@@ -1,6 +1,14 @@
 import { UserRole } from "@prisma/client"
 import * as z from "zod"
 
+const ACCEPTED_IMAGE_MIME_TYPES = [
+  "image/jpeg",
+  "image/jpg",
+  "image/png",
+  "image/webp",
+]
+const MAX_UPLOAD_SIZE = 1024 * 1024 * 5
+
 export const SettingsSchema = z
   .object({
     name: z.optional(z.string()),
@@ -9,6 +17,18 @@ export const SettingsSchema = z
     email: z.optional(z.string().email()),
     password: z.optional(z.string().min(8)),
     newPassword: z.optional(z.string().min(8)),
+    image: z.optional(
+      z
+        .any()
+        .refine(
+          (files) => ACCEPTED_IMAGE_MIME_TYPES.includes(files?.[0].type),
+          "Only .png, .jpg, .jpeg, and .webp formats are supported."
+        )
+        .refine(
+          (files) => !files || files?.[0].size <= MAX_UPLOAD_SIZE,
+          "Max upload size is 5MB"
+        )
+    ),
   })
   .refine(
     (data) => {

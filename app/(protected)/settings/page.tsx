@@ -3,7 +3,7 @@
 import * as z from "zod"
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
-import { useTransition, useState } from "react"
+import React, { useTransition, useState } from "react"
 import { useSession } from "next-auth/react"
 
 import { Switch } from "@/components/ui/switch"
@@ -17,7 +17,7 @@ import {
 import { SettingsSchema } from "@/schemas"
 import { Card, CardHeader, CardContent } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
-import { settings } from "@/actions/settings"
+import { updateUser } from "@/actions/settings/update-user"
 import {
   Form,
   FormField,
@@ -33,11 +33,15 @@ import { FormError } from "@/components/form-error"
 import { FormSuccess } from "@/components/form-success"
 import { UserRole } from "@prisma/client"
 
+import { FaTrash } from "react-icons/fa"
+
 const SettingsPage = () => {
   const user = useCurrentUser()
 
-  const [error, setError] = useState<string | undefined>()
-  const [success, setSuccess] = useState<string | undefined>()
+  const [image, setImage] = useState<File | null>(null)
+  const [previewUrl, setPreviewUrl] = useState<string | undefined>(undefined)
+  const [error, setError] = useState<string | undefined>(undefined)
+  const [success, setSuccess] = useState<string | undefined>(undefined)
   const { update } = useSession()
   const [isPending, startTransition] = useTransition()
 
@@ -50,20 +54,35 @@ const SettingsPage = () => {
       email: user?.email || undefined,
       role: user?.role || undefined,
       isTwoFactorEnabled: user?.isTwoFactorEnabled || undefined,
+      image: undefined,
     },
   })
 
-  const onSubmit = (values: z.infer<typeof SettingsSchema>) => {
+  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0]
+    setImage(file || null)
+    if (previewUrl) URL.revokeObjectURL(previewUrl)
+
+    if (file) {
+      const url = URL.createObjectURL(file)
+      setPreviewUrl(url)
+    } else setPreviewUrl(undefined)
+  }
+
+  const onSubmit = async (values: z.infer<typeof SettingsSchema>) => {
+    console.log(image, previewUrl)
     startTransition(() => {
-      settings(values)
+      updateUser(values)
         .then((data) => {
           if (data.error) {
             setError(data.error)
           }
-
           if (data.success) {
             update()
             setSuccess(data.success)
+            setTimeout(() => {
+              setSuccess(undefined)
+            }, 3000)
           }
         })
         .catch(() => setError("Something went wrong!"))
@@ -147,6 +166,48 @@ const SettingsPage = () => {
                             type="password"
                             disabled={isPending}
                           />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={form.control}
+                    name="image"
+                    render={({ field }) => (
+                      <FormItem className="flex flex-col gap-1">
+                        <FormLabel>Profile picture</FormLabel>
+                        <FormControl>
+                          <section className="flex items-center justify-between">
+                            <input
+                              type="file"
+                              onBlur={field.onBlur}
+                              name={field.name}
+                              onChange={(e) => {
+                                handleImageChange(e)
+                              }}
+                              ref={field.ref}
+                            />
+                            {previewUrl && image && (
+                              <div className="flex items-center justify-between gap-4">
+                                <span
+                                  className="cursor-pointer"
+                                  onClick={() => {
+                                    setPreviewUrl(undefined)
+                                    setImage(null)
+                                  }}
+                                >
+                                  <FaTrash color="red" />
+                                </span>
+                                <img
+                                  width={100}
+                                  height={100}
+                                  src={previewUrl}
+                                  alt="Selected image"
+                                />
+                              </div>
+                            )}
+                          </section>
                         </FormControl>
                         <FormMessage />
                       </FormItem>
