@@ -11,14 +11,14 @@ import { currentUser } from "@/lib/auth"
 import { generateVerificationToken } from "@/lib/tokens"
 import { sendVerificationEmail } from "@/lib/mail"
 
-export const settings = async (values: z.infer<typeof SettingsSchema>) => {
+export const updateUser = async (values: z.infer<typeof SettingsSchema>) => {
   const user = await currentUser()
 
   if (!user) {
     return { error: "Unauthorized" }
   }
 
-  const dbUser = await getUserById(user.id as string)
+  const dbUser = await getUserById(user.id!)
 
   if (!dbUser) {
     return { error: "Unauthorized" }
@@ -78,5 +78,5 @@ export const settings = async (values: z.infer<typeof SettingsSchema>) => {
     },
   })
 
-  return { success: "Settings Updated!" }
+  return { success: "User Profile Updated!" }
 }
