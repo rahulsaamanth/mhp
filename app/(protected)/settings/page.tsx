@@ -17,7 +17,7 @@ import {
 import { SettingsSchema } from "@/schemas"
 import { Card, CardHeader, CardContent } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
-import { updateUser } from "@/actions/settings/update-user"
+import { updateUser } from "@/actions/settings"
 import {
   Form,
   FormField,
@@ -34,6 +34,7 @@ import { FormSuccess } from "@/components/form-success"
 import { UserRole } from "@prisma/client"
 
 import { FaTrash } from "react-icons/fa"
+import { getSignedURL } from "@/actions/settings"
 
 const SettingsPage = () => {
   const user = useCurrentUser()
@@ -69,20 +70,57 @@ const SettingsPage = () => {
     } else setPreviewUrl(undefined)
   }
 
+  const computeSHA256 = async (file: File) => {
+    const buffer = await file.arrayBuffer()
+    const hashBuffer = await crypto.subtle.digest("SHA-256", buffer)
+    const hashArray = Array.from(new Uint8Array(hashBuffer))
+    const hashHex = hashArray
+      .map((b) => b.toString(16).padStart(2, "0"))
+      .join("")
+    return hashHex
+  }
+
+  const handleImageUpload = async (file: File) => {
+    const signedURLResult = await getSignedURL({
+      fileSize: file.size,
+      fileType: file.type,
+      checksum: await computeSHA256(file),
+    })
+    if (signedURLResult.error !== undefined)
+      throw new Error(signedURLResult.error)
+    const url = signedURLResult.success.url
+    await fetch(url, {
+      method: "PUT",
+      headers: {
+        "Content-Type": file.type,
+      },
+      body: file,
+    })
+    const fileUrl = url.split("?")[0]
+    return fileUrl
+  }
+
   const onSubmit = async (values: z.infer<typeof SettingsSchema>) => {
-    console.log(image, previewUrl)
+    let imageUrl: string | null = null
+
+    if (image) {
+      imageUrl = await handleImageUpload(image as File)
+    }
     startTransition(() => {
-      updateUser(values)
+      const updateUserParams = imageUrl
+        ? { ...values, image: imageUrl }
+        : { ...values }
+      updateUser(updateUserParams)
         .then((data) => {
           if (data.error) {
             setError(data.error)
           }
           if (data.success) {
             update()
+            console.log(user)
             setSuccess(data.success)
-            setTimeout(() => {
-              setSuccess(undefined)
-            }, 3000)
+            setImage(null)
+            setPreviewUrl(undefined)
           }
         })
         .catch(() => setError("Something went wrong!"))

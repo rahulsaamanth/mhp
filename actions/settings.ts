@@ -10,6 +10,9 @@ import { getUserByEmail, getUserById } from "@/utils/user"
 import { currentUser } from "@/lib/auth"
 import { generateVerificationToken } from "@/lib/tokens"
 import { sendVerificationEmail } from "@/lib/mail"
+import { PutObjectCommand, S3Client } from "@aws-sdk/client-s3"
+import { getSignedUrl } from "@aws-sdk/s3-request-presigner"
+import crypto from "crypto"
 
 export const updateUser = async (values: z.infer<typeof SettingsSchema>) => {
   const user = await currentUser()
@@ -69,14 +72,72 @@ export const updateUser = async (values: z.infer<typeof SettingsSchema>) => {
     },
   })
 
-  update({
+  await update({
     user: {
       name: updatedUser.name,
       email: updatedUser.email,
       isTwoFactorEnabled: updatedUser.isTwoFactorEnabled,
       role: updatedUser.role,
+      image: updatedUser.image,
     },
   })
 
   return { success: "User Profile Updated!" }
+}
+
+const generateFileName = (bytes = 32) =>
+  crypto.randomBytes(bytes).toString("hex")
+
+const allowedFileTypes = ["image/jpeg", "image/png", "image/jpg", "image/webp"]
+
+const MaxFileSize = 1024 * 1024 * 5
+
+type SignedURLResponse = Promise<
+  | { error: string; success?: undefined }
+  | { success: { url: string }; error?: undefined }
+>
+
+type GetSignedURLParams = {
+  fileType: string
+  fileSize: number
+  checksum: string
+}
+
+const s3Client = new S3Client({
+  region: process.env.AWS_BUCKET_REGION!,
+  credentials: {
+    accessKeyId: process.env.AWS_ACCESS_KEY!,
+    secretAccessKey: process.env.AWS_ACCESS_SECRET!,
+  },
+})
+
+export const getSignedURL = async ({
+  fileType,
+  fileSize,
+  checksum,
+}: GetSignedURLParams): SignedURLResponse => {
+  const user = currentUser()
+
+  if (!user) return { error: "Unauthorized!" }
+
+  if (!allowedFileTypes.includes(fileType))
+    return { error: "File type not allowed" }
+
+  if (fileSize > MaxFileSize) return { error: "File size too large" }
+
+  const fileName = generateFileName()
+
+  const putObjectCommand = new PutObjectCommand({
+    Bucket: process.env.AWS_BUCKET_NAME!,
+    Key: fileName,
+    ContentType: fileType,
+    ContentLength: fileSize,
+    ChecksumSHA256: checksum,
+  })
+
+  const signedUrl = await getSignedUrl(s3Client, putObjectCommand, {
+    expiresIn: 60, //3600
+  })
+
+  return { success: { url: signedUrl } }
 }
