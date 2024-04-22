@@ -19,9 +19,9 @@ export default function Home() {
             font.className
           )}
         >
-          🔐 Auth
+          🔐 Admin
         </h1>
-        <p className="text-white text-lg">A simple authentication service</p>
+        <p className="text-white text-lg">Magalore Homeopathic Pharmacy</p>
         <div className="">
           <LoginButton>
             <Button variant={"secondary"} size={"lg"}>

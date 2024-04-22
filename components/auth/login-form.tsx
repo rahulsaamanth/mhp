@@ -73,9 +73,9 @@ export const LoginForm = () => {
   return (
     <CardWrapper
       headerLabel="welcome back"
-      backButtonLabel="Don't have an account?"
-      backButtonHref="/auth/register"
-      showSocial={!showTwoFactor}
+      backButtonLabel="Forgot Pasword?"
+      backButtonHref="/auth/reset"
+      // showSocial={!showTwoFactor}
     >
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
@@ -134,14 +134,6 @@ export const LoginForm = () => {
                           disabled={isPending}
                         />
                       </FormControl>
-                      <Button
-                        size="sm"
-                        variant="link"
-                        asChild
-                        className="px-0 font-normal"
-                      >
-                        <Link href="/auth/reset">Forgot Password!</Link>
-                      </Button>
                       <FormMessage />
                     </FormItem>
                   )}

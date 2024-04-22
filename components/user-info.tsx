@@ -4,7 +4,7 @@ import { Badge } from "@/components/ui/badge"
 
 interface UserInfoProps {
   user?: ExtendedUser
-  label: string
+  label?: string
 }
 
 export const UserInfo = ({ user, label }: UserInfoProps) => {

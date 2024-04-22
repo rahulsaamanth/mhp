@@ -8,8 +8,8 @@ import { Toaster } from "@/components/ui/sonner"
 const inter = Inter({ subsets: ["latin"] })
 
 export const metadata: Metadata = {
-  title: "Next-Auth",
-  description: "Demonstration of next-auth",
+  title: "MHP - Admin Login",
+  description: "Mangalore Homeopathic Pharmacy - Admin Panel",
 }
 
 export default async function RootLayout({
