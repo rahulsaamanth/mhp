@@ -29,20 +29,17 @@ import {
 } from "@/components/ui/form"
 import { Input } from "@/components/ui/input"
 import { useCurrentUser } from "@/hooks/use-current-user"
-import { FormError } from "@/components/form-error"
-import { FormSuccess } from "@/components/form-success"
 import { UserRole } from "@prisma/client"
 
-import { FaTrash } from "react-icons/fa"
 import { getSignedURL } from "@/actions/settings"
+import { toast } from "sonner"
+import { Icon } from "@iconify/react"
 
 const SettingsPage = () => {
   const user = useCurrentUser()
 
   const [image, setImage] = useState<File | null>(null)
   const [previewUrl, setPreviewUrl] = useState<string | undefined>(undefined)
-  const [error, setError] = useState<string | undefined>(undefined)
-  const [success, setSuccess] = useState<string | undefined>(undefined)
   const { update } = useSession()
   const [isPending, startTransition] = useTransition()
 
@@ -113,26 +110,25 @@ const SettingsPage = () => {
       updateUser(updateUserParams)
         .then((data) => {
           if (data.error) {
-            setError(data.error)
+            toast.error(data.error)
           }
           if (data.success) {
             update()
-            console.log(user)
-            setSuccess(data.success)
+            toast.success(data.success)
             setImage(null)
             setPreviewUrl(undefined)
           }
         })
-        .catch(() => setError("Something went wrong!"))
+        .catch(() => toast.error("Something went wrong!"))
     })
   }
 
   return (
-    <section className="w-full h-full flex items-center justify-center">
+    <section className="w-full h-full grid place-items-center">
       <Card className="w-3/4 lg:w-1/2 p-10">
         {/* <CardHeader>
-        <p className="text-2xl font-semibold text-center">⚙️ Settings</p>
-      </CardHeader> */}
+          <p className="text-2xl font-semibold text-center">⚙️ Settings</p>
+        </CardHeader> */}
         <CardContent>
           <Form {...form}>
             <form className="space-y-6" onSubmit={form.handleSubmit(onSubmit)}>
@@ -236,7 +232,12 @@ const SettingsPage = () => {
                                       setImage(null)
                                     }}
                                   >
-                                    <FaTrash color="red" />
+                                    <Icon
+                                      icon="iconoir:trash"
+                                      width="24"
+                                      height="24"
+                                      style={{ color: "red" }}
+                                    />
                                   </span>
                                   <img
                                     width={100}
@@ -303,8 +304,6 @@ const SettingsPage = () => {
                   />
                 )}
               </div>
-              <FormError message={error} />
-              <FormSuccess message={success} />
               <Button disabled={isPending} type="submit">
                 Save
               </Button>

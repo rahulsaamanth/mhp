@@ -1,8 +1,5 @@
 "use client"
 
-import { FaUser } from "react-icons/fa"
-import { ExitIcon } from "@radix-ui/react-icons"
-
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -12,6 +9,7 @@ import {
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar"
 import { useCurrentUser } from "@/hooks/use-current-user"
 import { LogoutButton } from "./logout-button"
+import { Icon } from "@iconify/react"
 
 export const UserButton = () => {
   const user = useCurrentUser()
@@ -22,15 +20,29 @@ export const UserButton = () => {
         <Avatar className="outline-none">
           <AvatarImage src={user?.image || ""} />
           <AvatarFallback className="bg-sky-500">
-            <FaUser className="text-white" />
+            <Icon
+              icon="fa:user"
+              width="24"
+              height="24"
+              style={{ color: "white" }}
+            />
           </AvatarFallback>
         </Avatar>
       </DropdownMenuTrigger>
       <DropdownMenuContent className="w-40" align="end">
+        <DropdownMenuItem className="flex items-center justify-center gap-3 pb-2">
+          <img
+            src={user?.image!}
+            alt="profile"
+            className="size-8 rounded-full"
+          />
+          <span>{user?.name}</span>
+        </DropdownMenuItem>
+        <hr />
         <LogoutButton>
-          <DropdownMenuItem>
-            <ExitIcon className="h-4 w-4 mr-2" />
-            Logout
+          <DropdownMenuItem className="cursor-pointer space-x-2">
+            <Icon icon="material-symbols:logout-sharp" width="20" height="20" />
+            <span>Logout</span>
           </DropdownMenuItem>
         </LogoutButton>
       </DropdownMenuContent>

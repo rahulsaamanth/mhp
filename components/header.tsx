@@ -10,6 +10,7 @@ import { cn } from "@/lib/utils"
 import { Icon } from "@iconify/react"
 import { useCurrentUser } from "@/hooks/use-current-user"
 import { UserButton } from "./auth/user-button"
+import { CurrentPath } from "./current-path"
 
 const Header = () => {
   const user = useCurrentUser()
@@ -27,10 +28,10 @@ const Header = () => {
         }
       )}
     >
-      <div className="flex h-full items-center justify-between px-4">
+      <div className="flex h-full items-center justify-between px-10">
         <div className="flex items-center space-x-4">
           <Link href="/dashboard" className="md:hidden">
-            <span className="font-bold text-xl flex">Logo</span>
+            <span className="font-bold text-xl">Logo</span>
           </Link>
         </div>
 
