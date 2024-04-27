@@ -59,7 +59,9 @@ const HeaderMobile = () => {
         variants={variants}
         className="absolute grid w-full gap-3 px-10 py-16"
       >
-        {isOpen && <UserButton />}
+        <MenuItem className="pb-10">
+          <UserButton />
+        </MenuItem>
         {SIDENAV_ITEMS.map((item, idx) => {
           const isLastItem = idx === SIDENAV_ITEMS.length - 1
 
@@ -72,7 +74,7 @@ const HeaderMobile = () => {
                   <Link
                     href={item.path}
                     onClick={() => toggleOpen()}
-                    className={`flex w-full text-2xl ${
+                    className={`flex w-full text-2xl hover:font-medium ${
                       item.path === pathname ? "font-bold" : ""
                     }`}
                   >

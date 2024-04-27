@@ -5,6 +5,8 @@ import Header from "@/components/header"
 import HeaderMobile from "@/components/header-mobile"
 import PageWrapper from "@/components/page-wrapper"
 import { Metadata } from "next"
+import { Providers } from "@/lib/providers"
+import { CurrentPage } from "@/components/current-page"
 
 interface ProtectedLayoutProps {
   children: React.ReactNode
@@ -23,16 +25,21 @@ const ProtectedLayout = ({ children }: ProtectedLayoutProps) => {
   // )
   return (
     <>
-      <div className="flex">
-        <SideNav />
-        <main className="flex-1 min-h-max">
-          <MarginWidthWrapper>
-            <Header />
-            <HeaderMobile />
-            <PageWrapper>{children}</PageWrapper>
-          </MarginWidthWrapper>
-        </main>
-      </div>
+      <Providers>
+        <div className={`flex`} style={{ fontFamily: "Space Mono" }}>
+          <SideNav />
+          <main className="flex-1 min-h-max">
+            <MarginWidthWrapper>
+              <Header />
+              <HeaderMobile />
+              <PageWrapper>
+                <CurrentPage />
+                {children}
+              </PageWrapper>
+            </MarginWidthWrapper>
+          </main>
+        </div>
+      </Providers>
     </>
   )
 }

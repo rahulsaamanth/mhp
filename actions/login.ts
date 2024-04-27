@@ -13,7 +13,10 @@ import { getTwoFactorTokenByEmail } from "@/utils/two-factor-token"
 import { db } from "@/lib/db"
 import { getTwoFactorConfirmationByUserId } from "@/utils/two-factor-confirmation"
 
-export const login = async (values: z.infer<typeof LoginSchema>) => {
+export const login = async (
+  values: z.infer<typeof LoginSchema>,
+  callbackUrl?: string | null
+) => {
   const validatedFields = LoginSchema.safeParse(values)
 
   if (!validatedFields.success) return { error: "Invalid fields!" }
@@ -38,55 +41,56 @@ export const login = async (values: z.infer<typeof LoginSchema>) => {
   }
 
   if (existingUser.isTwoFactorEnabled && existingUser.email) {
-    if (code) {
-      const twoFactorToken = await getTwoFactorTokenByEmail(existingUser.email)
-
-      if (!twoFactorToken) return { error: "Invaid code" }
-
-      if (twoFactorToken.token !== code) return { error: "Invalid code" }
-
-      const hasExpired = new Date(twoFactorToken.expires) < new Date()
-
-      if (hasExpired) return { error: "code expired!" }
-
-      await db.twoFactorToken.delete({
-        where: { id: twoFactorToken.id },
-      })
-
-      const existingConfirmation = await getTwoFactorConfirmationByUserId(
-        existingUser.id
-      )
-
-      if (existingConfirmation)
-        await db.twoFactorConfirmation.delete({
-          where: { id: existingConfirmation.id },
-        })
-
-      await db.twoFactorConfirmation.create({
-        data: {
-          userId: existingUser?.id,
-        },
-      })
-    } else {
+    if (!code) {
       const twoFactorToken = await generateTwoFactorToken(existingUser.email)
 
       await sendTwoFactorTokenEmail(twoFactorToken.email, twoFactorToken.token)
 
       return { twoFactor: true }
     }
+    const twoFactorToken = await getTwoFactorTokenByEmail(existingUser.email)
+
+    if (!twoFactorToken) return { error: "Invaid code" }
+
+    if (twoFactorToken.token !== code) return { error: "Invalid code" }
+
+    const hasExpired = new Date(twoFactorToken.expires) < new Date()
+
+    if (hasExpired) return { error: "code expired!" }
+
+    await db.twoFactorToken.delete({
+      where: { id: twoFactorToken.id },
+    })
+
+    const existingConfirmation = await getTwoFactorConfirmationByUserId(
+      existingUser.id
+    )
+
+    if (existingConfirmation)
+      await db.twoFactorConfirmation.delete({
+        where: { id: existingConfirmation.id },
+      })
+
+    await db.twoFactorConfirmation.create({
+      data: {
+        userId: existingUser?.id,
+      },
+    })
   }
 
   try {
     await signIn("credentials", {
       email,
       password,
-      redirectTo: DEFAULT_LOGIN_REDIRECT,
+      redirectTo: callbackUrl || DEFAULT_LOGIN_REDIRECT,
     })
   } catch (error) {
     if (error instanceof AuthError) {
       switch (error.type) {
         case "CredentialsSignin":
           return { error: "Invalid credentials" }
+        case "AccessDenied":
+          return { error: "Access Denied: Admin Route" }
         default:
           return { error: "Something went wrong!" }
       }

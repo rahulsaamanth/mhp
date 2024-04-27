@@ -1,15 +1,18 @@
 "use client"
 
-import { FcGoogle } from "react-icons/fc"
-import { FaGithub } from "react-icons/fa"
 import { Button } from "@/components/ui/button"
 import { signIn } from "next-auth/react"
 import { DEFAULT_LOGIN_REDIRECT } from "@/routes"
+import { useSearchParams } from "next/navigation"
+import { Icon } from "@iconify/react/dist/iconify.js"
 
 export const Social = () => {
+  const searchParams = useSearchParams()
+  const callbackUrl = searchParams.get("callbackUrl")
+
   const onClick = (provider: "google" | "github") => {
     signIn(provider, {
-      callbackUrl: DEFAULT_LOGIN_REDIRECT,
+      callbackUrl: callbackUrl || DEFAULT_LOGIN_REDIRECT,
     })
   }
 
@@ -21,7 +24,7 @@ export const Social = () => {
         variant={"outline"}
         onClick={() => onClick("google")}
       >
-        <FcGoogle className="h-5 w-5" />
+        <Icon icon="flat-color-icons:google" width="24" height="24" />
       </Button>
       <Button
         size={"lg"}
@@ -29,7 +32,7 @@ export const Social = () => {
         variant={"outline"}
         onClick={() => onClick("github")}
       >
-        <FaGithub className="h-5 w-5" />
+        <Icon icon="mdi:github" width="24" height="24" />
       </Button>
     </div>
   )

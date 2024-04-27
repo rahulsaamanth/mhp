@@ -7,14 +7,10 @@ export const SIDENAV_ITEMS: SideNavItem[] = [
     path: "/dashboard",
     icon: <Icon icon="carbon:dashboard-reference" width="20" height="20" />,
   },
-  {
-    title: "Customers",
-    path: "/users",
-    icon: <Icon icon="ph:users" width="20" height="20" />,
-  },
+
   {
     title: "Products",
-    path: "/product",
+    path: "/products",
     icon: <Icon icon="fluent-mdl2:product-variant" width="20" height="20" />,
   },
   {
@@ -24,7 +20,23 @@ export const SIDENAV_ITEMS: SideNavItem[] = [
       <Icon icon="material-symbols:orders-outline" width="20" height="20" />
     ),
   },
-
+  {
+    title: "Customers",
+    path: "/users",
+    icon: <Icon icon="ph:users" width="20" height="20" />,
+  },
+  {
+    title: "Reviews",
+    path: "/reviews",
+    icon: (
+      <Icon icon="material-symbols:reviews-outline" width="20" height="20" />
+    ),
+  },
+  {
+    title: "Coupons",
+    path: "/coupons",
+    icon: <Icon icon="mdi:coupon-outline" width="20" height="20" />,
+  },
   {
     title: "Admin",
     path: "/admin",
