@@ -1,4 +1,4 @@
-@import url("https://fonts.googleapis.com/css2?family=Space+Mono:ital,wght@0,400;0,700;1,400;1,700&display=swap");
+@import url("clash-grotesk.css");
 
 @tailwind base;
 @tailwind components;
@@ -8,6 +8,29 @@ html,
 body,
 :root {
   height: 100%;
+}
+html::-webkit-scrollbar {
+  width: 0.3vw;
+}
+html::-webkit-scrollbar:hover {
+  width: 0.5vw;
+}
+
+html::-webkit-scrollbar-thumb {
+  background-color: #606060;
+  border-radius: 100px;
+}
+html::-webkit-scrollbar-thumb:hover {
+  background-color: #333;
+}
+html::-webkit-scrollbar-thumb:active {
+  background-color: #fc4100;
+}
+html::-webkit-scrollbar-button {
+  display: none;
+}
+html::-webkit-scrollbar-track-piece:hover {
+  background-color: #929292;
 }
 
 @layer base {

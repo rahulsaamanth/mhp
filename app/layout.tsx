@@ -1,11 +1,11 @@
 import type { Metadata } from "next"
-import { Inter } from "next/font/google"
 import { SessionProvider } from "next-auth/react"
-import "./globals.css"
+import "./styles/globals.css"
 import { auth } from "@/auth"
 import { Toaster } from "@/components/ui/sonner"
+import { Providers } from "@/lib/providers"
 
-const inter = Inter({ subsets: ["latin"] })
+import { GeistSans } from "geist/font/sans"
 
 export const metadata: Metadata = {
   title: "MHP - Admin Login",
@@ -21,10 +21,10 @@ export default async function RootLayout({
 
   return (
     <SessionProvider session={session}>
-      <html lang="en">
-        <body className={inter.className}>
+      <html lang="en" className={GeistSans.className}>
+        <body>
           <Toaster richColors theme="light" toastOptions={{}} />
-          {children}
+          <Providers>{children}</Providers>
         </body>
       </html>
     </SessionProvider>

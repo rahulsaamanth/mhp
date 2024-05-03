@@ -11,7 +11,7 @@ import { Icon } from "@iconify/react"
 
 const SideNav = () => {
   return (
-    <aside className="md:w-60 bg-white h-screen flex-1 fixed border-r border-zinc-200 hidden md:flex">
+    <div className="md:w-60 bg-white h-screen flex-1 fixed border-r border-zinc-200 hidden md:flex">
       <div className="flex flex-col gap-6 w-full">
         <Link
           href="/dashboard"
@@ -33,7 +33,7 @@ const SideNav = () => {
           })}
         </div>
       </div>
-    </aside>
+    </div>
   )
 }
 
@@ -57,7 +57,7 @@ const MenuItem = ({ item }: { item: SideNavItem }) => {
             }`}
           >
             <div className="flex flex-row space-x-4 items-center">
-              {item.icon}
+              <Icon icon={item.icon as string} width="20" height="20" />
               <span className="font-semibold text-xl flex">{item.title}</span>
             </div>
 
@@ -91,7 +91,8 @@ const MenuItem = ({ item }: { item: SideNavItem }) => {
             item.path === pathname && "bg-zinc-200"
           }`}
         >
-          {item.icon}
+          <Icon icon={item.icon?.toString()!} width="20" height="20" />
+
           <span className={`text-xl font-semibold flex`}>{item.title}</span>
         </Link>
       )}
