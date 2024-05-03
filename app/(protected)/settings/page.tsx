@@ -35,13 +35,32 @@ import { getSignedURL } from "@/actions/settings"
 import { toast } from "sonner"
 import { Icon } from "@iconify/react"
 
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog"
+
 const SettingsPage = () => {
   const user = useCurrentUser()
 
   const [image, setImage] = useState<File | null>(null)
   const [previewUrl, setPreviewUrl] = useState<string | undefined>(undefined)
+
   const { update } = useSession()
+
   const [isPending, startTransition] = useTransition()
+
+  const [isConfirmationDialogOpen, setIsConfirmationDialogOpen] =
+    useState(false)
+
+  const [isDirty, setIsDirty] = useState(false)
 
   const form = useForm<z.infer<typeof SettingsSchema>>({
     resolver: zodResolver(SettingsSchema),
@@ -55,6 +74,10 @@ const SettingsPage = () => {
       image: undefined,
     },
   })
+
+  const handleFormChange = () => {
+    setIsDirty(true)
+  }
 
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]
@@ -98,6 +121,11 @@ const SettingsPage = () => {
   }
 
   const onSubmit = async (values: z.infer<typeof SettingsSchema>) => {
+    if (!isDirty) {
+      toast.error("No changes detected!")
+      setIsConfirmationDialogOpen(false)
+      return
+    }
     let imageUrl: string | null = null
 
     if (image) {
@@ -111,13 +139,16 @@ const SettingsPage = () => {
         .then((data) => {
           if (data.error) {
             toast.error(data.error)
+            setIsConfirmationDialogOpen(false)
           }
           if (data.success) {
             update()
             toast.success(data.success)
             setImage(null)
             setPreviewUrl(undefined)
+            setIsConfirmationDialogOpen(false)
           }
+          setIsDirty(false)
         })
         .catch(() => toast.error("Something went wrong!"))
     })
@@ -131,7 +162,7 @@ const SettingsPage = () => {
         </CardHeader> */}
         <CardContent>
           <Form {...form}>
-            <form className="space-y-6" onSubmit={form.handleSubmit(onSubmit)}>
+            <form className="space-y-6" onChange={handleFormChange}>
               <div className="space-y-4">
                 <FormField
                   control={form.control}
@@ -304,9 +335,34 @@ const SettingsPage = () => {
                   />
                 )}
               </div>
-              <Button disabled={isPending} type="submit">
-                Save
-              </Button>
+              <AlertDialog open={isConfirmationDialogOpen}>
+                <AlertDialogTrigger
+                  asChild
+                  onClick={() => setIsConfirmationDialogOpen(true)}
+                >
+                  <Button variant="default">Save</Button>
+                </AlertDialogTrigger>
+                <AlertDialogContent>
+                  <AlertDialogHeader>
+                    <AlertDialogTitle>
+                      Confirm to make changes.
+                    </AlertDialogTitle>
+                    <AlertDialogDescription>
+                      You can always make changes to profile settings.
+                    </AlertDialogDescription>
+                  </AlertDialogHeader>
+                  <AlertDialogFooter>
+                    <AlertDialogCancel
+                      onClick={() => setIsConfirmationDialogOpen(false)}
+                    >
+                      Cancel
+                    </AlertDialogCancel>
+                    <AlertDialogAction onClick={form.handleSubmit(onSubmit)}>
+                      Confirm
+                    </AlertDialogAction>
+                  </AlertDialogFooter>
+                </AlertDialogContent>
+              </AlertDialog>
             </form>
           </Form>
         </CardContent>

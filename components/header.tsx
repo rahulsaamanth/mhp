@@ -10,7 +10,7 @@ import { cn } from "@/lib/utils"
 import { Icon } from "@iconify/react"
 import { useCurrentUser } from "@/hooks/use-current-user"
 import { UserButton } from "./auth/user-button"
-import { CurrentPath } from "./current-path"
+import { CurrentPage } from "@/components/current-page"
 
 const Header = () => {
   const user = useCurrentUser()
