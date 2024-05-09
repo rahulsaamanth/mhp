@@ -1,35 +1,35 @@
-"use client"
+"use client";
 
-import { admin } from "@/actions/admin"
-import { RoleGate } from "@/components/auth/role-gate"
-import { FormSuccess } from "@/components/form-success"
-import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardHeader } from "@/components/ui/card"
-import { UserRole } from "@prisma/client"
-import { toast } from "sonner"
+import { admin } from "@/actions/admin";
+import { RoleGate } from "@/components/auth/role-gate";
+import { FormSuccess } from "@/components/form-success";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader } from "@/components/ui/card";
+import { UserRole } from "@prisma/client";
+import { toast } from "sonner";
 
 const AdminPage = () => {
   const onServerActionClick = () => {
     admin().then((data) => {
-      if (data.error) toast.error(data?.error)
-      if (data.success) toast.success(data?.success)
-    })
-  }
+      if (data.error) toast.error(data?.error);
+      if (data.success) toast.success(data?.success);
+    });
+  };
 
   const onApiRouteClick = () => {
     fetch("/api/admin").then((response) => {
       if (!response.ok) {
-        return toast.error("Forbidden API Route!")
+        return toast.error("Forbidden API Route!");
       }
-      return toast.success("Allowed API Route!")
-    })
-  }
+      return toast.success("Allowed API Route!");
+    });
+  };
 
   return (
-    <section className="w-full h-full flex items-center justify-center mt-10">
+    <section className="mt-10 flex h-full w-full items-center justify-center">
       <Card className="w-[600px] p-10">
         <CardHeader>
-          <p className="text-2xl font-semibold text-center">🔑 Admin</p>
+          <p className="text-center text-2xl font-semibold">🔑 Admin</p>
         </CardHeader>
         <CardContent className="space-y-4">
           <RoleGate allowedRole={UserRole.ADMIN}>
@@ -47,7 +47,7 @@ const AdminPage = () => {
         </CardContent>
       </Card>
     </section>
-  )
-}
+  );
+};
 
-export default AdminPage
+export default AdminPage;

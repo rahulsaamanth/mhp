@@ -1,20 +1,20 @@
-"use client"
+"use client";
 
-import React, { ReactNode, useEffect, useRef, useState } from "react"
+import React, { ReactNode, useEffect, useRef, useState } from "react";
 
-import Link from "next/link"
-import { usePathname } from "next/navigation"
+import Link from "next/link";
+import { usePathname } from "next/navigation";
 
-import { SIDENAV_ITEMS } from "@/lib/constants"
-import { SideNavItem } from "@/types"
-import { Icon } from "@iconify/react"
-import { motion, useCycle } from "framer-motion"
-import { UserButton } from "./auth/user-button"
+import { SIDENAV_ITEMS } from "@/lib/constants";
+import { SideNavItem } from "@/types";
+import { Icon } from "@iconify/react";
+import { motion, useCycle } from "framer-motion";
+import { UserButton } from "./auth/user-button";
 
 type MenuItemWithSubMenuProps = {
-  item: SideNavItem
-  toggleOpen: () => void
-}
+  item: SideNavItem;
+  toggleOpen: () => void;
+};
 
 const sidebar = {
   open: (height = 1000) => ({
@@ -33,37 +33,37 @@ const sidebar = {
       damping: 40,
     },
   },
-}
+};
 
 const HeaderMobile = () => {
-  const pathname = usePathname()
-  const containerRef = useRef(null)
-  const { height } = useDimensions(containerRef)
-  const [isOpen, toggleOpen] = useCycle(false, true)
+  const pathname = usePathname();
+  const containerRef = useRef(null);
+  const { height } = useDimensions(containerRef);
+  const [isOpen, toggleOpen] = useCycle(false, true);
 
   return (
     <motion.nav
       initial={false}
       animate={isOpen ? "open" : "closed"}
       custom={height}
-      className={`fixed inset-0 z-50 w-full md:hidden ${
+      className={`fixed inset-0 z-50 w-full overflow-auto md:hidden ${
         isOpen ? "" : "pointer-events-none"
       }`}
       ref={containerRef}
     >
       <motion.div
-        className="absolute inset-0 right-0 w-full bg-slate-50"
+        className="absolute inset-0 right-0 w-full bg-white"
         variants={sidebar}
       />
       <motion.ul
         variants={variants}
-        className="absolute grid w-full gap-3 px-10 py-16"
+        className="absolute grid w-full gap-1 px-10 py-16 sm:gap-3"
       >
-        <MenuItem className="pb-10">
+        <MenuItem className="pb-4 sm:pb-10">
           <UserButton />
         </MenuItem>
         {SIDENAV_ITEMS.map((item, idx) => {
-          const isLastItem = idx === SIDENAV_ITEMS.length - 1
+          const isLastItem = idx === SIDENAV_ITEMS.length - 1;
 
           return (
             <div key={idx}>
@@ -87,15 +87,15 @@ const HeaderMobile = () => {
                 <MenuItem className="my-3 h-px w-full bg-gray-300" />
               )}
             </div>
-          )
+          );
         })}
       </motion.ul>
       <MenuToggle toggle={toggleOpen} />
     </motion.nav>
-  )
-}
+  );
+};
 
-export default HeaderMobile
+export default HeaderMobile;
 
 const MenuToggle = ({ toggle }: { toggle: any }) => (
   <button
@@ -125,7 +125,7 @@ const MenuToggle = ({ toggle }: { toggle: any }) => (
       />
     </svg>
   </button>
-)
+);
 
 const Path = (props: any) => (
   <motion.path
@@ -135,28 +135,28 @@ const Path = (props: any) => (
     strokeLinecap="round"
     {...props}
   />
-)
+);
 
 const MenuItem = ({
   className,
   children,
 }: {
-  className?: string
-  children?: ReactNode
+  className?: string;
+  children?: ReactNode;
 }) => {
   return (
     <motion.li variants={MenuItemVariants} className={className}>
       {children}
     </motion.li>
-  )
-}
+  );
+};
 
 const MenuItemWithSubMenu: React.FC<MenuItemWithSubMenuProps> = ({
   item,
   toggleOpen,
 }) => {
-  const pathname = usePathname()
-  const [subMenuOpen, setSubMenuOpen] = useState(false)
+  const pathname = usePathname();
+  const [subMenuOpen, setSubMenuOpen] = useState(false);
 
   return (
     <>
@@ -165,7 +165,7 @@ const MenuItemWithSubMenu: React.FC<MenuItemWithSubMenuProps> = ({
           className="flex w-full text-2xl"
           onClick={() => setSubMenuOpen(!subMenuOpen)}
         >
-          <div className="flex flex-row justify-between w-full items-center">
+          <div className="flex w-full flex-row items-center justify-between">
             <span
               className={`${pathname.includes(item.path) ? "font-bold" : ""}`}
             >
@@ -177,7 +177,7 @@ const MenuItemWithSubMenu: React.FC<MenuItemWithSubMenuProps> = ({
           </div>
         </button>
       </MenuItem>
-      <div className="mt-2 ml-2 flex flex-col space-y-2">
+      <div className="ml-2 mt-2 flex flex-col space-y-2">
         {subMenuOpen && (
           <>
             {item.subMenuItems?.map((subItem, subIdx) => {
@@ -193,14 +193,14 @@ const MenuItemWithSubMenu: React.FC<MenuItemWithSubMenuProps> = ({
                     {subItem.title}
                   </Link>
                 </MenuItem>
-              )
+              );
             })}
           </>
         )}
       </div>
     </>
-  )
-}
+  );
+};
 
 const MenuItemVariants = {
   open: {
@@ -218,7 +218,7 @@ const MenuItemVariants = {
       duration: 0.02,
     },
   },
-}
+};
 
 const variants = {
   open: {
@@ -227,17 +227,17 @@ const variants = {
   closed: {
     transition: { staggerChildren: 0.01, staggerDirection: -1 },
   },
-}
+};
 
 const useDimensions = (ref: any) => {
-  const dimensions = useRef({ width: 0, height: 0 })
+  const dimensions = useRef({ width: 0, height: 0 });
 
   useEffect(() => {
     if (ref.current) {
-      dimensions.current.width = ref.current.offsetWidth
-      dimensions.current.height = ref.current.offsetHeight
+      dimensions.current.width = ref.current.offsetWidth;
+      dimensions.current.height = ref.current.offsetHeight;
     }
-  }, [ref])
+  }, [ref]);
 
-  return dimensions.current
-}
+  return dimensions.current;
+};

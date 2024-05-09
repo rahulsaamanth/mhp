@@ -1,22 +1,22 @@
-"use client"
+"use client";
 
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
-import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar"
-import { useCurrentUser } from "@/hooks/use-current-user"
-import { LogoutButton } from "./logout-button"
-import { Icon } from "@iconify/react"
+} from "@/components/ui/dropdown-menu";
+import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
+import { useCurrentUser } from "@/hooks/use-current-user";
+import { LogoutButton } from "./logout-button";
+import { Icon } from "@iconify/react";
 
 export const UserButton = () => {
-  const user = useCurrentUser()
+  const user = useCurrentUser();
 
   return (
     <DropdownMenu>
-      <DropdownMenuTrigger>
+      <DropdownMenuTrigger className="rounded-full border-2 focus-visible:invisible">
         <Avatar className="outline-none">
           <AvatarImage src={user?.image || ""} />
           <AvatarFallback className="bg-sky-500">
@@ -31,11 +31,17 @@ export const UserButton = () => {
       </DropdownMenuTrigger>
       <DropdownMenuContent className="w-40" align="end">
         <DropdownMenuItem className="flex items-center justify-center gap-3 pb-2">
-          <img
-            src={user?.image!}
-            alt="profile"
-            className="size-8 rounded-full"
-          />
+          <Avatar className="size-8">
+            <AvatarImage src={user?.image || ""} />
+            <AvatarFallback className="size-8 bg-sky-500">
+              <Icon
+                icon="fa:user"
+                width="16"
+                height="16"
+                style={{ color: "white" }}
+              />
+            </AvatarFallback>
+          </Avatar>
           <span>{user?.name}</span>
         </DropdownMenuItem>
         <hr />
@@ -47,5 +53,5 @@ export const UserButton = () => {
         </LogoutButton>
       </DropdownMenuContent>
     </DropdownMenu>
-  )
-}
+  );
+};
