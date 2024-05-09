@@ -1,4 +1,4 @@
-import type { Config } from "tailwindcss"
+import type { Config } from "tailwindcss";
 
 const config = {
   darkMode: ["class"],
@@ -72,17 +72,17 @@ const config = {
         "accordion-down": "accordion-down 0.2s ease-out",
         "accordion-up": "accordion-up 0.2s ease-out",
       },
-      fontFamily: {
-        "cg-extralight": ["ClashGrotesk-Extralight"],
-        "cg-light": ["ClashGrotesk-Light"],
-        "cg-regular": ["ClashGrotesk-Regular"],
-        "cg-medium": ["ClashGrotesk-Medium"],
-        "cg-semibold": ["ClashGrotesk-Semibold"],
-        "cg-bold": ["ClashGrotesk-Bold"],
-      },
+      // fontFamily: {
+      //   "cg-extralight": ["ClashGrotesk-Extralight"],
+      //   "cg-light": ["ClashGrotesk-Light"],
+      //   "cg-regular": ["ClashGrotesk-Regular"],
+      //   "cg-medium": ["ClashGrotesk-Medium"],
+      //   "cg-semibold": ["ClashGrotesk-Semibold"],
+      //   "cg-bold": ["ClashGrotesk-Bold"],
+      // },
     },
   },
   plugins: [require("tailwindcss-animate")],
-} satisfies Config
+} satisfies Config;
 
-export default config
+export default config;

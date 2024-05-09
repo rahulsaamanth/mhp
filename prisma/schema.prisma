@@ -29,6 +29,11 @@ model User {
   accounts      Account[]
   isTwoFactorEnabled Boolean @default(false)
   twoFactorConfirmation TwoFactorConfirmation?
+
+  phone String
+  shippingAddress String?
+  billingAddress String?
+  orders Order[]
 }
 
 model Account {
@@ -84,4 +89,54 @@ model TwoFactorConfirmation{
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@unique([userId])
+}
+
+model Product{
+  id String @id @default(cuid())
+  name String
+  description String
+  price Float
+  stock Int
+  category Category @relation(fields: [categoryId], references: [id])
+  categoryId  String
+  brand Brand @relation(fields: [brandId], references: [id])
+  brandId String
+  orderDetails OrderDetails[]
+}
+
+model Category{
+  id String @id @default(cuid())
+  name String
+  parent Category? @relation("SubCategories", fields: [parentId], references: [id])
+  parentId String? 
+  subCategories Category[] @relation("SubCategories")
+  products Product[]
+}
+
+model Brand{
+  id String @id @default(cuid())
+  name String
+  products Product[]
+}
+
+model Order{
+  id String @id @default(cuid())
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId String 
+  orderDate DateTime
+  totalAmountPaid Float
+  orderDetails OrderDetails[]
+}
+
+model OrderDetails{
+  id String @id @default(cuid())
+  order Order @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  orderId String
+  product Product @relation(fields: [productId], references: [id], onDelete: Restrict)
+  productId String
+  quantity Int
+  unitPrice Float
+
+  @@index([orderId], name:"orderId")
+  @@index([productId], name:"productId")
 }

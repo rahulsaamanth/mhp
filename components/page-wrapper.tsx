@@ -1,9 +1,9 @@
-import { ReactNode } from "react"
+import { ReactNode } from "react";
 
 export default function PageWrapper({ children }: { children: ReactNode }) {
   return (
-    <div className="flex flex-col pt-2 pb-4 px-4 space-y-2 flex-grow min-h-screen bg-white">
+    <div className="flex min-h-screen flex-grow flex-col space-y-10 bg-zinc-50 px-4 py-8 sm:px-10 lg:px-20">
       {children}
     </div>
-  )
+  );
 }

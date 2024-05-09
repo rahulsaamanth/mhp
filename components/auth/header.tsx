@@ -1,20 +1,14 @@
-import { cn } from "@/lib/utils"
-import { Poppins } from "next/font/google"
-
-const font = Poppins({
-  subsets: ["latin"],
-  weight: ["600"],
-})
+import { cn } from "@/lib/utils";
 
 interface HeaderProps {
-  label: string
+  label: string;
 }
 
 export const Header = ({ label }: HeaderProps) => {
   return (
-    <div className="w-full flex flex-col gap-y-4 items-center justify-center">
-      <h1 className={cn("text-3xl font-semibold", font.className)}>🔐Admin</h1>
-      <p className="text-muted-foreground text-sm">{label}</p>
+    <div className="flex w-full flex-col items-center justify-center gap-y-4">
+      <h1 className="text-3xl font-semibold">🔐Admin</h1>
+      <p className="text-sm text-muted-foreground">{label}</p>
     </div>
-  )
-}
+  );
+};

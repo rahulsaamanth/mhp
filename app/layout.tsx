@@ -1,23 +1,23 @@
-import type { Metadata } from "next"
-import { SessionProvider } from "next-auth/react"
-import "./styles/globals.css"
-import { auth } from "@/auth"
-import { Toaster } from "@/components/ui/sonner"
-import { Providers } from "@/lib/providers"
+import type { Metadata } from "next";
+import { SessionProvider } from "next-auth/react";
+import "./styles/globals.css";
+import { auth } from "@/auth";
+import { Toaster } from "@/components/ui/sonner";
+import { Providers } from "@/lib/providers";
 
-import { GeistSans } from "geist/font/sans"
+import { GeistSans } from "geist/font/sans";
 
 export const metadata: Metadata = {
   title: "MHP - Admin Login",
   description: "Mangalore Homeopathic Pharmacy - Admin Panel",
-}
+};
 
 export default async function RootLayout({
   children,
 }: Readonly<{
-  children: React.ReactNode
+  children: React.ReactNode;
 }>) {
-  const session = await auth()
+  const session = await auth();
 
   return (
     <SessionProvider session={session}>
@@ -28,5 +28,5 @@ export default async function RootLayout({
         </body>
       </html>
     </SessionProvider>
-  )
+  );
 }

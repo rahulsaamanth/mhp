@@ -1,23 +1,23 @@
-"use client"
+"use client";
 
-import * as z from "zod"
-import { useForm } from "react-hook-form"
-import { zodResolver } from "@hookform/resolvers/zod"
-import React, { useTransition, useState } from "react"
-import { useSession } from "next-auth/react"
+import * as z from "zod";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import React, { useTransition, useState } from "react";
+import { useSession } from "next-auth/react";
 
-import { Switch } from "@/components/ui/switch"
+import { Switch } from "@/components/ui/switch";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select"
-import { SettingsSchema } from "@/schemas"
-import { Card, CardHeader, CardContent } from "@/components/ui/card"
-import { Button } from "@/components/ui/button"
-import { updateUser } from "@/actions/settings"
+} from "@/components/ui/select";
+import { SettingsSchema } from "@/schemas";
+import { Card, CardHeader, CardContent } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { updateUser } from "@/actions/settings";
 import {
   Form,
   FormField,
@@ -26,14 +26,14 @@ import {
   FormLabel,
   FormDescription,
   FormMessage,
-} from "@/components/ui/form"
-import { Input } from "@/components/ui/input"
-import { useCurrentUser } from "@/hooks/use-current-user"
-import { UserRole } from "@prisma/client"
+} from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
+import { useCurrentUser } from "@/hooks/use-current-user";
+import { UserRole } from "@prisma/client";
 
-import { getSignedURL } from "@/actions/settings"
-import { toast } from "sonner"
-import { Icon } from "@iconify/react"
+import { getSignedURL } from "@/actions/settings";
+import { toast } from "sonner";
+import { Icon } from "@iconify/react";
 
 import {
   AlertDialog,
@@ -45,22 +45,22 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
   AlertDialogTrigger,
-} from "@/components/ui/alert-dialog"
+} from "@/components/ui/alert-dialog";
 
 const SettingsPage = () => {
-  const user = useCurrentUser()
+  const user = useCurrentUser();
 
-  const [image, setImage] = useState<File | null>(null)
-  const [previewUrl, setPreviewUrl] = useState<string | undefined>(undefined)
+  const [image, setImage] = useState<File | null>(null);
+  const [previewUrl, setPreviewUrl] = useState<string | undefined>(undefined);
 
-  const { update } = useSession()
+  const { update } = useSession();
 
-  const [isPending, startTransition] = useTransition()
+  const [isPending, startTransition] = useTransition();
 
   const [isConfirmationDialogOpen, setIsConfirmationDialogOpen] =
-    useState(false)
+    useState(false);
 
-  const [isDirty, setIsDirty] = useState(false)
+  const [isDirty, setIsDirty] = useState(false);
 
   const form = useForm<z.infer<typeof SettingsSchema>>({
     resolver: zodResolver(SettingsSchema),
@@ -73,97 +73,97 @@ const SettingsPage = () => {
       isTwoFactorEnabled: user?.isTwoFactorEnabled || undefined,
       image: undefined,
     },
-  })
+  });
 
   const handleFormChange = () => {
-    setIsDirty(true)
-  }
+    setIsDirty(true);
+  };
 
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0]
-    setImage(file || null)
-    if (previewUrl) URL.revokeObjectURL(previewUrl)
+    const file = e.target.files?.[0];
+    setImage(file || null);
+    if (previewUrl) URL.revokeObjectURL(previewUrl);
 
     if (file) {
-      const url = URL.createObjectURL(file)
-      setPreviewUrl(url)
-    } else setPreviewUrl(undefined)
-  }
+      const url = URL.createObjectURL(file);
+      setPreviewUrl(url);
+    } else setPreviewUrl(undefined);
+  };
 
   const computeSHA256 = async (file: File) => {
-    const buffer = await file.arrayBuffer()
-    const hashBuffer = await crypto.subtle.digest("SHA-256", buffer)
-    const hashArray = Array.from(new Uint8Array(hashBuffer))
+    const buffer = await file.arrayBuffer();
+    const hashBuffer = await crypto.subtle.digest("SHA-256", buffer);
+    const hashArray = Array.from(new Uint8Array(hashBuffer));
     const hashHex = hashArray
       .map((b) => b.toString(16).padStart(2, "0"))
-      .join("")
-    return hashHex
-  }
+      .join("");
+    return hashHex;
+  };
 
   const handleImageUpload = async (file: File) => {
     const signedURLResult = await getSignedURL({
       fileSize: file.size,
       fileType: file.type,
       checksum: await computeSHA256(file),
-    })
+    });
     if (signedURLResult.error !== undefined)
-      throw new Error(signedURLResult.error)
-    const url = signedURLResult.success.url
+      throw new Error(signedURLResult.error);
+    const url = signedURLResult.success.url;
     await fetch(url, {
       method: "PUT",
       headers: {
         "Content-Type": file.type,
       },
       body: file,
-    })
-    const fileUrl = url.split("?")[0]
-    return fileUrl
-  }
+    });
+    const fileUrl = url.split("?")[0];
+    return fileUrl;
+  };
 
   const onSubmit = async (values: z.infer<typeof SettingsSchema>) => {
     if (!isDirty) {
-      toast.error("No changes detected!")
-      setIsConfirmationDialogOpen(false)
-      return
+      toast.error("No changes detected!");
+      setIsConfirmationDialogOpen(false);
+      return;
     }
-    let imageUrl: string | null = null
+    let imageUrl: string | null = null;
 
     if (image) {
-      imageUrl = await handleImageUpload(image as File)
+      imageUrl = await handleImageUpload(image as File);
     }
     startTransition(() => {
       const updateUserParams = imageUrl
         ? { ...values, image: imageUrl }
-        : { ...values }
+        : { ...values };
       updateUser(updateUserParams)
         .then((data) => {
           if (data.error) {
-            toast.error(data.error)
-            setIsConfirmationDialogOpen(false)
+            toast.error(data.error);
+            setIsConfirmationDialogOpen(false);
           }
           if (data.success) {
-            update()
-            toast.success(data.success)
-            setImage(null)
-            setPreviewUrl(undefined)
-            setIsConfirmationDialogOpen(false)
+            update();
+            toast.success(data.success);
+            setImage(null);
+            setPreviewUrl(undefined);
+            setIsConfirmationDialogOpen(false);
           }
-          setIsDirty(false)
+          setIsDirty(false);
         })
-        .catch(() => toast.error("Something went wrong!"))
-    })
-  }
+        .catch(() => toast.error("Something went wrong!"));
+    });
+  };
 
   return (
-    <section className="w-full h-full grid place-items-center">
-      <Card className="w-3/4 lg:w-1/2 p-10">
+    <section className="grid h-full w-full place-items-center">
+      <Card className="w-full rounded-lg bg-white py-2 shadow-lg sm:p-10">
         {/* <CardHeader>
           <p className="text-2xl font-semibold text-center">⚙️ Settings</p>
         </CardHeader> */}
         <CardContent>
           <Form {...form}>
             <form className="space-y-6" onChange={handleFormChange}>
-              <div className="space-y-4">
+              <div className="grid gap-8 lg:grid-cols-2">
                 <FormField
                   control={form.control}
                   name="name"
@@ -237,53 +237,6 @@ const SettingsPage = () => {
                         </FormItem>
                       )}
                     />
-                    <FormField
-                      control={form.control}
-                      name="image"
-                      render={({ field }) => (
-                        <FormItem className="flex flex-col gap-1">
-                          <FormLabel>Profile picture</FormLabel>
-                          <FormControl>
-                            <section className="flex items-center justify-between">
-                              <input
-                                type="file"
-                                onBlur={field.onBlur}
-                                name={field.name}
-                                onChange={(e) => {
-                                  handleImageChange(e)
-                                }}
-                                ref={field.ref}
-                              />
-                              {previewUrl && image && (
-                                <div className="flex items-center justify-between gap-4">
-                                  <span
-                                    className="cursor-pointer"
-                                    onClick={() => {
-                                      setPreviewUrl(undefined)
-                                      setImage(null)
-                                    }}
-                                  >
-                                    <Icon
-                                      icon="iconoir:trash"
-                                      width="24"
-                                      height="24"
-                                      style={{ color: "red" }}
-                                    />
-                                  </span>
-                                  <img
-                                    width={100}
-                                    height={100}
-                                    src={previewUrl}
-                                    alt="Selected image"
-                                  />
-                                </div>
-                              )}
-                            </section>
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
                   </>
                 )}
                 <FormField
@@ -335,6 +288,53 @@ const SettingsPage = () => {
                   />
                 )}
               </div>
+              <FormField
+                control={form.control}
+                name="image"
+                render={({ field }) => (
+                  <FormItem className="flex flex-col gap-1">
+                    <FormLabel>Profile picture</FormLabel>
+                    <FormControl>
+                      <section className="flex items-center justify-between">
+                        <input
+                          type="file"
+                          onBlur={field.onBlur}
+                          name={field.name}
+                          onChange={(e) => {
+                            handleImageChange(e);
+                          }}
+                          ref={field.ref}
+                        />
+                        {previewUrl && image && (
+                          <div className="flex items-center justify-between gap-4">
+                            <span
+                              className="cursor-pointer"
+                              onClick={() => {
+                                setPreviewUrl(undefined);
+                                setImage(null);
+                              }}
+                            >
+                              <Icon
+                                icon="iconoir:trash"
+                                width="24"
+                                height="24"
+                                style={{ color: "red" }}
+                              />
+                            </span>
+                            <img
+                              width={100}
+                              height={100}
+                              src={previewUrl}
+                              alt="Selected image"
+                            />
+                          </div>
+                        )}
+                      </section>
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
               <AlertDialog open={isConfirmationDialogOpen}>
                 <AlertDialogTrigger
                   asChild
@@ -368,7 +368,7 @@ const SettingsPage = () => {
         </CardContent>
       </Card>
     </section>
-  )
-}
+  );
+};
 
-export default SettingsPage
+export default SettingsPage;

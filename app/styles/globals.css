@@ -1,5 +1,3 @@
-@import url("clash-grotesk.css");
-
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -9,6 +7,8 @@ body,
 :root {
   height: 100%;
 }
+
+/* chrome scroll bar styling */
 html::-webkit-scrollbar {
   width: 0.3vw;
 }
@@ -32,6 +32,7 @@ html::-webkit-scrollbar-button {
 html::-webkit-scrollbar-track-piece:hover {
   background-color: #929292;
 }
+/* ---------------------------- */
 
 @layer base {
   :root {
@@ -104,4 +105,22 @@ html::-webkit-scrollbar-track-piece:hover {
   body {
     @apply bg-background text-foreground;
   }
+}
+
+.auth-background {
+  background-color: #ffffff;
+  background-image: linear-gradient(#b3b3b3 2px, transparent 2px),
+    linear-gradient(90deg, #b3b3b3 2px, transparent 2px),
+    linear-gradient(#b3b3b3 1px, transparent 1px),
+    linear-gradient(90deg, #b3b3b3 1px, #ffffff 1px);
+  background-size:
+    50px 50px,
+    50px 50px,
+    10px 10px,
+    10px 10px;
+  background-position:
+    -2px -2px,
+    -2px -2px,
+    -1px -1px,
+    -1px -1px;
 }

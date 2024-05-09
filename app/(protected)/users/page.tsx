@@ -1,18 +1,17 @@
-import { getUsers } from "@/actions/users"
-import { db } from "@/lib/db"
+import { getUsers } from "@/actions/users";
+import { db } from "@/lib/db";
 // import Users from "@/components/users"
-import { useQuery } from "@tanstack/react-query"
+import { useQuery } from "@tanstack/react-query";
 
 const UsersPage = async () => {
-  const users = await getUsers()
+  const users = await getUsers();
 
-  console.log(users)
   return (
     // TODO: to make a UsersPage
     <>
       <p></p>
     </>
-  )
-}
+  );
+};
 
-export default UsersPage
+export default UsersPage;
