@@ -157,9 +157,6 @@ const SettingsPage = () => {
   return (
     <section className="grid h-full w-full place-items-center">
       <Card className="w-full rounded-lg bg-white py-2 shadow-lg sm:p-10">
-        {/* <CardHeader>
-          <p className="text-2xl font-semibold text-center">⚙️ Settings</p>
-        </CardHeader> */}
         <CardContent>
           <Form {...form}>
             <form className="space-y-6" onChange={handleFormChange}>
