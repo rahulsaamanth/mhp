@@ -30,7 +30,7 @@ model User {
   isTwoFactorEnabled Boolean @default(false)
   twoFactorConfirmation TwoFactorConfirmation?
 
-  phone String
+  phone BigInt?
   shippingAddress String?
   billingAddress String?
   orders Order[]
