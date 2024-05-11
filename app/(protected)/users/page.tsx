@@ -1,12 +1,12 @@
-import { getUsers } from "@/actions/users";
-import { Button } from "@/components/ui/button";
-import { db } from "@/lib/db";
+import { getUsers } from "@/actions/users"
+import { Button } from "@/components/ui/button"
+import { db } from "@/lib/db"
 // import Users from "@/components/users"
-import { useQuery } from "@tanstack/react-query";
-import Link from "next/link";
+import { useQuery } from "@tanstack/react-query"
+import Link from "next/link"
 
 const UsersPage = async () => {
-  const users = await getUsers();
+  const users = await getUsers()
 
   return (
     <>
@@ -20,7 +20,7 @@ const UsersPage = async () => {
         ))}
       </ul>
     </>
-  );
-};
+  )
+}
 
-export default UsersPage;
+export default UsersPage

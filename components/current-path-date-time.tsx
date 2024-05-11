@@ -1,23 +1,23 @@
-"use client";
+"use client"
 
-import { usePathname } from "next/navigation";
-import React, { useEffect, useState } from "react";
+import { usePathname } from "next/navigation"
+import React, { useEffect, useState } from "react"
 
 export const CurrentPathAndDateTime = () => {
-  const path = usePathname();
+  const path = usePathname()
 
-  const [date, setDate] = React.useState(new Date());
+  const [date, setDate] = React.useState(new Date())
 
-  const [showDateTime, setShowDateTime] = useState(false);
-
-  useEffect(() => {
-    setShowDateTime(true);
-  }, []);
+  const [showDateTime, setShowDateTime] = useState(false)
 
   useEffect(() => {
-    let timer = setInterval(() => setDate(new Date()), 1000);
-    return () => clearInterval(timer);
-  });
+    setShowDateTime(true)
+  }, [])
+
+  useEffect(() => {
+    let timer = setInterval(() => setDate(new Date()), 1000)
+    return () => clearInterval(timer)
+  })
 
   return (
     <section className="flex w-full items-center justify-between rounded-md border bg-white px-6 py-4 shadow-lg shadow-zinc-200">
@@ -32,5 +32,5 @@ export const CurrentPathAndDateTime = () => {
         </div>
       )}
     </section>
-  );
-};
+  )
+}

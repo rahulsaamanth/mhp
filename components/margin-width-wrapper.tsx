@@ -1,13 +1,13 @@
-import { ReactNode } from "react";
+import { ReactNode } from "react"
 
 export default function MarginWidthWrapper({
   children,
 }: {
-  children: ReactNode;
+  children: ReactNode
 }) {
   return (
     <div className="flex h-auto flex-col sm:border-r sm:border-zinc-700 md:ml-60">
       {children}
     </div>
-  );
+  )
 }

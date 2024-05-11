@@ -1,11 +1,11 @@
-import { db } from "@/lib/db";
+import { db } from "@/lib/db"
 
 export const getUsers = async () => {
   try {
-    const data = await db.user.findMany();
+    const data = await db.user.findMany()
 
-    return { data };
+    return { data }
   } catch (error) {
-    return { error: error };
+    return { error: error }
   }
-};
+}

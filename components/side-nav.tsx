@@ -1,13 +1,13 @@
-"use client";
+"use client"
 
-import React, { useState } from "react";
+import React, { useState } from "react"
 
-import Link from "next/link";
-import { usePathname } from "next/navigation";
+import Link from "next/link"
+import { usePathname } from "next/navigation"
 
-import { SIDENAV_ITEMS } from "@/lib/constants";
-import { SideNavItem } from "@/types";
-import { Icon } from "@iconify/react";
+import { SIDENAV_ITEMS } from "@/lib/constants"
+import { SideNavItem } from "@/types"
+import { Icon } from "@iconify/react"
 
 const SideNav = () => {
   return (
@@ -22,29 +22,29 @@ const SideNav = () => {
 
         <div className="flex h-5/6 flex-col gap-2 md:px-6">
           {SIDENAV_ITEMS.map((item, idx) => {
-            const bottomItems = idx === SIDENAV_ITEMS.length - 2;
+            const bottomItems = idx === SIDENAV_ITEMS.length - 2
             return bottomItems ? (
               <div key={idx} className="mt-auto">
                 <MenuItem item={item} />
               </div>
             ) : (
               <MenuItem key={idx} item={item} />
-            );
+            )
           })}
         </div>
       </div>
     </div>
-  );
-};
+  )
+}
 
-export default SideNav;
+export default SideNav
 
 const MenuItem = ({ item }: { item: SideNavItem }) => {
-  const pathname = usePathname();
-  const [subMenuOpen, setSubMenuOpen] = useState(false);
+  const pathname = usePathname()
+  const [subMenuOpen, setSubMenuOpen] = useState(false)
   const toggleSubMenu = () => {
-    setSubMenuOpen(!subMenuOpen);
-  };
+    setSubMenuOpen(!subMenuOpen)
+  }
 
   return (
     <>
@@ -79,7 +79,7 @@ const MenuItem = ({ item }: { item: SideNavItem }) => {
                   >
                     <span>{subItem.title}</span>
                   </Link>
-                );
+                )
               })}
             </div>
           )}
@@ -97,5 +97,5 @@ const MenuItem = ({ item }: { item: SideNavItem }) => {
         </Link>
       )}
     </>
-  );
-};
+  )
+}

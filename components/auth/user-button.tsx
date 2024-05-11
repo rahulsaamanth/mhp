@@ -1,18 +1,18 @@
-"use client";
+"use client"
 
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
-import { useCurrentUser } from "@/hooks/use-current-user";
-import { LogoutButton } from "./logout-button";
-import { Icon } from "@iconify/react";
+} from "@/components/ui/dropdown-menu"
+import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar"
+import { useCurrentUser } from "@/hooks/use-current-user"
+import { LogoutButton } from "./logout-button"
+import { Icon } from "@iconify/react"
 
 export const UserButton = () => {
-  const user = useCurrentUser();
+  const user = useCurrentUser()
 
   return (
     <DropdownMenu>
@@ -53,5 +53,5 @@ export const UserButton = () => {
         </LogoutButton>
       </DropdownMenuContent>
     </DropdownMenu>
-  );
-};
+  )
+}
