@@ -1,7 +1,7 @@
-import { cn } from "@/lib/utils";
+import { cn } from "@/lib/utils"
 
 interface HeaderProps {
-  label: string;
+  label: string
 }
 
 export const Header = ({ label }: HeaderProps) => {
@@ -10,5 +10,5 @@ export const Header = ({ label }: HeaderProps) => {
       <h1 className="text-3xl font-semibold">🔐Admin</h1>
       <p className="text-sm text-muted-foreground">{label}</p>
     </div>
-  );
-};
+  )
+}

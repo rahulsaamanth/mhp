@@ -1,13 +1,22 @@
-import { User } from "@/types";
-import { getUserById } from "@/utils/user";
+import { User } from "@/types"
+import { getUserById } from "@/utils/user"
 
 const UserPage = async ({ params }: { params: { id: string } }) => {
-  const data: User | null = await getUserById(params.id);
+  const data: User | null = await getUserById(params.id)
 
-  console.log(data);
+  if (!data) return <h1>User not found!</h1>
+  return (
+    <div>
+      <ul>
+        {Object.entries(data).map(([key, value]) => (
+          <li key={key}>
+            <strong>{key}:</strong>
+            {value?.toString()}
+          </li>
+        ))}
+      </ul>
+    </div>
+  )
+}
 
-  if (!data) return <h1>User not found!</h1>;
-  return <div>{data?.orders?.map((order) => <div>{order.id}</div>)}</div>;
-};
-
-export default UserPage;
+export default UserPage

@@ -1,19 +1,19 @@
-import SideNav from "@/components/side-nav";
+import SideNav from "@/components/side-nav"
 // import { Navbar } from "./_components/navbar"
-import MarginWidthWrapper from "@/components/margin-width-wrapper";
-import Header from "@/components/header";
-import HeaderMobile from "@/components/header-mobile";
-import PageWrapper from "@/components/page-wrapper";
-import { Metadata } from "next";
-import { CurrentPathAndDateTime } from "@/components/current-path-date-time";
+import MarginWidthWrapper from "@/components/margin-width-wrapper"
+import Header from "@/components/header"
+import HeaderMobile from "@/components/header-mobile"
+import PageWrapper from "@/components/page-wrapper"
+import { Metadata } from "next"
+import { CurrentPathAndDateTime } from "@/components/current-path-date-time"
 
 interface ProtectedLayoutProps {
-  children: React.ReactNode;
+  children: React.ReactNode
 }
 export const metadata: Metadata = {
   title: "MHP - Admin",
   description: "Mangalore Homeopathic Pharmacy - Admin",
-};
+}
 
 const ProtectedLayout = ({ children }: ProtectedLayoutProps) => {
   // return (
@@ -38,7 +38,7 @@ const ProtectedLayout = ({ children }: ProtectedLayoutProps) => {
         </main>
       </div>
     </>
-  );
-};
+  )
+}
 
-export default ProtectedLayout;
+export default ProtectedLayout

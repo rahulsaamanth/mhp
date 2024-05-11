@@ -1,21 +1,21 @@
-"use client";
+"use client"
 
-import React from "react";
+import React from "react"
 
-import Link from "next/link";
-import { useSelectedLayoutSegment } from "next/navigation";
+import Link from "next/link"
+import { useSelectedLayoutSegment } from "next/navigation"
 
-import useScroll from "@/hooks/use-scroll";
-import { cn } from "@/lib/utils";
-import { Icon } from "@iconify/react";
-import { useCurrentUser } from "@/hooks/use-current-user";
-import { UserButton } from "./auth/user-button";
+import useScroll from "@/hooks/use-scroll"
+import { cn } from "@/lib/utils"
+import { Icon } from "@iconify/react"
+import { useCurrentUser } from "@/hooks/use-current-user"
+import { UserButton } from "./auth/user-button"
 
 const Header = () => {
-  const user = useCurrentUser();
+  const user = useCurrentUser()
 
-  const scrolled = useScroll(5);
-  const selectedLayout = useSelectedLayoutSegment();
+  const scrolled = useScroll(5)
+  const selectedLayout = useSelectedLayoutSegment()
 
   // sticky top-0 z-50 w-full border-b border-border/40 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60
   return (
@@ -52,7 +52,7 @@ const Header = () => {
         </div>
       </div>
     </div>
-  );
-};
+  )
+}
 
-export default Header;
+export default Header

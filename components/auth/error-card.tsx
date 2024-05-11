@@ -1,4 +1,4 @@
-import { CardWrapper } from "./card-wrapper";
+import { CardWrapper } from "./card-wrapper"
 // import { Icon } from "@iconify/react"
 
 export const ErrorCard = () => {
@@ -12,5 +12,5 @@ export const ErrorCard = () => {
         {/* <Icon icon="bi:exclamation-triangle" width="16" height="16" /> */}
       </div>
     </CardWrapper>
-  );
-};
+  )
+}

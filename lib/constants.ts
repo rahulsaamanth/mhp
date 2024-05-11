@@ -1,4 +1,4 @@
-import { SideNavItem } from "@/types";
+import { SideNavItem } from "@/types"
 
 export const SIDENAV_ITEMS: SideNavItem[] = [
   {
@@ -42,4 +42,4 @@ export const SIDENAV_ITEMS: SideNavItem[] = [
     path: "/settings",
     icon: "material-symbols:settings-outline",
   },
-];
+]

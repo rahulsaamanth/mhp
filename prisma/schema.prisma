@@ -97,11 +97,13 @@ model Product{
   description String
   price Float
   stock Int
+  image String?
   category Category @relation(fields: [categoryId], references: [id])
   categoryId  String
   brand Brand @relation(fields: [brandId], references: [id])
   brandId String
   orderDetails OrderDetails[]
+  properties Json?
 }
 
 model Category{

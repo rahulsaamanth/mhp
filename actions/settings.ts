@@ -1,68 +1,68 @@
-"use server";
+"use server"
 
-import * as z from "zod";
-import bcrypt from "bcryptjs";
+import * as z from "zod"
+import bcrypt from "bcryptjs"
 
-import { unstable_update as update } from "@/auth";
-import { db } from "@/lib/db";
-import { SettingsSchema } from "@/schemas";
-import { getUserByEmail, getUserById } from "@/utils/user";
-import { currentUser } from "@/lib/auth";
-import { generateVerificationToken } from "@/lib/tokens";
-import { sendVerificationEmail } from "@/lib/mail";
-import { PutObjectCommand, S3Client } from "@aws-sdk/client-s3";
-import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
-import crypto from "crypto";
+import { unstable_update as update } from "@/auth"
+import { db } from "@/lib/db"
+import { SettingsSchema } from "@/schemas"
+import { getUserByEmail, getUserById } from "@/utils/user"
+import { currentUser } from "@/lib/auth"
+import { generateVerificationToken } from "@/lib/tokens"
+import { sendVerificationEmail } from "@/lib/mail"
+import { PutObjectCommand, S3Client } from "@aws-sdk/client-s3"
+import { getSignedUrl } from "@aws-sdk/s3-request-presigner"
+import crypto from "crypto"
 
 export const updateUser = async (values: z.infer<typeof SettingsSchema>) => {
-  const user = await currentUser();
+  const user = await currentUser()
 
   if (!user) {
-    return { error: "Unauthorized" };
+    return { error: "Unauthorized" }
   }
 
-  const dbUser = await getUserById(user.id!);
+  const dbUser = await getUserById(user.id!)
 
   if (!dbUser) {
-    return { error: "Unauthorized" };
+    return { error: "Unauthorized" }
   }
 
   if (user.isOAuth) {
-    values.email = undefined;
-    values.password = undefined;
-    values.newPassword = undefined;
-    values.isTwoFactorEnabled = undefined;
+    values.email = undefined
+    values.password = undefined
+    values.newPassword = undefined
+    values.isTwoFactorEnabled = undefined
   }
 
   if (values.email && values.email !== user.email) {
-    const existingUser = await getUserByEmail(values.email);
+    const existingUser = await getUserByEmail(values.email)
 
     if (existingUser && existingUser.id !== user.id) {
-      return { error: "Email already in use!" };
+      return { error: "Email already in use!" }
     }
 
-    const verificationToken = await generateVerificationToken(values.email);
+    const verificationToken = await generateVerificationToken(values.email)
     await sendVerificationEmail(
       verificationToken.email,
       verificationToken.token,
-    );
+    )
 
-    return { success: "Verification email sent!" };
+    return { success: "Verification email sent!" }
   }
 
   if (values.password && values.newPassword && dbUser.password) {
     const passwordsMatch = await bcrypt.compare(
       values.password,
       dbUser.password,
-    );
+    )
 
     if (!passwordsMatch) {
-      return { error: "Incorrect password!" };
+      return { error: "Incorrect password!" }
     }
 
-    const hashedPassword = await bcrypt.hash(values.newPassword, 10);
-    values.password = hashedPassword;
-    values.newPassword = undefined;
+    const hashedPassword = await bcrypt.hash(values.newPassword, 10)
+    values.password = hashedPassword
+    values.newPassword = undefined
   }
 
   const updatedUser = await db.user.update({
@@ -70,7 +70,7 @@ export const updateUser = async (values: z.infer<typeof SettingsSchema>) => {
     data: {
       ...values,
     },
-  });
+  })
 
   await update({
     user: {
@@ -80,13 +80,13 @@ export const updateUser = async (values: z.infer<typeof SettingsSchema>) => {
       role: updatedUser.role,
       image: updatedUser.image,
     },
-  });
+  })
 
-  return { success: "User Profile Updated!" };
-};
+  return { success: "User Profile Updated!" }
+}
 
 const generateFileName = (bytes = 32) =>
-  crypto.randomBytes(bytes).toString("hex");
+  crypto.randomBytes(bytes).toString("hex")
 
 const allowedFileTypes = [
   "image/jpeg",
@@ -94,20 +94,20 @@ const allowedFileTypes = [
   "image/jpg",
   "image/webp",
   "image/svg+xml",
-];
+]
 
-const MaxFileSize = 1024 * 1024 * 5;
+const MaxFileSize = 1024 * 1024 * 5
 
 type SignedURLResponse = Promise<
   | { error: string; success?: undefined }
   | { success: { url: string }; error?: undefined }
->;
+>
 
 type GetSignedURLParams = {
-  fileType: string;
-  fileSize: number;
-  checksum: string;
-};
+  fileType: string
+  fileSize: number
+  checksum: string
+}
 
 const s3Client = new S3Client({
   region: process.env.AWS_BUCKET_REGION!,
@@ -115,23 +115,23 @@ const s3Client = new S3Client({
     accessKeyId: process.env.AWS_ACCESS_KEY!,
     secretAccessKey: process.env.AWS_ACCESS_SECRET!,
   },
-});
+})
 
 export const getSignedURL = async ({
   fileType,
   fileSize,
   checksum,
 }: GetSignedURLParams): SignedURLResponse => {
-  const user = currentUser();
+  const user = currentUser()
 
-  if (!user) return { error: "Unauthorized!" };
+  if (!user) return { error: "Unauthorized!" }
 
   if (!allowedFileTypes.includes(fileType))
-    return { error: "File type not allowed" };
+    return { error: "File type not allowed" }
 
-  if (fileSize > MaxFileSize) return { error: "File size too large" };
+  if (fileSize > MaxFileSize) return { error: "File size too large" }
 
-  const fileName = generateFileName();
+  const fileName = generateFileName()
 
   const putObjectCommand = new PutObjectCommand({
     Bucket: process.env.AWS_BUCKET_NAME!,
@@ -139,11 +139,11 @@ export const getSignedURL = async ({
     ContentType: fileType,
     ContentLength: fileSize,
     ChecksumSHA256: checksum,
-  });
+  })
 
   const signedUrl = await getSignedUrl(s3Client, putObjectCommand, {
     expiresIn: 60, //3600
-  });
+  })
 
-  return { success: { url: signedUrl } };
-};
+  return { success: { url: signedUrl } }
+}

@@ -1,4 +1,4 @@
-import { cn } from "@/lib/utils";
+import { cn } from "@/lib/utils"
 
 const AuthLayout = ({ children }: { children: React.ReactNode }) => {
   return (
@@ -10,6 +10,6 @@ const AuthLayout = ({ children }: { children: React.ReactNode }) => {
     >
       {children}
     </div>
-  );
-};
-export default AuthLayout;
+  )
+}
+export default AuthLayout

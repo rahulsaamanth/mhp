@@ -1,11 +1,11 @@
-"use client";
+"use client"
 
-import Link from "next/link";
-import { Button } from "../ui/button";
+import Link from "next/link"
+import { Button } from "../ui/button"
 
 interface BackButtonProps {
-  href: string;
-  label: string;
+  href: string
+  label: string
 }
 
 export const BackButton = ({ href, label }: BackButtonProps) => {
@@ -13,5 +13,5 @@ export const BackButton = ({ href, label }: BackButtonProps) => {
     <Button variant={"link"} className="w-full font-normal" size={"sm"} asChild>
       <Link href={href}>{label}</Link>
     </Button>
-  );
-};
+  )
+}
