@@ -24,7 +24,8 @@ export default async function RootLayout({
       <html lang="en" className={GeistSans.className}>
         <body>
           <Toaster richColors theme="light" toastOptions={{}} />
-          <Providers>{children}</Providers>
+          {/* <Providers>{children}</Providers> */}
+          {children}
         </body>
       </html>
     </SessionProvider>
