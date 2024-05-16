@@ -3,7 +3,8 @@
   "extends": [
     "next/core-web-vitals",
     "plugin:reacthooks/recommended",
-    "plugin:@tanstack/eslint-plugin-query/recommended"
+    "plugin:@tanstack/eslint-plugin-query/recommended",
+    "plugin:eslint-plugin-reacthooks/recommended"
   ],
 
   "rules": {
