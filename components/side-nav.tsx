@@ -87,7 +87,7 @@ const MenuItem = ({ item }: { item: SideNavItem }) => {
       ) : (
         <Link
           href={item.path}
-          className={`flex flex-row items-center space-x-4 rounded-lg p-2 hover:bg-zinc-200 hover:outline hover:outline-1 ${
+          className={`flex flex-row items-center space-x-4 rounded-lg p-2 hover:bg-zinc-200 ${
             item.path === pathname && "bg-zinc-200"
           }`}
         >
