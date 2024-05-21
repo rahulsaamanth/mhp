@@ -10,6 +10,12 @@ const ACCEPTED_IMAGE_MIME_TYPES = [
 ]
 const MAX_UPLOAD_SIZE = 1024 * 1024 * 5
 
+// const minStringLength = (min: number) => {
+//   return z.string().refine((val) => val.length === 0 || val.length >= min, {
+//     message: `Must be atleast ${min} characters.`,
+//   })
+// }
+
 export const SettingsSchema = z
   .object({
     name: z.optional(z.string()),
@@ -33,19 +39,6 @@ export const SettingsSchema = z
   })
   .refine(
     (data) => {
-      if (data.password && !data.newPassword) {
-        return false
-      }
-
-      return true
-    },
-    {
-      message: "New password is required!",
-      path: ["newPassword"],
-    },
-  )
-  .refine(
-    (data) => {
       if (data.newPassword && !data.password) {
         return false
       }
@@ -53,7 +46,7 @@ export const SettingsSchema = z
       return true
     },
     {
-      message: "Password is required!",
+      message: "Password is required, as you are setting new password!",
       path: ["password"],
     },
   )

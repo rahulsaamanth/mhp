@@ -13,6 +13,9 @@ export type MenuItemWithSubMenuProps = {
   toggleOpen: () => void
 }
 
+// UserStatus enum
+export type UserStatus = "ACTIVE" | "INACTIVE" | "SUSPENDED"
+
 // UserRole enum
 // export type UserRole = "ADMIN" | "USER";
 
@@ -25,11 +28,12 @@ export type User = {
   image?: string | null
   password?: string | null
   role: UserRole
+  status: UserStatus
   isTwoFactorEnabled: boolean
-  phone: BigInt | null
+  phone: string | null
   shippingAddress?: string | null
   billingAddress?: string | null
-  orders?: Order[]
+  orders?: []
 }
 
 // Product model

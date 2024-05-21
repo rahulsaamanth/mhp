@@ -1,25 +1,16 @@
 import { getUsers } from "@/actions/users"
-import { Button } from "@/components/ui/button"
-import { db } from "@/lib/db"
-// import Users from "@/components/users"
-import { useQuery } from "@tanstack/react-query"
-import Link from "next/link"
+import { DataTable } from "@/components/data-table"
+import { UserColumn, columns } from "./columns"
 
 const UsersPage = async () => {
   const users = await getUsers()
 
+  const columnData: UserColumn[] = users?.data!
+
   return (
-    <>
-      <ul>
-        {users?.data?.map((user) => (
-          <li key={user.id}>
-            <Button variant="link">
-              <Link href={`/users/${user.id}`}>{user.id}</Link>
-            </Button>
-          </li>
-        ))}
-      </ul>
-    </>
+    <div className="w-full py-10">
+      <DataTable columns={columns} data={columnData} />
+    </div>
   )
 }
 
