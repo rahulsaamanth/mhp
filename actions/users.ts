@@ -1,16 +1,19 @@
-import { db } from "@/lib/db"
-import { UserRole } from "@prisma/client"
+"use server"
 
-export const getUsers = async () => {
+import { db } from "@/lib/db"
+import { User, UserRole } from "@prisma/client"
+
+export const getUsers = async (): Promise<User[]> => {
   try {
-    const data = await db.user.findMany({
+    return await db.user.findMany({
       where: {
         role: UserRole.USER,
       },
+      include: {
+        orders: true,
+      },
     })
-
-    return { data }
   } catch (error) {
-    return { error: error }
+    throw new Error(`Failed to get users: ${(error as Error).message}`)
   }
 }

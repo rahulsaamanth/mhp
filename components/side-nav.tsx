@@ -11,7 +11,7 @@ import { Icon } from "@iconify/react"
 
 const SideNav = () => {
   return (
-    <div className="fixed hidden h-screen flex-1 border-r border-zinc-200 bg-white md:flex md:w-60">
+    <div className="fixed hidden h-screen flex-1 border-r border-zinc-200 bg-white md:flex md:w-60 z-50">
       <div className="flex w-full flex-col gap-6">
         <Link
           href="/dashboard"
