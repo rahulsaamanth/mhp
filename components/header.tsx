@@ -21,7 +21,7 @@ const Header = () => {
   return (
     <div
       className={cn(
-        `sticky inset-x-0 top-0 z-50 h-16 w-full border-b border-border/40 border-gray-200 transition-all`,
+        `sticky inset-x-0 top-0 z-50 h-16 w-full border-b border-border/40 border-gray-200 transition-all bg-white`,
         {
           "bg-background/95 backdrop-blur-sm supports-[backdrop-filter]:bg-background/50":
             scrolled,
