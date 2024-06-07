@@ -26,6 +26,7 @@ export function UsersByDayChart({ data }: UsersByDayChartProps) {
         <YAxis
           //   tickFormatter={tick => formatNumber(tick)}
           stroke="hsl(var(--primary))"
+          allowDecimals={false}
         />
         <Tooltip
           cursor={{ fill: "hsl(var(--muted))" }}
