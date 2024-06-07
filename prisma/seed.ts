@@ -357,7 +357,8 @@ async function main() {
       password: "password123",
       role: UserRole.USER,
       phone: "+91 9123456702",
-      status: UserStatus.ACTIVE,
+      status: UserStatus.INACTIVE,
+      createdAt: new Date(2022, 8, 3),
       isTwoFactorEnabled: false,
     },
     {
@@ -384,7 +385,8 @@ async function main() {
       password: "password123",
       role: UserRole.USER,
       phone: "+91 9123456705",
-      status: UserStatus.ACTIVE,
+      status: UserStatus.INACTIVE,
+      createdAt: new Date(2022, 10, 10),
       isTwoFactorEnabled: false,
     },
     {
@@ -417,12 +419,21 @@ async function main() {
   ]
 
   for (const user of dummyUsers) {
-    await prisma.user.create({
-      data: {
-        ...user,
-        createdAt: getRandomDate(new Date(2024, 2, 1), new Date(2024, 5, 1)),
-      },
-    })
+    !user.createdAt
+      ? await prisma.user.create({
+          data: {
+            ...user,
+            createdAt: getRandomDate(
+              new Date(2024, 2, 1),
+              new Date(2024, 5, 1),
+            ),
+          },
+        })
+      : await prisma.user.create({
+          data: {
+            ...user,
+          },
+        })
   }
 }
 
