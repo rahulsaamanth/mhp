@@ -3,6 +3,7 @@
 import { usePathname } from "next/navigation"
 import React, { useEffect, useState } from "react"
 import { Card, CardContent } from "./ui/card"
+import { formatDate } from "@/lib/formatters"
 
 export const CurrentPathAndDateTime = () => {
   const path = usePathname()
@@ -29,7 +30,7 @@ export const CurrentPathAndDateTime = () => {
         </span>
         {showDateTime && (
           <div className="space-x-3 border-2 border-[#069307] px-2 py-2 font-bold text-[#069307] max-sm:hidden sm:px-4">
-            <span>{date.toLocaleDateString()}</span>
+            <span>{formatDate(date)}</span>
             <span>{date.toLocaleTimeString()}</span>
           </div>
         )}

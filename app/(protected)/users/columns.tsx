@@ -10,6 +10,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
+import { formatDate } from "@/lib/formatters"
 import { cn } from "@/lib/utils"
 import { Icon } from "@iconify/react/dist/iconify.js"
 import { User, UserStatus } from "@prisma/client"
@@ -55,6 +56,9 @@ export const columns: ColumnDef<User, any>[] = [
         </Button>
       )
     },
+    cell: ({ row }) => {
+      return <span className="text-nowrap">{row.getValue("name")}</span>
+    },
     filterFn: "equalsString",
   },
   {
@@ -91,7 +95,7 @@ export const columns: ColumnDef<User, any>[] = [
     },
     cell: ({ row }) => {
       const date: Date = row.getValue("createdAt")
-      return date.toDateString()
+      return <span className="text-nowrap">{formatDate(date)}</span>
     },
   },
   {

@@ -62,12 +62,13 @@ const fuzzySort: SortingFn<any> = (rowA, rowB, columnId) => {
 import { Card, CardContent, CardFooter, CardHeader } from "./ui/card"
 import { Button } from "./ui/button"
 import Link from "next/link"
-import { useReducer, useState } from "react"
+import { useMemo, useReducer, useState } from "react"
 import { Input } from "./ui/input"
 import {
   DropdownMenu,
   DropdownMenuCheckboxItem,
   DropdownMenuContent,
+  DropdownMenuItem,
   DropdownMenuTrigger,
 } from "./ui/dropdown-menu"
 import { Icon } from "@iconify/react/dist/iconify.js"
@@ -122,30 +123,27 @@ export function DataTable<TData, TValue>({
   })
 
   return (
-    <Card className="rounded-md border bg-white shadow-lg shadow-zinc-200">
-      <CardHeader className="flex-row items-center justify-between py-10 space-y-0">
+    <Card className="w-full rounded-md border bg-white shadow-lg shadow-zinc-200 overflow-x-auto">
+      <CardHeader className="py-10">
         <Input
           placeholder="Search users..."
           value={table.getColumn("name")?.getFilterValue() as string}
           onChange={(e) => setGlobalFilter(String(e.target.value))}
-          className="max-w-sm focus-visible:ring-0"
+          className="focus-visible:ring-0 max-w-sm"
         />
-        <Button variant="default">
-          <Link href="/users/add-new">Add new user</Link>
-        </Button>
       </CardHeader>
-      <CardContent>
-        <section className="w-full flex items-center justify-end gap-10">
-          <div className="ml-auto space-x-6">
-            <span>
-              Page&nbsp;
+      <CardContent className="space-y-6">
+        <section className="w-full flex items-center justify-between gap-10">
+          <div className="space-x-6 ml-auto flex items-center justify-between">
+            <span className="flex items-center justify-center gap-2 flex-nowrap text-nowrap">
+              <text>Page</text>
               <strong>
                 {table.getState().pagination.pageIndex + 1} of{" "}
                 {table.getPageCount()}
               </strong>
             </span>
-            <span>
-              Show&nbsp;
+            <span className="flex items-center justify-center gap-2">
+              <text>Show</text>
               <select
                 value={table.getState().pagination.pageSize}
                 onChange={(e) => table.setPageSize(Number(e.target.value))}
@@ -189,63 +187,65 @@ export function DataTable<TData, TValue>({
             </DropdownMenu>
           </div>
         </section>
-      </CardContent>
-      <CardContent>
-        <Table>
-          <TableHeader>
-            {table.getHeaderGroups().map((headerGroup) => (
-              <TableRow key={headerGroup.id}>
-                {headerGroup.headers.map((header) => {
-                  return (
-                    <TableHead key={header.id}>
-                      {header.isPlaceholder
-                        ? null
-                        : flexRender(
-                            header.column.columnDef.header,
-                            header.getContext(),
-                          )}
-                    </TableHead>
-                  )
-                })}
-              </TableRow>
-            ))}
-          </TableHeader>
-          <TableBody>
-            {table.getRowModel().rows?.length ? (
-              table.getRowModel().rows.map((row) => (
-                <TableRow
-                  key={row.id}
-                  data-state={row.getIsSelected() && "selected"}
-                >
-                  {row.getVisibleCells().map((cell) => (
-                    <TableCell key={cell.id}>
-                      {flexRender(
-                        cell.column.columnDef.cell,
-                        cell.getContext(),
-                      )}
-                    </TableCell>
-                  ))}
+
+        <section>
+          <Table>
+            <TableHeader>
+              {table.getHeaderGroups().map((headerGroup) => (
+                <TableRow key={headerGroup.id}>
+                  {headerGroup.headers.map((header) => {
+                    return (
+                      <TableHead key={header.id}>
+                        {header.isPlaceholder
+                          ? null
+                          : flexRender(
+                              header.column.columnDef.header,
+                              header.getContext(),
+                            )}
+                      </TableHead>
+                    )
+                  })}
                 </TableRow>
-              ))
-            ) : (
-              <TableRow>
-                <TableCell
-                  colSpan={columns.length}
-                  className="h-24 text-center"
-                >
-                  No results.
-                </TableCell>
-              </TableRow>
-            )}
-          </TableBody>
-        </Table>
+              ))}
+            </TableHeader>
+            <TableBody>
+              {table.getRowModel().rows?.length ? (
+                table.getRowModel().rows.map((row) => (
+                  <TableRow
+                    key={row.id}
+                    data-state={row.getIsSelected() && "selected"}
+                  >
+                    {row.getVisibleCells().map((cell) => (
+                      <TableCell key={cell.id}>
+                        {flexRender(
+                          cell.column.columnDef.cell,
+                          cell.getContext(),
+                        )}
+                      </TableCell>
+                    ))}
+                  </TableRow>
+                ))
+              ) : (
+                <TableRow>
+                  <TableCell
+                    colSpan={columns.length}
+                    className="h-24 text-center"
+                  >
+                    No results.
+                  </TableCell>
+                </TableRow>
+              )}
+            </TableBody>
+          </Table>
+        </section>
+
         <CardFooter className="space-x-4 pb-0 justify-between">
           <div className="text-sm text-muted-foreground">
             {table.getFilteredSelectedRowModel().rows.length} of{" "}
             {table.getFilteredRowModel().rows.length} row(s) selected.
           </div>
 
-          <div className="space-x-2 py-4">
+          <div className="flex items-center justify-center gap-3 py-4  flex-nowrap">
             <Button
               variant="outline"
               size="sm"

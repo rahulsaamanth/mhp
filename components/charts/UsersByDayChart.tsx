@@ -1,5 +1,6 @@
 "use client"
 
+import { formatNumber } from "@/lib/formatters"
 import {
   Bar,
   BarChart,
@@ -24,13 +25,13 @@ export function UsersByDayChart({ data }: UsersByDayChartProps) {
         <CartesianGrid stroke="hsl(var(--muted))" />
         <XAxis dataKey="date" stroke="hsl(var(--primary))" />
         <YAxis
-          //   tickFormatter={tick => formatNumber(tick)}
+          tickFormatter={(tick) => formatNumber(tick)}
           stroke="hsl(var(--primary))"
           allowDecimals={false}
         />
         <Tooltip
           cursor={{ fill: "hsl(var(--muted))" }}
-          //   formatter={value => formatNumber(value as number)}
+          formatter={(value) => formatNumber(value as number)}
         />
         <Bar
           dataKey="totalUsers"

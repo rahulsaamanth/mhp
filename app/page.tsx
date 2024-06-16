@@ -2,8 +2,9 @@ import { cn } from "@/lib/utils"
 
 import { Button } from "@/components/ui/button"
 import { LoginButton } from "@/components/auth/login-button"
+import { db } from "@/db/db"
 
-export default function Home() {
+export default async function Home() {
   return (
     <main
       className={cn(

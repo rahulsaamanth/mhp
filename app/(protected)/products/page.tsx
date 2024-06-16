@@ -1,8 +1,5 @@
 const ProductsPage = () => {
-  return (
-    // TODO: to make a products page
-    <></>
-  )
+  return <></>
 }
 
 export default ProductsPage

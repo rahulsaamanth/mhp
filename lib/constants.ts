@@ -11,6 +11,19 @@ export const SIDENAV_ITEMS: SideNavItem[] = [
     title: "Products",
     path: "/products",
     icon: "fluent-mdl2:product-variant",
+    submenu: true,
+    subMenuItems: [
+      {
+        title: "all products",
+        path: "/products",
+        icon: "fluent-mdl2:product-list",
+      },
+      {
+        title: "add new",
+        path: "/products/add-new",
+        icon: "fluent:cube-add-20-regular",
+      },
+    ],
   },
   {
     title: "Orders",
@@ -20,7 +33,7 @@ export const SIDENAV_ITEMS: SideNavItem[] = [
   {
     title: "Customers",
     path: "/users",
-    icon: "ph:users",
+    icon: "ph:users-three",
   },
   {
     title: "Reviews",
@@ -28,9 +41,22 @@ export const SIDENAV_ITEMS: SideNavItem[] = [
     icon: "material-symbols:reviews-outline",
   },
   {
-    title: "Coupons",
-    path: "/coupons",
-    icon: "mdi:coupon-outline",
+    title: "Offers",
+    path: "/offers",
+    icon: "ic:outline-local-offer",
+    submenu: true,
+    subMenuItems: [
+      {
+        title: "Coupons",
+        path: "/offers/coupons",
+        icon: "mdi:coupon-outline",
+      },
+      {
+        title: "Discounts",
+        path: "/offers/discounts",
+        icon: "flowbite:sale-percent-outline",
+      },
+    ],
   },
   {
     title: "Admin",

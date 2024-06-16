@@ -1,6 +1,13 @@
 "use client"
 
-import { Pie, PieChart, ResponsiveContainer, Tooltip } from "recharts"
+import {
+  Cell,
+  Label,
+  Pie,
+  PieChart,
+  ResponsiveContainer,
+  Tooltip,
+} from "recharts"
 
 type UsersByStatusChartProps = {
   data: {
@@ -20,8 +27,12 @@ export function UsersByStatusChart({ data }: UsersByStatusChartProps) {
           label={(item) => item.status}
           labelLine={false}
           nameKey="status"
-          fill="hsl(var(--primary)"
-        />
+          fill="hsl(var(--primary--foreground))"
+        >
+          {data.map((entry, index) => (
+            <Cell key={`cell-${index}`} />
+          ))}
+        </Pie>
       </PieChart>
     </ResponsiveContainer>
   )

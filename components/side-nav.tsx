@@ -1,7 +1,6 @@
 "use client"
 
 import React, { useState } from "react"
-
 import Link from "next/link"
 import { usePathname } from "next/navigation"
 
@@ -10,8 +9,14 @@ import { SideNavItem } from "@/types"
 import { Icon } from "@iconify/react"
 
 const SideNav = () => {
+  const [openSubMenu, setOpenSubMenu] = useState<string | null>(null)
+
+  const handleToggleSubMenu = (path: string) => {
+    setOpenSubMenu(openSubMenu === path ? null : path)
+  }
+
   return (
-    <div className="fixed hidden h-screen flex-1 border-r border-zinc-200 bg-white md:flex md:w-60 z-50">
+    <div className="fixed hidden h-screen flex-1 border-r border-zinc-200 bg-white lg:flex lg:w-60 z-50">
       <div className="flex w-full flex-col gap-6">
         <Link
           href="/dashboard"
@@ -25,10 +30,21 @@ const SideNav = () => {
             const bottomItems = idx === SIDENAV_ITEMS.length - 2
             return bottomItems ? (
               <div key={idx} className="mt-auto">
-                <MenuItem item={item} />
+                <MenuItem
+                  item={item}
+                  openSubMenu={openSubMenu}
+                  handleToggleSubMenu={handleToggleSubMenu}
+                  setOpenSubMenu={setOpenSubMenu}
+                />
               </div>
             ) : (
-              <MenuItem key={idx} item={item} />
+              <MenuItem
+                key={idx}
+                item={item}
+                openSubMenu={openSubMenu}
+                setOpenSubMenu={setOpenSubMenu}
+                handleToggleSubMenu={handleToggleSubMenu}
+              />
             )
           })}
         </div>
@@ -39,44 +55,57 @@ const SideNav = () => {
 
 export default SideNav
 
-const MenuItem = ({ item }: { item: SideNavItem }) => {
+const MenuItem = ({
+  item,
+  openSubMenu,
+  handleToggleSubMenu,
+  setOpenSubMenu,
+}: {
+  item: SideNavItem
+  openSubMenu: string | null
+  handleToggleSubMenu: (path: string) => void
+  setOpenSubMenu: (path: string | null) => void
+}) => {
   const pathname = usePathname()
-  const [subMenuOpen, setSubMenuOpen] = useState(false)
-  const toggleSubMenu = () => {
-    setSubMenuOpen(!subMenuOpen)
-  }
 
   return (
     <>
       {item.submenu ? (
         <>
           <button
-            onClick={toggleSubMenu}
+            onClick={() => handleToggleSubMenu(item.path)}
             className={`flex w-full flex-row items-center justify-between rounded-lg p-2 hover:bg-zinc-200 ${
               pathname.includes(item.path) && "bg-zinc-200"
             }`}
           >
             <div className="flex flex-row items-center space-x-4">
               <Icon icon={item.icon as string} width="20" height="20" />
-              <span className="flex text-xl font-semibold">{item.title}</span>
+              <span className="flex text-xl font-medium">{item.title}</span>
             </div>
 
-            <div className={`${subMenuOpen ? "rotate-180" : ""} flex`}>
+            <div
+              className={`${openSubMenu === item.path ? "rotate-180" : ""} flex`}
+            >
               <Icon icon="lucide:chevron-down" width="24" height="24" />
             </div>
           </button>
 
-          {subMenuOpen && (
-            <div className="my-2 ml-12 flex flex-col space-y-4">
+          {openSubMenu === item.path && (
+            <div className="ml-4 flex flex-col space-y-2 border-dashed border-l-2 border-black">
               {item.subMenuItems?.map((subItem, idx) => {
                 return (
                   <Link
                     key={idx}
                     href={subItem.path}
-                    className={`${
-                      subItem.path === pathname ? "font-bold" : ""
+                    className={`flex flex-row items-center space-x-4 rounded-lg p-2 hover:bg-zinc-200 ${
+                      subItem.path === pathname && "font-semibold bg-zinc-200"
                     }`}
                   >
+                    <Icon
+                      icon={subItem.icon as string}
+                      width="20"
+                      height="20"
+                    />
                     <span>{subItem.title}</span>
                   </Link>
                 )
@@ -90,10 +119,10 @@ const MenuItem = ({ item }: { item: SideNavItem }) => {
           className={`flex flex-row items-center space-x-4 rounded-lg p-2 hover:bg-zinc-200 ${
             item.path === pathname && "bg-zinc-200"
           }`}
+          onClick={() => setOpenSubMenu(null)}
         >
-          <Icon icon={item.icon?.toString()!} width="20" height="20" />
-
-          <span className={`flex text-xl font-semibold`}>{item.title}</span>
+          <Icon icon={item.icon as string} width="20" height="20" />
+          <span className={`flex text-xl font-medium`}>{item.title}</span>
         </Link>
       )}
     </>
