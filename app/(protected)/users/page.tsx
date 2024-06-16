@@ -6,26 +6,14 @@ import { OrdersByDayChart } from "@/components/charts/OrdersbyDayChart"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { UsersByDayChart } from "@/components/charts/UsersByDayChart"
 import { db } from "@/lib/db"
-import {
-  differenceInDays,
-  differenceInMonths,
-  differenceInWeeks,
-  eachDayOfInterval,
-  eachMonthOfInterval,
-  eachWeekOfInterval,
-  eachYearOfInterval,
-  endOfWeek,
-  interval,
-  max,
-  min,
-  startOfDay,
-  startOfWeek,
-  subDays,
-} from "date-fns"
-import { formatDate } from "@/lib/formatters"
+
 import { UsersByStatusChart } from "@/components/charts/UsersByStatusChart"
 import { ChartCard } from "@/components/chart-card"
 import { RANGE_OPTIONS, getRangeOption } from "@/lib/rangeOptions"
+import { getChartDateArray } from "@/lib/chart-date-array"
+import { startOfDay } from "date-fns"
+import { ResponsiveContainer } from "recharts"
+import { pause } from "@/utils/pause"
 
 async function getUserData({
   createdAfter,
@@ -98,7 +86,8 @@ const UsersPage = async ({
   }
 }) => {
   const users = await getUsers()
-  // const columnData: User[] | [] = users
+
+  const columnData: User[] | [] = users
 
   const newCustomersRangeOption =
     getRangeOption(
@@ -113,8 +102,8 @@ const UsersPage = async ({
   })
 
   return (
-    <div className="w-full py-10 space-y-10">
-      <section className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+    <div className="w-full py-10">
+      <section className="grid grid-cols-1 lg:grid-cols-2 gap-4 gap-y-10">
         <ChartCard
           title="New Customers"
           queryKey="newCustomersRange"
@@ -122,54 +111,15 @@ const UsersPage = async ({
         >
           <UsersByDayChart data={userData.chartData} />
         </ChartCard>
-        <Card>
-          <CardHeader>
-            <CardTitle>Customer Count By Status</CardTitle>
-            <CardContent>
-              <UsersByStatusChart data={userData.userCountByStatus} />
-            </CardContent>
-          </CardHeader>
-        </Card>
+        <ChartCard title="Customer Count by Status">
+          <UsersByStatusChart data={userData.userCountByStatus} />
+        </ChartCard>
+        <div className="col-span-1 lg:col-span-2 w-full">
+          <DataTable data={columnData} columns={columns} />
+        </div>
       </section>
-      {/* <DataTable columns={columns} data={columnData} /> */}
     </div>
   )
 }
 
 export default UsersPage
-
-function getChartDateArray(startDate: Date, endDate: Date = new Date()) {
-  const days = differenceInDays(endDate, startDate)
-
-  if (days < 30) {
-    return {
-      array: eachDayOfInterval(interval(startDate, endDate)),
-      format: formatDate,
-    }
-  }
-
-  const weeks = differenceInWeeks(endDate, startDate)
-  if (weeks < 30) {
-    return {
-      array: eachWeekOfInterval(interval(startDate, endDate)),
-      format: (date: Date) => {
-        const start = max([startOfWeek(date), startDate])
-        const end = min([endOfWeek(date), endDate])
-        return `${formatDate(start)} - ${formatDate(end)}`
-      },
-    }
-  }
-
-  const months = differenceInMonths(endDate, startDate)
-  if (months < 30) {
-    return {
-      array: eachMonthOfInterval(interval(startDate, endDate)),
-      format: new Intl.DateTimeFormat("en", { month: "long", year: "numeric" })
-        .format,
-    }
-  }
-  return {
-    array: eachYearOfInterval(interval(startDate, endDate)),
-    format: new Intl.DateTimeFormat("en", { year: "numeric" }).format,
-  }
-}

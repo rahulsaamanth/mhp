@@ -181,7 +181,7 @@ async function main() {
         create: [
           {
             orderDate: new Date(),
-            totalAmountPaid: 311.25, // sum of product prices in the order
+            totalAmountPaid: hairGrowGel?.price! + aloeveraCream?.price!, // sum of product prices in the order
             orderDetails: {
               create: [
                 {
@@ -193,6 +193,19 @@ async function main() {
                   product: { connect: { id: aloeveraCream!.id } },
                   quantity: 1,
                   unitPrice: aloeveraCream!.price,
+                },
+              ],
+            },
+          },
+          {
+            orderDate: new Date(),
+            totalAmountPaid: fivePhosSyrup?.price! * 2,
+            orderDetails: {
+              create: [
+                {
+                  product: { connect: { id: fivePhosSyrup!.id } },
+                  quantity: 2,
+                  unitPrice: fivePhosSyrup!.price,
                 },
               ],
             },

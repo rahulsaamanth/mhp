@@ -39,18 +39,6 @@ export const SettingsSchema = z
   })
   .refine(
     (data) => {
-      if (data.password && !data.newPassword) {
-        return false
-      }
-      return true
-    },
-    {
-      message: "New password is required!",
-      path: ["newPassword"],
-    },
-  )
-  .refine(
-    (data) => {
       if (data.newPassword && !data.password) {
         return false
       }
@@ -60,6 +48,18 @@ export const SettingsSchema = z
     {
       message: "Password is required, as you are setting new password!",
       path: ["password"],
+    },
+  )
+  .refine(
+    (data) => {
+      if (data.password && !data.newPassword) {
+        return false
+      }
+      return true
+    },
+    {
+      message: "New password is required!",
+      path: ["newPassword"],
     },
   )
 

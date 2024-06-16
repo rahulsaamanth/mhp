@@ -38,3 +38,6 @@ next-env.d.ts
 
 #pretier-settings
 .prettierrc.json
+
+#db backups
+backup.sql

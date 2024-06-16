@@ -5,7 +5,10 @@
 // Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
 
 generator client {
-  provider = "prisma-client-js"
+  provider = "prisma-kysely"
+  output = "../db"
+  fileName = "types.ts"
+  enumFileName ="enums.ts"
 }
 
 datasource db {
@@ -40,6 +43,7 @@ model User {
   shippingAddress String?
   billingAddress String?
   orders Order[]
+  reviews Review[]
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
@@ -98,19 +102,21 @@ model TwoFactorConfirmation{
 
   @@unique([userId])
 }
-
 model Product{
   id String @id @default(cuid())
   name String
   description String
   price Float
   stock Int
-  image String?
+  image String[]
+  tags String[]
+  type String
   category Category @relation(fields: [categoryId], references: [id])
   categoryId  String
   brand Brand @relation(fields: [brandId], references: [id])
   brandId String
   orderDetails OrderDetails[]
+  reivews Review[]
   properties Json?
 }
 
@@ -129,11 +135,16 @@ model Brand{
   products Product[]
 }
 
+enum OrderType{
+  OFFLINE
+  ONLINE
+}
 model Order{
   id String @id @default(cuid())
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
   userId String 
   orderDate DateTime
+  orderType OrderType @default(ONLINE)
   totalAmountPaid Float
   orderDetails OrderDetails[]
 }
@@ -149,4 +160,17 @@ model OrderDetails{
 
   @@index([orderId], name:"orderId")
   @@index([productId], name:"productId")
+}
+
+model Review{
+  id String @id @default(cuid())
+  rating Int @default(0) 
+  comment String?
+  userId String
+  productId String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user User @relation(fields: [userId],references: [id], onDelete: Cascade)
+  product Product @relation(fields: [productId], references: [id], onDelete: Cascade)
 }

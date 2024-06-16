@@ -31,7 +31,7 @@ const Header = () => {
     >
       <div className="flex h-full items-center justify-between px-10">
         <div className="flex items-center space-x-4">
-          <Link href="/dashboard" className="md:hidden">
+          <Link href="/dashboard" className="lg:hidden">
             <span className="text-xl font-bold">Logo</span>
           </Link>
         </div>
