@@ -6,7 +6,7 @@ import bcrypt from "bcryptjs"
 import { NewPasswordSchema } from "@/schemas"
 import { getPasswordResetTokenByToken } from "@/utils/password-reset-token"
 import { getUserByEmail } from "@/utils/user"
-import { db } from "@/lib/db"
+import db from "@/lib/db"
 
 export const newPassword = async (
   values: z.infer<typeof NewPasswordSchema>,

@@ -10,7 +10,7 @@ import { getUserByEmail } from "@/utils/user"
 import { sendVerificationEmail, sendTwoFactorTokenEmail } from "@/lib/mail"
 import { generateVerificationToken, generateTwoFactorToken } from "@/lib/tokens"
 import { getTwoFactorTokenByEmail } from "@/utils/two-factor-token"
-import { db } from "@/lib/db"
+import db from "@/lib/db"
 import { getTwoFactorConfirmationByUserId } from "@/utils/two-factor-confirmation"
 
 export const login = async (

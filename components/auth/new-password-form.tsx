@@ -21,7 +21,7 @@ import { Input } from "../ui/input"
 import { Button } from "../ui/button"
 import { FormError } from "../form-error"
 import { FormSuccess } from "../form-success"
-import { newPassword } from "@/actions/new-password"
+import { newPassword } from "@/actions/auth/new-password"
 import { useSearchParams } from "next/navigation"
 
 export const NewPasswordForm = () => {

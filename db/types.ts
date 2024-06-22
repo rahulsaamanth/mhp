@@ -7,8 +7,8 @@ export type Timestamp = ColumnType<Date, Date | string, Date | string>;
 import type { UserRole, UserStatus, OrderType } from "./enums";
 
 export type Account = {
-    id: string;
-    userId: string;
+    id: Generated<number>;
+    userId: number;
     type: string;
     provider: string;
     providerAccountId: string;
@@ -21,68 +21,68 @@ export type Account = {
     session_state: string | null;
 };
 export type Brand = {
-    id: string;
+    id: Generated<number>;
     name: string;
 };
 export type Category = {
-    id: string;
+    id: Generated<number>;
     name: string;
-    parentId: string | null;
+    parentId: number | null;
 };
 export type Order = {
-    id: string;
-    userId: string;
+    id: Generated<number>;
+    userId: number;
     orderDate: Timestamp;
     orderType: Generated<OrderType>;
     totalAmountPaid: number;
 };
 export type OrderDetails = {
-    id: string;
-    orderId: string;
-    productId: string;
+    id: Generated<number>;
+    orderId: number;
+    productId: number;
     quantity: number;
     unitPrice: number;
 };
 export type PasswordResetToken = {
-    id: string;
+    id: Generated<number>;
     email: string;
     token: string;
     expires: Timestamp;
 };
 export type Product = {
-    id: string;
+    id: Generated<number>;
     name: string;
     description: string;
     price: number;
     stock: number;
-    image: string[];
+    image: string;
     tags: string[];
     type: string;
-    categoryId: string;
-    brandId: string;
+    categoryId: number;
+    brandId: number;
     properties: unknown | null;
 };
 export type Review = {
-    id: string;
+    id: Generated<number>;
     rating: Generated<number>;
     comment: string | null;
-    userId: string;
-    productId: string;
+    userId: number;
+    productId: number;
     createdAt: Generated<Timestamp>;
     updatedAt: Timestamp;
 };
 export type TwoFactorConfirmation = {
-    id: string;
-    userId: string;
+    id: Generated<number>;
+    userId: number;
 };
 export type TwoFactorToken = {
-    id: string;
+    id: Generated<number>;
     email: string;
     token: string;
     expires: Timestamp;
 };
 export type User = {
-    id: string;
+    id: Generated<number>;
     name: string | null;
     email: string | null;
     emailVerified: Timestamp | null;
@@ -98,7 +98,7 @@ export type User = {
     updatedAt: Timestamp;
 };
 export type VerificationToken = {
-    id: string;
+    id: Generated<number>;
     email: string;
     token: string;
     expires: Timestamp;

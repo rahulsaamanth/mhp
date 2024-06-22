@@ -4,7 +4,7 @@ import * as z from "zod"
 import bcrypt from "bcryptjs"
 
 import { RegisterSchema } from "@/schemas"
-import { db } from "@/lib/db"
+import db from "@/lib/db"
 import { getUserByEmail } from "@/utils/user"
 import { generateVerificationToken } from "@/lib/tokens"
 import { sendVerificationEmail } from "@/lib/mail"

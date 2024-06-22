@@ -1,11 +1,11 @@
 import { getUsers } from "@/actions/users"
-import { DataTable } from "@/components/data-table"
+import { DataTable } from "@/components/tables/data-table"
 import { columns } from "./columns"
 import { Prisma, User, UserStatus } from "@prisma/client"
 import { OrdersByDayChart } from "@/components/charts/OrdersbyDayChart"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { UsersByDayChart } from "@/components/charts/UsersByDayChart"
-import { db } from "@/lib/db"
+import db from "@/lib/db"
 
 import { UsersByStatusChart } from "@/components/charts/UsersByStatusChart"
 import { ChartCard } from "@/components/chart-card"

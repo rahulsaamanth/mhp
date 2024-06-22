@@ -1,4 +1,6 @@
-const DiscountsPagge = () => {
+import { getProducts } from "@/actions/products"
+
+const DiscountsPagge = async () => {
   return <div>Discouts</div>
 }
 

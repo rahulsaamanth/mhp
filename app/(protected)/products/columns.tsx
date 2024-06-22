@@ -10,13 +10,14 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
+import { Product } from "@prisma/client"
 import { formatDate } from "@/lib/formatters"
 import { cn } from "@/lib/utils"
 import { Icon } from "@iconify/react/dist/iconify.js"
-import { User, UserStatus } from "@prisma/client"
+
 import { ColumnDef } from "@tanstack/react-table"
 
-export const columns: ColumnDef<User, any>[] = [
+export const columns: ColumnDef<any, any>[] = [
   {
     id: "select",
     header: ({ table }) => (
@@ -36,7 +37,6 @@ export const columns: ColumnDef<User, any>[] = [
         className="mb-3 mr-3"
       />
     ),
-
     enableSorting: false,
     enableHiding: false,
   },
@@ -64,21 +64,19 @@ export const columns: ColumnDef<User, any>[] = [
       )
     },
     cell: ({ row }) => {
-      return <span className="text-nowrap">{row.getValue("name")}</span>
+      return (
+        <span className="text-nowrap inline-block w-[200px] overflow-hidden text-ellipsis">
+          {row.getValue("name")}
+        </span>
+      )
     },
     filterFn: "equalsString",
   },
+
   {
-    accessorKey: "email",
-    header: "Email",
-    filterFn: "weakEquals",
-  },
-  {
-    accessorKey: "phone",
-    header: "Contact",
-    cell: ({ row }) => (
-      <span className="text-nowrap">{row.getValue("phone")}</span>
-    ),
+    accessorKey: "price",
+    header: "Price",
+
     filterFn: "equalsString",
   },
   {
@@ -90,7 +88,7 @@ export const columns: ColumnDef<User, any>[] = [
           onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
           className="p-0 cursor-default"
         >
-          Joined
+          Created
           <Icon
             width="14"
             height="14"
@@ -106,25 +104,11 @@ export const columns: ColumnDef<User, any>[] = [
     },
   },
   {
-    accessorKey: "status",
-    header: "Status",
-    cell: ({ row }) => {
-      const status = row.getValue("status")
-      return (
-        <div
-          className={cn(
-            "text-green-600 font-bold min-w-fit",
-
-            { "text-red-600": status === UserStatus.INACTIVE },
-          )}
-        >
-          {row.getValue("status")}
-        </div>
-      )
-    },
+    accessorKey: "stock",
+    header: "Stock",
   },
   {
-    accessorKey: "orders",
+    accessorKey: "category",
     header: ({ column }) => {
       return (
         <Button
@@ -132,7 +116,7 @@ export const columns: ColumnDef<User, any>[] = [
           onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
           className="p-0 cursor-default"
         >
-          orders
+          Category
           <Icon
             width="14"
             height="14"
@@ -143,49 +127,33 @@ export const columns: ColumnDef<User, any>[] = [
       )
     },
     cell: ({ row }) => {
-      const orders: [] = row.getValue("orders")
-      return <span>{orders.length}</span>
+      const category: { id: number; name: string; parentId: number } =
+        row.getValue("category")
+      return <span>{category.name}</span>
     },
   },
   {
-    accessorKey: "total-spent",
-    header: "Total Spent",
-    cell: ({ row }) => {
-      const orders: { totalAmountPaid: number }[] = row.getValue("orders") as {
-        totalAmountPaid: number
-      }[]
-      const totalSpent = orders.reduce(
-        (totalSpent, order) => totalSpent + order.totalAmountPaid,
-        0,
-      )
-      return <span>&#x20B9;{totalSpent}</span>
-    },
-  },
-  {
-    id: "actions",
-    cell: ({ row }) => {
-      const user = row.original
-
+    accessorKey: "brand",
+    header: ({ column }) => {
       return (
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button variant="ghost" className="h-8 w-8 p-0 outline-none">
-              <span className="sr-only">Open menu</span>
-              <Icon icon="material-symbols:more-horiz" width="24" height="24" />
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end">
-            <DropdownMenuLabel>Actions</DropdownMenuLabel>
-            <DropdownMenuItem
-              onClick={() => navigator.clipboard.writeText(String(user.id))}
-            >
-              Copy User ID
-            </DropdownMenuItem>
-            <DropdownMenuSeparator />
-            <DropdownMenuItem>View User</DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
+        <Button
+          variant="ghost"
+          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+          className="p-0 cursor-default"
+        >
+          Brand
+          <Icon
+            width="14"
+            height="14"
+            className="ml-2"
+            icon="ph:caret-up-down"
+          />
+        </Button>
       )
+    },
+    cell: ({ row }) => {
+      const brand: { id: number; name: string } = row.getValue("brand")
+      return <span>{brand.name}</span>
     },
   },
 ]

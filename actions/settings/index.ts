@@ -4,7 +4,7 @@ import * as z from "zod"
 import bcrypt from "bcryptjs"
 
 import { unstable_update as update } from "@/auth"
-import { db } from "@/lib/db"
+import db from "@/lib/db"
 import { SettingsSchema } from "@/schemas"
 import { getUserByEmail, getUserById } from "@/utils/user"
 import { currentUser } from "@/lib/auth"
@@ -21,7 +21,7 @@ export const updateUser = async (values: z.infer<typeof SettingsSchema>) => {
     return { error: "Unauthorized" }
   }
 
-  const dbUser = await getUserById(user.id!)
+  const dbUser = await getUserById(Number(user.id!))
 
   if (!dbUser) {
     return { error: "Unauthorized" }
@@ -37,7 +37,7 @@ export const updateUser = async (values: z.infer<typeof SettingsSchema>) => {
   if (values.email && values.email !== user.email) {
     const existingUser = await getUserByEmail(values.email)
 
-    if (existingUser && existingUser.id !== user.id) {
+    if (existingUser && existingUser.id !== Number(user.id)) {
       return { error: "Email already in use!" }
     }
 
