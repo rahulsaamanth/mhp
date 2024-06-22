@@ -22,7 +22,7 @@ import { Input } from "../ui/input"
 import { Button } from "../ui/button"
 import { FormError } from "../form-error"
 import { FormSuccess } from "../form-success"
-import { login } from "@/actions/login"
+import { login } from "@/actions/auth/login"
 // import Link from "next/link"
 
 export const LoginForm = () => {

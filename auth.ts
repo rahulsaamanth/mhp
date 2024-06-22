@@ -3,7 +3,7 @@ import authConfig from "@/auth.config"
 
 import { UserRole } from "@prisma/client"
 import { PrismaAdapter } from "@auth/prisma-adapter"
-import { db } from "@/lib/db"
+import db from "@/lib/db"
 import { getUserById } from "./utils/user"
 import { getTwoFactorConfirmationByUserId } from "./utils/two-factor-confirmation"
 import { getAccountByUserId } from "./utils/account"
@@ -28,7 +28,7 @@ export const {
   events: {
     async linkAccount({ user }) {
       await db.user.update({
-        where: { id: user.id },
+        where: { id: Number(user.id) },
         data: { emailVerified: new Date() },
       })
     },
@@ -38,7 +38,7 @@ export const {
     async signIn({ user, account }) {
       if (account?.provider !== "credentials") return true
 
-      const existingUser = await getUserById(user.id as string)
+      const existingUser = await getUserById(Number(user.id))
 
       if (!existingUser?.emailVerified) return false
 
@@ -83,10 +83,10 @@ export const {
     async jwt({ token }) {
       if (!token.sub) return token
 
-      const existingUser = await getUserById(token.sub)
+      const existingUser = await getUserById(Number(token.sub))
       if (!existingUser) return token
 
-      const existingAccount = await getAccountByUserId(existingUser.id)
+      const existingAccount = await getAccountByUserId(Number(existingUser.id))
 
       token.isOAuth = !!existingAccount
       token.name = existingUser.name

@@ -1,6 +1,7 @@
 "use client"
 
 import { admin } from "@/actions/admin"
+import { getProducts } from "@/actions/products"
 import { RoleGate } from "@/components/auth/role-gate"
 import { FormSuccess } from "@/components/form-success"
 import { Button } from "@/components/ui/button"
@@ -8,7 +9,9 @@ import { Card, CardContent, CardHeader } from "@/components/ui/card"
 import { UserRole } from "@prisma/client"
 import { toast } from "sonner"
 
-const AdminPage = () => {
+const AdminPage = async () => {
+  const products = await getProducts()
+
   const onServerActionClick = () => {
     admin().then((data) => {
       if (data.error) toast.error(data?.error)

@@ -1,5 +1,5 @@
 import crypto from "crypto"
-import { db } from "@/lib/db"
+import db from "@/lib/db"
 import { v4 as uuid } from "uuid"
 
 import { getVerificationTokenByEmail } from "@/utils/verification-token"

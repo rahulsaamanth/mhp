@@ -59,18 +59,18 @@ const fuzzySort: SortingFn<any> = (rowA, rowB, columnId) => {
   return dir === 0 ? sortingFns.alphanumeric(rowA, rowB, columnId) : dir
 }
 
-import { Card, CardContent, CardFooter, CardHeader } from "./ui/card"
-import { Button } from "./ui/button"
+import { Card, CardContent, CardFooter, CardHeader } from "../ui/card"
+import { Button } from "../ui/button"
 import Link from "next/link"
 import { useMemo, useReducer, useState } from "react"
-import { Input } from "./ui/input"
+import { Input } from "../ui/input"
 import {
   DropdownMenu,
   DropdownMenuCheckboxItem,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
-} from "./ui/dropdown-menu"
+} from "../ui/dropdown-menu"
 import { Icon } from "@iconify/react/dist/iconify.js"
 
 interface DataTableProps<TData, TValue> {

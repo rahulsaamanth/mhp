@@ -2,6 +2,7 @@
 
 import { Button } from "@/components/ui/button"
 import { useEffect } from "react"
+import { useRouter } from "next/navigation"
 
 export default function Error({
   error,
@@ -10,13 +11,14 @@ export default function Error({
   error: Error & { digest?: string }
   reset: () => void
 }) {
+  const router = useRouter()
   useEffect(() => {
     console.error(error)
   }, [error])
   return (
     <div>
       Something went wrong!,
-      <Button variant="link" onClick={() => reset()}>
+      <Button variant="link" onClick={() => router.refresh()}>
         Try again
       </Button>
     </div>
