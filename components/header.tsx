@@ -26,13 +26,15 @@ const Header = () => {
           "bg-background/95 backdrop-blur-sm supports-[backdrop-filter]:bg-background/50":
             scrolled,
           "bg-white": selectedLayout,
-        },
+        }
       )}
     >
       <div className="flex h-full items-center justify-between px-10">
         <div className="flex items-center space-x-4">
           <Link href="/dashboard" className="lg:hidden">
-            <span className="text-xl font-bold">Logo</span>
+            <span className="text-xl font-bold">
+              <img src="./logo.jpg" alt="logo" height={100} width={100} />
+            </span>
           </Link>
         </div>
 

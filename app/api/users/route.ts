@@ -1,8 +1,8 @@
-import db from "@/lib/db"
+import { db } from "@/drizzle/db"
 import { NextResponse } from "next/server"
 
 export async function GET() {
-  const users = await db.user.findMany()
+  const users = await db.query.user.findMany()
 
   if (!users) return new NextResponse(null, { status: 404 })
 

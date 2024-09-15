@@ -53,7 +53,7 @@ const fuzzySort: SortingFn<any> = (rowA, rowB, columnId) => {
   if (rowA.columnFiltersMeta[columnId]) {
     dir = compareItems(
       rowA.columnFiltersMeta[columnId]?.itemRank!,
-      rowB.columnFiltersMeta[columnId]?.itemRank!,
+      rowB.columnFiltersMeta[columnId]?.itemRank!
     )
   }
   return dir === 0 ? sortingFns.alphanumeric(rowA, rowB, columnId) : dir
@@ -61,8 +61,8 @@ const fuzzySort: SortingFn<any> = (rowA, rowB, columnId) => {
 
 import { Card, CardContent, CardFooter, CardHeader } from "../ui/card"
 import { Button } from "../ui/button"
-import Link from "next/link"
-import { useMemo, useReducer, useState } from "react"
+
+import { useState } from "react"
 import { Input } from "../ui/input"
 import {
   DropdownMenu,
@@ -86,7 +86,7 @@ export function DataTable<TData, TValue>({
     { id: "createdAt", desc: true },
   ])
 
-  const rerender = useReducer(() => ({}), {})[1]
+  // const rerender = useReducer(() => ({}), {})[1]
 
   const [globalFilter, setGlobalFilter] = useState("")
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([])
@@ -200,7 +200,7 @@ export function DataTable<TData, TValue>({
                           ? null
                           : flexRender(
                               header.column.columnDef.header,
-                              header.getContext(),
+                              header.getContext()
                             )}
                       </TableHead>
                     )
@@ -219,7 +219,7 @@ export function DataTable<TData, TValue>({
                       <TableCell key={cell.id}>
                         {flexRender(
                           cell.column.columnDef.cell,
-                          cell.getContext(),
+                          cell.getContext()
                         )}
                       </TableCell>
                     ))}

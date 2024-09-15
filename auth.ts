@@ -1,12 +1,21 @@
 import NextAuth from "next-auth"
-import authConfig from "@/auth.config"
+// import authConfig from "@/auth.config"
 
-import { UserRole } from "@prisma/client"
-import { PrismaAdapter } from "@auth/prisma-adapter"
-import db from "@/lib/db"
-import { getUserById } from "./utils/user"
+// import { UserRole } from "@prisma/client"
+// import { PrismaAdapter } from "@auth/prisma-adapter"
+// import p_db from "@/lib/db"
+import { DrizzleAdapter } from "@auth/drizzle-adapter"
+import { getUserByEmail, getUserById } from "./utils/user"
 import { getTwoFactorConfirmationByUserId } from "./utils/two-factor-confirmation"
 import { getAccountByUserId } from "./utils/account"
+// import { db } from "./db/db"
+import { db } from "@/drizzle/db"
+import { user as User, twoFactorConfirmation, UserRole } from "./drizzle/schema"
+import { eq } from "drizzle-orm"
+import Credentials from "@auth/core/providers/credentials"
+import { LoginSchema } from "./schemas"
+import bcrypt from "bcryptjs"
+import authConfig from "./auth.config"
 
 declare module "next-auth" {
   interface User {
@@ -27,10 +36,18 @@ export const {
   },
   events: {
     async linkAccount({ user }) {
-      await db.user.update({
-        where: { id: Number(user.id) },
-        data: { emailVerified: new Date() },
-      })
+      // await db.user.update({
+      //   where: { id: Number(user.id) },
+      //   data: { emailVerified: new Date() },
+      // })
+
+      await db
+        .update(User)
+        .set({
+          emailVerified: new Date(),
+        })
+        .where(eq(User.id, Number(user.id)))
+        .execute()
     },
   },
 
@@ -45,15 +62,19 @@ export const {
       if (existingUser.role !== "ADMIN") return false
 
       if (existingUser.isTwoFactorEnabled) {
-        const twoFactorConfirmation = await getTwoFactorConfirmationByUserId(
-          existingUser.id,
+        const _twoFactorConfirmation = await getTwoFactorConfirmationByUserId(
+          existingUser.id
         )
 
-        if (!twoFactorConfirmation) return false
+        if (!_twoFactorConfirmation) return false
 
-        await db.twoFactorConfirmation.delete({
-          where: { id: twoFactorConfirmation.id },
-        })
+        // await db.twoFactorConfirmation.delete({
+        //   where: { id: twoFactorConfirmation.id },
+        // })
+        await db
+          .delete(twoFactorConfirmation)
+          .where(eq(twoFactorConfirmation.id, _twoFactorConfirmation.id))
+          .execute()
       }
 
       return true
@@ -96,7 +117,27 @@ export const {
       return token
     },
   },
-  adapter: PrismaAdapter(db),
+  adapter: DrizzleAdapter(db),
   session: { strategy: "jwt" },
+  // providers: [
+  //   Credentials({
+  //     async authorize(credentials) {
+  //       const validatedFields = LoginSchema.safeParse(credentials)
+  //       if (validatedFields.success) {
+  //         const { email, password } = validatedFields.data
+  //         const user = await getUserByEmail(email)
+  //         if (!user || !user.password) return null
+  //         const passwordMatch = await bcrypt.compare(password, user.password)
+  //         if (passwordMatch)
+  //           return {
+  //             ...user,
+  //             id: user.id.toString(),
+  //           }
+  //       }
+  //       return null
+  //     },
+  //   }),
+  // ],
+  // trustHost: true,
   ...authConfig,
 })

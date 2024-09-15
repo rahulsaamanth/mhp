@@ -1,8 +1,10 @@
 "use server"
 
-import db from "@/lib/db"
+import { db } from "@/drizzle/db"
+import { user, verificationToken } from "@/drizzle/schema"
 import { getUserByEmail } from "@/utils/user"
 import { getVerificationTokenByToken } from "@/utils/verification-token"
+import { eq } from "drizzle-orm"
 
 export const newVerification = async (token: string) => {
   const existingToken = await getVerificationTokenByToken(token)
@@ -17,16 +19,29 @@ export const newVerification = async (token: string) => {
 
   if (!existingUser) return { error: "Email does not exist!" }
 
-  await db.user.update({
-    where: { id: existingUser.id },
-    data: {
+  // await db.user.update({
+  //   where: { id: existingUser.id },
+  //   data: {
+  //     emailVerified: new Date(),
+  //     email: existingToken.email,
+  //   },
+  // })
+  await db
+    .update(user)
+    .set({
       emailVerified: new Date(),
       email: existingToken.email,
-    },
-  })
-  await db.verificationToken.delete({
-    where: { id: existingToken.id },
-  })
+    })
+    .where(eq(user.id, existingUser.id))
+    .execute()
+
+  // await db.verificationToken.delete({
+  //   where: { id: existingToken.id },
+  // })
+  await db
+    .delete(verificationToken)
+    .where(eq(verificationToken.id, existingToken.id))
+    .execute()
 
   return { success: "Email verified!" }
 }

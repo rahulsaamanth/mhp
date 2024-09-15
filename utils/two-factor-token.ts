@@ -1,12 +1,19 @@
-import db from "@/lib/db"
+import { db } from "@/drizzle/db"
+import { twoFactorToken } from "@/drizzle/schema"
+import { eq } from "drizzle-orm"
 
 export const getTwoFactorTokenByToken = async (token: string) => {
   try {
-    const twoFactorToken = await db.twoFactorToken.findUnique({
-      where: { token },
-    })
+    // `const twoFactorToken = await db.twoFactorToken.findUnique({
+    //   where: { token },
+    // })`
+    const _twoFactorToken = await db.query.twoFactorToken
+      .findFirst({
+        where: eq(twoFactorToken.token, token),
+      })
+      .execute()
 
-    return twoFactorToken
+    return _twoFactorToken
   } catch {
     return null
   }
@@ -14,11 +21,16 @@ export const getTwoFactorTokenByToken = async (token: string) => {
 
 export const getTwoFactorTokenByEmail = async (email: string) => {
   try {
-    const twoFactorToken = await db.twoFactorToken.findFirst({
-      where: { email },
-    })
+    // const twoFactorToken = await db.twoFactorToken.findFirst({
+    //   where: { email },
+    // })
+    const _twoFactorToken = await db.query.twoFactorToken
+      .findFirst({
+        where: eq(twoFactorToken.email, email),
+      })
+      .execute()
 
-    return twoFactorToken
+    return _twoFactorToken
   } catch {
     return null
   }

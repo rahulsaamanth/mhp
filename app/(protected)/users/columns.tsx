@@ -12,8 +12,9 @@ import {
 } from "@/components/ui/dropdown-menu"
 import { formatDate } from "@/lib/formatters"
 import { cn } from "@/lib/utils"
+import { User } from "@/types"
 import { Icon } from "@iconify/react/dist/iconify.js"
-import { User, UserStatus } from "@prisma/client"
+
 import { ColumnDef } from "@tanstack/react-table"
 
 export const columns: ColumnDef<User, any>[] = [
@@ -115,7 +116,7 @@ export const columns: ColumnDef<User, any>[] = [
           className={cn(
             "text-green-600 font-bold min-w-fit",
 
-            { "text-red-600": status === UserStatus.INACTIVE },
+            { "text-red-600": status === "INACTIVE" }
           )}
         >
           {row.getValue("status")}
@@ -156,7 +157,7 @@ export const columns: ColumnDef<User, any>[] = [
       }[]
       const totalSpent = orders.reduce(
         (totalSpent, order) => totalSpent + order.totalAmountPaid,
-        0,
+        0
       )
       return <span>&#x20B9;{totalSpent}</span>
     },
@@ -177,7 +178,7 @@ export const columns: ColumnDef<User, any>[] = [
           <DropdownMenuContent align="end">
             <DropdownMenuLabel>Actions</DropdownMenuLabel>
             <DropdownMenuItem
-              onClick={() => navigator.clipboard.writeText(String(user.id))}
+              onClick={() => navigator.clipboard.writeText(user.id)}
             >
               Copy User ID
             </DropdownMenuItem>
