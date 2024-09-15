@@ -1,19 +1,20 @@
 import { getUsers } from "@/actions/users"
 import { DataTable } from "@/components/tables/data-table"
 import { columns } from "./columns"
-import { Prisma, User, UserStatus } from "@prisma/client"
+
 import { OrdersByDayChart } from "@/components/charts/OrdersbyDayChart"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+
 import { UsersByDayChart } from "@/components/charts/UsersByDayChart"
-import db from "@/lib/db"
 
 import { UsersByStatusChart } from "@/components/charts/UsersByStatusChart"
 import { ChartCard } from "@/components/chart-card"
 import { RANGE_OPTIONS, getRangeOption } from "@/lib/rangeOptions"
 import { getChartDateArray } from "@/lib/chart-date-array"
 import { startOfDay } from "date-fns"
-import { ResponsiveContainer } from "recharts"
-import { pause } from "@/utils/pause"
+
+import { and, count, gte, lte, sum } from "drizzle-orm"
+import { order, user } from "@/drizzle/schema"
+import { db } from "@/drizzle/db"
 
 async function getUserData({
   createdAfter,
@@ -22,30 +23,28 @@ async function getUserData({
   createdAfter: Date | null
   createdBefore: Date | null
 }) {
-  const createdAtQuery: Prisma.UserWhereInput["createdAt"] = {}
-  if (createdAfter) createdAtQuery.gte = createdAfter
-  if (createdBefore) createdAtQuery.lte = createdBefore
+  const whereClause = []
+  if (createdAfter) whereClause.push(gte(user.createdAt, createdAfter))
+  if (createdBefore) whereClause.push(lte(user.createdAt, createdBefore))
 
   const [userCount, orderData, usersChartData, userCountByStatus] =
     await Promise.all([
-      db.user.count(),
-      db.order.aggregate({
-        _sum: { totalAmountPaid: true },
-      }),
-      db.user.findMany({
-        select: { createdAt: true },
-        where: { createdAt: createdAtQuery },
-        orderBy: { createdAt: "asc" },
-      }),
-      db.user.groupBy({
-        by: ["status"],
-        _count: true,
-      }),
+      db.select({ count: count() }).from(user),
+      db.select({ totalAmountPaid: sum(order.totalAmountPaid) }).from(order),
+      db
+        .select({ createdAt: user.createdAt })
+        .from(user)
+        .where(and(...whereClause))
+        .orderBy(user.createdAt),
+      db
+        .select({ status: user.status, _count: count() })
+        .from(user)
+        .groupBy(user.status),
     ])
 
   const { array, format } = getChartDateArray(
     createdAfter || startOfDay(usersChartData[0].createdAt),
-    createdBefore || new Date(),
+    createdBefore || new Date()
   )
 
   const dayArray = array.map((date) => {
@@ -65,9 +64,11 @@ async function getUserData({
     }, dayArray),
     userCount,
     averageValuePerUser:
-      userCount === 0
+      userCount[0].count === 0
         ? 0
-        : (orderData._sum.totalAmountPaid || 0) / userCount / 100,
+        : (Number(orderData[0].totalAmountPaid) || 0) /
+          userCount[0].count /
+          100,
     userCountByStatus,
   }
 }
@@ -85,15 +86,13 @@ const UsersPage = async ({
     newCustomersRangeTo?: string
   }
 }) => {
-  const users = await getUsers()
-
-  const columnData: User[] | [] = users
+  const columnData = await getUsers()
 
   const newCustomersRangeOption =
     getRangeOption(
       newCustomersRange,
       newCustomersRangeFrom,
-      newCustomersRangeTo,
+      newCustomersRangeTo
     ) || RANGE_OPTIONS.last_30_days
 
   const userData = await getUserData({

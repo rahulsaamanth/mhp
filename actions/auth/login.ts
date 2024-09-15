@@ -10,12 +10,14 @@ import { getUserByEmail } from "@/utils/user"
 import { sendVerificationEmail, sendTwoFactorTokenEmail } from "@/lib/mail"
 import { generateVerificationToken, generateTwoFactorToken } from "@/lib/tokens"
 import { getTwoFactorTokenByEmail } from "@/utils/two-factor-token"
-import db from "@/lib/db"
+import { db } from "@/drizzle/db"
 import { getTwoFactorConfirmationByUserId } from "@/utils/two-factor-confirmation"
+import { twoFactorConfirmation, twoFactorToken } from "@/drizzle/schema"
+import { eq } from "drizzle-orm"
 
 export const login = async (
   values: z.infer<typeof LoginSchema>,
-  callbackUrl?: string | null,
+  callbackUrl?: string | null
 ) => {
   const validatedFields = LoginSchema.safeParse(values)
 
@@ -30,12 +32,12 @@ export const login = async (
 
   if (!existingUser.emailVerified) {
     const verificationToken = await generateVerificationToken(
-      existingUser.email,
+      existingUser.email
     )
 
     await sendVerificationEmail(
       verificationToken.email,
-      verificationToken.token,
+      verificationToken.token
     )
     return { success: "Confirmation email sent!" }
   }
@@ -48,34 +50,49 @@ export const login = async (
 
       return { twoFactor: true }
     }
-    const twoFactorToken = await getTwoFactorTokenByEmail(existingUser.email)
+    const _twoFactorToken = await getTwoFactorTokenByEmail(existingUser.email)
 
-    if (!twoFactorToken) return { error: "Invaid code" }
+    if (!_twoFactorToken) return { error: "Invaid code" }
 
-    if (twoFactorToken.token !== code) return { error: "Invalid code" }
+    if (_twoFactorToken.token !== code) return { error: "Invalid code" }
 
-    const hasExpired = new Date(twoFactorToken.expires) < new Date()
+    const hasExpired = new Date(_twoFactorToken.expires) < new Date()
 
     if (hasExpired) return { error: "code expired!" }
 
-    await db.twoFactorToken.delete({
-      where: { id: twoFactorToken.id },
-    })
+    // await db.twoFactorToken.delete({
+    //   where: { id: twoFactorToken.id },
+    // })
+    await db
+      .delete(twoFactorToken)
+      .where(eq(twoFactorToken.id, _twoFactorToken.id))
+      .execute()
 
     const existingConfirmation = await getTwoFactorConfirmationByUserId(
-      existingUser.id,
+      existingUser.id
     )
 
     if (existingConfirmation)
-      await db.twoFactorConfirmation.delete({
-        where: { id: existingConfirmation.id },
-      })
+      // await db.twoFactorConfirmation.delete({
+      //   where: { id: existingConfirmation.id },
+      // })
+      await db
+        .delete(twoFactorConfirmation)
+        .where(eq(twoFactorConfirmation.id, existingConfirmation.id))
+        .execute()
 
-    await db.twoFactorConfirmation.create({
-      data: {
+    // await db.twoFactorConfirmation.create({
+    //   data: {
+    //     userId: existingUser?.id,
+    //   },
+    // })
+
+    await db
+      .insert(twoFactorConfirmation)
+      .values({
         userId: existingUser?.id,
-      },
-    })
+      })
+      .execute()
   }
 
   try {

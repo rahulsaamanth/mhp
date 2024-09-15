@@ -7,7 +7,8 @@ const ProductsPage = async () => {
   console.log(products)
   return (
     <div className="w-full py-10">
-      <DataTable data={products} columns={columns} />
+      {/* <DataTable data={products} columns={columns} /> */}
+      {JSON.stringify(products)}
     </div>
   )
 }

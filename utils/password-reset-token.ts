@@ -1,11 +1,19 @@
-import db from "@/lib/db"
+import { db } from "@/drizzle/db"
+import { passwordResetToken } from "@/drizzle/schema"
+import { eq } from "drizzle-orm"
 
 export const getPasswordResetTokenByToken = async (token: string) => {
   try {
-    const passwordResetToken = await db.passwordResetToken.findUnique({
-      where: { token },
-    })
-    return passwordResetToken
+    // const passwordResetToken = await db.passwordResetToken.findUnique({
+    //   where: { token },
+    // })
+    const _passwordResetToken = await db.query.passwordResetToken
+      .findFirst({
+        where: eq(passwordResetToken.token, token),
+      })
+      .execute()
+
+    return _passwordResetToken
   } catch {
     return null
   }
@@ -13,10 +21,16 @@ export const getPasswordResetTokenByToken = async (token: string) => {
 
 export const generatePasswordResetTokenByEmail = async (email: string) => {
   try {
-    const passwrodResetToken = await db.passwordResetToken.findFirst({
-      where: { email },
-    })
-    return passwrodResetToken
+    // const passwrodResetToken = await db.passwordResetToken.findFirst({
+    //   where: { email },
+    // })
+    const _passwordResetToken = await db.query.passwordResetToken
+      .findFirst({
+        where: eq(passwordResetToken.email, email),
+      })
+      .execute()
+
+    return _passwordResetToken
   } catch {
     return null
   }

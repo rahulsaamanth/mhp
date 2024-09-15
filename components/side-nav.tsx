@@ -22,7 +22,9 @@ const SideNav = () => {
           href="/dashboard"
           className="flex h-16 w-full flex-row items-center justify-center space-x-3 border-b border-zinc-200 md:justify-start md:px-6"
         >
-          <span className="hidden text-3xl font-bold md:flex">Logo</span>
+          <span className="hidden text-3xl font-bold md:flex">
+            <img src="./logo.jpg" alt="logo" height={100} width={100} />
+          </span>
         </Link>
 
         <div className="flex h-5/6 flex-col gap-2 md:px-6">

@@ -1,10 +1,16 @@
 import crypto from "crypto"
-import db from "@/lib/db"
+import { db } from "@/drizzle/db"
 import { v4 as uuid } from "uuid"
 
 import { getVerificationTokenByEmail } from "@/utils/verification-token"
 import { generatePasswordResetTokenByEmail } from "@/utils/password-reset-token"
 import { getTwoFactorTokenByEmail } from "@/utils/two-factor-token"
+import {
+  passwordResetToken,
+  twoFactorToken,
+  verificationToken,
+} from "@/drizzle/schema"
+import { eq } from "drizzle-orm"
 
 export const generateTwoFactorToken = async (email: string) => {
   const token = crypto.randomInt(100_000, 1_000_000).toString()
@@ -13,22 +19,35 @@ export const generateTwoFactorToken = async (email: string) => {
   const existingToken = await getTwoFactorTokenByEmail(email)
 
   if (existingToken) {
-    await db.twoFactorToken.delete({
-      where: {
-        id: existingToken.id,
-      },
-    })
+    // await db.twoFactorToken.delete({
+    //   where: {
+    //     id: existingToken.id,
+    //   },
+    // })
+    await db
+      .delete(twoFactorToken)
+      .where(eq(twoFactorToken.id, existingToken.id))
+      .execute()
   }
 
-  const twoFactorToken = await db.twoFactorToken.create({
-    data: {
+  // const twoFactorToken = await db.twoFactorToken.create({
+  //   data: {
+  //     email,
+  //     token,
+  //     expires,
+  //   },
+  // })
+  const [_twoFactorToken] = await db
+    .insert(twoFactorToken)
+    .values({
       email,
       token,
       expires,
-    },
-  })
+    })
+    .returning()
+    .execute()
 
-  return twoFactorToken
+  return _twoFactorToken
 }
 
 export const generatePasswordResetToken = async (email: string) => {
@@ -38,20 +57,33 @@ export const generatePasswordResetToken = async (email: string) => {
   const existingToken = await generatePasswordResetTokenByEmail(email)
 
   if (existingToken) {
-    await db.passwordResetToken.delete({
-      where: { id: existingToken.id },
-    })
+    // await db.passwordResetToken.delete({
+    //   where: { id: existingToken.id },
+    // })
+    await db
+      .delete(passwordResetToken)
+      .where(eq(passwordResetToken.id, existingToken?.id))
+      .execute()
   }
 
-  const passwordResetToken = await db.passwordResetToken.create({
-    data: {
+  // const passwordResetToken = await db.passwordResetToken.create({
+  //   data: {
+  //     email,
+  //     token,
+  //     expires,
+  //   },
+  // })
+  const [_passwordResetToken] = await db
+    .insert(passwordResetToken)
+    .values({
       email,
       token,
       expires,
-    },
-  })
+    })
+    .returning()
+    .execute()
 
-  return passwordResetToken
+  return _passwordResetToken
 }
 
 export const generateVerificationToken = async (email: string) => {
@@ -60,19 +92,32 @@ export const generateVerificationToken = async (email: string) => {
 
   const existingToken = await getVerificationTokenByEmail(email)
   if (existingToken) {
-    await db.verificationToken.delete({
-      where: {
-        id: existingToken.id,
-      },
-    })
+    // await db.verificationToken.delete({
+    //   where: {
+    //     id: existingToken.id,
+    //   },
+    // })
+    await db
+      .delete(verificationToken)
+      .where(eq(verificationToken.id, existingToken.id))
+      .execute()
   }
-  const verifcationToken = await db.verificationToken.create({
-    data: {
+  // const verifcationToken = await db.verificationToken.create({
+  //   data: {
+  //     email,
+  //     token,
+  //     expires,
+  //   },
+  // })
+  const [_verificationToken] = await db
+    .insert(verificationToken)
+    .values({
       email,
       token,
       expires,
-    },
-  })
+    })
+    .returning()
+    .execute()
 
-  return verifcationToken
+  return _verificationToken
 }

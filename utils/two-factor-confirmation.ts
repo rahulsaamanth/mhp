@@ -1,12 +1,19 @@
-import db from "@/lib/db"
+import { db } from "@/drizzle/db"
+import { twoFactorConfirmation } from "@/drizzle/schema"
+import { eq } from "drizzle-orm"
 
 export const getTwoFactorConfirmationByUserId = async (userId: number) => {
   try {
-    const twoFactorConfirmation = await db.twoFactorConfirmation.findUnique({
-      where: { userId },
-    })
+    // const twoFactorConfirmation = await db.twoFactorConfirmation.findUnique({
+    //   where: { userId },
+    // })
+    const _twoFactorConfirmation = await db.query.twoFactorConfirmation
+      .findFirst({
+        where: eq(twoFactorConfirmation.userId, userId),
+      })
+      .execute()
 
-    return twoFactorConfirmation
+    return _twoFactorConfirmation
   } catch {
     return null
   }

@@ -29,7 +29,6 @@ import {
 } from "@/components/ui/form"
 import { Input } from "@/components/ui/input"
 import { useCurrentUser } from "@/hooks/use-current-user"
-import { UserRole } from "@prisma/client"
 
 import { getSignedURL } from "@/actions/settings"
 import { toast } from "sonner"
@@ -253,8 +252,8 @@ const SettingsPage = () => {
                           </SelectTrigger>
                         </FormControl>
                         <SelectContent>
-                          <SelectItem value={UserRole.ADMIN}>Admin</SelectItem>
-                          <SelectItem value={UserRole.USER}>User</SelectItem>
+                          <SelectItem value={"ADMIN"}>Admin</SelectItem>
+                          <SelectItem value={"USER"}>User</SelectItem>
                         </SelectContent>
                       </Select>
                       <FormMessage />

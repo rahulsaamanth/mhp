@@ -6,11 +6,13 @@ import bcrypt from "bcryptjs"
 import { NewPasswordSchema } from "@/schemas"
 import { getPasswordResetTokenByToken } from "@/utils/password-reset-token"
 import { getUserByEmail } from "@/utils/user"
-import db from "@/lib/db"
+import { db } from "@/drizzle/db"
+import { passwordResetToken, user } from "@/drizzle/schema"
+import { eq } from "drizzle-orm"
 
 export const newPassword = async (
   values: z.infer<typeof NewPasswordSchema>,
-  token?: string | null,
+  token?: string | null
 ) => {
   if (!token) return { error: "Missing token!" }
 
@@ -30,14 +32,25 @@ export const newPassword = async (
 
   const hashedPassword = await bcrypt.hash(password, 10)
 
-  await db.user.update({
-    where: { id: existingUser.id },
-    data: { password: hashedPassword },
-  })
+  // await db.user.update({
+  //   where: { id: existingUser.id },
+  //   data: { password: hashedPassword },
+  // })
+  await db
+    .update(user)
+    .set({
+      password: hashedPassword,
+    })
+    .where(eq(user.id, existingUser.id))
+    .execute()
 
-  await db.passwordResetToken.delete({
-    where: { id: existingToken.id },
-  })
+  // await db.passwordResetToken.delete({
+  //   where: { id: existingToken.id },
+  // })
+  await db
+    .delete(passwordResetToken)
+    .where(eq(passwordResetToken.id, existingToken.id))
+    .execute()
 
   return { success: "Password Updated successfully!" }
 }

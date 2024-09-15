@@ -4,10 +4,11 @@ import * as z from "zod"
 import bcrypt from "bcryptjs"
 
 import { RegisterSchema } from "@/schemas"
-import db from "@/lib/db"
+import { db } from "@/drizzle/db"
 import { getUserByEmail } from "@/utils/user"
 import { generateVerificationToken } from "@/lib/tokens"
 import { sendVerificationEmail } from "@/lib/mail"
+import { user } from "@/drizzle/schema"
 
 export const register = async (values: z.infer<typeof RegisterSchema>) => {
   const validatedFields = RegisterSchema.safeParse(values)
@@ -21,13 +22,22 @@ export const register = async (values: z.infer<typeof RegisterSchema>) => {
 
   if (existingUser) return { error: "Email already in use!" }
 
-  await db.user.create({
-    data: {
+  // await db.user.create({
+  //   data: {
+  //     name,
+  //     email,
+  //     password: hashedPassword,
+  //   },
+  // })
+  await db
+    .insert(user)
+    .values({
       name,
       email,
       password: hashedPassword,
-    },
-  })
+      updatedAt: new Date(),
+    })
+    .execute()
 
   const verifcationToken = await generateVerificationToken(email)
 

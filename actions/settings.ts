@@ -4,7 +4,7 @@ import * as z from "zod"
 import bcrypt from "bcryptjs"
 
 import { unstable_update as update } from "@/auth"
-import db from "@/lib/db"
+// import db from "@/lib/db"
 import { SettingsSchema } from "@/schemas"
 import { getUserByEmail, getUserById } from "@/utils/user"
 import { currentUser } from "@/lib/auth"
@@ -13,38 +13,41 @@ import { sendVerificationEmail } from "@/lib/mail"
 import { PutObjectCommand, S3Client } from "@aws-sdk/client-s3"
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner"
 import crypto from "crypto"
+import { db } from "@/drizzle/db"
+import { user } from "@/drizzle/schema"
+import { eq } from "drizzle-orm"
 
 export const updateUser = async (values: z.infer<typeof SettingsSchema>) => {
-  const user = await currentUser()
+  const _user = await currentUser()
 
-  if (!user) {
+  if (!_user) {
     return { error: "Unauthorized" }
   }
 
-  const dbUser = await getUserById(Number(user.id!))
+  const dbUser = await getUserById(Number(_user.id!))
 
   if (!dbUser) {
     return { error: "Unauthorized" }
   }
 
-  if (user.isOAuth) {
+  if (_user.isOAuth) {
     values.email = undefined
     values.password = undefined
     values.newPassword = undefined
     values.isTwoFactorEnabled = undefined
   }
 
-  if (values.email && values.email !== user.email) {
+  if (values.email && values.email !== _user.email) {
     const existingUser = await getUserByEmail(values.email)
 
-    if (existingUser && existingUser.id !== Number(user.id)) {
+    if (existingUser && existingUser.id !== Number(_user.id)) {
       return { error: "Email already in use!" }
     }
 
     const verificationToken = await generateVerificationToken(values.email)
     await sendVerificationEmail(
       verificationToken.email,
-      verificationToken.token,
+      verificationToken.token
     )
 
     return { success: "Verification email sent!" }
@@ -53,7 +56,7 @@ export const updateUser = async (values: z.infer<typeof SettingsSchema>) => {
   if (values.password && values.newPassword && dbUser.password) {
     const passwordsMatch = await bcrypt.compare(
       values.password,
-      dbUser.password,
+      dbUser.password
     )
 
     if (!passwordsMatch) {
@@ -65,20 +68,28 @@ export const updateUser = async (values: z.infer<typeof SettingsSchema>) => {
     values.newPassword = undefined
   }
 
-  const updatedUser = await db.user.update({
-    where: { id: dbUser.id },
-    data: {
+  // const updatedUser = await db._user.update({
+  //   where: { id: dbUser.id },
+  //   data: {
+  //     ...values,
+  //   },
+  // })
+  const [updatedUser] = await db
+    .update(user)
+    .set({
       ...values,
-    },
-  })
+    })
+    .where(eq(user.id, dbUser.id))
+    .returning()
+    .execute()
 
   await update({
     user: {
-      name: updatedUser.name,
-      email: updatedUser.email,
-      isTwoFactorEnabled: updatedUser.isTwoFactorEnabled,
-      role: updatedUser.role,
-      image: updatedUser.image,
+      name: updatedUser?.name,
+      email: updatedUser?.email,
+      isTwoFactorEnabled: updatedUser?.isTwoFactorEnabled,
+      role: updatedUser?.role,
+      image: updatedUser?.image,
     },
   })
 

@@ -1,5 +1,5 @@
 import { auth } from "@/auth"
-import { UserRole } from "@prisma/client"
+import { UserRole } from "@/drizzle/schema"
 
 export const currentUser = async () => {
   const session = await auth()
