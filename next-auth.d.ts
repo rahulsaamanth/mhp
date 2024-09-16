@@ -1,5 +1,6 @@
-import { UserRole } from "@prisma/client"
+userRole
 import NextAuth, { type DefaultSession } from "next-auth"
+import { userRole } from "./drizzle/schema"
 
 export type ExtendedUser = DefaultSession["user"] & {
   role: UserRole

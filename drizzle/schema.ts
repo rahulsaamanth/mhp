@@ -13,13 +13,16 @@ import {
   index,
   pgEnum,
 } from "drizzle-orm/pg-core"
-import { sql } from "drizzle-orm"
+import { InferSelectModel, sql } from "drizzle-orm"
 
 export const orderType = pgEnum("OrderType", ["OFFLINE", "ONLINE"])
 export const userRole = pgEnum("UserRole", ["ADMIN", "USER"])
 export const userStatus = pgEnum("UserStatus", ["ACTIVE", "INACTIVE"])
 
 export type UserRole = (typeof userRole.enumValues)[number]
+
+export type User = InferSelectModel<typeof user>
+export type Order = InferSelectModel<typeof order>
 
 export const prismaMigrations = pgTable("_prisma_migrations", {
   id: varchar("id", { length: 36 }).primaryKey().notNull(),
@@ -349,8 +352,3 @@ export const review = pgTable(
     }
   }
 )
-
-export const test_table = pgTable("Test", {
-  id: serial("id").primaryKey().notNull(),
-  text: text("text"),
-})

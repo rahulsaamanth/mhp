@@ -1,9 +1,5 @@
 import NextAuth from "next-auth"
-// import authConfig from "@/auth.config"
 
-// import { UserRole } from "@prisma/client"
-// import { PrismaAdapter } from "@auth/prisma-adapter"
-// import p_db from "@/lib/db"
 import { DrizzleAdapter } from "@auth/drizzle-adapter"
 import { getUserByEmail, getUserById } from "./utils/user"
 import { getTwoFactorConfirmationByUserId } from "./utils/two-factor-confirmation"
@@ -13,8 +9,7 @@ import { db } from "@/drizzle/db"
 import { user as User, twoFactorConfirmation, UserRole } from "./drizzle/schema"
 import { eq } from "drizzle-orm"
 import Credentials from "@auth/core/providers/credentials"
-import { LoginSchema } from "./schemas"
-import bcrypt from "bcryptjs"
+
 import authConfig from "./auth.config"
 
 declare module "next-auth" {

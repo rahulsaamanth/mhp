@@ -1,5 +1,6 @@
 "use client"
 
+import { UsersWithOrders } from "@/actions/users"
 import { Button } from "@/components/ui/button"
 import { Checkbox } from "@/components/ui/checkbox"
 import {
@@ -17,7 +18,7 @@ import { Icon } from "@iconify/react/dist/iconify.js"
 
 import { ColumnDef } from "@tanstack/react-table"
 
-export const columns: ColumnDef<User, any>[] = [
+export const columns: ColumnDef<UsersWithOrders, any>[] = [
   {
     id: "select",
     header: ({ table }) => (
@@ -178,7 +179,7 @@ export const columns: ColumnDef<User, any>[] = [
           <DropdownMenuContent align="end">
             <DropdownMenuLabel>Actions</DropdownMenuLabel>
             <DropdownMenuItem
-              onClick={() => navigator.clipboard.writeText(user.id)}
+              onClick={() => navigator.clipboard.writeText(String(user.id))}
             >
               Copy User ID
             </DropdownMenuItem>

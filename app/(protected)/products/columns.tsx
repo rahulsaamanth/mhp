@@ -2,17 +2,9 @@
 
 import { Button } from "@/components/ui/button"
 import { Checkbox } from "@/components/ui/checkbox"
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
-import { Product } from "@prisma/client"
+
 import { formatDate } from "@/lib/formatters"
-import { cn } from "@/lib/utils"
+
 import { Icon } from "@iconify/react/dist/iconify.js"
 
 import { ColumnDef } from "@tanstack/react-table"
