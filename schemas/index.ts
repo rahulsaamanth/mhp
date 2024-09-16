@@ -1,4 +1,3 @@
-// import { UserRole } from "@prisma/client"
 import * as z from "zod"
 
 const ACCEPTED_IMAGE_MIME_TYPES = [
@@ -29,12 +28,12 @@ export const SettingsSchema = z
         .any()
         .refine(
           (files) => ACCEPTED_IMAGE_MIME_TYPES.includes(files?.[0].type),
-          "Only .png, .jpg, .jpeg, and .webp formats are supported.",
+          "Only .png, .jpg, .jpeg, and .webp formats are supported."
         )
         .refine(
           (files) => !files || files?.[0].size <= MAX_UPLOAD_SIZE,
-          "Max upload size is 5MB",
-        ),
+          "Max upload size is 5MB"
+        )
     ),
   })
   .refine(
@@ -48,7 +47,7 @@ export const SettingsSchema = z
     {
       message: "Password is required, as you are setting new password!",
       path: ["password"],
-    },
+    }
   )
   .refine(
     (data) => {
@@ -60,7 +59,7 @@ export const SettingsSchema = z
     {
       message: "New password is required!",
       path: ["newPassword"],
-    },
+    }
   )
 
 export const NewPasswordSchema = z.object({

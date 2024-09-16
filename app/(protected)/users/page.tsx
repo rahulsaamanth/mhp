@@ -93,7 +93,7 @@ const UsersPage = async ({
       newCustomersRange,
       newCustomersRangeFrom,
       newCustomersRangeTo
-    ) || RANGE_OPTIONS.last_30_days
+    ) || RANGE_OPTIONS.last_365_days
 
   const userData = await getUserData({
     createdAfter: newCustomersRangeOption.startDate,

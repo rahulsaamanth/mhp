@@ -1,5 +1,3 @@
-import { UserRole } from "@prisma/client"
-
 export type SideNavItem = {
   title: string
   path: string
@@ -14,10 +12,10 @@ export type MenuItemWithSubMenuProps = {
 }
 
 // UserStatus enum
-export type UserStatus = "ACTIVE" | "INACTIVE" | "SUSPENDED"
+export type UserStatus = "ACTIVE" | "INACTIVE"
 
 // UserRole enum
-// export type UserRole = "ADMIN" | "USER";
+export type UserRole = "ADMIN" | "USER"
 
 // User model
 export type User = {
@@ -33,7 +31,7 @@ export type User = {
   phone: string | null
   shippingAddress?: string | null
   billingAddress?: string | null
-  orders?: []
+  orders?: Order[]
 }
 
 // Product model
