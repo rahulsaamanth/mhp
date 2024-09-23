@@ -12,7 +12,7 @@ import { useCurrentUser } from "@/hooks/use-current-user"
 import { UserButton } from "./auth/user-button"
 
 const Header = () => {
-  const user = useCurrentUser()
+  // const user = useCurrentUser()
 
   const scrolled = useScroll(5)
   const selectedLayout = useSelectedLayoutSegment()
@@ -31,7 +31,7 @@ const Header = () => {
     >
       <div className="flex h-full items-center justify-between px-10">
         <div className="flex items-center space-x-4">
-          <Link href="/dashboard" className="lg:hidden">
+          <Link href="/dashboard" className="xl:hidden">
             <span className="text-xl font-bold">
               <img src="./logo.jpg" alt="logo" height={100} width={100} />
             </span>
@@ -49,7 +49,7 @@ const Header = () => {
           </div>
         </> */}
 
-        <div className="hidden md:block">
+        <div className="hidden xl:block">
           <UserButton />
         </div>
       </div>
