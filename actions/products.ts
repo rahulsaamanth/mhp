@@ -8,13 +8,6 @@ type Product = InferSelectModel<typeof product>
 
 export const getProducts = async (): Promise<Product[]> => {
   try {
-    // return await db.product.findMany({
-    //   include: {
-    //     orderDetails: true,
-    //     category: true,
-    //     brand: true,
-    //   },
-    // })
     return await db.query.product
       .findMany({
         with: {

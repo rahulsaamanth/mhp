@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
@@ -11,6 +11,7 @@
         justify-content: center;
         width: 100%;
         height: 100vh;
+        background: black;
       }
 
       .logo {
@@ -25,12 +26,12 @@
       .p {
         width: 100px;
         height: 100px;
-        border: 20px solid green;
+        border: 20px solid white;
         position: relative;
       }
       .m {
         width: 150px;
-        border-right: 10px solid green;
+        border-right: 10px solid white;
       }
       .m::before,
       .m::after,
@@ -38,7 +39,7 @@
         content: "";
         width: 20px;
         height: 80px;
-        background-color: green;
+        background-color: white;
         position: absolute;
       }
       .m::before {
@@ -50,7 +51,7 @@
         bottom: 0;
       }
       .h {
-        border-left: 10px solid green;
+        border-left: 10px solid white;
       }
       .h::before {
         bottom: 0;
@@ -64,11 +65,11 @@
         position: absolute;
         top: -70px;
         left: 0;
-        box-shadow: 0 -20px 0 20px green;
-        border-bottom: solid 20px white;
+        box-shadow: 0 -20px 0 20px white;
+        border-bottom: solid 20px black;
       }
       .p {
-        border-left: 10px solid green;
+        border-left: 10px solid white;
       }
 
       .p::before {
@@ -78,17 +79,17 @@
         height: 50px;
         left: 60px;
         bottom: 25px;
-        background-color: green;
+        background-color: white;
       }
       .p::after {
         content: "";
         position: absolute;
         width: 50px;
         height: 20px;
-        background-color: white;
+        background-color: black;
         left: 0;
         bottom: -20px;
-        box-shadow: 0 20px 0 20px green;
+        box-shadow: 0 20px 0 20px white;
       }
     </style>
   </head>
@@ -100,4 +101,3 @@
     </section>
   </body>
 </html>
-

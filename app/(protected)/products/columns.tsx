@@ -35,6 +35,22 @@ export const columns: ColumnDef<any, any>[] = [
   {
     accessorKey: "id",
     header: "id",
+    cell: ({ row }) => {
+      return `#${row.getValue("id")}`
+    },
+  },
+  {
+    accessorKey: "image",
+    header: "Image",
+    cell: ({ row }) => {
+      return (
+        <img
+          src={row.getValue("image")}
+          alt="failed to load product image"
+          className="w-[100px] h-[100px] object-cover"
+        />
+      )
+    },
   },
   {
     accessorKey: "name",
