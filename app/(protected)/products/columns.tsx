@@ -8,6 +8,7 @@ import { formatDate } from "@/lib/formatters"
 import { Icon } from "@iconify/react/dist/iconify.js"
 
 import { ColumnDef } from "@tanstack/react-table"
+import Link from "next/link"
 
 export const columns: ColumnDef<any, any>[] = [
   {
@@ -19,6 +20,7 @@ export const columns: ColumnDef<any, any>[] = [
           (table.getIsSomePageRowsSelected() && "indeterminate")
         }
         onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
+        aria-label="Select all"
         className="mb-3 mr-3"
       />
     ),
@@ -36,7 +38,14 @@ export const columns: ColumnDef<any, any>[] = [
     accessorKey: "id",
     header: "id",
     cell: ({ row }) => {
-      return `#${row.getValue("id")}`
+      return (
+        <Link
+          href={`products/${row.getValue("id")}`}
+          className="hover:underline font-bold text-blue-400"
+        >
+          #{row.getValue("id")}
+        </Link>
+      )
     },
   },
   {

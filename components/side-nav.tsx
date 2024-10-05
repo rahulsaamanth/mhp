@@ -7,6 +7,7 @@ import { usePathname } from "next/navigation"
 import { SIDENAV_ITEMS } from "@/lib/constants"
 import { SideNavItem } from "@/types"
 import { Icon } from "@iconify/react"
+import Image from "next/image"
 
 const SideNav = () => {
   const [openSubMenu, setOpenSubMenu] = useState<string | null>(null)
@@ -23,7 +24,12 @@ const SideNav = () => {
           className="flex h-16 w-full flex-row items-center justify-center space-x-3 border-b border-zinc-200 md:justify-start md:px-6"
         >
           <span className="hidden text-3xl font-bold md:flex">
-            <img src="./logo.jpg" alt="logo" height={100} width={100} />
+            <Image
+              src="/logo.jpg"
+              alt="failed to load logo : side-nav"
+              height={100}
+              width={100}
+            />
           </span>
         </Link>
 

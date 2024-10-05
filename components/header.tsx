@@ -7,13 +7,11 @@ import { useSelectedLayoutSegment } from "next/navigation"
 
 import useScroll from "@/hooks/use-scroll"
 import { cn } from "@/lib/utils"
-import { Icon } from "@iconify/react"
-import { useCurrentUser } from "@/hooks/use-current-user"
+
 import { UserButton } from "./auth/user-button"
+import Image from "next/image"
 
 const Header = () => {
-  // const user = useCurrentUser()
-
   const scrolled = useScroll(5)
   const selectedLayout = useSelectedLayoutSegment()
 
@@ -32,22 +30,14 @@ const Header = () => {
       <div className="flex h-full items-center justify-between px-10">
         <div className="flex items-center space-x-4">
           <Link href="/dashboard" className="xl:hidden">
-            <span className="text-xl font-bold">
-              <img src="./logo.jpg" alt="logo" height={100} width={100} />
-            </span>
+            <Image
+              src="/logo.jpg"
+              alt="failed to load logo : header"
+              width={100}
+              height={100}
+            />
           </Link>
         </div>
-
-        {/* <>
-          <div className="flex items-center gap-4 w-full justify-center">
-            <span>welcome</span>
-
-            <span>
-              <Icon icon="uil:user" />
-            </span>
-            <span>{user?.name}</span>
-          </div>
-        </> */}
 
         <div className="hidden xl:block">
           <UserButton />

@@ -121,6 +121,10 @@ export function DataTable<TData, TValue>({
     debugHeaders: true,
     debugColumns: false,
   })
+  // const selectedRows = table
+  //   .getSelectedRowModel()
+  //   .rows.map((row) => (row.original as { id: string | number }).id)
+  // console.log(selectedRows)
 
   return (
     <Card className="w-full rounded-md border bg-white shadow-lg shadow-zinc-200 overflow-x-auto">
@@ -136,14 +140,14 @@ export function DataTable<TData, TValue>({
         <section className="w-full flex items-center justify-between gap-10">
           <div className="space-x-6 ml-auto flex items-center justify-between">
             <span className="flex items-center justify-center gap-2 flex-nowrap text-nowrap">
-              <text>Page</text>
+              <span>Page</span>
               <strong>
                 {table.getState().pagination.pageIndex + 1} of{" "}
                 {table.getPageCount()}
               </strong>
             </span>
             <span className="flex items-center justify-center gap-2">
-              <text>Show</text>
+              <span>Show</span>
               <select
                 value={table.getState().pagination.pageSize}
                 onChange={(e) => table.setPageSize(Number(e.target.value))}
