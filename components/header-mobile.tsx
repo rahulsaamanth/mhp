@@ -177,7 +177,7 @@ const MenuItemWithSubMenu: React.FC<MenuItemWithSubMenuProps> = ({
           </div>
         </button>
       </MenuItem>
-      <div className="ml-2 mt-2 flex flex-col space-y-2">
+      <div className="ml-2 mt-2 flex flex-col space-y-2 ">
         {subMenuOpen && (
           <>
             {item.subMenuItems?.map((subItem, subIdx) => {
@@ -186,7 +186,7 @@ const MenuItemWithSubMenu: React.FC<MenuItemWithSubMenuProps> = ({
                   <Link
                     href={subItem.path}
                     onClick={() => toggleOpen()}
-                    className={` ${
+                    className={`ml-2 hover:font-semibold ${
                       subItem.path === pathname ? "font-bold" : ""
                     }`}
                   >

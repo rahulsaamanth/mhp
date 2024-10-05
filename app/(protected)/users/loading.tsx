@@ -1,7 +1,7 @@
 export default function Loading() {
   return (
     <div>
-      <text className="text-cnter">Loading...</text>
+      <span className="text-cnter">Loading...</span>
     </div>
   )
 }
