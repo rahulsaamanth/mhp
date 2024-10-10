@@ -38,14 +38,7 @@ export const columns: ColumnDef<any, any>[] = [
     accessorKey: "id",
     header: "id",
     cell: ({ row }) => {
-      return (
-        <Link
-          href={`products/${row.getValue("id")}`}
-          className="hover:underline font-bold text-blue-400"
-        >
-          #{row.getValue("id")}
-        </Link>
-      )
+      return <span>{row.getValue("id")}</span>
     },
   },
   {
@@ -82,9 +75,12 @@ export const columns: ColumnDef<any, any>[] = [
     },
     cell: ({ row }) => {
       return (
-        <span className="text-nowrap inline-block w-[200px] overflow-hidden text-ellipsis">
+        <Link
+          href={`products/${row.getValue("id")}`}
+          className="hover:underline font-bold text-blue-400 text-ellipsis text-nowrap inline-block w-[200px] overflow-hidden "
+        >
           {row.getValue("name")}
-        </span>
+        </Link>
       )
     },
     filterFn: "equalsString",
@@ -96,30 +92,7 @@ export const columns: ColumnDef<any, any>[] = [
 
     filterFn: "equalsString",
   },
-  {
-    accessorKey: "createdAt",
-    header: ({ column }) => {
-      return (
-        <Button
-          variant="ghost"
-          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-          className="p-0 cursor-default"
-        >
-          Created
-          <Icon
-            width="14"
-            height="14"
-            className="ml-2"
-            icon="ph:caret-up-down"
-          />
-        </Button>
-      )
-    },
-    cell: ({ row }) => {
-      const date: Date = row.getValue("createdAt")
-      return <span className="text-nowrap">{formatDate(date)}</span>
-    },
-  },
+
   {
     accessorKey: "stock",
     header: "Stock",
