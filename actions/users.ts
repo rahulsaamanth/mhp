@@ -10,29 +10,6 @@ export type UsersWithOrders = User & {
 
 export const getUsers = async () => {
   try {
-    // const _users = await db
-    //   .select()
-    //   .from(user)
-    //   .where(eq(user.role, "USER"))
-    //   .leftJoin(order, eq(user.id, order.userId))
-
-    // const usersWithOrders: UsersWithOrders[] = _users.reduce(
-    //   (acc: (User & { orders: Order[] })[], { User, Order }) => {
-    //     const existingUser = acc.find((u) => u.id === User.id)
-    //     if (existingUser) {
-    //       if (Order) {
-    //         existingUser.orders.push(Order)
-    //       }
-    //     } else {
-    //       acc.push({
-    //         ...User,
-    //         orders: Order ? [Order] : [],
-    //       })
-    //     }
-    //     return acc
-    //   },
-    //   []
-    // )
     const usersWithOrders = await db.query.user.findMany({
       where: eq(user.role, "USER"),
       with: {
