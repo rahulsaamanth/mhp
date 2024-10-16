@@ -1,7 +1,7 @@
 import { getUserById } from "@/utils/user"
 
 const UserPage = async ({ params }: { params: { id: string } }) => {
-  const data = await getUserById(Number(params.id))
+  const data = await getUserById(params.id)
 
   if (!data) return <h1>User not found!</h1>
   return (

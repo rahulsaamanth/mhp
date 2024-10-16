@@ -1,14 +1,15 @@
-import { relations } from "drizzle-orm/relations"
+import { Many, relations } from "drizzle-orm/relations"
 import {
   user,
   account,
   twoFactorConfirmation,
   category,
   product,
-  brand,
+  manufacturer,
   order,
   orderDetails,
   review,
+  productVariant,
 } from "./schema"
 
 export const accountRelations = relations(account, ({ one }) => ({
@@ -52,15 +53,27 @@ export const productRelations = relations(product, ({ one, many }) => ({
     fields: [product.categoryId],
     references: [category.id],
   }),
-  brand: one(brand, {
-    fields: [product.brandId],
-    references: [brand.id],
+  manufacturer: one(manufacturer, {
+    fields: [product.manufacturerId],
+    references: [manufacturer.id],
   }),
-  orderDetails: many(orderDetails),
+
   reviews: many(review),
+  variants: many(productVariant),
 }))
 
-export const brandRelations = relations(brand, ({ many }) => ({
+export const productVariantRelations = relations(
+  productVariant,
+  ({ one, many }) => ({
+    product: one(product, {
+      fields: [productVariant.productId],
+      references: [product.id],
+    }),
+    orderDetails: many(orderDetails),
+  })
+)
+
+export const manufacturerRelations = relations(manufacturer, ({ many }) => ({
   products: many(product),
 }))
 
@@ -77,9 +90,9 @@ export const orderDetailsRelations = relations(orderDetails, ({ one }) => ({
     fields: [orderDetails.orderId],
     references: [order.id],
   }),
-  product: one(product, {
-    fields: [orderDetails.productId],
-    references: [product.id],
+  product: one(productVariant, {
+    fields: [orderDetails.productVariantId],
+    references: [productVariant.id],
   }),
 }))
 

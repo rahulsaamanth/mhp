@@ -31,17 +31,12 @@ export const {
   },
   events: {
     async linkAccount({ user }) {
-      // await db.user.update({
-      //   where: { id: Number(user.id) },
-      //   data: { emailVerified: new Date() },
-      // })
-
       await db
         .update(User)
         .set({
           emailVerified: new Date(),
         })
-        .where(eq(User.id, Number(user.id)))
+        .where(eq(User.id, user.id!))
         .execute()
     },
   },
@@ -50,7 +45,7 @@ export const {
     async signIn({ user, account }) {
       if (account?.provider !== "credentials") return true
 
-      const existingUser = await getUserById(Number(user.id))
+      const existingUser = await getUserById(user.id!)
 
       if (!existingUser?.emailVerified) return false
 
@@ -71,6 +66,10 @@ export const {
           .where(eq(twoFactorConfirmation.id, _twoFactorConfirmation.id))
           .execute()
       }
+      await db
+        .update(User)
+        .set({ lastActive: new Date() })
+        .where(eq(User.id, user.id!))
 
       return true
     },
@@ -99,10 +98,10 @@ export const {
     async jwt({ token }) {
       if (!token.sub) return token
 
-      const existingUser = await getUserById(Number(token.sub))
+      const existingUser = await getUserById(token.sub)
       if (!existingUser) return token
 
-      const existingAccount = await getAccountByUserId(Number(existingUser.id))
+      const existingAccount = await getAccountByUserId(existingUser.id)
 
       token.isOAuth = !!existingAccount
       token.name = existingUser.name

@@ -11,13 +11,13 @@ export const getProducts = async (): Promise<Product[]> => {
     return await db.query.product
       .findMany({
         with: {
-          orderDetails: true,
           category: true,
-          brand: true,
+          manufacturer: true,
+          variants: true,
         },
       })
       .execute()
   } catch (error) {
-    throw new Error(`Failed to get users: ${(error as Error).message}`)
+    throw new Error(`Failed to get prodcuts: ${(error as Error).message}`)
   }
 }

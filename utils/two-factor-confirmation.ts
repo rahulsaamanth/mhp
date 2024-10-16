@@ -2,7 +2,7 @@ import { db } from "@/drizzle/db"
 import { twoFactorConfirmation } from "@/drizzle/schema"
 import { eq } from "drizzle-orm"
 
-export const getTwoFactorConfirmationByUserId = async (userId: number) => {
+export const getTwoFactorConfirmationByUserId = async (userId: string) => {
   try {
     // const twoFactorConfirmation = await db.twoFactorConfirmation.findUnique({
     //   where: { userId },
