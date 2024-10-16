@@ -82,9 +82,9 @@ export function DataTable<TData, TValue>({
   columns,
   data,
 }: DataTableProps<TData, TValue>) {
-  const [sorting, setSorting] = useState<SortingState>([
-    { id: "createdAt", desc: true },
-  ])
+  // const [sorting, setSorting] = useState<SortingState>([
+  //   { id: "createdAt", desc: true },
+  // ])
 
   // const rerender = useReducer(() => ({}), {})[1]
 
@@ -100,14 +100,14 @@ export function DataTable<TData, TValue>({
     columns,
     getCoreRowModel: getCoreRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
-    onSortingChange: setSorting,
+    // onSortingChange: setSorting,
     getSortedRowModel: getSortedRowModel(),
     onColumnFiltersChange: setColumnFilters,
     getFilteredRowModel: getFilteredRowModel(),
     onColumnVisibilityChange: setColumnVisibility,
     onRowSelectionChange: setRowSelection,
     state: {
-      sorting,
+      // sorting,
       columnFilters,
       globalFilter,
       columnVisibility,

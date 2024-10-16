@@ -10,106 +10,107 @@ EXCEPTION
  WHEN duplicate_object THEN null;
 END $$;
 --> statement-breakpoint
-DO $$ BEGIN
- CREATE TYPE "public"."UserStatus" AS ENUM('ACTIVE', 'INACTIVE');
-EXCEPTION
- WHEN duplicate_object THEN null;
-END $$;
---> statement-breakpoint
 CREATE TABLE IF NOT EXISTS "Account" (
-	"id" serial PRIMARY KEY NOT NULL,
-	"userId" integer NOT NULL,
+	"id" varchar(32) PRIMARY KEY NOT NULL,
+	"userId" varchar(32) NOT NULL,
 	"type" text NOT NULL,
 	"provider" text NOT NULL,
 	"providerAccountId" text NOT NULL,
 	"refresh_token" text,
 	"access_token" text,
-	"expires_at" integer,
+	"expires_at" varchar(32),
 	"token_type" text,
 	"scope" text,
 	"id_token" text,
 	"session_state" text
 );
 --> statement-breakpoint
-CREATE TABLE IF NOT EXISTS "Brand" (
-	"id" serial PRIMARY KEY NOT NULL,
+CREATE TABLE IF NOT EXISTS "Category" (
+	"id" varchar(32) PRIMARY KEY NOT NULL,
+	"name" text NOT NULL,
+	"parentId" varchar(32)
+);
+--> statement-breakpoint
+CREATE TABLE IF NOT EXISTS "Manufacturer" (
+	"id" varchar(32) PRIMARY KEY NOT NULL,
 	"name" text NOT NULL
 );
 --> statement-breakpoint
-CREATE TABLE IF NOT EXISTS "Category" (
-	"id" serial PRIMARY KEY NOT NULL,
-	"name" text NOT NULL,
-	"parentId" integer
-);
---> statement-breakpoint
 CREATE TABLE IF NOT EXISTS "Order" (
-	"id" serial PRIMARY KEY NOT NULL,
-	"userId" integer NOT NULL,
-	"orderDate" timestamp(3) NOT NULL,
+	"id" varchar(32) PRIMARY KEY NOT NULL,
+	"userId" varchar(32) NOT NULL,
+	"orderDate" timestamp (3) NOT NULL,
 	"orderType" "OrderType" DEFAULT 'ONLINE' NOT NULL,
 	"totalAmountPaid" double precision NOT NULL
 );
 --> statement-breakpoint
 CREATE TABLE IF NOT EXISTS "OrderDetails" (
-	"id" serial PRIMARY KEY NOT NULL,
-	"orderId" integer NOT NULL,
-	"productId" integer NOT NULL,
+	"id" varchar(32) PRIMARY KEY NOT NULL,
+	"orderId" varchar(32) NOT NULL,
+	"productVariantId" varchar(32) NOT NULL,
 	"quantity" integer NOT NULL,
 	"unitPrice" double precision NOT NULL
 );
 --> statement-breakpoint
 CREATE TABLE IF NOT EXISTS "PasswordResetToken" (
-	"id" serial PRIMARY KEY NOT NULL,
+	"id" varchar(32) PRIMARY KEY NOT NULL,
 	"email" text NOT NULL,
 	"token" text NOT NULL,
 	"expires" timestamp (3) NOT NULL
 );
 --> statement-breakpoint
 CREATE TABLE IF NOT EXISTS "Product" (
-	"id" serial PRIMARY KEY NOT NULL,
+	"id" varchar(32) PRIMARY KEY NOT NULL,
 	"name" text NOT NULL,
 	"description" text NOT NULL,
-	"price" double precision NOT NULL,
-	"stock" integer NOT NULL,
-	"image" text NOT NULL,
+	"image" text[] NOT NULL,
 	"tags" text[],
-	"type" text NOT NULL,
-	"categoryId" integer NOT NULL,
-	"brandId" integer NOT NULL,
+	"categoryId" varchar(32) NOT NULL,
+	"manufacturerId" varchar(32) NOT NULL,
 	"properties" jsonb
 );
 --> statement-breakpoint
+CREATE TABLE IF NOT EXISTS "ProductVariant" (
+	"id" varchar(32) PRIMARY KEY NOT NULL,
+	"productId" varchar(32) NOT NULL,
+	"variantName" text NOT NULL,
+	"potency" varchar,
+	"packSize" varchar,
+	"price" double precision NOT NULL,
+	"stock" integer NOT NULL
+);
+--> statement-breakpoint
 CREATE TABLE IF NOT EXISTS "Review" (
-	"id" serial PRIMARY KEY NOT NULL,
-	"rating" integer DEFAULT 0 NOT NULL,
+	"id" varchar(32) PRIMARY KEY NOT NULL,
+	"rating" double precision DEFAULT 0 NOT NULL,
 	"comment" text,
-	"userId" integer NOT NULL,
-	"productId" integer NOT NULL,
-	"createdAt" timestamp(3) DEFAULT CURRENT_TIMESTAMP NOT NULL,
-	"updatedAt" timestamp(3) NOT NULL
+	"userId" varchar(32) NOT NULL,
+	"productId" varchar(32) NOT NULL,
+	"createdAt" timestamp (3) DEFAULT CURRENT_TIMESTAMP NOT NULL,
+	"updatedAt" timestamp (3) NOT NULL
 );
 --> statement-breakpoint
 CREATE TABLE IF NOT EXISTS "TwoFactorConfirmation" (
-	"id" serial PRIMARY KEY NOT NULL,
-	"userId" integer NOT NULL
+	"id" varchar(32) PRIMARY KEY NOT NULL,
+	"userId" varchar(32) NOT NULL
 );
 --> statement-breakpoint
 CREATE TABLE IF NOT EXISTS "TwoFactorToken" (
-	"id" serial PRIMARY KEY NOT NULL,
+	"id" varchar(32) PRIMARY KEY NOT NULL,
 	"email" text NOT NULL,
 	"token" text NOT NULL,
 	"expires" timestamp (3) NOT NULL
 );
 --> statement-breakpoint
 CREATE TABLE IF NOT EXISTS "User" (
-	"id" serial PRIMARY KEY NOT NULL,
+	"id" varchar(32) PRIMARY KEY NOT NULL,
 	"name" text,
 	"email" text,
 	"emailVerified" timestamp (3),
 	"image" text,
 	"password" text,
 	"role" "UserRole" DEFAULT 'USER' NOT NULL,
-	"status" "UserStatus" DEFAULT 'ACTIVE' NOT NULL,
+	"lastActive" timestamp (3) DEFAULT CURRENT_TIMESTAMP NOT NULL,
 	"isTwoFactorEnabled" boolean DEFAULT false NOT NULL,
 	"phone" text,
 	"shippingAddress" text,
@@ -119,7 +120,7 @@ CREATE TABLE IF NOT EXISTS "User" (
 );
 --> statement-breakpoint
 CREATE TABLE IF NOT EXISTS "VerificationToken" (
-	"id" serial PRIMARY KEY NOT NULL,
+	"id" varchar(32) PRIMARY KEY NOT NULL,
 	"email" text NOT NULL,
 	"token" text NOT NULL,
 	"expires" timestamp (3) NOT NULL
@@ -150,7 +151,7 @@ EXCEPTION
 END $$;
 --> statement-breakpoint
 DO $$ BEGIN
- ALTER TABLE "OrderDetails" ADD CONSTRAINT "OrderDetails_productId_fkey" FOREIGN KEY ("productId") REFERENCES "public"."Product"("id") ON DELETE restrict ON UPDATE cascade;
+ ALTER TABLE "OrderDetails" ADD CONSTRAINT "OrderDetails_productVariantId_fkey" FOREIGN KEY ("productVariantId") REFERENCES "public"."ProductVariant"("id") ON DELETE restrict ON UPDATE cascade;
 EXCEPTION
  WHEN duplicate_object THEN null;
 END $$;
@@ -162,7 +163,13 @@ EXCEPTION
 END $$;
 --> statement-breakpoint
 DO $$ BEGIN
- ALTER TABLE "Product" ADD CONSTRAINT "Product_brandId_fkey" FOREIGN KEY ("brandId") REFERENCES "public"."Brand"("id") ON DELETE restrict ON UPDATE cascade;
+ ALTER TABLE "Product" ADD CONSTRAINT "Product_manufacturerId_fkey" FOREIGN KEY ("manufacturerId") REFERENCES "public"."Manufacturer"("id") ON DELETE restrict ON UPDATE cascade;
+EXCEPTION
+ WHEN duplicate_object THEN null;
+END $$;
+--> statement-breakpoint
+DO $$ BEGIN
+ ALTER TABLE "ProductVariant" ADD CONSTRAINT "ProductVariant_productId_fkey" FOREIGN KEY ("productId") REFERENCES "public"."Product"("id") ON DELETE cascade ON UPDATE cascade;
 EXCEPTION
  WHEN duplicate_object THEN null;
 END $$;
@@ -186,8 +193,6 @@ EXCEPTION
 END $$;
 --> statement-breakpoint
 CREATE UNIQUE INDEX IF NOT EXISTS "Account_provider_providerAccountId_key" ON "Account" USING btree ("provider","providerAccountId");--> statement-breakpoint
-CREATE INDEX IF NOT EXISTS "orderId" ON "OrderDetails" USING btree ("orderId");--> statement-breakpoint
-CREATE INDEX IF NOT EXISTS "productId" ON "OrderDetails" USING btree ("productId");--> statement-breakpoint
 CREATE UNIQUE INDEX IF NOT EXISTS "PasswordResetToken_email_token_key" ON "PasswordResetToken" USING btree ("email","token");--> statement-breakpoint
 CREATE UNIQUE INDEX IF NOT EXISTS "PasswordResetToken_token_key" ON "PasswordResetToken" USING btree ("token");--> statement-breakpoint
 CREATE UNIQUE INDEX IF NOT EXISTS "TwoFactorConfirmation_userId_key" ON "TwoFactorConfirmation" USING btree ("userId");--> statement-breakpoint

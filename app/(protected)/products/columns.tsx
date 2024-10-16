@@ -3,8 +3,6 @@
 import { Button } from "@/components/ui/button"
 import { Checkbox } from "@/components/ui/checkbox"
 
-import { formatDate } from "@/lib/formatters"
-
 import { Icon } from "@iconify/react/dist/iconify.js"
 
 import { ColumnDef } from "@tanstack/react-table"
@@ -74,31 +72,52 @@ export const columns: ColumnDef<any, any>[] = [
       )
     },
     cell: ({ row }) => {
+      const category = row.original.category
       return (
-        <Link
-          href={`products/${row.getValue("id")}`}
-          className="hover:underline font-bold text-blue-400 text-ellipsis text-nowrap inline-block w-[200px] overflow-hidden "
-        >
-          {row.getValue("name")}
-        </Link>
+        <div className="flex-col flex">
+          <Link
+            href={`products/${row.getValue("id")}`}
+            className="hover:underline font-semibold"
+          >
+            {row.getValue("name")}
+          </Link>
+          <span className="text-sm text-muted-foreground">
+            {category?.name}
+          </span>
+        </div>
       )
     },
     filterFn: "equalsString",
   },
 
   {
-    accessorKey: "price",
+    accessorKey: "variants",
     header: "Price",
-
-    filterFn: "equalsString",
+    cell: ({ row }) => {
+      const varaints = row.original.variants
+      const price1 = varaints[0].price
+      const price2 = varaints.at(-1).price
+      return varaints.length > 1 ? (
+        <span>
+          {price1} - {price2}
+        </span>
+      ) : (
+        <span>{price1}</span>
+      )
+    },
   },
 
   {
-    accessorKey: "stock",
+    accessorKey: "variants",
     header: "Stock",
+    cell: ({ row }) => {
+      const stock = row.original.variants[0].stock
+      return <span>{stock}</span>
+    },
   },
+
   {
-    accessorKey: "category",
+    accessorKey: "manufacturer",
     header: ({ column }) => {
       return (
         <Button
@@ -106,7 +125,7 @@ export const columns: ColumnDef<any, any>[] = [
           onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
           className="p-0 cursor-default"
         >
-          Category
+          Manufacturer
           <Icon
             width="14"
             height="14"
@@ -117,32 +136,7 @@ export const columns: ColumnDef<any, any>[] = [
       )
     },
     cell: ({ row }) => {
-      const category: { id: number; name: string; parentId: number } =
-        row.getValue("category")
-      return <span>{category.name}</span>
-    },
-  },
-  {
-    accessorKey: "brand",
-    header: ({ column }) => {
-      return (
-        <Button
-          variant="ghost"
-          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-          className="p-0 cursor-default"
-        >
-          Brand
-          <Icon
-            width="14"
-            height="14"
-            className="ml-2"
-            icon="ph:caret-up-down"
-          />
-        </Button>
-      )
-    },
-    cell: ({ row }) => {
-      const brand: { id: number; name: string } = row.getValue("brand")
+      const brand: { id: number; name: string } = row.getValue("manufacturer")
       return <span>{brand.name}</span>
     },
   },

@@ -1,5 +1,5 @@
 {
-  "id": "e6262958-fe0a-44fd-a7d5-2d30f4e041f6",
+  "id": "1f23e71a-6c5b-4050-8f86-1320ee5c489a",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "version": "7",
   "dialect": "postgresql",
@@ -10,13 +10,13 @@
       "columns": {
         "id": {
           "name": "id",
-          "type": "serial",
+          "type": "varchar(32)",
           "primaryKey": true,
           "notNull": true
         },
         "userId": {
           "name": "userId",
-          "type": "integer",
+          "type": "varchar(32)",
           "primaryKey": false,
           "notNull": true
         },
@@ -52,7 +52,7 @@
         },
         "expires_at": {
           "name": "expires_at",
-          "type": "integer",
+          "type": "varchar(32)",
           "primaryKey": false,
           "notNull": false
         },
@@ -122,35 +122,13 @@
       "compositePrimaryKeys": {},
       "uniqueConstraints": {}
     },
-    "public.Brand": {
-      "name": "Brand",
-      "schema": "",
-      "columns": {
-        "id": {
-          "name": "id",
-          "type": "serial",
-          "primaryKey": true,
-          "notNull": true
-        },
-        "name": {
-          "name": "name",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true
-        }
-      },
-      "indexes": {},
-      "foreignKeys": {},
-      "compositePrimaryKeys": {},
-      "uniqueConstraints": {}
-    },
     "public.Category": {
       "name": "Category",
       "schema": "",
       "columns": {
         "id": {
           "name": "id",
-          "type": "serial",
+          "type": "varchar(32)",
           "primaryKey": true,
           "notNull": true
         },
@@ -162,7 +140,7 @@
         },
         "parentId": {
           "name": "parentId",
-          "type": "integer",
+          "type": "varchar(32)",
           "primaryKey": false,
           "notNull": false
         }
@@ -186,25 +164,47 @@
       "compositePrimaryKeys": {},
       "uniqueConstraints": {}
     },
+    "public.Manufacturer": {
+      "name": "Manufacturer",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "varchar(32)",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "name": {
+          "name": "name",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {}
+    },
     "public.Order": {
       "name": "Order",
       "schema": "",
       "columns": {
         "id": {
           "name": "id",
-          "type": "serial",
+          "type": "varchar(32)",
           "primaryKey": true,
           "notNull": true
         },
         "userId": {
           "name": "userId",
-          "type": "integer",
+          "type": "varchar(32)",
           "primaryKey": false,
           "notNull": true
         },
         "orderDate": {
           "name": "orderDate",
-          "type": "timestamp(3)",
+          "type": "timestamp (3)",
           "primaryKey": false,
           "notNull": true
         },
@@ -248,19 +248,19 @@
       "columns": {
         "id": {
           "name": "id",
-          "type": "serial",
+          "type": "varchar(32)",
           "primaryKey": true,
           "notNull": true
         },
         "orderId": {
           "name": "orderId",
-          "type": "integer",
+          "type": "varchar(32)",
           "primaryKey": false,
           "notNull": true
         },
-        "productId": {
-          "name": "productId",
-          "type": "integer",
+        "productVariantId": {
+          "name": "productVariantId",
+          "type": "varchar(32)",
           "primaryKey": false,
           "notNull": true
         },
@@ -277,38 +277,7 @@
           "notNull": true
         }
       },
-      "indexes": {
-        "orderId": {
-          "name": "orderId",
-          "columns": [
-            {
-              "expression": "orderId",
-              "isExpression": false,
-              "asc": true,
-              "nulls": "last"
-            }
-          ],
-          "isUnique": false,
-          "concurrently": false,
-          "method": "btree",
-          "with": {}
-        },
-        "productId": {
-          "name": "productId",
-          "columns": [
-            {
-              "expression": "productId",
-              "isExpression": false,
-              "asc": true,
-              "nulls": "last"
-            }
-          ],
-          "isUnique": false,
-          "concurrently": false,
-          "method": "btree",
-          "with": {}
-        }
-      },
+      "indexes": {},
       "foreignKeys": {
         "OrderDetails_orderId_fkey": {
           "name": "OrderDetails_orderId_fkey",
@@ -323,12 +292,12 @@
           "onDelete": "cascade",
           "onUpdate": "cascade"
         },
-        "OrderDetails_productId_fkey": {
-          "name": "OrderDetails_productId_fkey",
+        "OrderDetails_productVariantId_fkey": {
+          "name": "OrderDetails_productVariantId_fkey",
           "tableFrom": "OrderDetails",
-          "tableTo": "Product",
+          "tableTo": "ProductVariant",
           "columnsFrom": [
-            "productId"
+            "productVariantId"
           ],
           "columnsTo": [
             "id"
@@ -346,7 +315,7 @@
       "columns": {
         "id": {
           "name": "id",
-          "type": "serial",
+          "type": "varchar(32)",
           "primaryKey": true,
           "notNull": true
         },
@@ -417,7 +386,7 @@
       "columns": {
         "id": {
           "name": "id",
-          "type": "serial",
+          "type": "varchar(32)",
           "primaryKey": true,
           "notNull": true
         },
@@ -433,21 +402,9 @@
           "primaryKey": false,
           "notNull": true
         },
-        "price": {
-          "name": "price",
-          "type": "double precision",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "stock": {
-          "name": "stock",
-          "type": "integer",
-          "primaryKey": false,
-          "notNull": true
-        },
         "image": {
           "name": "image",
-          "type": "text",
+          "type": "text[]",
           "primaryKey": false,
           "notNull": true
         },
@@ -457,21 +414,15 @@
           "primaryKey": false,
           "notNull": false
         },
-        "type": {
-          "name": "type",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true
-        },
         "categoryId": {
           "name": "categoryId",
-          "type": "integer",
+          "type": "varchar(32)",
           "primaryKey": false,
           "notNull": true
         },
-        "brandId": {
-          "name": "brandId",
-          "type": "integer",
+        "manufacturerId": {
+          "name": "manufacturerId",
+          "type": "varchar(32)",
           "primaryKey": false,
           "notNull": true
         },
@@ -497,17 +448,83 @@
           "onDelete": "restrict",
           "onUpdate": "cascade"
         },
-        "Product_brandId_fkey": {
-          "name": "Product_brandId_fkey",
+        "Product_manufacturerId_fkey": {
+          "name": "Product_manufacturerId_fkey",
           "tableFrom": "Product",
-          "tableTo": "Brand",
+          "tableTo": "Manufacturer",
           "columnsFrom": [
-            "brandId"
+            "manufacturerId"
           ],
           "columnsTo": [
             "id"
           ],
           "onDelete": "restrict",
+          "onUpdate": "cascade"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {}
+    },
+    "public.ProductVariant": {
+      "name": "ProductVariant",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "varchar(32)",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "productId": {
+          "name": "productId",
+          "type": "varchar(32)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "variantName": {
+          "name": "variantName",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "potency": {
+          "name": "potency",
+          "type": "varchar",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "packSize": {
+          "name": "packSize",
+          "type": "varchar",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "price": {
+          "name": "price",
+          "type": "double precision",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "stock": {
+          "name": "stock",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "ProductVariant_productId_fkey": {
+          "name": "ProductVariant_productId_fkey",
+          "tableFrom": "ProductVariant",
+          "tableTo": "Product",
+          "columnsFrom": [
+            "productId"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
           "onUpdate": "cascade"
         }
       },
@@ -520,13 +537,13 @@
       "columns": {
         "id": {
           "name": "id",
-          "type": "serial",
+          "type": "varchar(32)",
           "primaryKey": true,
           "notNull": true
         },
         "rating": {
           "name": "rating",
-          "type": "integer",
+          "type": "double precision",
           "primaryKey": false,
           "notNull": true,
           "default": 0
@@ -539,26 +556,26 @@
         },
         "userId": {
           "name": "userId",
-          "type": "integer",
+          "type": "varchar(32)",
           "primaryKey": false,
           "notNull": true
         },
         "productId": {
           "name": "productId",
-          "type": "integer",
+          "type": "varchar(32)",
           "primaryKey": false,
           "notNull": true
         },
         "createdAt": {
           "name": "createdAt",
-          "type": "timestamp(3)",
+          "type": "timestamp (3)",
           "primaryKey": false,
           "notNull": true,
           "default": "CURRENT_TIMESTAMP"
         },
         "updatedAt": {
           "name": "updatedAt",
-          "type": "timestamp(3)",
+          "type": "timestamp (3)",
           "primaryKey": false,
           "notNull": true
         }
@@ -601,13 +618,13 @@
       "columns": {
         "id": {
           "name": "id",
-          "type": "serial",
+          "type": "varchar(32)",
           "primaryKey": true,
           "notNull": true
         },
         "userId": {
           "name": "userId",
-          "type": "integer",
+          "type": "varchar(32)",
           "primaryKey": false,
           "notNull": true
         }
@@ -653,7 +670,7 @@
       "columns": {
         "id": {
           "name": "id",
-          "type": "serial",
+          "type": "varchar(32)",
           "primaryKey": true,
           "notNull": true
         },
@@ -724,7 +741,7 @@
       "columns": {
         "id": {
           "name": "id",
-          "type": "serial",
+          "type": "varchar(32)",
           "primaryKey": true,
           "notNull": true
         },
@@ -766,13 +783,12 @@
           "notNull": true,
           "default": "'USER'"
         },
-        "status": {
-          "name": "status",
-          "type": "UserStatus",
-          "typeSchema": "public",
+        "lastActive": {
+          "name": "lastActive",
+          "type": "timestamp (3)",
           "primaryKey": false,
           "notNull": true,
-          "default": "'ACTIVE'"
+          "default": "CURRENT_TIMESTAMP"
         },
         "isTwoFactorEnabled": {
           "name": "isTwoFactorEnabled",
@@ -840,7 +856,7 @@
       "columns": {
         "id": {
           "name": "id",
-          "type": "serial",
+          "type": "varchar(32)",
           "primaryKey": true,
           "notNull": true
         },
@@ -921,14 +937,6 @@
       "values": [
         "ADMIN",
         "USER"
-      ]
-    },
-    "public.UserStatus": {
-      "name": "UserStatus",
-      "schema": "public",
-      "values": [
-        "ACTIVE",
-        "INACTIVE"
       ]
     }
   },

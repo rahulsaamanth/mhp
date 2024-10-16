@@ -2,7 +2,7 @@ import { db } from "@/drizzle/db"
 import { eq } from "drizzle-orm"
 import { account } from "@/drizzle/schema"
 
-export const getAccountByUserId = async (userId: number) => {
+export const getAccountByUserId = async (userId: string) => {
   try {
     // const account = await db.account.findFirst({
     //   where: { userId },

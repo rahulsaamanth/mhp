@@ -8,7 +8,8 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "format": "prettier --write \"**/*.{js,ts,jsx,tsx}\""
+    "format": "prettier --write \"**/*.{js,ts,jsx,tsx}\"",
+    "db:seed": "tsx drizzle/seed.ts"
   },
   "dependencies": {
     "@auth/core": "^0.34.2",
@@ -72,6 +73,7 @@
     "eslint-plugin-react-hooks": "^4.6.2",
     "prettier": "^3.2.5",
     "tailwindcss": "^3.3.0",
+    "tsx": "^4.19.1",
     "typescript": "5.4.5"
   }
 }

@@ -3,31 +3,55 @@ import {
   varchar,
   timestamp,
   text,
-  integer,
   uniqueIndex,
-  serial,
   boolean,
   foreignKey,
   doublePrecision,
   jsonb,
   index,
   pgEnum,
+  integer,
 } from "drizzle-orm/pg-core"
 import { InferSelectModel, sql } from "drizzle-orm"
 
+const ENTITY_PREFIX = {
+  USER: "USR",
+  PRODUCT: "PRD",
+  ORDER: "ORD",
+  CATEGORY: "CAT",
+  MANUFACTURER: "MFR",
+  REVIEW: "REV",
+  ACCOUNT: "ACC",
+  VERIFICATION: "VRF",
+  PASSWORD_RESET: "PWD",
+  TWO_FACTOR: "2FA",
+  ORDER_DETAILS: "ODT",
+} as const
+
+export const customId = (name: string, prefix: string) =>
+  varchar(name, { length: 32 })
+    .notNull()
+    .primaryKey()
+    .$defaultFn(() => {
+      const timestamp = Date.now().toString(36)
+      const random = Math.random().toString(36).substring(2, 6)
+      const sequence = Math.floor(Math.random() * 1000)
+        .toString()
+        .padStart(3, "0")
+      return `${prefix}_${timestamp}${random}${sequence}`
+    })
+
 export const orderType = pgEnum("OrderType", ["OFFLINE", "ONLINE"])
 export const userRole = pgEnum("UserRole", ["ADMIN", "USER"])
-export const userStatus = pgEnum("UserStatus", ["ACTIVE", "INACTIVE"])
 
 export type UserRole = (typeof userRole.enumValues)[number]
-
 export type User = InferSelectModel<typeof user>
 export type Order = InferSelectModel<typeof order>
 
 export const verificationToken = pgTable(
   "VerificationToken",
   {
-    id: serial("id").primaryKey().notNull(),
+    id: customId("id", ENTITY_PREFIX.VERIFICATION),
     email: text("email").notNull(),
     token: text("token").notNull(),
     expires: timestamp("expires", { precision: 3, mode: "date" }).notNull(),
@@ -50,7 +74,7 @@ export const verificationToken = pgTable(
 export const passwordResetToken = pgTable(
   "PasswordResetToken",
   {
-    id: serial("id").primaryKey().notNull(),
+    id: customId("id", ENTITY_PREFIX.PASSWORD_RESET),
     email: text("email").notNull(),
     token: text("token").notNull(),
     expires: timestamp("expires", { precision: 3, mode: "date" }).notNull(),
@@ -73,7 +97,7 @@ export const passwordResetToken = pgTable(
 export const twoFactorToken = pgTable(
   "TwoFactorToken",
   {
-    id: serial("id").primaryKey().notNull(),
+    id: customId("id", ENTITY_PREFIX.TWO_FACTOR),
     email: text("email").notNull(),
     token: text("token").notNull(),
     expires: timestamp("expires", { precision: 3, mode: "date" }).notNull(),
@@ -96,14 +120,16 @@ export const twoFactorToken = pgTable(
 export const user = pgTable(
   "User",
   {
-    id: serial("id").primaryKey().notNull(),
+    id: customId("id", ENTITY_PREFIX.USER),
     name: text("name"),
     email: text("email"),
     emailVerified: timestamp("emailVerified", { precision: 3, mode: "date" }),
     image: text("image"),
     password: text("password"),
     role: userRole("role").default("USER").notNull(),
-    status: userStatus("status").default("ACTIVE").notNull(),
+    lastActive: timestamp("lastActive", { precision: 3, mode: "date" })
+      .default(sql`CURRENT_TIMESTAMP`)
+      .notNull(),
     isTwoFactorEnabled: boolean("isTwoFactorEnabled").default(false).notNull(),
     phone: text("phone"),
     shippingAddress: text("shippingAddress"),
@@ -126,14 +152,14 @@ export const user = pgTable(
 export const account = pgTable(
   "Account",
   {
-    id: serial("id").primaryKey().notNull(),
-    userId: integer("userId").notNull(),
+    id: customId("id", ENTITY_PREFIX.ACCOUNT),
+    userId: varchar("userId", { length: 32 }).notNull(),
     type: text("type").notNull(),
     provider: text("provider").notNull(),
     providerAccountId: text("providerAccountId").notNull(),
     refreshToken: text("refresh_token"),
     accessToken: text("access_token"),
-    expiresAt: integer("expires_at"),
+    expiresAt: varchar("expires_at", { length: 32 }),
     tokenType: text("token_type"),
     scope: text("scope"),
     idToken: text("id_token"),
@@ -162,8 +188,8 @@ export const account = pgTable(
 export const twoFactorConfirmation = pgTable(
   "TwoFactorConfirmation",
   {
-    id: serial("id").primaryKey().notNull(),
-    userId: integer("userId").notNull(),
+    id: customId("id", ENTITY_PREFIX.TWO_FACTOR),
+    userId: varchar("userId", { length: 32 }).notNull(),
   },
   (table) => {
     return {
@@ -185,9 +211,9 @@ export const twoFactorConfirmation = pgTable(
 export const category = pgTable(
   "Category",
   {
-    id: serial("id").primaryKey().notNull(),
+    id: customId("id", ENTITY_PREFIX.CATEGORY),
     name: text("name").notNull(),
-    parentId: integer("parentId"),
+    parentId: varchar("parentId", { length: 32 }),
   },
   (table) => {
     return {
@@ -202,19 +228,21 @@ export const category = pgTable(
   }
 )
 
+export const manufacturer = pgTable("Manufacturer", {
+  id: customId("id", ENTITY_PREFIX.MANUFACTURER),
+  name: text("name").notNull(),
+})
+
 export const product = pgTable(
   "Product",
   {
-    id: serial("id").primaryKey().notNull(),
+    id: customId("id", ENTITY_PREFIX.PRODUCT),
     name: text("name").notNull(),
     description: text("description").notNull(),
-    price: doublePrecision("price").notNull(),
-    stock: integer("stock").notNull(),
-    image: text("image").notNull(),
+    image: text("image").array().notNull(),
     tags: text("tags").array(),
-    type: text("type").notNull(),
-    categoryId: integer("categoryId").notNull(),
-    brandId: integer("brandId").notNull(),
+    categoryId: varchar("categoryId", { length: 32 }).notNull(),
+    manufacturerId: varchar("manufacturerId", { length: 32 }).notNull(),
     properties: jsonb("properties"),
   },
   (table) => {
@@ -226,10 +254,10 @@ export const product = pgTable(
       })
         .onUpdate("cascade")
         .onDelete("restrict"),
-      productBrandIdFkey: foreignKey({
-        columns: [table.brandId],
-        foreignColumns: [brand.id],
-        name: "Product_brandId_fkey",
+      productManufacturerIdFkey: foreignKey({
+        columns: [table.manufacturerId],
+        foreignColumns: [manufacturer.id],
+        name: "Product_manufacturerId_fkey",
       })
         .onUpdate("cascade")
         .onDelete("restrict"),
@@ -237,19 +265,38 @@ export const product = pgTable(
   }
 )
 
-export const brand = pgTable("Brand", {
-  id: serial("id").primaryKey().notNull(),
-  name: text("name").notNull(),
-})
+export const productVariant = pgTable(
+  "ProductVariant",
+  {
+    id: customId("id", ENTITY_PREFIX.PRODUCT + "VAR"),
+    productId: varchar("productId", { length: 32 }).notNull(),
+    variantName: text("variantName").notNull(),
+    potency: varchar("potency"),
+    packSize: varchar("packSize"),
+    price: doublePrecision("price").notNull(),
+    stock: integer("stock").notNull(),
+  },
+  (table) => {
+    return {
+      productVariantProductIdFkey: foreignKey({
+        columns: [table.productId],
+        foreignColumns: [product.id],
+        name: "ProductVariant_productId_fkey",
+      })
+        .onDelete("cascade")
+        .onUpdate("cascade"),
+    }
+  }
+)
 
 export const order = pgTable(
   "Order",
   {
-    id: serial("id").primaryKey().notNull(),
-    userId: integer("userId").notNull(),
+    id: customId("id", ENTITY_PREFIX.ORDER),
+    userId: varchar("userId", { length: 32 }).notNull(),
     orderDate: timestamp("orderDate", {
       precision: 3,
-      mode: "string",
+      mode: "date",
     }).notNull(),
     orderType: orderType("orderType").default("ONLINE").notNull(),
     totalAmountPaid: doublePrecision("totalAmountPaid").notNull(),
@@ -270,19 +317,14 @@ export const order = pgTable(
 export const orderDetails = pgTable(
   "OrderDetails",
   {
-    id: serial("id").primaryKey().notNull(),
-    orderId: integer("orderId").notNull(),
-    productId: integer("productId").notNull(),
+    id: customId("id", ENTITY_PREFIX.ORDER_DETAILS),
+    orderId: varchar("orderId", { length: 32 }).notNull(),
+    productVariantId: varchar("productVariantId", { length: 32 }).notNull(),
     quantity: integer("quantity").notNull(),
     unitPrice: doublePrecision("unitPrice").notNull(),
   },
   (table) => {
     return {
-      orderId: index("orderId").using("btree", table.orderId.asc().nullsLast()),
-      productId: index("productId").using(
-        "btree",
-        table.productId.asc().nullsLast()
-      ),
       orderDetailsOrderIdFkey: foreignKey({
         columns: [table.orderId],
         foreignColumns: [order.id],
@@ -290,10 +332,10 @@ export const orderDetails = pgTable(
       })
         .onUpdate("cascade")
         .onDelete("cascade"),
-      orderDetailsProductIdFkey: foreignKey({
-        columns: [table.productId],
-        foreignColumns: [product.id],
-        name: "OrderDetails_productId_fkey",
+      orderDetailsProductVariantIdFkey: foreignKey({
+        columns: [table.productVariantId],
+        foreignColumns: [productVariant.id],
+        name: "OrderDetails_productVariantId_fkey",
       })
         .onUpdate("cascade")
         .onDelete("restrict"),
@@ -304,17 +346,17 @@ export const orderDetails = pgTable(
 export const review = pgTable(
   "Review",
   {
-    id: serial("id").primaryKey().notNull(),
-    rating: integer("rating").default(0).notNull(),
+    id: customId("id", ENTITY_PREFIX.REVIEW),
+    rating: doublePrecision("rating").default(0).notNull(),
     comment: text("comment"),
-    userId: integer("userId").notNull(),
-    productId: integer("productId").notNull(),
-    createdAt: timestamp("createdAt", { precision: 3, mode: "string" })
+    userId: varchar("userId", { length: 32 }).notNull(),
+    productId: varchar("productId", { length: 32 }).notNull(),
+    createdAt: timestamp("createdAt", { precision: 3, mode: "date" })
       .default(sql`CURRENT_TIMESTAMP`)
       .notNull(),
     updatedAt: timestamp("updatedAt", {
       precision: 3,
-      mode: "string",
+      mode: "date",
     }).notNull(),
   },
   (table) => {

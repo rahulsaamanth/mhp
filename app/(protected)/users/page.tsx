@@ -27,20 +27,19 @@ async function getUserData({
   if (createdAfter) whereClause.push(gte(user.createdAt, createdAfter))
   if (createdBefore) whereClause.push(lte(user.createdAt, createdBefore))
 
-  const [userCount, orderData, usersChartData, userCountByStatus] =
-    await Promise.all([
-      db.select({ count: count() }).from(user),
-      db.select({ totalAmountPaid: sum(order.totalAmountPaid) }).from(order),
-      db
-        .select({ createdAt: user.createdAt })
-        .from(user)
-        .where(and(...whereClause))
-        .orderBy(user.createdAt),
-      db
-        .select({ status: user.status, _count: count() })
-        .from(user)
-        .groupBy(user.status),
-    ])
+  const [userCount, orderData, usersChartData] = await Promise.all([
+    db.select({ count: count() }).from(user),
+    db.select({ totalAmountPaid: sum(order.totalAmountPaid) }).from(order),
+    db
+      .select({ createdAt: user.createdAt })
+      .from(user)
+      .where(and(...whereClause))
+      .orderBy(user.createdAt),
+    // db
+    //   .select({ status: user.status, _count: count() })
+    //   .from(user)
+    //   .groupBy(user.status),
+  ])
 
   const { array, format } = getChartDateArray(
     createdAfter || startOfDay(usersChartData[0].createdAt),
@@ -69,7 +68,7 @@ async function getUserData({
         : (Number(orderData[0].totalAmountPaid) || 0) /
           userCount[0].count /
           100,
-    userCountByStatus,
+    // userCountByStatus,
   }
 }
 
@@ -110,9 +109,9 @@ const UsersPage = async ({
         >
           <UsersByDayChart data={userData.chartData} />
         </ChartCard>
-        <ChartCard title="Customer Count by Status">
+        {/* <ChartCard title="Customer Count by Status">
           <UsersByStatusChart data={userData.userCountByStatus} />
-        </ChartCard>
+        </ChartCard> */}
         <div className="col-span-1 lg:col-span-2 w-full">
           <DataTable data={columnData} columns={columns} />
         </div>
