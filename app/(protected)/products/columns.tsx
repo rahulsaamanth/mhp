@@ -77,7 +77,7 @@ export const columns: ColumnDef<any, any>[] = [
         <div className="flex-col flex">
           <Link
             href={`products/${row.getValue("id")}`}
-            className="hover:underline font-semibold"
+            className="hover:underline font-semibold max-w-48"
           >
             {row.getValue("name")}
           </Link>
@@ -111,8 +111,21 @@ export const columns: ColumnDef<any, any>[] = [
     accessorKey: "variants",
     header: "Stock",
     cell: ({ row }) => {
-      const stock = row.original.variants[0].stock
-      return <span>{stock}</span>
+      const variants = row.original.variants
+      const stocks = variants.map((variant: { stock: number }) => {
+        return variant.stock
+      })
+
+      return (
+        <div className="relative group cursor-default hover:underline">
+          <span>
+            {stocks.reduce((acc: number, stock: number) => acc + stock, 0)}
+          </span>
+          <div className="absolute bottom-8 hidden w-auto text-wrap group-hover:block">
+            <span>[{stocks.join(",")}]</span>
+          </div>
+        </div>
+      )
     },
   },
 

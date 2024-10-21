@@ -107,24 +107,24 @@ export const columns: ColumnDef<UsersWithOrders, any>[] = [
   //     return <span className="text-nowrap">{formatDate(date)}</span>
   //   },
   // },
-  {
-    accessorKey: "status",
-    header: "Status",
-    cell: ({ row }) => {
-      const status = row.getValue("status")
-      return (
-        <div
-          className={cn(
-            "text-green-600 font-bold min-w-fit",
+  // {
+  //   accessorKey: "status",
+  //   header: "Status",
+  //   cell: ({ row }) => {
+  //     const status = row.getValue("status")
+  //     return (
+  //       <div
+  //         className={cn(
+  //           "text-green-600 font-bold min-w-fit",
 
-            { "text-red-600": status === "INACTIVE" }
-          )}
-        >
-          {row.getValue("status")}
-        </div>
-      )
-    },
-  },
+  //           { "text-red-600": status === "INACTIVE" }
+  //         )}
+  //       >
+  //         {row.getValue("status")}
+  //       </div>
+  //     )
+  //   },
+  // },
   {
     accessorKey: "orders",
     header: ({ column }) => {

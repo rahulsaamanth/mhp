@@ -26,7 +26,16 @@ const ENTITY_PREFIX = {
   PASSWORD_RESET: "PWD",
   TWO_FACTOR: "2FA",
   ORDER_DETAILS: "ODT",
+  ADDRESS: "ADDR",
+  PAYMENT: "PYMT",
 } as const
+export const paymentType = pgEnum("PaymentType", [
+  "CREDIT_CARD",
+  "DEBIT_CARD",
+  "UPI",
+  "NET_BANKING",
+  "WALLET",
+])
 
 export const customId = (name: string, prefix: string) =>
   varchar(name, { length: 32 })
@@ -43,6 +52,15 @@ export const customId = (name: string, prefix: string) =>
 
 export const orderType = pgEnum("OrderType", ["OFFLINE", "ONLINE"])
 export const userRole = pgEnum("UserRole", ["ADMIN", "USER"])
+export const deliveryStatus = pgEnum("DeliveryStatus", [
+  "PROCESSING",
+  "SHIPPED",
+  "OUT_FOR_DELIVERY",
+  "DELIVERED",
+  "CANCELLED",
+  "RETURNED",
+])
+export const addressType = pgEnum("AdressType", ["SHIPPING", "BILLING"])
 
 export type UserRole = (typeof userRole.enumValues)[number]
 export type User = InferSelectModel<typeof user>
@@ -132,12 +150,12 @@ export const user = pgTable(
       .notNull(),
     isTwoFactorEnabled: boolean("isTwoFactorEnabled").default(false).notNull(),
     phone: text("phone"),
-    shippingAddress: text("shippingAddress"),
-    billingAddress: text("billingAddress"),
     createdAt: timestamp("createdAt", { precision: 3, mode: "date" })
       .default(sql`CURRENT_TIMESTAMP`)
       .notNull(),
-    updatedAt: timestamp("updatedAt", { precision: 3, mode: "date" }).notNull(),
+    updatedAt: timestamp("updatedAt", { precision: 3, mode: "date" })
+      .default(sql`CURRENT_TIMESTAMP`)
+      .notNull(),
   },
   (table) => {
     return {
@@ -239,7 +257,6 @@ export const product = pgTable(
     id: customId("id", ENTITY_PREFIX.PRODUCT),
     name: text("name").notNull(),
     description: text("description").notNull(),
-    image: text("image").array().notNull(),
     tags: text("tags").array(),
     categoryId: varchar("categoryId", { length: 32 }).notNull(),
     manufacturerId: varchar("manufacturerId", { length: 32 }).notNull(),
@@ -271,6 +288,7 @@ export const productVariant = pgTable(
     id: customId("id", ENTITY_PREFIX.PRODUCT + "VAR"),
     productId: varchar("productId", { length: 32 }).notNull(),
     variantName: text("variantName").notNull(),
+    variantImage: text("variantImage").array().notNull(),
     potency: varchar("potency"),
     packSize: varchar("packSize"),
     price: doublePrecision("price").notNull(),
@@ -289,6 +307,38 @@ export const productVariant = pgTable(
   }
 )
 
+export const paymentMethod = pgTable(
+  "PaymentMethod",
+  {
+    id: customId("id", ENTITY_PREFIX.PAYMENT),
+    userId: varchar("userId", { length: 32 }).notNull(),
+    paymentType: paymentType("paymentType").notNull(),
+    isDefault: boolean("isDefault").default(false).notNull(),
+    paymentDetails: jsonb("paymentDetails").notNull(),
+    displayDetails: jsonb("displayDetails").notNull(),
+    createdAt: timestamp("createdAt", { precision: 3, mode: "date" })
+      .default(sql`CURRENT_TIMESTAMP`)
+      .notNull(),
+    updatedAt: timestamp("updatedAt", { precision: 3, mode: "date" })
+      .default(sql`CURRENT_TIMESTAMP`)
+      .notNull(),
+  },
+  (table) => {
+    return {
+      paymentMethodUserIdFkey: foreignKey({
+        columns: [table.userId],
+        foreignColumns: [user.id],
+        name: "PaymentMethod_userId_fkey",
+      })
+        .onDelete("cascade")
+        .onUpdate("cascade"),
+      userPaymentMethodIndex: index("PaymentMethod_userId_index").on(
+        table.userId
+      ),
+    }
+  }
+)
+
 export const order = pgTable(
   "Order",
   {
@@ -300,6 +350,13 @@ export const order = pgTable(
     }).notNull(),
     orderType: orderType("orderType").default("ONLINE").notNull(),
     totalAmountPaid: doublePrecision("totalAmountPaid").notNull(),
+    deliveryStatus: deliveryStatus("deliveryStatus")
+      .default("PROCESSING")
+      .notNull(),
+    shippingAddressId: varchar("shippingAddress", { length: 32 }).notNull(),
+    billingAddressId: varchar("billingAddress", { length: 32 }).notNull(),
+    // payment method is mandatory, but not required for now.
+    paymentMethodId: varchar("paymentMethodId", { length: 32 }),
   },
   (table) => {
     return {
@@ -310,6 +367,27 @@ export const order = pgTable(
       })
         .onUpdate("cascade")
         .onDelete("cascade"),
+      orderShippingAddressFkey: foreignKey({
+        columns: [table.shippingAddressId],
+        foreignColumns: [address.id],
+        name: "Order_shippingAddress_fkey",
+      })
+        .onUpdate("cascade")
+        .onDelete("restrict"),
+      orderBillingAddressFkey: foreignKey({
+        columns: [table.billingAddressId],
+        foreignColumns: [address.id],
+        name: "Order_billingAddress_fkey",
+      })
+        .onUpdate("cascade")
+        .onDelete("restrict"),
+      orderPaymentMethodFkey: foreignKey({
+        columns: [table.paymentMethodId],
+        foreignColumns: [paymentMethod.id],
+        name: "Order_paymentMethod_fkey",
+      })
+        .onUpdate("cascade")
+        .onDelete("restrict"),
     }
   }
 )
@@ -357,7 +435,9 @@ export const review = pgTable(
     updatedAt: timestamp("updatedAt", {
       precision: 3,
       mode: "date",
-    }).notNull(),
+    })
+      .default(sql`CURRENT_TIMESTAMP`)
+      .notNull(),
   },
   (table) => {
     return {
@@ -375,6 +455,38 @@ export const review = pgTable(
       })
         .onUpdate("cascade")
         .onDelete("cascade"),
+    }
+  }
+)
+
+export const address = pgTable(
+  "Address",
+  {
+    id: customId("id", ENTITY_PREFIX.ADDRESS),
+    userId: varchar("userId", { length: 32 }).notNull(),
+    street: varchar("street", { length: 255 }).notNull(),
+    city: varchar("city", { length: 100 }).notNull(),
+    state: varchar("state", { length: 100 }).notNull(),
+    postalCode: varchar("postalCode", { length: 10 }).notNull(),
+    country: varchar("country", { length: 50 }).default("India").notNull(),
+    type: addressType("addressType").default("SHIPPING").notNull(),
+    createdAt: timestamp("createdAt", { precision: 3, mode: "date" })
+      .default(sql`CURRENT_TIMESTAMP`)
+      .notNull(),
+    updatedAt: timestamp("updatedAt", { precision: 3, mode: "date" })
+      .default(sql`CURRENT_TIMESTAMP`)
+      .notNull(),
+  },
+  (table) => {
+    return {
+      addressUserIdFkey: foreignKey({
+        columns: [table.userId],
+        foreignColumns: [user.id],
+        name: "Address_userId_fkey",
+      })
+        .onDelete("cascade")
+        .onUpdate("cascade"),
+      userAddressIndex: index("Adress_userId_index").on(table.userId),
     }
   }
 )
