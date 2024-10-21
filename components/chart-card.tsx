@@ -43,7 +43,7 @@ export function ChartCard({
   })
 
   function setRange(range: keyof typeof RANGE_OPTIONS | DateRange) {
-    const params = new URLSearchParams(searchParams)
+    const params = new URLSearchParams(Array.from(searchParams))
     if (typeof range === "string") {
       params.set(queryKey as string, range)
       params.delete(`${queryKey}From`)

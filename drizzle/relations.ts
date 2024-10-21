@@ -1,4 +1,4 @@
-import { Many, relations } from "drizzle-orm/relations"
+import { relations } from "drizzle-orm/relations"
 import {
   user,
   account,
@@ -10,6 +10,7 @@ import {
   orderDetails,
   review,
   productVariant,
+  address,
 } from "./schema"
 
 export const accountRelations = relations(account, ({ one }) => ({
@@ -24,6 +25,7 @@ export const userRelations = relations(user, ({ many }) => ({
   twoFactorConfirmations: many(twoFactorConfirmation),
   orders: many(order),
   reviews: many(review),
+  addresses: many(address),
 }))
 
 export const twoFactorConfirmationRelations = relations(
@@ -104,5 +106,12 @@ export const reviewRelations = relations(review, ({ one }) => ({
   product: one(product, {
     fields: [review.productId],
     references: [product.id],
+  }),
+}))
+
+export const adressRelations = relations(address, ({ one }) => ({
+  user: one(user, {
+    fields: [address.userId],
+    references: [user.id],
   }),
 }))
