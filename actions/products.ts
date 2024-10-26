@@ -1,12 +1,25 @@
 "use server"
 
 import { db } from "@/drizzle/db"
-import { product } from "@/drizzle/schema"
+import {
+  category,
+  manufacturer,
+  product,
+  productVariant,
+} from "@/drizzle/schema"
 import { InferSelectModel } from "drizzle-orm"
 
 type Product = InferSelectModel<typeof product>
+type Category = InferSelectModel<typeof category>
+type Manufacturer = InferSelectModel<typeof manufacturer>
+type Variants = InferSelectModel<typeof productVariant>
+type fullProduct = Product & {
+  category: Category
+  manufacturer: Manufacturer
+  variants: Variants[]
+}
 
-export const getProducts = async (): Promise<Product[]> => {
+export const getProducts = async (): Promise<fullProduct[]> => {
   try {
     return await db.query.product
       .findMany({

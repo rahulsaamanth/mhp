@@ -135,7 +135,7 @@ async function seed() {
         },
       },
       {
-        name: "Dr. Reckeweg Natrum Sulphuricum 3X (20g)",
+        name: "Dr. Reckeweg Natrum Sulphuricum",
         description:
           "Natrum sulphuricum regulates the distribution of water and the flow of bile. It removes the excess of water from the blood. It keeps the bile in normal consistency. Natrum sulph is the water removing tissue salt. It helpful for water retention that takes place in the body. An imbalance of sodium sulphate produces edema in the tissues, dry skin with watery eruptions.",
 
@@ -147,7 +147,7 @@ async function seed() {
         },
       },
       {
-        name: "Dr. Reckeweg Magnesia Phosphoricum 6X (20g)",
+        name: "Dr. Reckeweg Magnesia Phosphoricum",
         description:
           "Phosphate of Magnesia is contained in blood-corpuscles, muscles, brain, spinal marrow, nerves, teeth. Disturbance of its molecules results in pains, cramps, paralysis. Magnesia Phosphorica makes up white matter of muscles and nerve. Mag phos is a mineral supplement to restore energy and begin the regeneration of the bodyâ€™s nerves and muscles. A nutrition and functional remedy for nerve tissues.",
 
@@ -159,7 +159,7 @@ async function seed() {
         },
       },
       {
-        name: "SBL Silicea 6X",
+        name: "SBL Silicea",
         description:
           "Silicea is well known as a tissue salt to ripen infections and removes them through the surface. It acts as a blood cleanser and is useful in abscesses, tonsillitis, styes and other infections to promote the formation of pus when an outlet is available. When it is lacking, the nails, hair and bones may become weak. Weakness and poor stamina may be evident in other parts of the body.",
 
@@ -171,7 +171,7 @@ async function seed() {
         },
       },
       {
-        name: "SBL Natrum Sulphuricum 6X",
+        name: "SBL Natrum Sulphuricum",
         description:
           "Natrum sulph regulates the distribution of water and the flow of bile. It removes the excess of water from the blood. It keeps the bile in normal consistency. Natrum sulph is the water removing tissue salt.",
 
@@ -183,7 +183,7 @@ async function seed() {
         },
       },
       {
-        name: "SBL Natrum Muriaticum 200X",
+        name: "SBL Natrum Muriaticum",
         description:
           "It is a mineral with an affinity for fluids, and as it is in nature so it is in the body. It is found predominantly in the extracellular fluids, in striking contrast with the potassium salts.",
 
@@ -222,7 +222,7 @@ async function seed() {
         manufacturerId: manufacturers[0].id,
       },
       {
-        name: "Dr. Reckeweg Bio Combination 1 (20g) Anaemla",
+        name: "Dr. Reckeweg Bio Combination 1 Anaemla",
         description:
           "BC 1- Anaemia Composition of Dr. Reckeweg Bio Combination 1 Calcarea Phosphorica 3x Ferrum Phosphoricum 3x Natrum Muriaticum 6x Kalium Phosphoricum 3x Indications of Dr. Reckeweg Bio Combination 1 Lack of blood or loss of blood from any part of the body General Wasting of tissues Waxy appearance of  Mental Depression, Worry, Physical Exhaustion, Weakness Poor digestion in children.",
 
@@ -231,7 +231,7 @@ async function seed() {
         manufacturerId: manufacturers[1].id,
       },
       {
-        name: "Dr. Reckeweg Bio Combination 2 (20g) Asthama",
+        name: "Dr. Reckeweg Bio Combination 2 Asthama",
         description:
           "BC 2- For breathing problems Composition of Dr. Reckeweg Bio Combination 2 Magnesia -3x Natrum sulphuricum -3x Natrum muriaticum -3x Kalium phosphoricum -3x",
 
@@ -240,7 +240,7 @@ async function seed() {
         manufacturerId: manufacturers[1].id,
       },
       {
-        name: "Dr. Reckeweg Bio Combination 3 (20g) Colic",
+        name: "Dr. Reckeweg Bio Combination 3 Colic",
         description:
           "BC 3- Colic Composition of Dr. Reckeweg Bio Combination 3 Magnesia phosphoricum 3x Natrum sulphuricum 3x Calcarea phosphorica 3x Ferrum phosphoricum 3x",
 
@@ -267,7 +267,7 @@ async function seed() {
         manufacturerId: manufacturers[2].id,
       },
       {
-        name: "SBL Abel Moschus (30ml)",
+        name: "SBL Abel Moschus",
         description:
           "SBL Abel Moschus (Dilution) Also known as: Abel, Abel mosc, Abe mosch | Common Name: Musk mallow | Other Name: Hibiscus Abelmoschus | Potency: 30 CH | Weight: 82 gms | Dimensions: 3.5 cm x 3.5 cm x 9.5 cm.",
 
@@ -276,7 +276,7 @@ async function seed() {
         manufacturerId: manufacturers[0].id,
       },
       {
-        name: "SBL Abel Moschus 1X (Q) (30ml)",
+        name: "SBL Abel Moschus",
         description:
           "SBL Abel Moschus (Mother Tincture) Common Name: Musk mallow | Other Name: Hibiscus Abelmoschus Causes & Symptoms: Sleepiness, dysphagia, oedema of hands and legs.",
 
@@ -303,7 +303,7 @@ async function seed() {
         manufacturerId: manufacturers[3].id,
       },
       {
-        name: "Hapdco Nokrack Cream (25g)",
+        name: "Hapdco Nokrack Cream",
         description: "For cracked heels, chaped hands and dry skin.",
 
         tags: ["PersonalCare", "Foot", "homeopathy", "Cosmetics", "Hapdco"],
@@ -311,7 +311,7 @@ async function seed() {
         manufacturerId: manufacturers[4].id,
       },
       {
-        name: "Allen Immunity Booster Tablet (25)",
+        name: "Allen Immunity Booster Tablet",
         description:
           "Allen Immunity Booster Tablet is a homeopathic tablet that helps boost the bodyâ€™s defense mechanism and helps combat various bacteria or viruses that cause diseases. It helps in maintaining general wellness. It helps to build stamina. It can also be used to manage common cold, cough or flu. It has no side effects . Pregnant women should consult a physician before taking this medicine.",
 
@@ -334,7 +334,7 @@ async function seed() {
         manufacturerId: manufacturers[5].id,
       },
       {
-        name: "Adven Babyson Drops (30ml)",
+        name: "Adven Babyson Drops",
         description:
           "Adven Babyson Drops is a well-balanced tonic for children. This product helps to improve the appetite and helps in the overall growth. It promotes better assimilation of calcium, iron, phosphorus, and potassium.",
 
@@ -406,7 +406,9 @@ async function seed() {
       {
         productId: products[1].id,
         variantName: "Natrum Sulphuricum - 3X - 20gms",
-        variantImage: [],
+        variantImage: [
+          "https://healthyghar.com/wp-content/uploads/2022/04/Natrum-Sulphuricum-3X-20g-2.jpg",
+        ],
         packSize: "20gms",
         potency: "3X",
         price: 165,
@@ -415,7 +417,9 @@ async function seed() {
       {
         productId: products[2].id,
         variantName: "Magnesia Phosphoricum - 6X - 20gms",
-        variantImage: [],
+        variantImage: [
+          "https://healthyghar.com/wp-content/uploads/2022/04/Magnesia-Phosphoricum-6X-20g-1.jpg",
+        ],
         packSize: "20gms",
         potency: "6X",
         price: 165,
@@ -424,7 +428,9 @@ async function seed() {
       {
         productId: products[3].id,
         variantName: "Silicea 6X - 25gms",
-        variantImage: [],
+        variantImage: [
+          "https://healthyghar.com/wp-content/uploads/2022/04/Untitled-design-2023-01-10T171125.911-600x600.jpg",
+        ],
         packSize: "25gms",
         potency: "6X",
         price: 90,
@@ -433,7 +439,9 @@ async function seed() {
       {
         productId: products[3].id,
         variantName: "Silicea 6X - 450gms",
-        variantImage: [],
+        variantImage: [
+          "https://healthyghar.com/wp-content/uploads/2022/04/Untitled-design-2023-01-10T171009.897.jpg",
+        ],
         packSize: "450gms",
         potency: "6X",
         price: 650,
@@ -442,7 +450,9 @@ async function seed() {
       {
         productId: products[4].id,
         variantName: "Natrum Sulphuricum 6X - 25gms",
-        variantImage: [],
+        variantImage: [
+          "https://healthyghar.com/wp-content/uploads/2022/04/Untitled-design-2023-01-23T125320.248-600x600.jpg",
+        ],
         packSize: "25gms",
         potency: "6X",
         price: 90,
@@ -451,7 +461,9 @@ async function seed() {
       {
         productId: products[4].id,
         variantName: "Natrum Sulphuricum 6X - 450gms",
-        variantImage: [],
+        variantImage: [
+          "https://healthyghar.com/wp-content/uploads/2022/04/Untitled-design-2023-01-23T125237.527.jpg",
+        ],
         packSize: "450gms",
         potency: "6X",
         price: 650,
@@ -460,7 +472,9 @@ async function seed() {
       {
         productId: products[5].id,
         variantName: "Natrum Muriaticum 200X",
-        variantImage: [],
+        variantImage: [
+          "https://healthyghar.com/wp-content/uploads/2022/04/Untitled-design-2022-11-28T175811.277-600x600.jpg",
+        ],
         packSize: "25gms",
         potency: "200X",
         price: 90,
@@ -469,7 +483,9 @@ async function seed() {
       {
         productId: products[5].id,
         variantName: "Natrum Muriaticum 200X",
-        variantImage: [],
+        variantImage: [
+          "https://healthyghar.com/wp-content/uploads/2022/04/Untitled-design-2022-11-28T175915.259.jpg",
+        ],
         packSize: "450gms",
         potency: "200X",
         price: 650,
@@ -478,7 +494,9 @@ async function seed() {
       {
         productId: products[6].id,
         variantName: "Bio Combination 10",
-        variantImage: [],
+        variantImage: [
+          "https://healthyghar.com/wp-content/uploads/2022/04/Bio-Combination-10-25g.jpg",
+        ],
         packSize: "25gms",
         price: 90,
         stock: 15,
@@ -486,7 +504,9 @@ async function seed() {
       {
         productId: products[6].id,
         variantName: "Bio Combination 10",
-        variantImage: [],
+        variantImage: [
+          "https://healthyghar.com/wp-content/uploads/2022/04/Bio-Combination-10-450g.jpg",
+        ],
         packSize: "450gms",
         price: 650,
         stock: 10,
@@ -494,7 +514,9 @@ async function seed() {
       {
         productId: products[7].id,
         variantName: "Bio Combination 11",
-        variantImage: [],
+        variantImage: [
+          "https://healthyghar.com/wp-content/uploads/2022/04/Bio-Combination-11-25g.jpg",
+        ],
         packSize: "25gms",
         price: 90,
         stock: 12,
@@ -502,7 +524,9 @@ async function seed() {
       {
         productId: products[7].id,
         variantName: "Bio Combination 11",
-        variantImage: [],
+        variantImage: [
+          "https://healthyghar.com/wp-content/uploads/2022/04/Bio-Combination-11-450g.jpg",
+        ],
         packSize: "450gms",
         price: 650,
         stock: 8,
@@ -510,7 +534,9 @@ async function seed() {
       {
         productId: products[8].id,
         variantName: "Bio Combination 12",
-        variantImage: [],
+        variantImage: [
+          "https://healthyghar.com/wp-content/uploads/2022/04/Bio-Combination-12-25g.jpg",
+        ],
         packSize: "25gms",
         price: 90,
         stock: 10,
@@ -518,7 +544,9 @@ async function seed() {
       {
         productId: products[8].id,
         variantName: "Bio Combination 12",
-        variantImage: [],
+        variantImage: [
+          "https://healthyghar.com/wp-content/uploads/2022/04/Bio-Combination-12-450g.jpg",
+        ],
         packSize: "450gms",
         price: 650,
         stock: 5,
@@ -526,28 +554,36 @@ async function seed() {
       {
         productId: products[9].id,
         variantName: "Bio Combination 1 - (20g)",
-        variantImage: [],
+        variantImage: [
+          "https://healthyghar.com/wp-content/uploads/2022/04/Bio-Combination-1-20g-1.jpg",
+        ],
         price: 165,
         stock: 15,
       },
       {
         productId: products[10].id,
         variantName: "Bio Combination 2 (20g)",
-        variantImage: [],
+        variantImage: [
+          "https://healthyghar.com/wp-content/uploads/2022/04/Bio-Combination-2-20g-1.jpg",
+        ],
         price: 165,
         stock: 12,
       },
       {
         productId: products[11].id,
         variantName: "Bio Combination 3 (20g)",
-        variantImage: [],
+        variantImage: [
+          "https://healthyghar.com/wp-content/uploads/2022/04/Bio-Combination-3-20g-1.jpg",
+        ],
         price: 165,
         stock: 8,
       },
       {
         productId: products[12].id,
         variantName: "Bio Combination 20 - 20gms",
-        variantImage: [],
+        variantImage: [
+          "https://healthyghar.com/wp-content/uploads/2022/04/Untitled-design-2022-09-17T130234.631-600x600.jpg",
+        ],
         packSize: "20gms",
         price: 85,
         stock: 10,
@@ -555,7 +591,9 @@ async function seed() {
       {
         productId: products[12].id,
         variantName: "Bio Combination 20 - 550gms",
-        variantImage: [],
+        variantImage: [
+          "https://healthyghar.com/wp-content/uploads/2022/04/Untitled-design-2022-09-17T130335.154.jpg",
+        ],
         packSize: "550gms",
         price: 730,
         stock: 5,
@@ -563,7 +601,9 @@ async function seed() {
       {
         productId: products[13].id,
         variantName: "Bio Combination 21 - 20gms",
-        variantImage: [],
+        variantImage: [
+          "https://healthyghar.com/wp-content/uploads/2022/04/Untitled-design-2022-09-17T125304.548-150x171.jpg",
+        ],
         packSize: "20gms",
         price: 85,
         stock: 13,
@@ -571,7 +611,9 @@ async function seed() {
       {
         productId: products[13].id,
         variantName: "Bio Combination 21 - 550gms",
-        variantImage: [],
+        variantImage: [
+          "https://healthyghar.com/wp-content/uploads/2022/04/Untitled-design-2022-09-17T125340.481.jpg",
+        ],
         packSize: "550gms",
         price: 730,
         stock: 8,
@@ -579,7 +621,9 @@ async function seed() {
       {
         productId: products[14].id,
         variantName: "Abel Moschus - (30ml)",
-        variantImage: [],
+        variantImage: [
+          "https://healthyghar.com/wp-content/uploads/2022/05/SBL-Abel-Moschus-1M-1000-CH-30ml.png",
+        ],
         packSize: "30gms",
         potency: "1000CH",
         price: 130,
@@ -588,7 +632,9 @@ async function seed() {
       {
         productId: products[14].id,
         variantName: "Abel Moschus - (30ml)",
-        variantImage: [],
+        variantImage: [
+          "https://healthyghar.com/wp-content/uploads/2022/05/SBL-Abel-Moschus-200-CH-30ml.png",
+        ],
         packSize: "30gms",
         potency: "200CH",
         price: 90,
@@ -597,7 +643,9 @@ async function seed() {
       {
         productId: products[14].id,
         variantName: "Abel Moschus - (30ml)",
-        variantImage: [],
+        variantImage: [
+          "https://healthyghar.com/wp-content/uploads/2022/05/SBL-Abel-Moschus-30-CH-30ml.png",
+        ],
         packSize: "30gms",
         potency: "30CH",
         price: 85,
@@ -606,7 +654,9 @@ async function seed() {
       {
         productId: products[14].id,
         variantName: "Abel Moschus - (30ml)",
-        variantImage: [],
+        variantImage: [
+          "https://healthyghar.com/wp-content/uploads/2022/05/SBL-Abel-Moschus-6-CH-30ml.png",
+        ],
         packSize: "30gms",
         potency: "6CH",
         price: 85,
@@ -615,7 +665,9 @@ async function seed() {
       {
         productId: products[15].id,
         variantName: "Moschus 1X (Q) - (30ml)",
-        variantImage: [],
+        variantImage: [
+          "https://healthyghar.com/wp-content/uploads/2022/05/ABEL-MOSCHUS-30-ML-150x150.png",
+        ],
         packSize: "30gms",
         price: 115,
         stock: 15,
@@ -623,14 +675,18 @@ async function seed() {
       {
         productId: products[16].id,
         variantName: "Acne Aid (Twin Pack)",
-        variantImage: [],
+        variantImage: [
+          "https://healthyghar.com/wp-content/uploads/2023/03/Untitled-design-2023-03-11T193215.898-600x600.jpg",
+        ],
         price: 290,
         stock: 12,
       },
       {
         productId: products[17].id,
         variantName: "sunny hair removal cream - 100gms",
-        variantImage: [],
+        variantImage: [
+          "https://healthyghar.com/wp-content/uploads/2022/04/bakson-hair-removel-100.jpg",
+        ],
         packSize: "100gms",
         price: 155,
         stock: 10,
@@ -638,7 +694,9 @@ async function seed() {
       {
         productId: products[17].id,
         variantName: "sunny hair removal cream - 60gms",
-        variantImage: [],
+        variantImage: [
+          "https://healthyghar.com/wp-content/uploads/2022/04/bakson-hair-removel-60-1.jpg",
+        ],
         packSize: "60gms",
         price: 95,
         stock: 13,
@@ -646,7 +704,9 @@ async function seed() {
       {
         productId: products[18].id,
         variantName: "Nokrack Cream - (25g)",
-        variantImage: [],
+        variantImage: [
+          "https://healthyghar.com/wp-content/uploads/2022/04/hapdco-nocrack-cream-150x171.jpg",
+        ],
         packSize: "25gms",
         price: 80,
         stock: 14,
@@ -654,7 +714,9 @@ async function seed() {
       {
         productId: products[19].id,
         variantName: "Immunity Booster Tablet (25)",
-        variantImage: [],
+        variantImage: [
+          "https://healthyghar.com/wp-content/uploads/2022/08/Allen-Immunity-Booster-Tablet-25gms-600x600.jpg",
+        ],
         packSize: "25Tab",
         price: 155,
         stock: 11,
@@ -662,7 +724,9 @@ async function seed() {
       {
         productId: products[20].id,
         variantName: "Multi Vitamins - 30 Tablets",
-        variantImage: [],
+        variantImage: [
+          "https://healthyghar.com/wp-content/uploads/2022/09/Allen-Multi-Vitamins-30tab.jpg",
+        ],
         packSize: "30Tab",
         price: 385,
         stock: 12,
@@ -670,7 +734,9 @@ async function seed() {
       {
         productId: products[20].id,
         variantName: "Multi Vitamins - 60 Tablets",
-        variantImage: [],
+        variantImage: [
+          "https://healthyghar.com/wp-content/uploads/2022/09/Allen-Multi-Vitamins-60tab-1.jpg",
+        ],
         packSize: "60Tab",
         price: 775,
         stock: 10,
@@ -678,7 +744,9 @@ async function seed() {
       {
         productId: products[21].id,
         variantName: "Babyson Drops - (30ml)",
-        variantImage: [],
+        variantImage: [
+          "https://healthyghar.com/wp-content/uploads/2022/05/BABYSON-DROP-600x600.jpg",
+        ],
         packSize: "30ml",
         price: 85,
         stock: 13,
