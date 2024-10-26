@@ -40,12 +40,14 @@ export const columns: ColumnDef<any, any>[] = [
     },
   },
   {
-    accessorKey: "image",
+    accessorKey: "images",
     header: "Image",
     cell: ({ row }) => {
+      const imageSrc: string[] = row.getValue("images")
+
       return (
         <img
-          src={row.getValue("image")}
+          src={imageSrc[0]}
           alt="failed to load product image"
           className="w-[100px] h-[100px] object-cover"
         />
@@ -91,13 +93,13 @@ export const columns: ColumnDef<any, any>[] = [
   },
 
   {
-    accessorKey: "variants",
+    accessorKey: "prices",
     header: "Price",
     cell: ({ row }) => {
-      const varaints = row.original.variants
-      const price1 = varaints[0].price
-      const price2 = varaints.at(-1).price
-      return varaints.length > 1 ? (
+      const prices: number[] = row.getValue("prices")
+      const price1 = prices[0]
+      const price2 = prices.at(-1)
+      return prices.length > 1 ? (
         <span>
           {price1} - {price2}
         </span>
@@ -108,24 +110,10 @@ export const columns: ColumnDef<any, any>[] = [
   },
 
   {
-    accessorKey: "variants",
+    accessorKey: "stock",
     header: "Stock",
     cell: ({ row }) => {
-      const variants = row.original.variants
-      const stocks = variants.map((variant: { stock: number }) => {
-        return variant.stock
-      })
-
-      return (
-        <div className="relative group cursor-default hover:underline">
-          <span>
-            {stocks.reduce((acc: number, stock: number) => acc + stock, 0)}
-          </span>
-          <div className="absolute bottom-8 hidden w-auto text-wrap group-hover:block">
-            <span>[{stocks.join(",")}]</span>
-          </div>
-        </div>
-      )
+      return <span>{row.getValue("stock")}</span>
     },
   },
 
@@ -149,8 +137,8 @@ export const columns: ColumnDef<any, any>[] = [
       )
     },
     cell: ({ row }) => {
-      const brand: { id: number; name: string } = row.getValue("manufacturer")
-      return <span>{brand.name}</span>
+      const brand: string = row.getValue("manufacturer")
+      return <span>{brand}</span>
     },
   },
 ]
