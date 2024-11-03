@@ -1,3 +1,7 @@
+import { type Row } from "@tanstack/react-table"
+import { type SQL } from "drizzle-orm"
+import { DataTableConfig } from "./config/data-table"
+
 export type SideNavItem = {
   title: string
   path: string
@@ -84,4 +88,47 @@ export type OrderDetails = {
   productId: string
   quantity: number
   unitPrice: number
+}
+
+export interface Option {
+  label: string
+  value: string
+  icon?: React.ComponentType<{ clascName?: string }>
+  count?: number
+}
+
+export type ColumnType = DataTableConfig["columnTypes"][number]
+
+export type FilterOperator = DataTableConfig["globalOperators"][number]
+
+export type JoinOperator = DataTableConfig["joinOperators"][number]["value"]
+export interface DataTableFilterField<TData> {
+  id: keyof TData
+  label: string
+  placeholder?: string
+  options?: Option[]
+}
+
+export interface DataTableAdvancedFilterField<TData>
+  extends DataTableFilterField<TData> {
+  type: ColumnType
+}
+
+export interface FilterCondition<TData> {
+  id: keyof TData
+  value: string | string[]
+  type: ColumnType
+  operator: FilterOperator
+}
+
+export interface DataTableRowAction<TData> {
+  row: Row<TData>
+  type: "update" | "delete"
+}
+
+export interface QueryBuilderOpts {
+  where?: SQL
+  orderBy?: SQL
+  distinct?: boolean
+  nullish?: boolean
 }

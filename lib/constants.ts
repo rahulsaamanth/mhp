@@ -49,3 +49,7 @@ export const SIDENAV_ITEMS: SideNavItem[] = [
     icon: "material-symbols:settings-outline",
   },
 ]
+
+export const unknownError = "An unknown error occurred. Please try again later."
+
+export const databasePrefix = "shadcn"

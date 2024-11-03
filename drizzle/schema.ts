@@ -151,11 +151,11 @@ export const user = pgTable(
     isTwoFactorEnabled: boolean("isTwoFactorEnabled").default(false).notNull(),
     phone: text("phone"),
     createdAt: timestamp("createdAt", { precision: 3, mode: "date" })
-      .default(sql`CURRENT_TIMESTAMP`)
+      .defaultNow()
       .notNull(),
     updatedAt: timestamp("updatedAt", { precision: 3, mode: "date" })
       .default(sql`CURRENT_TIMESTAMP`)
-      .notNull(),
+      .$onUpdate(() => new Date()),
   },
   (table) => {
     return {
@@ -260,6 +260,12 @@ export const product = pgTable(
     tags: text("tags").array(),
     categoryId: varchar("categoryId", { length: 32 }).notNull(),
     manufacturerId: varchar("manufacturerId", { length: 32 }).notNull(),
+    createdAt: timestamp("createdAt", { mode: "string" })
+      .defaultNow()
+      .notNull(),
+    updatedAt: timestamp("updatedAt")
+      .default(sql`current_timestamp`)
+      .$onUpdate(() => new Date()),
     properties: jsonb("properties"),
   },
   (table) => {
@@ -321,7 +327,7 @@ export const paymentMethod = pgTable(
       .notNull(),
     updatedAt: timestamp("updatedAt", { precision: 3, mode: "date" })
       .default(sql`CURRENT_TIMESTAMP`)
-      .notNull(),
+      .$onUpdate(() => new Date()),
   },
   (table) => {
     return {
@@ -432,12 +438,9 @@ export const review = pgTable(
     createdAt: timestamp("createdAt", { precision: 3, mode: "date" })
       .default(sql`CURRENT_TIMESTAMP`)
       .notNull(),
-    updatedAt: timestamp("updatedAt", {
-      precision: 3,
-      mode: "date",
-    })
+    updatedAt: timestamp("updatedAt", { precision: 3, mode: "date" })
       .default(sql`CURRENT_TIMESTAMP`)
-      .notNull(),
+      .$onUpdate(() => new Date()),
   },
   (table) => {
     return {
@@ -475,7 +478,7 @@ export const address = pgTable(
       .notNull(),
     updatedAt: timestamp("updatedAt", { precision: 3, mode: "date" })
       .default(sql`CURRENT_TIMESTAMP`)
-      .notNull(),
+      .$onUpdate(() => new Date()),
   },
   (table) => {
     return {
