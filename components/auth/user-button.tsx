@@ -18,7 +18,12 @@ export const UserButton = () => {
     <DropdownMenu>
       <DropdownMenuTrigger className="rounded-full border-2 focus-visible:invisible">
         <Avatar className="outline-none">
-          <AvatarImage src={user?.image || ""} />
+          <AvatarImage
+            src={
+              user?.image ||
+              "https://media.licdn.com/dms/image/v2/D4D0BAQGgmhTnU6j3eQ/company-logo_200_200/company-logo_200_200/0/1703768636553/8ase_logo?e=1739404800&v=beta&t=-lVnJP_MlKg8acV8w3kMLC14qd0mVd-XpOpKov2iOW0"
+            }
+          />
           <AvatarFallback className="bg-sky-500">
             <Icon
               icon="fa:user"

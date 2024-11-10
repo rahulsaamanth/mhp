@@ -5,8 +5,8 @@ export type DataTableConfig = typeof dataTableConfig
 export const dataTableConfig = {
   featureFlags: [
     {
-      label: "Advanced filter",
-      value: "advancedFilter" as const,
+      label: "Advanced table",
+      value: "advancedTable" as const,
       icon: MixIcon,
       tooltipTitle: "Toggle advanced filter",
       tooltipDescription: "An airtable like query builder to filter rows.",

@@ -24,7 +24,7 @@ export const updateUser = async (values: z.infer<typeof SettingsSchema>) => {
     return { error: "Unauthorized" }
   }
 
-  const dbUser = await getUserById(Number(_user.id!))
+  const dbUser = await getUserById(_user.id!)
 
   if (!dbUser) {
     return { error: "Unauthorized" }
@@ -40,7 +40,7 @@ export const updateUser = async (values: z.infer<typeof SettingsSchema>) => {
   if (values.email && values.email !== _user.email) {
     const existingUser = await getUserByEmail(values.email)
 
-    if (existingUser && existingUser.id !== Number(_user.id)) {
+    if (existingUser && existingUser.id !== _user.id) {
       return { error: "Email already in use!" }
     }
 

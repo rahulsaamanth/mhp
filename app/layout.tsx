@@ -4,6 +4,8 @@ import { SessionProvider } from "next-auth/react"
 import "./styles/globals.css"
 import { auth } from "@/auth"
 import { Toaster } from "@/components/ui/sonner"
+import { NuqsAdapter } from "nuqs/adapters/next/app"
+
 // import { Providers } from "@/lib/providers"
 
 // import { GeistSans } from "geist/font/sans"
@@ -31,7 +33,7 @@ export default async function RootLayout({
         <body>
           <Toaster richColors theme="light" toastOptions={{}} />
           {/* <Providers>{children}</Providers> */}
-          {children}
+          <NuqsAdapter>{children}</NuqsAdapter>
         </body>
       </html>
     </SessionProvider>

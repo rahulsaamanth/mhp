@@ -19,7 +19,7 @@ type fullProduct = Product & {
   variants: Variants[]
 }
 
-export const getProducts = async (): Promise<fullProduct[]> => {
+export const getProductsWithFullDetials = async (): Promise<fullProduct[]> => {
   try {
     return await db.query.product
       .findMany({

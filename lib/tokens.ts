@@ -119,5 +119,5 @@ export const generateVerificationToken = async (email: string) => {
     .returning()
     .execute()
 
-  return _verificationToken
+  return _verificationToken!
 }
