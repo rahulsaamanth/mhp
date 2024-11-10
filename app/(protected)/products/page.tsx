@@ -1,42 +1,61 @@
-// import { getProducts } from "@/actions/products"
-import { getProducts } from "../_lib/queries"
-import { DataTable } from "@/components/tables/data-table"
-import { columns } from "./columns"
+import { type SearchParams } from "@/types"
+import { searchParamsCache } from "./_lib/validations"
+import { getValidFilters } from "@/lib/data-table"
+import { getProducts } from "./_lib/queries"
+import { Shell } from "@/components/shell"
+import { FeatureFlagsProvider } from "./_components/feature-flags-provider"
+import * as React from "react"
+import { Skeleton } from "@/components/ui/skeleton"
+import { DateRangePicker } from "@/components/date-range-picker"
+import { DataTableSkeleton } from "@/components/data-table/data-table-skeleton"
+import { ProductsTable } from "./_components/products-table"
+import { getProductsWithFullDetials } from "@/actions/products"
+import { pause } from "@/utils/pause"
+interface ProductPageProps {
+  searchParams: Promise<SearchParams>
+}
 
-const ProductsPage = async () => {
-  // const products = await getProducts()
-  // const tableData = products.map((product) => {
-  //   return {
-  //     id: product.id,
-  //     name: product.name,
-  //     description: product.description,
-  //     tags: product.tags,
-  //     category: product.category.name,
-  //     manufacturer: product.manufacturer.name,
-  //     prices: product.variants.map((variant) => variant.price),
-  //     stock: product.variants.reduce((acc, variant) => acc + variant.stock, 0),
-  //     potencies: product.variants.map((variant) => variant.potency),
-  //     images: product.variants.map((variant) => variant.variantImage),
-  //   }
-  // })
-  const input = {
-    flags: [],
-    page: 1,
-    perPage: 10,
-    sort: {
-      column: "createdAt",
-      order: "desc",
-    },
-    name: "",
-    filters: [],
-    joinOperator: "and",
-  }
-  const products = await getProducts(input)
-  console.log(products)
+export default async function ProductPage(props: ProductPageProps) {
+  const searchParams = await props.searchParams
+  const search = searchParamsCache.parse(searchParams)
+
+  const validFilters = getValidFilters(search.filters)
+
+  const productsPromise = getProducts({
+    ...search,
+    filters: validFilters,
+  })
+
+  const productsWithFullDetials = await getProductsWithFullDetials()
+
+  console.log(productsWithFullDetials.map((product) => product.variants))
+
+  await pause(2000)
   return (
-    <div className="w-full py-10">
-      {/* <DataTable data={tableData} columns={columns} /> */}
-    </div>
+    <Shell className="gap-2">
+      <FeatureFlagsProvider>
+        <React.Suspense fallback={<Skeleton className="h-7 w-52" />}>
+          <DateRangePicker
+            triggerSize="sm"
+            triggerClassName="ml-auto w-56 sm:w-60"
+            align="end"
+            shallow={false}
+          />
+        </React.Suspense>
+        <React.Suspense
+          fallback={
+            <DataTableSkeleton
+              columnCount={6}
+              searchableColumnCount={1}
+              filterableColumnCount={2}
+              cellWidths={["10rem", "40rem", "12rem", "12rem", "8rem", "8rem"]}
+              shrinkZero
+            />
+          }
+        >
+          <ProductsTable promise={productsPromise} />
+        </React.Suspense>
+      </FeatureFlagsProvider>
+    </Shell>
   )
 }
-export default ProductsPage

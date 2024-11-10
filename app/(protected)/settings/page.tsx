@@ -116,7 +116,7 @@ const SettingsPage = () => {
       body: file,
     })
     const fileUrl = url.split("?")[0]
-    return fileUrl
+    return fileUrl as string
   }
 
   const onSubmit = async (values: z.infer<typeof SettingsSchema>) => {

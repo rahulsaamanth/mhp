@@ -1,7 +1,3 @@
-/**
- * @see https://github.com/ethanniser/NextMaster/blob/main/src/lib/unstable-cache.ts
- */
-
 import { cache } from "react"
 import { unstable_cache as next_unstable_cache } from "next/cache"
 

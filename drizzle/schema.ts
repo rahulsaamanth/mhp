@@ -493,3 +493,5 @@ export const address = pgTable(
     }
   }
 )
+
+export type Product = typeof product.$inferSelect
