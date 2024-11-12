@@ -16,8 +16,6 @@ import { DataTableAdvancedToolbar } from "@/components/data-table/data-table-adv
 import { ProductsTableToolbarActions } from "./products-table-toobar-actions"
 import { DataTableToolbar } from "@/components/data-table/data-table-toolbar"
 import { DeleteProductsDialog } from "./delete-products-dialog"
-import { pause } from "@/utils/pause"
-import { PauseCircle } from "lucide-react"
 
 interface ProductTableProps {
   promise: Promise<Awaited<ReturnType<typeof getProducts>>>

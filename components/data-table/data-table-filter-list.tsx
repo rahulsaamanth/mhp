@@ -11,6 +11,7 @@ import type {
 import { type Table } from "@tanstack/react-table"
 import {
   CalendarIcon,
+  Check,
   ChevronsUpDown,
   GripVertical,
   ListFilter,
@@ -27,6 +28,14 @@ import { useDebouncedCallback } from "@/hooks/use-debounced-callback"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Calendar } from "@/components/ui/calendar"
+import {
+  Command,
+  CommandEmpty,
+  CommandGroup,
+  CommandInput,
+  CommandItem,
+  CommandList,
+} from "@/components/ui/command"
 import {
   FacetedFilter,
   FacetedFilterContent,
@@ -542,8 +551,9 @@ export function DataTableFilterList<TData>({
         <PopoverContent
           id={`${id}-filter-dialog`}
           align="start"
+          collisionPadding={16}
           className={cn(
-            "flex w-[36rem] origin-[var(--radix-popover-content-transform-origin)] flex-col p-4",
+            "flex w-[calc(100vw-theme(spacing.12))] min-w-60 origin-[var(--radix-popover-content-transform-origin)] flex-col p-4 sm:w-[36rem]",
             filters.length > 0 ? "gap-3.5" : "gap-2"
           )}
         >
@@ -562,6 +572,7 @@ export function DataTableFilterList<TData>({
               const filterId = `${id}-filter-${filter.rowId}`
               const joinOperatorListboxId = `${filterId}-join-operator-listbox`
               const fieldListboxId = `${filterId}-field-listbox`
+              const fieldTriggerId = `${filterId}-field-trigger`
               const operatorListboxId = `${filterId}-operator-listbox`
               const inputId = `${filterId}-input`
 
@@ -605,41 +616,78 @@ export function DataTableFilterList<TData>({
                         </span>
                       )}
                     </div>
-                    <Select
-                      value={filter.id}
-                      onValueChange={(value: StringKeyOf<TData>) => {
-                        const column = filterFields.find(
-                          (col) => col.id === value
-                        )
-                        if (column) {
-                          updateFilter({
-                            rowId: filter.rowId,
-                            field: {
-                              id: value,
-                              type: column.type,
-                              operator: getDefaultFilterOperator(column.type),
-                            },
-                          })
+                    <Popover modal>
+                      <PopoverTrigger asChild>
+                        <Button
+                          id={fieldTriggerId}
+                          variant="outline"
+                          size="sm"
+                          role="combobox"
+                          aria-label="Select filter field"
+                          aria-controls={fieldListboxId}
+                          className="h-8 w-32 justify-between gap-2 rounded focus:outline-none focus:ring-1 focus:ring-ring"
+                        >
+                          <span className="truncate">
+                            {filterFields.find(
+                              (field) => field.id === filter.id
+                            )?.label ?? "Select field"}
+                          </span>
+                          <ChevronsUpDown className="size-4 shrink-0 opacity-50" />
+                        </Button>
+                      </PopoverTrigger>
+                      <PopoverContent
+                        id={fieldListboxId}
+                        align="start"
+                        className="w-40 p-0"
+                        onCloseAutoFocus={() =>
+                          document.getElementById(fieldTriggerId)?.focus()
                         }
-                      }}
-                    >
-                      <SelectTrigger
-                        aria-label="Select filter field"
-                        aria-controls={fieldListboxId}
-                        className="h-8 w-32 rounded"
                       >
-                        <div className="truncate">
-                          <SelectValue />
-                        </div>
-                      </SelectTrigger>
-                      <SelectContent id={fieldListboxId}>
-                        {filterFields.map((col) => (
-                          <SelectItem key={col.id} value={col.id}>
-                            {col.label}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
+                        <Command>
+                          <CommandInput placeholder="Search fields..." />
+                          <CommandList>
+                            <CommandEmpty>No fields found.</CommandEmpty>
+                            <CommandGroup>
+                              {filterFields.map((field) => (
+                                <CommandItem
+                                  key={field.id}
+                                  value={field.id}
+                                  onSelect={(value) => {
+                                    const column = filterFields.find(
+                                      (col) => col.id === value
+                                    )
+                                    if (column) {
+                                      updateFilter({
+                                        rowId: filter.rowId,
+                                        field: {
+                                          id: value as StringKeyOf<TData>,
+                                          type: column.type,
+                                          operator: getDefaultFilterOperator(
+                                            column.type
+                                          ),
+                                        },
+                                      })
+                                    }
+                                  }}
+                                >
+                                  <span className="mr-1.5 truncate">
+                                    {field.label}
+                                  </span>
+                                  <Check
+                                    className={cn(
+                                      "ml-auto size-4 shrink-0",
+                                      field.id === filter.id
+                                        ? "opacity-100"
+                                        : "opacity-0"
+                                    )}
+                                  />
+                                </CommandItem>
+                              ))}
+                            </CommandGroup>
+                          </CommandList>
+                        </Command>
+                      </PopoverContent>
+                    </Popover>
                     <Select
                       value={filter.operator}
                       onValueChange={(value: FilterOperator) =>
