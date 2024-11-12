@@ -33,7 +33,6 @@ async function seed() {
         phone: "_1234567890",
         isTwoFactorEnabled: false,
         image: "",
-        updatedAt: new Date(),
       },
       {
         name: "Jane Smith",
@@ -45,10 +44,15 @@ async function seed() {
         phone: "+1122334455",
         isTwoFactorEnabled: false,
         image: "",
-        updatedAt: new Date(),
       },
     ])
     .returning()
+
+  console.log(users)
+  if (users.length === 0) {
+    console.error("Error: No users created. Aborting the seeding process.")
+    return
+  }
 
   const addresses = await db
     .insert(schema.address)
@@ -84,11 +88,11 @@ async function seed() {
   const subCategories = await db
     .insert(schema.category)
     .values([
-      { name: "Biochemics", parentId: mainCategories[0].id },
-      { name: "Biocombinations", parentId: mainCategories[0].id },
-      { name: "Dilutions", parentId: mainCategories[0].id },
-      { name: "Mothertinctures", parentId: mainCategories[0].id },
-      { name: "Cosmetics", parentId: mainCategories[0].id },
+      { name: "Biochemics", parentId: mainCategories[0]?.id },
+      { name: "Biocombinations", parentId: mainCategories[0]?.id },
+      { name: "Dilutions", parentId: mainCategories[0]?.id },
+      { name: "Mothertinctures", parentId: mainCategories[0]?.id },
+      { name: "Cosmetics", parentId: mainCategories[0]?.id },
     ])
     .returning()
 
@@ -800,6 +804,7 @@ async function seed() {
   ])
 
   console.log("✅ Seeding completed!")
+  process.exit(0)
 }
 
 seed().catch((e) => {

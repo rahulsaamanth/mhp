@@ -26,8 +26,10 @@ export async function getProducts(input: GetProductsSchema) {
           ? advancedWhere
           : and(
               input.name ? ilike(product.name, `%${product.name}%`) : undefined,
-              fromDate ? gte(product.createdAt, String(fromDate)) : undefined,
-              toDate ? lte(product.createdAt, String(toDate)) : undefined
+              fromDate
+                ? gte(product.createdAt, fromDate.toISOString())
+                : undefined,
+              toDate ? lte(product.createdAt, toDate.toISOString()) : undefined
             )
 
         const orderBy =

@@ -70,6 +70,7 @@ export function DataTableAdvancedToolbar<TData>({
         filterFields={filterFields}
         debounceMs={debounceMs}
         shallow={shallow}
+        table={table}
       />
       <div className="flex items-center gap-2">
         {children}

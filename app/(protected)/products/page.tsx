@@ -9,8 +9,8 @@ import { Skeleton } from "@/components/ui/skeleton"
 import { DateRangePicker } from "@/components/date-range-picker"
 import { DataTableSkeleton } from "@/components/data-table/data-table-skeleton"
 import { ProductsTable } from "./_components/products-table"
-import { getProductsWithFullDetials } from "@/actions/products"
-import { pause } from "@/utils/pause"
+// import { getProductsWithFullDetials } from "@/actions/products"
+
 interface ProductPageProps {
   searchParams: Promise<SearchParams>
 }
@@ -26,11 +26,6 @@ export default async function ProductPage(props: ProductPageProps) {
     filters: validFilters,
   })
 
-  const productsWithFullDetials = await getProductsWithFullDetials()
-
-  console.log(productsWithFullDetials.map((product) => product.variants))
-
-  await pause(2000)
   return (
     <Shell className="gap-2">
       <FeatureFlagsProvider>
