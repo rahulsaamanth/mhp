@@ -201,10 +201,12 @@ export function DataTableFilterList<TData>({
               typeof filter.value === "string" ? filter.value : undefined
             }
             onChange={(event) =>
-              updateFilter({
-                rowId: filter.rowId,
-                field: { value: event.target.value },
-                debounced: true,
+              React.startTransition(() => {
+                updateFilter({
+                  rowId: filter.rowId,
+                  field: { value: event.target.value },
+                  debounced: false,
+                })
               })
             }
           />

@@ -1,4 +1,4 @@
-import { MixIcon, SquareIcon } from "@radix-ui/react-icons"
+import { Pickaxe, SquareSquare } from "lucide-react"
 
 export type DataTableConfig = typeof dataTableConfig
 
@@ -7,14 +7,14 @@ export const dataTableConfig = {
     {
       label: "Advanced table",
       value: "advancedTable" as const,
-      icon: MixIcon,
-      tooltipTitle: "Toggle advanced filter",
-      tooltipDescription: "An airtable like query builder to filter rows.",
+      icon: Pickaxe,
+      tooltipTitle: "Toggle advanced table",
+      tooltipDescription: "A filter and sort builder to filter and sort rows.",
     },
     {
       label: "Floating bar",
       value: "floatingBar" as const,
-      icon: SquareIcon,
+      icon: SquareSquare,
       tooltipTitle: "Toggle floating bar",
       tooltipDescription: "A floating bar that sticks to the top of the table.",
     },
@@ -62,6 +62,10 @@ export const dataTableConfig = {
   joinOperators: [
     { label: "And", value: "and" as const },
     { label: "Or", value: "or" as const },
+  ],
+  sortOrders: [
+    { label: "Asc", value: "asc" as const },
+    { label: "Desc", value: "desc" as const },
   ],
   columnTypes: [
     "text",

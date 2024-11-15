@@ -4,11 +4,10 @@ import { DrizzleAdapter } from "@auth/drizzle-adapter"
 import { getUserByEmail, getUserById } from "./utils/user"
 import { getTwoFactorConfirmationByUserId } from "./utils/two-factor-confirmation"
 import { getAccountByUserId } from "./utils/account"
-// import { db } from "./db/db"
+
 import { db } from "@/drizzle/db"
 import { user as User, twoFactorConfirmation, UserRole } from "./drizzle/schema"
 import { eq } from "drizzle-orm"
-import Credentials from "@auth/core/providers/credentials"
 
 import authConfig from "./auth.config"
 
@@ -111,27 +110,7 @@ export const {
       return token
     },
   },
-  adapter: DrizzleAdapter(db),
+  adapter: DrizzleAdapter(db) as any,
   session: { strategy: "jwt" },
-  // providers: [
-  //   Credentials({
-  //     async authorize(credentials) {
-  //       const validatedFields = LoginSchema.safeParse(credentials)
-  //       if (validatedFields.success) {
-  //         const { email, password } = validatedFields.data
-  //         const user = await getUserByEmail(email)
-  //         if (!user || !user.password) return null
-  //         const passwordMatch = await bcrypt.compare(password, user.password)
-  //         if (passwordMatch)
-  //           return {
-  //             ...user,
-  //             id: user.id.toString(),
-  //           }
-  //       }
-  //       return null
-  //     },
-  //   }),
-  // ],
-  // trustHost: true,
   ...authConfig,
 })
