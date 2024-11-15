@@ -6,10 +6,6 @@ import { auth } from "@/auth"
 import { Toaster } from "@/components/ui/sonner"
 import { NuqsAdapter } from "nuqs/adapters/next/app"
 
-// import { Providers } from "@/lib/providers"
-
-// import { GeistSans } from "geist/font/sans"
-
 const MontSerrat = Montserrat({
   weight: ["100", "200", "300", "400", "500", "600", "700", "800", "900"],
   subsets: ["latin"],
@@ -29,10 +25,9 @@ export default async function RootLayout({
 
   return (
     <SessionProvider session={session}>
-      <html lang="en" className={MontSerrat.className}>
+      <html lang="en" className={MontSerrat.className} suppressHydrationWarning>
         <body>
           <Toaster richColors theme="light" toastOptions={{}} />
-          {/* <Providers>{children}</Providers> */}
           <NuqsAdapter>{children}</NuqsAdapter>
         </body>
       </html>
