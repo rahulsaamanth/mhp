@@ -1,4 +1,3 @@
-userRole
 import NextAuth, { type DefaultSession } from "next-auth"
 import { userRole } from "./drizzle/schema"
 

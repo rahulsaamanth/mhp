@@ -60,9 +60,6 @@ export const login = async (
 
     if (hasExpired) return { error: "code expired!" }
 
-    // await db.twoFactorToken.delete({
-    //   where: { id: twoFactorToken.id },
-    // })
     await db
       .delete(twoFactorToken)
       .where(eq(twoFactorToken.id, _twoFactorToken.id))
@@ -73,19 +70,10 @@ export const login = async (
     )
 
     if (existingConfirmation)
-      // await db.twoFactorConfirmation.delete({
-      //   where: { id: existingConfirmation.id },
-      // })
       await db
         .delete(twoFactorConfirmation)
         .where(eq(twoFactorConfirmation.id, existingConfirmation.id))
         .execute()
-
-    // await db.twoFactorConfirmation.create({
-    //   data: {
-    //     userId: existingUser?.id,
-    //   },
-    // })
 
     await db
       .insert(twoFactorConfirmation)
