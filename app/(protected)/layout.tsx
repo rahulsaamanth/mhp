@@ -6,6 +6,7 @@ import HeaderMobile from "@/components/header-mobile"
 import PageWrapper from "@/components/page-wrapper"
 import { Metadata } from "next"
 import { CurrentPathAndDateTime } from "@/components/current-path-date-time"
+import { TooltipProvider } from "@/components/ui/tooltip"
 
 interface ProtectedLayoutProps {
   children: React.ReactNode
@@ -32,7 +33,7 @@ const ProtectedLayout = ({ children }: ProtectedLayoutProps) => {
             <HeaderMobile />
             <PageWrapper>
               <CurrentPathAndDateTime />
-              {children}
+              <TooltipProvider>{children}</TooltipProvider>
             </PageWrapper>
           </MarginWidthWrapper>
         </main>

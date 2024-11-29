@@ -1,7 +1,7 @@
 import NextAuth from "next-auth"
 
 import { DrizzleAdapter } from "@auth/drizzle-adapter"
-import { getUserByEmail, getUserById } from "./utils/user"
+import { getUserById } from "./utils/user"
 import { getTwoFactorConfirmationByUserId } from "./utils/two-factor-confirmation"
 import { getAccountByUserId } from "./utils/account"
 

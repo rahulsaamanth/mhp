@@ -1,4 +1,4 @@
-import type { ColumnType, FilterCondition, FilterOperator } from "@/types"
+import type { ColumnType, Filter, FilterOperator } from "@/types"
 import { type Column } from "@tanstack/react-table"
 
 import { dataTableConfig } from "@/config/data-table"
@@ -110,8 +110,8 @@ export function getFilterOperators(columnType: ColumnType) {
  * @returns A new array containing only the valid filter conditions.
  */
 export function getValidFilters<TData>(
-  filters: FilterCondition<TData>[]
-): FilterCondition<TData>[] {
+  filters: Filter<TData>[]
+): Filter<TData>[] {
   return filters.filter(
     (filter) =>
       filter.operator === "isEmpty" ||

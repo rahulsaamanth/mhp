@@ -30,7 +30,7 @@ export async function GET(request: NextRequest) {
         .offset(offset),
     ])
 
-    const totalCount = Number(totalCountResult[0].count)
+    const totalCount = Number(totalCountResult[0]?.count)
 
     return NextResponse.json({
       data: productsData,

@@ -19,24 +19,12 @@ export const generateTwoFactorToken = async (email: string) => {
   const existingToken = await getTwoFactorTokenByEmail(email)
 
   if (existingToken) {
-    // await db.twoFactorToken.delete({
-    //   where: {
-    //     id: existingToken.id,
-    //   },
-    // })
     await db
       .delete(twoFactorToken)
       .where(eq(twoFactorToken.id, existingToken.id))
       .execute()
   }
 
-  // const twoFactorToken = await db.twoFactorToken.create({
-  //   data: {
-  //     email,
-  //     token,
-  //     expires,
-  //   },
-  // })
   const [_twoFactorToken] = await db
     .insert(twoFactorToken)
     .values({
@@ -47,7 +35,7 @@ export const generateTwoFactorToken = async (email: string) => {
     .returning()
     .execute()
 
-  return _twoFactorToken
+  return _twoFactorToken!
 }
 
 export const generatePasswordResetToken = async (email: string) => {
@@ -57,22 +45,12 @@ export const generatePasswordResetToken = async (email: string) => {
   const existingToken = await generatePasswordResetTokenByEmail(email)
 
   if (existingToken) {
-    // await db.passwordResetToken.delete({
-    //   where: { id: existingToken.id },
-    // })
     await db
       .delete(passwordResetToken)
       .where(eq(passwordResetToken.id, existingToken?.id))
       .execute()
   }
 
-  // const passwordResetToken = await db.passwordResetToken.create({
-  //   data: {
-  //     email,
-  //     token,
-  //     expires,
-  //   },
-  // })
   const [_passwordResetToken] = await db
     .insert(passwordResetToken)
     .values({
@@ -83,7 +61,7 @@ export const generatePasswordResetToken = async (email: string) => {
     .returning()
     .execute()
 
-  return _passwordResetToken
+  return _passwordResetToken!
 }
 
 export const generateVerificationToken = async (email: string) => {
@@ -92,23 +70,12 @@ export const generateVerificationToken = async (email: string) => {
 
   const existingToken = await getVerificationTokenByEmail(email)
   if (existingToken) {
-    // await db.verificationToken.delete({
-    //   where: {
-    //     id: existingToken.id,
-    //   },
-    // })
     await db
       .delete(verificationToken)
       .where(eq(verificationToken.id, existingToken.id))
       .execute()
   }
-  // const verifcationToken = await db.verificationToken.create({
-  //   data: {
-  //     email,
-  //     token,
-  //     expires,
-  //   },
-  // })
+
   const [_verificationToken] = await db
     .insert(verificationToken)
     .values({

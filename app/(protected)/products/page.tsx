@@ -2,14 +2,13 @@ import { type SearchParams } from "@/types"
 import { searchParamsCache } from "./_lib/validations"
 import { getValidFilters } from "@/lib/data-table"
 import { getProducts } from "./_lib/queries"
-import { Shell } from "@/components/shell"
+
 import { FeatureFlagsProvider } from "./_components/feature-flags-provider"
 import * as React from "react"
 import { Skeleton } from "@/components/ui/skeleton"
 import { DateRangePicker } from "@/components/date-range-picker"
 import { DataTableSkeleton } from "@/components/data-table/data-table-skeleton"
 import { ProductsTable } from "./_components/products-table"
-// import { getProductsWithFullDetials } from "@/actions/products"
 
 interface ProductPageProps {
   searchParams: Promise<SearchParams>
