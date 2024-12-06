@@ -11,7 +11,7 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog"
 import React from "react"
-import { type Product } from "@/drizzle/schema"
+import { type Product } from "@/db/schema"
 import { type Row } from "@tanstack/react-table"
 import { useMediaQuery } from "@/hooks/use-media-query"
 import { deleteProducts } from "../_lib/actions"

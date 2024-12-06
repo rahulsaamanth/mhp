@@ -1,5 +1,5 @@
-import { db } from "@/drizzle/db"
-import { verificationToken } from "@/drizzle/schema"
+import { db } from "@/db/db"
+import { verificationToken } from "@/db/schema"
 import { eq } from "drizzle-orm"
 
 export const getVerificationTokenByEmail = async (email: string) => {

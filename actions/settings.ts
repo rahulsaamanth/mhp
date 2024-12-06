@@ -13,8 +13,8 @@ import { sendVerificationEmail } from "@/lib/mail"
 import { PutObjectCommand, S3Client } from "@aws-sdk/client-s3"
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner"
 import crypto from "crypto"
-import { db } from "@/drizzle/db"
-import { user } from "@/drizzle/schema"
+import { db } from "@/db/db"
+import { user } from "@/db/schema"
 import { eq } from "drizzle-orm"
 
 export const updateUser = async (values: z.infer<typeof SettingsSchema>) => {

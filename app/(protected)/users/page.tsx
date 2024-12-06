@@ -13,8 +13,8 @@ import { getChartDateArray } from "@/lib/chart-date-array"
 import { startOfDay } from "date-fns"
 
 import { and, count, gte, lte, sum } from "drizzle-orm"
-import { order, user } from "@/drizzle/schema"
-import { db } from "@/drizzle/db"
+import { order, user } from "@/db/schema"
+import { db } from "@/db/db"
 
 async function getUserData({
   createdAfter,

@@ -1,12 +1,7 @@
 "use server"
 
-import { db } from "@/drizzle/db"
-import {
-  category,
-  manufacturer,
-  product,
-  productVariant,
-} from "@/drizzle/schema"
+import { db } from "@/db/db"
+import { category, manufacturer, product, productVariant } from "@/db/schema"
 import { InferSelectModel } from "drizzle-orm"
 
 type Product = InferSelectModel<typeof product>

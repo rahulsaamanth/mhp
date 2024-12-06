@@ -1,7 +1,7 @@
 "use client"
 
 import { DataTableRowAction } from "@/types"
-import { type Product } from "@/drizzle/schema"
+import { type Product } from "@/db/schema"
 import { ColumnDef } from "@tanstack/react-table"
 import { Checkbox } from "@/components/ui/checkbox"
 import { DataTableColumnHeader } from "@/components/data-table/data-table-column-header"
@@ -56,7 +56,11 @@ export function getColumns({
       header: ({ column }) => (
         <DataTableColumnHeader column={column} title="Name" />
       ),
-      cell: ({ row }) => <div className="h-10">{row.getValue("name")}</div>,
+      cell: ({ row }) => (
+        <div className="h-10 text-ellipsis whitespace-nowrap overflow-hidden w-44">
+          {row.getValue("name")}
+        </div>
+      ),
       enableSorting: false,
       enableHiding: false,
     },

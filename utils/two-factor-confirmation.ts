@@ -1,5 +1,5 @@
-import { db } from "@/drizzle/db"
-import { twoFactorConfirmation } from "@/drizzle/schema"
+import { db } from "@/db/db"
+import { twoFactorConfirmation } from "@/db/schema"
 import { eq } from "drizzle-orm"
 
 export const getTwoFactorConfirmationByUserId = async (userId: string) => {

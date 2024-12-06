@@ -1,4 +1,4 @@
-import { product, type Product } from "@/drizzle/schema"
+import { product, type Product } from "@/db/schema"
 import {
   createSearchParamsCache,
   parseAsArrayOf,

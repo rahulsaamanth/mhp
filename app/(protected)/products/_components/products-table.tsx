@@ -2,7 +2,7 @@
 
 import React from "react"
 import { getProducts } from "../_lib/queries"
-import { type Product } from "@/drizzle/schema"
+import { type Product } from "@/db/schema"
 import {
   DataTableAdvancedFilterField,
   DataTableFilterField,

@@ -5,8 +5,8 @@ import { getUserById } from "./utils/user"
 import { getTwoFactorConfirmationByUserId } from "./utils/two-factor-confirmation"
 import { getAccountByUserId } from "./utils/account"
 
-import { db } from "@/drizzle/db"
-import { user as User, twoFactorConfirmation, UserRole } from "./drizzle/schema"
+import { db } from "@/db/db"
+import { user as User, twoFactorConfirmation, UserRole } from "./db/schema"
 import { eq } from "drizzle-orm"
 
 import authConfig from "./auth.config"
