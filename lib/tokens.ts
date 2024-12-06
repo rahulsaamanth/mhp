@@ -1,5 +1,5 @@
 import crypto from "crypto"
-import { db } from "@/drizzle/db"
+import { db } from "@/db/db"
 import { v4 as uuid } from "uuid"
 
 import { getVerificationTokenByEmail } from "@/utils/verification-token"
@@ -9,7 +9,7 @@ import {
   passwordResetToken,
   twoFactorToken,
   verificationToken,
-} from "@/drizzle/schema"
+} from "@/db/schema"
 import { eq } from "drizzle-orm"
 
 export const generateTwoFactorToken = async (email: string) => {

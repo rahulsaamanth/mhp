@@ -13,6 +13,7 @@ import {
   integer,
 } from "drizzle-orm/pg-core"
 import { InferSelectModel, sql } from "drizzle-orm"
+import { generateId } from "@/lib/id"
 
 const ENTITY_PREFIX = {
   USER: "USR",
@@ -260,9 +261,7 @@ export const product = pgTable(
     tags: text("tags").array(),
     categoryId: varchar("categoryId", { length: 32 }).notNull(),
     manufacturerId: varchar("manufacturerId", { length: 32 }).notNull(),
-    createdAt: timestamp("createdAt", { mode: "string" })
-      .defaultNow()
-      .notNull(),
+    createdAt: timestamp("createdAt", { mode: "date" }).defaultNow().notNull(),
     updatedAt: timestamp("updatedAt")
       .default(sql`current_timestamp`)
       .$onUpdate(() => new Date()),
@@ -493,5 +492,40 @@ export const address = pgTable(
     }
   }
 )
+
+// Testing the server side data table
+export const tasks = pgTable("tasks", {
+  id: varchar("id", { length: 30 })
+    .$defaultFn(() => generateId())
+    .primaryKey(),
+  code: varchar("code", { length: 128 }).notNull().unique(),
+  title: varchar("title", { length: 128 }),
+  status: varchar("status", {
+    length: 30,
+    enum: ["todo", "in-progress", "done", "canceled"],
+  })
+    .notNull()
+    .default("todo"),
+  label: varchar("label", {
+    length: 30,
+    enum: ["bug", "feature", "enhancement", "documentation"],
+  })
+    .notNull()
+    .default("bug"),
+  priority: varchar("priority", {
+    length: 30,
+    enum: ["low", "medium", "high"],
+  })
+    .notNull()
+    .default("low"),
+  archived: boolean("archived").notNull().default(false),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  updatedAt: timestamp("updated_at")
+    .default(sql`current_timestamp`)
+    .$onUpdate(() => new Date()),
+})
+
+export type Task = typeof tasks.$inferSelect
+export type NewTask = typeof tasks.$inferInsert
 
 export type Product = typeof product.$inferSelect

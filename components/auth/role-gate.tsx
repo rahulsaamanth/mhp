@@ -1,6 +1,6 @@
 "use client"
 
-import { UserRole } from "@/drizzle/schema"
+import { UserRole } from "@/db/schema"
 
 import { useCurrentRole } from "@/hooks/use-current-role"
 import { FormError } from "@/components/form-error"

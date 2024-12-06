@@ -6,8 +6,8 @@ import bcrypt from "bcryptjs"
 import { NewPasswordSchema } from "@/schemas"
 import { getPasswordResetTokenByToken } from "@/utils/password-reset-token"
 import { getUserByEmail } from "@/utils/user"
-import { db } from "@/drizzle/db"
-import { passwordResetToken, user } from "@/drizzle/schema"
+import { db } from "@/db/db"
+import { passwordResetToken, user } from "@/db/schema"
 import { eq } from "drizzle-orm"
 
 export const newPassword = async (

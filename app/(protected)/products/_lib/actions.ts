@@ -1,7 +1,7 @@
 "use server"
 
-import { db } from "@/drizzle/db"
-import { product } from "@/drizzle/schema"
+import { db } from "@/db/db"
+import { product } from "@/db/schema"
 import { getErrorMessage } from "@/lib/handle-error"
 import { eq, inArray } from "drizzle-orm"
 import { revalidatePath, revalidateTag, unstable_noStore } from "next/cache"

@@ -1,5 +1,5 @@
-import { isEmpty, isNotEmpty } from "@/drizzle/utils"
-import type { FilterCondition, JoinOperator } from "@/types"
+import { isEmpty, isNotEmpty } from "@/db/utils"
+import type { Filter, JoinOperator } from "@/types"
 import { addDays, endOfDay, startOfDay } from "date-fns"
 import {
   and,
@@ -43,7 +43,7 @@ export function filterColumns<T extends Table>({
   joinOperator,
 }: {
   table: T
-  filters: FilterCondition<T>[]
+  filters: Filter<T>[]
   joinOperator: JoinOperator
 }): SQL | undefined {
   const joinFn = joinOperator === "and" ? and : or

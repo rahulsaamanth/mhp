@@ -1,11 +1,11 @@
 import "server-only"
 
-import { product } from "@/drizzle/schema"
+import { product } from "@/db/schema"
 import { and, asc, count, desc, gte, ilike, lte } from "drizzle-orm"
 
 import { type GetProductsSchema } from "./validations"
 import { unstable_cache } from "@/lib/unstable-cache"
-import { db } from "@/drizzle/db"
+import { db } from "@/db/db"
 import { filterColumns } from "@/lib/filter-columns"
 
 export async function getProducts(input: GetProductsSchema) {
@@ -25,11 +25,9 @@ export async function getProducts(input: GetProductsSchema) {
         const where = advancedTable
           ? advancedWhere
           : and(
-              input.name ? ilike(product.name, `%${product.name}%`) : undefined,
-              fromDate
-                ? gte(product.createdAt, fromDate.toISOString())
-                : undefined,
-              toDate ? lte(product.createdAt, toDate.toISOString()) : undefined
+              input.name ? ilike(product.name, `%${input.name}%`) : undefined,
+              fromDate ? gte(product.createdAt, fromDate) : undefined,
+              toDate ? lte(product.createdAt, toDate) : undefined
             )
 
         const orderBy =

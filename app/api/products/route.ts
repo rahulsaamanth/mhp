@@ -1,6 +1,6 @@
-import { db } from "@/drizzle/db"
-import { product } from "@/drizzle/schema"
-import { buildSearchCondition, buildSortCondition } from "@/drizzle/utils"
+import { db } from "@/db/db"
+import { product } from "@/db/schema"
+import { buildSearchCondition, buildSortCondition } from "@/db/utils"
 import { and, sql } from "drizzle-orm"
 import { NextRequest, NextResponse } from "next/server"
 
