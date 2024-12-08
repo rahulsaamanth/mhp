@@ -56,7 +56,7 @@ export function ProductsTable({ promise }: ProductTableProps) {
   ]
 
   const enableAdvancedTable = featureFlags.includes("advancedTable")
-  const enableFloatingBar = featureFlags.includes("floatingBar")
+  // const enableFloatingBar = featureFlags.includes("floatingBar")
 
   const { table } = useDataTable({
     data,

@@ -1,5 +1,5 @@
 import { getUsers } from "@/actions/users"
-import { DataTable } from "@/components/tables/data-table"
+import { DataTable } from "@/components/client/data-table"
 import { columns } from "./columns"
 
 import { OrdersByDayChart } from "@/components/charts/OrdersbyDayChart"
