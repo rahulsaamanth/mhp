@@ -1,5 +1,5 @@
 import { getUsers } from "@/actions/users"
-import { DataTable } from "@/components/client/data-table"
+// import { DataTable } from "@/components/client/data-table"
 import { columns } from "./columns"
 
 import { OrdersByDayChart } from "@/components/charts/OrdersbyDayChart"
@@ -35,14 +35,16 @@ async function getUserData({
       .from(user)
       .where(and(...whereClause))
       .orderBy(user.createdAt),
-    // db
-    //   .select({ status: user.status, _count: count() })
-    //   .from(user)
-    //   .groupBy(user.status),
   ])
 
+  const startDate =
+    createdAfter ||
+    (usersChartData.length > 0
+      ? startOfDay(usersChartData[0]!.createdAt)
+      : new Date())
+
   const { array, format } = getChartDateArray(
-    createdAfter || startOfDay(usersChartData[0].createdAt),
+    startDate,
     createdBefore || new Date()
   )
 
@@ -62,22 +64,11 @@ async function getUserData({
       return data
     }, dayArray),
     userCount,
-    averageValuePerUser:
-      userCount[0].count === 0
-        ? 0
-        : (Number(orderData[0].totalAmountPaid) || 0) /
-          userCount[0].count /
-          100,
-    // userCountByStatus,
   }
 }
 
 const UsersPage = async ({
-  searchParams: {
-    newCustomersRange,
-    newCustomersRangeFrom,
-    newCustomersRangeTo,
-  },
+  searchParams,
 }: {
   searchParams: {
     newCustomersRange?: string
@@ -87,6 +78,8 @@ const UsersPage = async ({
 }) => {
   const columnData = await getUsers()
 
+  const { newCustomersRange, newCustomersRangeFrom, newCustomersRangeTo } =
+    await searchParams
   const newCustomersRangeOption =
     getRangeOption(
       newCustomersRange,
@@ -113,7 +106,7 @@ const UsersPage = async ({
           <UsersByStatusChart data={userData.userCountByStatus} />
         </ChartCard> */}
         <div className="col-span-1 lg:col-span-2 w-full">
-          <DataTable data={columnData} columns={columns} />
+          {/* <DataTable data={columnData} columns={columns} /> */}
         </div>
       </section>
     </div>
