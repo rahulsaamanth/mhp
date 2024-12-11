@@ -124,6 +124,17 @@ export type FilterOperator = DataTableConfig["globalOperators"][number]
 
 export type JoinOperator = DataTableConfig["joinOperators"][number]["value"]
 
+export type ProductForTable = {
+  id: string
+  name: string
+  status: "ACTIVE" | "DRAFT" | "ARCHIVED"
+  createdAt: Date
+  image: string
+  sales: string | number
+  minPrice: number
+  maxPrice: number
+}
+
 export interface DataTableFilterField<TData> {
   id: StringKeyOf<TData>
   label: string

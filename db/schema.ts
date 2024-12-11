@@ -30,13 +30,6 @@ const ENTITY_PREFIX = {
   ADDRESS: "ADDR",
   PAYMENT: "PYMT",
 } as const
-export const paymentType = pgEnum("PaymentType", [
-  "CREDIT_CARD",
-  "DEBIT_CARD",
-  "UPI",
-  "NET_BANKING",
-  "WALLET",
-])
 
 export const customId = (name: string, prefix: string) =>
   varchar(name, { length: 32 })
@@ -52,7 +45,9 @@ export const customId = (name: string, prefix: string) =>
     })
 
 export const orderType = pgEnum("OrderType", ["OFFLINE", "ONLINE"])
+
 export const userRole = pgEnum("UserRole", ["ADMIN", "USER"])
+
 export const deliveryStatus = pgEnum("DeliveryStatus", [
   "PROCESSING",
   "SHIPPED",
@@ -61,7 +56,22 @@ export const deliveryStatus = pgEnum("DeliveryStatus", [
   "CANCELLED",
   "RETURNED",
 ])
+
+export const paymentType = pgEnum("PaymentType", [
+  "CREDIT_CARD",
+  "DEBIT_CARD",
+  "UPI",
+  "NET_BANKING",
+  "WALLET",
+])
+
 export const addressType = pgEnum("AdressType", ["SHIPPING", "BILLING"])
+
+export const productStatus = pgEnum("ProductStatus", [
+  "ACTIVE",
+  "DRAFT",
+  "ARCHIVED",
+])
 
 export type UserRole = (typeof userRole.enumValues)[number]
 export type User = InferSelectModel<typeof user>
@@ -258,6 +268,7 @@ export const product = pgTable(
     id: customId("id", ENTITY_PREFIX.PRODUCT),
     name: text("name").notNull(),
     description: text("description").notNull(),
+    status: productStatus("status").default("ACTIVE").notNull(),
     tags: text("tags").array(),
     categoryId: varchar("categoryId", { length: 32 }).notNull(),
     manufacturerId: varchar("manufacturerId", { length: 32 }).notNull(),

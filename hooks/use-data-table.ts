@@ -1,7 +1,7 @@
 "use client"
 
 import * as React from "react"
-import { flushSync } from "react-dom"
+
 import type { DataTableFilterField, ExtendedSortingState } from "@/types"
 import {
   getCoreRowModel,
@@ -186,7 +186,7 @@ export function useDataTable<TData>({
     "perPage",
     parseAsInteger
       .withOptions(queryStateOptions)
-      .withDefault(initialState?.pagination?.pageSize ?? 10)
+      .withDefault(initialState?.pagination?.pageSize ?? 50)
   )
   const [sorting, setSorting] = useQueryState(
     "sort",

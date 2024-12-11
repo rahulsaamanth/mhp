@@ -11,7 +11,7 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog"
 import React from "react"
-import { type Product } from "@/db/schema"
+
 import { type Row } from "@tanstack/react-table"
 import { useMediaQuery } from "@/hooks/use-media-query"
 import { deleteProducts } from "../_lib/actions"
@@ -28,10 +28,11 @@ import {
   DrawerTitle,
   DrawerTrigger,
 } from "@/components/ui/drawer"
+import { ProductForTable } from "@/types"
 
 interface DeleteProductsDialogProps
   extends React.ComponentPropsWithoutRef<typeof Dialog> {
-  products: Row<Product>["original"][]
+  products: Row<ProductForTable>["original"][]
   showTrigger?: boolean
   onSuccess?: () => void
 }

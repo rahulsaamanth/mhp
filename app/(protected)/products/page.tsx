@@ -9,6 +9,44 @@ import { Skeleton } from "@/components/ui/skeleton"
 import { DateRangePicker } from "@/components/date-range-picker"
 import { DataTableSkeleton } from "@/components/data-table/data-table-skeleton"
 import { ProductsTable } from "./_components/products-table"
+import { product } from "@/db/schema"
+import { sql } from "drizzle-orm"
+import { db } from "@/db/db"
+
+async function getProductsForDataTable() {
+  const data = await db
+    .select({
+      id: product.id,
+      name: product.name,
+      status: product.status,
+      createdAt: product.createdAt,
+      firstImage: sql<string>`(
+      SELECT (pv."variantImage"[1])
+      FROM "ProductVariant" pv
+      WHERE pv."productId" = "Product"."id"
+      LIMIT 1
+    )`,
+      sales: sql<number>`(
+      SELECT COUNT(DISTINCT od."orderId")
+      FROM "OrderDetails" od
+      JOIN "ProductVariant" pv ON od."productVariantId" = pv."id"
+      WHERE pv."productId" = "Product"."id"
+    )`,
+      minPrice: sql<number>`(
+      SELECT MIN(pv."price")
+      FROM "ProductVariant" pv
+      WHERE pv."productId" = "Product"."id"
+    )`,
+      maxPrice: sql<number>`(
+      SELECT MAX(pv."price")
+      FROM "ProductVariant" pv
+      WHERE pv."productId" = "Product"."id"
+    )`,
+    })
+    .from(product)
+    .orderBy(product.createdAt)
+  return data
+}
 
 interface ProductPageProps {
   searchParams: Promise<SearchParams>
@@ -24,6 +62,8 @@ export default async function ProductPage(props: ProductPageProps) {
     ...search,
     filters: validFilters,
   })
+  const testProducts = await getProductsForDataTable()
+  // console.log(testProducts)
 
   return (
     // <Shell className="gap-2">

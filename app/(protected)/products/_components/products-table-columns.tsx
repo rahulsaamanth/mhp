@@ -1,22 +1,22 @@
 "use client"
 
-import { DataTableRowAction } from "@/types"
-import { type Product } from "@/db/schema"
+import { DataTableRowAction, ProductForTable } from "@/types"
+
 import { ColumnDef } from "@tanstack/react-table"
 import { Checkbox } from "@/components/ui/checkbox"
 import { DataTableColumnHeader } from "@/components/data-table/data-table-column-header"
 
 import { formatDate } from "@/lib/utils"
+import { Badge } from "@/components/ui/badge"
 
 interface GetColumnProps {
   setRowAction: React.Dispatch<
-    React.SetStateAction<DataTableRowAction<Product> | null>
+    React.SetStateAction<DataTableRowAction<ProductForTable> | null>
   >
 }
-
 export function getColumns({
   setRowAction,
-}: GetColumnProps): ColumnDef<Product>[] {
+}: GetColumnProps): ColumnDef<ProductForTable>[] {
   return [
     {
       id: "select",
@@ -43,11 +43,17 @@ export function getColumns({
       enableHiding: false,
     },
     {
-      accessorKey: "id",
-      header: ({ column }) => (
-        <DataTableColumnHeader column={column} title="ID" />
+      accessorKey: "image",
+      header: ({ column }) => <></>,
+      cell: ({ row }) => (
+        <img
+          alt="Product image"
+          className="aspect-square rounded-md object-cover"
+          height="64"
+          width="64"
+          src={row.getValue("image")}
+        />
       ),
-      cell: ({ row }) => <div className="h-10">{row.getValue("id")}</div>,
       enableSorting: false,
       enableHiding: false,
     },
@@ -57,12 +63,47 @@ export function getColumns({
         <DataTableColumnHeader column={column} title="Name" />
       ),
       cell: ({ row }) => (
-        <div className="h-10 text-ellipsis whitespace-nowrap overflow-hidden w-44">
-          {row.getValue("name")}
-        </div>
+        <div className="py-4 text-wrap w-44">{row.getValue("name")}</div>
       ),
+      enableSorting: true,
+      enableHiding: false,
+    },
+    {
+      accessorKey: "status",
+      header: ({ column }) => (
+        <DataTableColumnHeader column={column} title="Status" />
+      ),
+      cell: ({ row }) => {
+        const status = row.getValue("status")
+        return (
+          <Badge variant={status === "ACTIVE" ? "default" : "secondary"}>
+            {status as string}
+          </Badge>
+        )
+      },
+    },
+    {
+      accessorKey: "minPrice",
+      header: ({ column }) => (
+        <DataTableColumnHeader column={column} title="Price" />
+      ),
+      cell: ({ row }) => {
+        const minPrice = row.getValue("minPrice") as number
+        const maxPrice = row.original.maxPrice as number
+
+        if (minPrice === maxPrice) return `₹${minPrice}`
+
+        return `₹${minPrice} - ₹${maxPrice}`
+      },
       enableSorting: false,
       enableHiding: false,
+    },
+    {
+      accessorKey: "sales",
+      header: ({ column }) => (
+        <DataTableColumnHeader column={column} title="Sales" />
+      ),
+      cell: ({ row }) => row.getValue("sales"),
     },
     {
       accessorKey: "createdAt",

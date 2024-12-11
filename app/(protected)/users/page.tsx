@@ -76,7 +76,7 @@ const UsersPage = async ({
     newCustomersRangeTo?: string
   }
 }) => {
-  const columnData = await getUsers()
+  // const columnData = await getUsers()
 
   const { newCustomersRange, newCustomersRangeFrom, newCustomersRangeTo } =
     await searchParams
