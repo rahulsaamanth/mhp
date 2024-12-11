@@ -9,7 +9,8 @@ export const dataTableConfig = {
       value: "advancedTable" as const,
       icon: Pickaxe,
       tooltipTitle: "Toggle advanced table",
-      tooltipDescription: "A filter and sort builder to filter and sort rows.",
+      tooltipDescription:
+        "A filter and sort builder to filter and sort rows. Testing",
     },
     // {
     //   label: "Floating bar",

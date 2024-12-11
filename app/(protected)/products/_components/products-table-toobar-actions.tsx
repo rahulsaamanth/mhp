@@ -1,6 +1,5 @@
 "use client"
 
-import { type Product } from "@/db/schema"
 import { type Table } from "@tanstack/react-table"
 import { Download } from "lucide-react"
 
@@ -8,9 +7,10 @@ import { exportTableToCSV } from "@/lib/export"
 import { Button } from "@/components/ui/button"
 
 import { DeleteProductsDialog } from "./delete-products-dialog"
+import { ProductForTable } from "@/types"
 
 interface TasksTableToolbarActionsProps {
-  table: Table<Product>
+  table: Table<ProductForTable>
 }
 
 export function ProductsTableToolbarActions({

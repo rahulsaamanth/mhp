@@ -2,11 +2,12 @@
 
 import React from "react"
 import { getProducts } from "../_lib/queries"
-import { type Product } from "@/db/schema"
+
 import {
   DataTableAdvancedFilterField,
   DataTableFilterField,
   DataTableRowAction,
+  ProductForTable,
 } from "@/types"
 import { getColumns } from "./products-table-columns"
 import { useDataTable } from "@/hooks/use-data-table"
@@ -25,16 +26,17 @@ export function ProductsTable({ promise }: ProductTableProps) {
   const { featureFlags } = useFeatureFlags()
 
   const { data, pageCount } = React.use(promise)
+  console.log(data)
 
   const [rowAction, setRowAction] =
-    React.useState<DataTableRowAction<Product> | null>(null)
+    React.useState<DataTableRowAction<ProductForTable> | null>(null)
 
   const columns = React.useMemo(
     () => getColumns({ setRowAction }),
     [setRowAction]
   )
 
-  const filterFields: DataTableFilterField<Product>[] = [
+  const filterFields: DataTableFilterField<ProductForTable>[] = [
     {
       id: "name",
       label: "Product Name",
@@ -42,18 +44,19 @@ export function ProductsTable({ promise }: ProductTableProps) {
     },
   ]
 
-  const advancedFilterFields: DataTableAdvancedFilterField<Product>[] = [
-    {
-      id: "name",
-      label: "Product Name",
-      type: "text",
-    },
-    {
-      id: "createdAt",
-      label: "Created at",
-      type: "date",
-    },
-  ]
+  const advancedFilterFields: DataTableAdvancedFilterField<ProductForTable>[] =
+    [
+      {
+        id: "name",
+        label: "Product Name",
+        type: "text",
+      },
+      {
+        id: "createdAt",
+        label: "Created at",
+        type: "date",
+      },
+    ]
 
   const enableAdvancedTable = featureFlags.includes("advancedTable")
   // const enableFloatingBar = featureFlags.includes("floatingBar")

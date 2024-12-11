@@ -1,7 +1,7 @@
 import "server-only"
 
 import { product } from "@/db/schema"
-import { and, asc, count, desc, gte, ilike, lte } from "drizzle-orm"
+import { and, asc, count, desc, gte, ilike, lte, sql } from "drizzle-orm"
 
 import { type GetProductsSchema } from "./validations"
 import { unstable_cache } from "@/lib/unstable-cache"
@@ -38,8 +38,42 @@ export async function getProducts(input: GetProductsSchema) {
             : [asc(product.createdAt)]
 
         const { data, total } = await db.transaction(async (tx) => {
+          // const data = await tx
+          //   .select()
+          //   .from(product)
+          //   .limit(input.perPage)
+          //   .offset(offset)
+          //   .where(where)
+          //   .orderBy(...orderBy)
           const data = await tx
-            .select()
+            .select({
+              id: product.id,
+              name: product.name,
+              status: product.status,
+              createdAt: product.createdAt,
+              image: sql<string>`(
+            SELECT (pv."variantImage"[1])
+            FROM "ProductVariant" pv
+            WHERE pv."productId" = "Product"."id"
+            LIMIT 1
+            )`,
+              sales: sql<number>`(
+            SELECT COUNT(DISTINCT od."orderId")
+            FROM "OrderDetails" od
+            JOIN "ProductVariant" pv ON od."productVariantId" = pv."id"
+            WHERE pv."productId" = "Product"."id"
+            )`,
+              minPrice: sql<number>`(
+            SELECT MIN(pv."price")
+            FROM "ProductVariant" pv
+            WHERE pv."productId" = "Product"."id"
+            )`,
+              maxPrice: sql<number>`(
+            SELECT MAX(pv."price")
+            FROM "ProductVariant" pv
+            WHERE pv."productId" = "Product"."id"
+            )`,
+            })
             .from(product)
             .limit(input.perPage)
             .offset(offset)
