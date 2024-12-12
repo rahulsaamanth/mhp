@@ -71,7 +71,7 @@ interface DataTableSkeletonProps extends React.HTMLAttributes<HTMLDivElement> {
 export function DataTableSkeleton(props: DataTableSkeletonProps) {
   const {
     columnCount,
-    rowCount = 10,
+    rowCount = 20,
     searchableColumnCount = 0,
     filterableColumnCount = 0,
     showViewOptions = true,

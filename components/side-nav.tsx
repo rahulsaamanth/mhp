@@ -17,7 +17,7 @@ const SideNav = () => {
   }
 
   return (
-    <div className="fixed hidden h-screen flex-1 border-r border-zinc-200 bg-white xl:flex lg:w-48 z-50">
+    <div className="fixed hidden h-screen flex-1 border-r border-zinc-200 bg-white xl:flex lg:w-52 z-50">
       <div className="flex w-full flex-col gap-6">
         <Link
           href="/dashboard"

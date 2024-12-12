@@ -1,5 +1,5 @@
 {
-  "id": "1f23e71a-6c5b-4050-8f86-1320ee5c489a",
+  "id": "b268cf24-39b3-4d41-acaf-8555662e039a",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "version": "7",
   "dialect": "postgresql",
@@ -122,6 +122,111 @@
       "compositePrimaryKeys": {},
       "uniqueConstraints": {}
     },
+    "public.Address": {
+      "name": "Address",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "varchar(32)",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "userId": {
+          "name": "userId",
+          "type": "varchar(32)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "street": {
+          "name": "street",
+          "type": "varchar(255)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "city": {
+          "name": "city",
+          "type": "varchar(100)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "state": {
+          "name": "state",
+          "type": "varchar(100)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "postalCode": {
+          "name": "postalCode",
+          "type": "varchar(10)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "country": {
+          "name": "country",
+          "type": "varchar(50)",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'India'"
+        },
+        "addressType": {
+          "name": "addressType",
+          "type": "AdressType",
+          "typeSchema": "public",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'SHIPPING'"
+        },
+        "createdAt": {
+          "name": "createdAt",
+          "type": "timestamp (3)",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "updatedAt": {
+          "name": "updatedAt",
+          "type": "timestamp (3)",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "now()"
+        }
+      },
+      "indexes": {
+        "Adress_userId_index": {
+          "name": "Adress_userId_index",
+          "columns": [
+            {
+              "expression": "userId",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        }
+      },
+      "foreignKeys": {
+        "Address_userId_fkey": {
+          "name": "Address_userId_fkey",
+          "tableFrom": "Address",
+          "tableTo": "User",
+          "columnsFrom": [
+            "userId"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "cascade"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {}
+    },
     "public.Category": {
       "name": "Category",
       "schema": "",
@@ -221,6 +326,32 @@
           "type": "double precision",
           "primaryKey": false,
           "notNull": true
+        },
+        "deliveryStatus": {
+          "name": "deliveryStatus",
+          "type": "DeliveryStatus",
+          "typeSchema": "public",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'PROCESSING'"
+        },
+        "shippingAddress": {
+          "name": "shippingAddress",
+          "type": "varchar(32)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "billingAddress": {
+          "name": "billingAddress",
+          "type": "varchar(32)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "paymentMethodId": {
+          "name": "paymentMethodId",
+          "type": "varchar(32)",
+          "primaryKey": false,
+          "notNull": false
         }
       },
       "indexes": {},
@@ -236,6 +367,45 @@
             "id"
           ],
           "onDelete": "cascade",
+          "onUpdate": "cascade"
+        },
+        "Order_shippingAddress_fkey": {
+          "name": "Order_shippingAddress_fkey",
+          "tableFrom": "Order",
+          "tableTo": "Address",
+          "columnsFrom": [
+            "shippingAddress"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "restrict",
+          "onUpdate": "cascade"
+        },
+        "Order_billingAddress_fkey": {
+          "name": "Order_billingAddress_fkey",
+          "tableFrom": "Order",
+          "tableTo": "Address",
+          "columnsFrom": [
+            "billingAddress"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "restrict",
+          "onUpdate": "cascade"
+        },
+        "Order_paymentMethod_fkey": {
+          "name": "Order_paymentMethod_fkey",
+          "tableFrom": "Order",
+          "tableTo": "PaymentMethod",
+          "columnsFrom": [
+            "paymentMethodId"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "restrict",
           "onUpdate": "cascade"
         }
       },
@@ -380,6 +550,98 @@
       "compositePrimaryKeys": {},
       "uniqueConstraints": {}
     },
+    "public.PaymentMethod": {
+      "name": "PaymentMethod",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "varchar(32)",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "userId": {
+          "name": "userId",
+          "type": "varchar(32)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "paymentType": {
+          "name": "paymentType",
+          "type": "PaymentType",
+          "typeSchema": "public",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "isDefault": {
+          "name": "isDefault",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": true,
+          "default": false
+        },
+        "paymentDetails": {
+          "name": "paymentDetails",
+          "type": "jsonb",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "displayDetails": {
+          "name": "displayDetails",
+          "type": "jsonb",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "createdAt": {
+          "name": "createdAt",
+          "type": "timestamp (3)",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "updatedAt": {
+          "name": "updatedAt",
+          "type": "timestamp (3)",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "now()"
+        }
+      },
+      "indexes": {
+        "PaymentMethod_userId_index": {
+          "name": "PaymentMethod_userId_index",
+          "columns": [
+            {
+              "expression": "userId",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        }
+      },
+      "foreignKeys": {
+        "PaymentMethod_userId_fkey": {
+          "name": "PaymentMethod_userId_fkey",
+          "tableFrom": "PaymentMethod",
+          "tableTo": "User",
+          "columnsFrom": [
+            "userId"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "cascade"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {}
+    },
     "public.Product": {
       "name": "Product",
       "schema": "",
@@ -402,11 +664,13 @@
           "primaryKey": false,
           "notNull": true
         },
-        "image": {
-          "name": "image",
-          "type": "text[]",
+        "status": {
+          "name": "status",
+          "type": "ProductStatus",
+          "typeSchema": "public",
           "primaryKey": false,
-          "notNull": true
+          "notNull": true,
+          "default": "'ACTIVE'"
         },
         "tags": {
           "name": "tags",
@@ -425,6 +689,20 @@
           "type": "varchar(32)",
           "primaryKey": false,
           "notNull": true
+        },
+        "createdAt": {
+          "name": "createdAt",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "updatedAt": {
+          "name": "updatedAt",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "now()"
         },
         "properties": {
           "name": "properties",
@@ -484,6 +762,12 @@
         "variantName": {
           "name": "variantName",
           "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "variantImage": {
+          "name": "variantImage",
+          "type": "text[]",
           "primaryKey": false,
           "notNull": true
         },
@@ -571,13 +855,14 @@
           "type": "timestamp (3)",
           "primaryKey": false,
           "notNull": true,
-          "default": "CURRENT_TIMESTAMP"
+          "default": "now()"
         },
         "updatedAt": {
           "name": "updatedAt",
           "type": "timestamp (3)",
           "primaryKey": false,
-          "notNull": true
+          "notNull": false,
+          "default": "now()"
         }
       },
       "indexes": {},
@@ -788,7 +1073,7 @@
           "type": "timestamp (3)",
           "primaryKey": false,
           "notNull": true,
-          "default": "CURRENT_TIMESTAMP"
+          "default": "now()"
         },
         "isTwoFactorEnabled": {
           "name": "isTwoFactorEnabled",
@@ -803,30 +1088,19 @@
           "primaryKey": false,
           "notNull": false
         },
-        "shippingAddress": {
-          "name": "shippingAddress",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "billingAddress": {
-          "name": "billingAddress",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": false
-        },
         "createdAt": {
           "name": "createdAt",
           "type": "timestamp (3)",
           "primaryKey": false,
           "notNull": true,
-          "default": "CURRENT_TIMESTAMP"
+          "default": "now()"
         },
         "updatedAt": {
           "name": "updatedAt",
           "type": "timestamp (3)",
           "primaryKey": false,
-          "notNull": true
+          "notNull": false,
+          "default": "now()"
         }
       },
       "indexes": {
@@ -923,12 +1197,52 @@
     }
   },
   "enums": {
+    "public.AdressType": {
+      "name": "AdressType",
+      "schema": "public",
+      "values": [
+        "SHIPPING",
+        "BILLING"
+      ]
+    },
+    "public.DeliveryStatus": {
+      "name": "DeliveryStatus",
+      "schema": "public",
+      "values": [
+        "PROCESSING",
+        "SHIPPED",
+        "OUT_FOR_DELIVERY",
+        "DELIVERED",
+        "CANCELLED",
+        "RETURNED"
+      ]
+    },
     "public.OrderType": {
       "name": "OrderType",
       "schema": "public",
       "values": [
         "OFFLINE",
         "ONLINE"
+      ]
+    },
+    "public.PaymentType": {
+      "name": "PaymentType",
+      "schema": "public",
+      "values": [
+        "CREDIT_CARD",
+        "DEBIT_CARD",
+        "UPI",
+        "NET_BANKING",
+        "WALLET"
+      ]
+    },
+    "public.ProductStatus": {
+      "name": "ProductStatus",
+      "schema": "public",
+      "values": [
+        "ACTIVE",
+        "DRAFT",
+        "ARCHIVED"
       ]
     },
     "public.UserRole": {

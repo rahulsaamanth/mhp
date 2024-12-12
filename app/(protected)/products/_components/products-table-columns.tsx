@@ -28,7 +28,7 @@ export function getColumns({
           }
           onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
           aria-label="Select all"
-          className="translate-y-0.5"
+          className="translate-y-0.5 ml-8"
         />
       ),
       cell: ({ row }) => (
@@ -36,7 +36,7 @@ export function getColumns({
           checked={row.getIsSelected()}
           onCheckedChange={(value) => row.toggleSelected(!!value)}
           aria-label="Selected row"
-          className="translate-y-0.5"
+          className="translate-y-0.5 m-8"
         />
       ),
       enableSorting: false,
@@ -50,7 +50,7 @@ export function getColumns({
           alt="Product image"
           className="aspect-square rounded-md object-cover"
           height="64"
-          width="64"
+          width="54"
           src={row.getValue("image")}
         />
       ),
@@ -76,7 +76,7 @@ export function getColumns({
       cell: ({ row }) => {
         const status = row.getValue("status")
         return (
-          <Badge variant={status === "ACTIVE" ? "default" : "secondary"}>
+          <Badge variant={status === "ACTIVE" ? "secondary" : "outline"}>
             {status as string}
           </Badge>
         )
