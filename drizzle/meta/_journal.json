@@ -5,43 +5,8 @@
     {
       "idx": 0,
       "version": "7",
-      "when": 1728990004238,
-      "tag": "0000_freezing_felicia_hardy",
-      "breakpoints": true
-    },
-    {
-      "idx": 1,
-      "version": "7",
-      "when": 1729416562290,
-      "tag": "0001_strange_lockheed",
-      "breakpoints": true
-    },
-    {
-      "idx": 2,
-      "version": "7",
-      "when": 1729519537811,
-      "tag": "0002_uneven_the_spike",
-      "breakpoints": true
-    },
-    {
-      "idx": 3,
-      "version": "7",
-      "when": 1730555226979,
-      "tag": "0003_lowly_prodigy",
-      "breakpoints": true
-    },
-    {
-      "idx": 4,
-      "version": "7",
-      "when": 1733220657185,
-      "tag": "0004_overconfident_loa",
-      "breakpoints": true
-    },
-    {
-      "idx": 5,
-      "version": "7",
-      "when": 1733855551088,
-      "tag": "0005_fine_tenebrous",
+      "when": 1733990468802,
+      "tag": "0000_bored_rocket_racer",
       "breakpoints": true
     }
   ]

@@ -74,8 +74,10 @@ export const productStatus = pgEnum("ProductStatus", [
 ])
 
 export type UserRole = (typeof userRole.enumValues)[number]
-export type User = InferSelectModel<typeof user>
-export type Order = InferSelectModel<typeof order>
+
+export type User = typeof user.$inferSelect
+export type Order = typeof order.$inferSelect
+export type Product = typeof product.$inferSelect
 
 export const verificationToken = pgTable(
   "VerificationToken",
@@ -157,7 +159,7 @@ export const user = pgTable(
     password: text("password"),
     role: userRole("role").default("USER").notNull(),
     lastActive: timestamp("lastActive", { precision: 3, mode: "date" })
-      .default(sql`CURRENT_TIMESTAMP`)
+      .defaultNow()
       .notNull(),
     isTwoFactorEnabled: boolean("isTwoFactorEnabled").default(false).notNull(),
     phone: text("phone"),
@@ -165,7 +167,7 @@ export const user = pgTable(
       .defaultNow()
       .notNull(),
     updatedAt: timestamp("updatedAt", { precision: 3, mode: "date" })
-      .default(sql`CURRENT_TIMESTAMP`)
+      .defaultNow()
       .$onUpdate(() => new Date()),
   },
   (table) => {
@@ -274,7 +276,7 @@ export const product = pgTable(
     manufacturerId: varchar("manufacturerId", { length: 32 }).notNull(),
     createdAt: timestamp("createdAt", { mode: "date" }).defaultNow().notNull(),
     updatedAt: timestamp("updatedAt")
-      .default(sql`current_timestamp`)
+      .defaultNow()
       .$onUpdate(() => new Date()),
     properties: jsonb("properties"),
   },
@@ -333,10 +335,10 @@ export const paymentMethod = pgTable(
     paymentDetails: jsonb("paymentDetails").notNull(),
     displayDetails: jsonb("displayDetails").notNull(),
     createdAt: timestamp("createdAt", { precision: 3, mode: "date" })
-      .default(sql`CURRENT_TIMESTAMP`)
+      .defaultNow()
       .notNull(),
     updatedAt: timestamp("updatedAt", { precision: 3, mode: "date" })
-      .default(sql`CURRENT_TIMESTAMP`)
+      .defaultNow()
       .$onUpdate(() => new Date()),
   },
   (table) => {
@@ -446,10 +448,10 @@ export const review = pgTable(
     userId: varchar("userId", { length: 32 }).notNull(),
     productId: varchar("productId", { length: 32 }).notNull(),
     createdAt: timestamp("createdAt", { precision: 3, mode: "date" })
-      .default(sql`CURRENT_TIMESTAMP`)
+      .defaultNow()
       .notNull(),
     updatedAt: timestamp("updatedAt", { precision: 3, mode: "date" })
-      .default(sql`CURRENT_TIMESTAMP`)
+      .defaultNow()
       .$onUpdate(() => new Date()),
   },
   (table) => {
@@ -484,10 +486,10 @@ export const address = pgTable(
     country: varchar("country", { length: 50 }).default("India").notNull(),
     type: addressType("addressType").default("SHIPPING").notNull(),
     createdAt: timestamp("createdAt", { precision: 3, mode: "date" })
-      .default(sql`CURRENT_TIMESTAMP`)
+      .defaultNow()
       .notNull(),
     updatedAt: timestamp("updatedAt", { precision: 3, mode: "date" })
-      .default(sql`CURRENT_TIMESTAMP`)
+      .defaultNow()
       .$onUpdate(() => new Date()),
   },
   (table) => {
@@ -503,40 +505,3 @@ export const address = pgTable(
     }
   }
 )
-
-// Testing the server side data table
-export const tasks = pgTable("tasks", {
-  id: varchar("id", { length: 30 })
-    .$defaultFn(() => generateId())
-    .primaryKey(),
-  code: varchar("code", { length: 128 }).notNull().unique(),
-  title: varchar("title", { length: 128 }),
-  status: varchar("status", {
-    length: 30,
-    enum: ["todo", "in-progress", "done", "canceled"],
-  })
-    .notNull()
-    .default("todo"),
-  label: varchar("label", {
-    length: 30,
-    enum: ["bug", "feature", "enhancement", "documentation"],
-  })
-    .notNull()
-    .default("bug"),
-  priority: varchar("priority", {
-    length: 30,
-    enum: ["low", "medium", "high"],
-  })
-    .notNull()
-    .default("low"),
-  archived: boolean("archived").notNull().default(false),
-  createdAt: timestamp("created_at").defaultNow().notNull(),
-  updatedAt: timestamp("updated_at")
-    .default(sql`current_timestamp`)
-    .$onUpdate(() => new Date()),
-})
-
-export type Task = typeof tasks.$inferSelect
-export type NewTask = typeof tasks.$inferInsert
-
-export type Product = typeof product.$inferSelect

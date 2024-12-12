@@ -25,9 +25,9 @@ export const SIDENAV_ITEMS: SideNavItem[] = [
     icon: "ph:users-three",
   },
   {
-    title: "Reviews",
-    path: "/reviews",
-    icon: "material-symbols:reviews-outline",
+    title: "Invoices",
+    path: "/invoices",
+    icon: "basil:invoice-outline",
   },
   {
     title: "Offers",

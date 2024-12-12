@@ -1,5 +1,29 @@
 DO $$ BEGIN
+ CREATE TYPE "public"."AdressType" AS ENUM('SHIPPING', 'BILLING');
+EXCEPTION
+ WHEN duplicate_object THEN null;
+END $$;
+--> statement-breakpoint
+DO $$ BEGIN
+ CREATE TYPE "public"."DeliveryStatus" AS ENUM('PROCESSING', 'SHIPPED', 'OUT_FOR_DELIVERY', 'DELIVERED', 'CANCELLED', 'RETURNED');
+EXCEPTION
+ WHEN duplicate_object THEN null;
+END $$;
+--> statement-breakpoint
+DO $$ BEGIN
  CREATE TYPE "public"."OrderType" AS ENUM('OFFLINE', 'ONLINE');
+EXCEPTION
+ WHEN duplicate_object THEN null;
+END $$;
+--> statement-breakpoint
+DO $$ BEGIN
+ CREATE TYPE "public"."PaymentType" AS ENUM('CREDIT_CARD', 'DEBIT_CARD', 'UPI', 'NET_BANKING', 'WALLET');
+EXCEPTION
+ WHEN duplicate_object THEN null;
+END $$;
+--> statement-breakpoint
+DO $$ BEGIN
+ CREATE TYPE "public"."ProductStatus" AS ENUM('ACTIVE', 'DRAFT', 'ARCHIVED');
 EXCEPTION
  WHEN duplicate_object THEN null;
 END $$;
@@ -25,6 +49,19 @@ CREATE TABLE IF NOT EXISTS "Account" (
 	"session_state" text
 );
 --> statement-breakpoint
+CREATE TABLE IF NOT EXISTS "Address" (
+	"id" varchar(32) PRIMARY KEY NOT NULL,
+	"userId" varchar(32) NOT NULL,
+	"street" varchar(255) NOT NULL,
+	"city" varchar(100) NOT NULL,
+	"state" varchar(100) NOT NULL,
+	"postalCode" varchar(10) NOT NULL,
+	"country" varchar(50) DEFAULT 'India' NOT NULL,
+	"addressType" "AdressType" DEFAULT 'SHIPPING' NOT NULL,
+	"createdAt" timestamp (3) DEFAULT now() NOT NULL,
+	"updatedAt" timestamp (3) DEFAULT now()
+);
+--> statement-breakpoint
 CREATE TABLE IF NOT EXISTS "Category" (
 	"id" varchar(32) PRIMARY KEY NOT NULL,
 	"name" text NOT NULL,
@@ -41,7 +78,11 @@ CREATE TABLE IF NOT EXISTS "Order" (
 	"userId" varchar(32) NOT NULL,
 	"orderDate" timestamp (3) NOT NULL,
 	"orderType" "OrderType" DEFAULT 'ONLINE' NOT NULL,
-	"totalAmountPaid" double precision NOT NULL
+	"totalAmountPaid" double precision NOT NULL,
+	"deliveryStatus" "DeliveryStatus" DEFAULT 'PROCESSING' NOT NULL,
+	"shippingAddress" varchar(32) NOT NULL,
+	"billingAddress" varchar(32) NOT NULL,
+	"paymentMethodId" varchar(32)
 );
 --> statement-breakpoint
 CREATE TABLE IF NOT EXISTS "OrderDetails" (
@@ -59,14 +100,27 @@ CREATE TABLE IF NOT EXISTS "PasswordResetToken" (
 	"expires" timestamp (3) NOT NULL
 );
 --> statement-breakpoint
+CREATE TABLE IF NOT EXISTS "PaymentMethod" (
+	"id" varchar(32) PRIMARY KEY NOT NULL,
+	"userId" varchar(32) NOT NULL,
+	"paymentType" "PaymentType" NOT NULL,
+	"isDefault" boolean DEFAULT false NOT NULL,
+	"paymentDetails" jsonb NOT NULL,
+	"displayDetails" jsonb NOT NULL,
+	"createdAt" timestamp (3) DEFAULT now() NOT NULL,
+	"updatedAt" timestamp (3) DEFAULT now()
+);
+--> statement-breakpoint
 CREATE TABLE IF NOT EXISTS "Product" (
 	"id" varchar(32) PRIMARY KEY NOT NULL,
 	"name" text NOT NULL,
 	"description" text NOT NULL,
-	"image" text[] NOT NULL,
+	"status" "ProductStatus" DEFAULT 'ACTIVE' NOT NULL,
 	"tags" text[],
 	"categoryId" varchar(32) NOT NULL,
 	"manufacturerId" varchar(32) NOT NULL,
+	"createdAt" timestamp DEFAULT now() NOT NULL,
+	"updatedAt" timestamp DEFAULT now(),
 	"properties" jsonb
 );
 --> statement-breakpoint
@@ -74,6 +128,7 @@ CREATE TABLE IF NOT EXISTS "ProductVariant" (
 	"id" varchar(32) PRIMARY KEY NOT NULL,
 	"productId" varchar(32) NOT NULL,
 	"variantName" text NOT NULL,
+	"variantImage" text[] NOT NULL,
 	"potency" varchar,
 	"packSize" varchar,
 	"price" double precision NOT NULL,
@@ -86,8 +141,8 @@ CREATE TABLE IF NOT EXISTS "Review" (
 	"comment" text,
 	"userId" varchar(32) NOT NULL,
 	"productId" varchar(32) NOT NULL,
-	"createdAt" timestamp (3) DEFAULT CURRENT_TIMESTAMP NOT NULL,
-	"updatedAt" timestamp (3) NOT NULL
+	"createdAt" timestamp (3) DEFAULT now() NOT NULL,
+	"updatedAt" timestamp (3) DEFAULT now()
 );
 --> statement-breakpoint
 CREATE TABLE IF NOT EXISTS "TwoFactorConfirmation" (
@@ -110,13 +165,11 @@ CREATE TABLE IF NOT EXISTS "User" (
 	"image" text,
 	"password" text,
 	"role" "UserRole" DEFAULT 'USER' NOT NULL,
-	"lastActive" timestamp (3) DEFAULT CURRENT_TIMESTAMP NOT NULL,
+	"lastActive" timestamp (3) DEFAULT now() NOT NULL,
 	"isTwoFactorEnabled" boolean DEFAULT false NOT NULL,
 	"phone" text,
-	"shippingAddress" text,
-	"billingAddress" text,
-	"createdAt" timestamp (3) DEFAULT CURRENT_TIMESTAMP NOT NULL,
-	"updatedAt" timestamp (3) NOT NULL
+	"createdAt" timestamp (3) DEFAULT now() NOT NULL,
+	"updatedAt" timestamp (3) DEFAULT now()
 );
 --> statement-breakpoint
 CREATE TABLE IF NOT EXISTS "VerificationToken" (
@@ -128,6 +181,12 @@ CREATE TABLE IF NOT EXISTS "VerificationToken" (
 --> statement-breakpoint
 DO $$ BEGIN
  ALTER TABLE "Account" ADD CONSTRAINT "Account_userId_fkey" FOREIGN KEY ("userId") REFERENCES "public"."User"("id") ON DELETE cascade ON UPDATE cascade;
+EXCEPTION
+ WHEN duplicate_object THEN null;
+END $$;
+--> statement-breakpoint
+DO $$ BEGIN
+ ALTER TABLE "Address" ADD CONSTRAINT "Address_userId_fkey" FOREIGN KEY ("userId") REFERENCES "public"."User"("id") ON DELETE cascade ON UPDATE cascade;
 EXCEPTION
  WHEN duplicate_object THEN null;
 END $$;
@@ -145,6 +204,24 @@ EXCEPTION
 END $$;
 --> statement-breakpoint
 DO $$ BEGIN
+ ALTER TABLE "Order" ADD CONSTRAINT "Order_shippingAddress_fkey" FOREIGN KEY ("shippingAddress") REFERENCES "public"."Address"("id") ON DELETE restrict ON UPDATE cascade;
+EXCEPTION
+ WHEN duplicate_object THEN null;
+END $$;
+--> statement-breakpoint
+DO $$ BEGIN
+ ALTER TABLE "Order" ADD CONSTRAINT "Order_billingAddress_fkey" FOREIGN KEY ("billingAddress") REFERENCES "public"."Address"("id") ON DELETE restrict ON UPDATE cascade;
+EXCEPTION
+ WHEN duplicate_object THEN null;
+END $$;
+--> statement-breakpoint
+DO $$ BEGIN
+ ALTER TABLE "Order" ADD CONSTRAINT "Order_paymentMethod_fkey" FOREIGN KEY ("paymentMethodId") REFERENCES "public"."PaymentMethod"("id") ON DELETE restrict ON UPDATE cascade;
+EXCEPTION
+ WHEN duplicate_object THEN null;
+END $$;
+--> statement-breakpoint
+DO $$ BEGIN
  ALTER TABLE "OrderDetails" ADD CONSTRAINT "OrderDetails_orderId_fkey" FOREIGN KEY ("orderId") REFERENCES "public"."Order"("id") ON DELETE cascade ON UPDATE cascade;
 EXCEPTION
  WHEN duplicate_object THEN null;
@@ -152,6 +229,12 @@ END $$;
 --> statement-breakpoint
 DO $$ BEGIN
  ALTER TABLE "OrderDetails" ADD CONSTRAINT "OrderDetails_productVariantId_fkey" FOREIGN KEY ("productVariantId") REFERENCES "public"."ProductVariant"("id") ON DELETE restrict ON UPDATE cascade;
+EXCEPTION
+ WHEN duplicate_object THEN null;
+END $$;
+--> statement-breakpoint
+DO $$ BEGIN
+ ALTER TABLE "PaymentMethod" ADD CONSTRAINT "PaymentMethod_userId_fkey" FOREIGN KEY ("userId") REFERENCES "public"."User"("id") ON DELETE cascade ON UPDATE cascade;
 EXCEPTION
  WHEN duplicate_object THEN null;
 END $$;
@@ -193,8 +276,10 @@ EXCEPTION
 END $$;
 --> statement-breakpoint
 CREATE UNIQUE INDEX IF NOT EXISTS "Account_provider_providerAccountId_key" ON "Account" USING btree ("provider","providerAccountId");--> statement-breakpoint
+CREATE INDEX IF NOT EXISTS "Adress_userId_index" ON "Address" USING btree ("userId");--> statement-breakpoint
 CREATE UNIQUE INDEX IF NOT EXISTS "PasswordResetToken_email_token_key" ON "PasswordResetToken" USING btree ("email","token");--> statement-breakpoint
 CREATE UNIQUE INDEX IF NOT EXISTS "PasswordResetToken_token_key" ON "PasswordResetToken" USING btree ("token");--> statement-breakpoint
+CREATE INDEX IF NOT EXISTS "PaymentMethod_userId_index" ON "PaymentMethod" USING btree ("userId");--> statement-breakpoint
 CREATE UNIQUE INDEX IF NOT EXISTS "TwoFactorConfirmation_userId_key" ON "TwoFactorConfirmation" USING btree ("userId");--> statement-breakpoint
 CREATE UNIQUE INDEX IF NOT EXISTS "TwoFactorToken_email_token_key" ON "TwoFactorToken" USING btree ("email","token");--> statement-breakpoint
 CREATE UNIQUE INDEX IF NOT EXISTS "TwoFactorToken_token_key" ON "TwoFactorToken" USING btree ("token");--> statement-breakpoint
