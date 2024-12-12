@@ -365,7 +365,9 @@ export const order = pgTable(
     orderDate: timestamp("orderDate", {
       precision: 3,
       mode: "date",
-    }).notNull(),
+    })
+      .defaultNow()
+      .notNull(),
     orderType: orderType("orderType").default("ONLINE").notNull(),
     totalAmountPaid: doublePrecision("totalAmountPaid").notNull(),
     deliveryStatus: deliveryStatus("deliveryStatus")

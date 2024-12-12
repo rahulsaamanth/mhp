@@ -8,6 +8,13 @@
       "when": 1733990468802,
       "tag": "0000_bored_rocket_racer",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1734034320602,
+      "tag": "0001_closed_blade",
+      "breakpoints": true
     }
   ]
 }

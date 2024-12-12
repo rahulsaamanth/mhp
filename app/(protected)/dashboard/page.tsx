@@ -1,43 +1,119 @@
+import { ChartCard } from "@/components/chart-card"
+import { OrdersByDayChart } from "@/components/charts/OrdersbyDayChart"
+import { UsersByDayChart } from "@/components/charts/UsersByDayChart"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { db } from "@/db/db"
 import { order, product, user } from "@/db/schema"
+import { getChartDateArray } from "@/lib/chart-date-array"
+import { getRangeOption, RANGE_OPTIONS } from "@/lib/rangeOptions"
+import { startOfDay } from "date-fns"
 
-import { count, eq, sql, sum } from "drizzle-orm"
-import {
-  Boxes,
-  DollarSign,
-  LucideIcon,
-  ShoppingCart,
-  Users,
-} from "lucide-react"
+import { count, eq, sql, sum, gte, lte, and } from "drizzle-orm"
+import { Boxes, LucideIcon, ShoppingCart, Users } from "lucide-react"
 
-async function getSalesData() {
-  const [data] = await db
-    .select({
-      salesCount: count(),
-      totalAmount: sum(order.totalAmountPaid),
-    })
-    .from(order)
+async function getSalesData({
+  createdAfter,
+  createdBefore,
+}: {
+  createdAfter: Date | null
+  createdBefore: Date | null
+}) {
+  const whereClause = []
+  if (createdAfter) whereClause.push(gte(order.orderDate, createdAfter))
+  if (createdBefore) whereClause.push(lte(order.orderDate, createdBefore))
+
+  const [salesData, salesChartData] = await Promise.all([
+    db
+      .select({
+        salesCount: count(),
+        totalAmount: sum(order.totalAmountPaid),
+      })
+      .from(order),
+    db
+      .select({
+        createdAt: order.orderDate,
+        totalAmountPaid: order.totalAmountPaid,
+      })
+      .from(order)
+      .where(and(...whereClause))
+      .orderBy(order.orderDate),
+  ])
+
+  const { array, format } = getChartDateArray(
+    createdAfter || startOfDay(salesChartData[0]!.createdAt),
+    createdBefore || new Date()
+  )
+
+  const dayArray = array.map((date) => {
+    return {
+      date: format(date),
+      totalSales: 0,
+    }
+  })
 
   return {
-    amount: data?.totalAmount,
-    numberOfSales: data?.salesCount,
+    chartData: salesChartData.reduce((data, order) => {
+      const formattedDate = format(order.createdAt)
+      const entry = dayArray.find((day) => day.date === formattedDate)
+      if (entry == null) return data
+      entry.totalSales += order.totalAmountPaid
+      return data
+    }, dayArray),
+    amount: salesData[0]?.totalAmount,
+    numberOfSales: salesData[0]?.salesCount,
   }
 }
 
-async function getUserData() {
-  const [data] = await db
-    .select({
-      usersWithOrders: sql<number>`count(distinct case when ${order.id} is not null then ${user.id} end)`,
-      totalUsers: count(),
-    })
-    .from(user)
-    .where(eq(user.role, "USER"))
-    .leftJoin(order, eq(user.id, order.userId))
+async function getUserData({
+  createdAfter,
+  createdBefore,
+}: {
+  createdAfter: Date | null
+  createdBefore: Date | null
+}) {
+  const whereClause = []
+  if (createdAfter) whereClause.push(gte(user.createdAt, createdAfter))
+  if (createdBefore) whereClause.push(lte(user.createdAt, createdBefore))
+
+  const [userData, usersChartData] = await Promise.all([
+    db
+      .select({
+        usersWithOrders: sql<number>`count(distinct case when ${order.id} is not null then ${user.id} end)`,
+        totalUsers: count(),
+      })
+      .from(user)
+      .where(eq(user.role, "USER"))
+      .leftJoin(order, eq(user.id, order.userId)),
+
+    db
+      .select({ createdAt: user.createdAt })
+      .from(user)
+      .where(and(...whereClause))
+      .orderBy(user.createdAt),
+  ])
+
+  const { array, format } = getChartDateArray(
+    createdAfter || startOfDay(usersChartData[0]!.createdAt),
+    createdBefore || new Date()
+  )
+
+  const dayArray = array.map((date) => {
+    return {
+      date: format(date),
+      totalUsers: 0,
+    }
+  })
 
   return {
-    activeUsers: data?.usersWithOrders,
-    totalUsers: data?.totalUsers,
+    chartData: usersChartData.reduce((data, user) => {
+      const formattedDate = format(user.createdAt)
+      const entry = dayArray.find((day) => day.date === formattedDate)
+      if (entry == null) return data
+      entry.totalUsers += 1
+      return data
+    }, dayArray),
+    activeUsers: userData[0]?.usersWithOrders,
+    totalUsers: userData[0]?.totalUsers,
   }
 }
 
@@ -55,34 +131,56 @@ async function getProdcutsData() {
   }
 }
 
-export default async function DashboardPage() {
+export default async function DashboardPage({
+  searchParams,
+}: {
+  searchParams: {
+    totalSalesRange?: string
+    totalSalesRangeFrom?: string
+    totalSalesRangeTo?: string
+    newCustomersRange?: string
+    newCustomersRangeFrom?: string
+    newCustomersRangeTo?: string
+  }
+}) {
+  const {
+    newCustomersRange,
+    newCustomersRangeFrom,
+    newCustomersRangeTo,
+    totalSalesRange,
+    totalSalesRangeFrom,
+    totalSalesRangeTo,
+  } = await searchParams
+
+  const totalSalesRangeOption =
+    getRangeOption(totalSalesRange, totalSalesRangeFrom, totalSalesRangeTo) ||
+    RANGE_OPTIONS.last_90_days
+
+  const newCustomersRangeOption =
+    getRangeOption(
+      newCustomersRange,
+      newCustomersRangeFrom,
+      newCustomersRangeTo
+    ) || RANGE_OPTIONS.last_90_days
+
   const [salesData, userData, productData] = await Promise.all([
-    getSalesData(),
-    getUserData(),
+    getSalesData({
+      createdAfter: totalSalesRangeOption.startDate,
+      createdBefore: totalSalesRangeOption.endDate,
+    }),
+    getUserData({
+      createdAfter: newCustomersRangeOption.startDate,
+      createdBefore: newCustomersRangeOption.endDate,
+    }),
     getProdcutsData(),
   ])
 
   return (
-    <div>
+    <div className="w-full py-2 space-y-8">
       <section className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
         <DashboardCard
           title="Sales"
-          body={
-            <span className="flex items-center">
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                width="24"
-                height="24"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  fill="currentColor"
-                  d="M13.725 21L7 14v-2h3.5q1.325 0 2.288-.862T13.95 9H6V7h7.65q-.425-.875-1.263-1.437T10.5 5H6V3h12v2h-3.25q.35.425.625.925T15.8 7H18v2h-2.025q-.2 2.125-1.75 3.563T10.5 14h-.725l6.725 7z"
-                />
-              </svg>
-              {salesData.amount}
-            </span>
-          }
+          body={<span className="flex items-center">₹ {salesData.amount}</span>}
           Icon={ShoppingCart}
           footerTitle="Total orders"
           footerValue={salesData.numberOfSales}
@@ -102,6 +200,22 @@ export default async function DashboardPage() {
           footerTitle="Total products"
           footerValue={productData.totalProductCount}
         />
+      </section>
+      <section className="grid grid-cols-1 lg:grid-cols-2 gap-4 gap-y-8">
+        <ChartCard
+          title="New Customers"
+          queryKey="newCustomersRange"
+          selectedRangeLabel={newCustomersRangeOption.label}
+        >
+          <UsersByDayChart data={userData.chartData} />
+        </ChartCard>
+        <ChartCard
+          title="Total Sales"
+          queryKey="totalSalesRange"
+          selectedRangeLabel={totalSalesRangeOption.label}
+        >
+          <OrdersByDayChart data={salesData.chartData} />
+        </ChartCard>
       </section>
     </div>
   )
