@@ -1,14 +1,35 @@
 import { ChartCard } from "@/components/chart-card"
+import { OrdersByCategoryChart } from "@/components/charts/OrdersByCategoryChart"
 import { OrdersByDayChart } from "@/components/charts/OrdersbyDayChart"
 import { UsersByDayChart } from "@/components/charts/UsersByDayChart"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { db } from "@/db/db"
-import { order, product, user } from "@/db/schema"
+import {
+  category,
+  manufacturer,
+  order,
+  orderDetails,
+  product,
+  productVariant,
+  user,
+} from "@/db/schema"
 import { getChartDateArray } from "@/lib/chart-date-array"
 import { getRangeOption, RANGE_OPTIONS } from "@/lib/rangeOptions"
 import { startOfDay } from "date-fns"
 
-import { count, eq, sql, sum, gte, lte, and } from "drizzle-orm"
+import {
+  count,
+  eq,
+  sql,
+  sum,
+  gte,
+  lte,
+  and,
+  countDistinct,
+  ne,
+  desc,
+  aliasedTable,
+} from "drizzle-orm"
 import { Boxes, LucideIcon, ShoppingCart, Users } from "lucide-react"
 
 async function getSalesData({
@@ -113,7 +134,7 @@ async function getUserData({
       return data
     }, dayArray),
     activeUsers: userData[0]?.usersWithOrders,
-    totalUsers: userData[0]?.totalUsers,
+    inactiveUsers: userData[0]?.totalUsers! - userData[0]?.usersWithOrders!,
   }
 }
 
@@ -126,9 +147,59 @@ async function getProdcutsData() {
     .from(product)
 
   return {
-    totalProductCount: data?.totalProducts,
-    activeProuductCount: data?.activeProducts,
+    activeProductCount: data?.activeProducts,
+    inactiveProductCount: data?.totalProducts! - data?.activeProducts!,
   }
+}
+
+async function getOrdersByMainCategory() {
+  const mainCategory = aliasedTable(category, "mainCategory")
+
+  return await db
+    .select({
+      // mainCategoryId: mainCategory.id,
+      mainCategoryName: mainCategory.name,
+      totalOrders: countDistinct(order.id).mapWith(Number),
+      totalRevenue: sum(order.totalAmountPaid).mapWith(Number),
+      totalItemsSold: sum(orderDetails.quantity).mapWith(Number),
+    })
+    .from(order)
+    .innerJoin(orderDetails, sql`${orderDetails.orderId} = ${order.id}`)
+    .innerJoin(
+      productVariant,
+      sql`${productVariant.id} = ${orderDetails.productVariantId}`
+    )
+    .innerJoin(product, sql`${product.id} = ${productVariant.productId}`)
+    .innerJoin(category, sql`${category.id} = ${product.categoryId}`)
+    .innerJoin(mainCategory, sql`${category.parentId} = ${mainCategory.id}`)
+    .groupBy(mainCategory.id, mainCategory.name)
+    .orderBy(desc(sum(order.totalAmountPaid)))
+}
+
+async function getOrdersBySubCategory() {
+  const mainCategory = aliasedTable(category, "mainCategory")
+
+  return await db
+    .select({
+      // mainCategoryId: mainCategory.id,
+      mainCategoryName: mainCategory.name,
+      // subCategoryId: category.id,
+      subCategoryName: category.name,
+      totalOrders: countDistinct(order.id).mapWith(Number),
+      totalRevenue: sum(order.totalAmountPaid).mapWith(Number),
+      totalItemsSold: sum(orderDetails.quantity).mapWith(Number),
+    })
+    .from(order)
+    .innerJoin(orderDetails, sql`${orderDetails.orderId} = ${order.id}`)
+    .innerJoin(
+      productVariant,
+      sql`${productVariant.id} = ${orderDetails.productVariantId}`
+    )
+    .innerJoin(product, sql`${product.id} = ${productVariant.productId}`)
+    .innerJoin(category, sql`${category.id} = ${product.categoryId}`)
+    .innerJoin(mainCategory, sql`${category.parentId} = ${mainCategory.id}`)
+    .groupBy(mainCategory.id, mainCategory.name, category.id, category.name)
+    .orderBy(desc(sum(order.totalAmountPaid)))
 }
 
 export default async function DashboardPage({
@@ -175,6 +246,9 @@ export default async function DashboardPage({
     getProdcutsData(),
   ])
 
+  const ordersByMainCategory = await getOrdersByMainCategory()
+  const ordersBySubCategory = await getOrdersBySubCategory()
+  console.log(ordersByMainCategory, ordersBySubCategory)
   return (
     <div className="w-full py-2 space-y-8">
       <section className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -187,18 +261,18 @@ export default async function DashboardPage({
         />
         <DashboardCard
           title="Customers"
-          body={userData.activeUsers ?? 0}
+          body={userData.activeUsers}
           Icon={Users}
-          footerTitle="Total users"
-          footerValue={userData.totalUsers}
+          footerTitle="Total inactive customers"
+          footerValue={userData.inactiveUsers}
         />
 
         <DashboardCard
           title="Active Products"
-          body={productData.activeProuductCount ?? 0}
+          body={productData.activeProductCount}
           Icon={Boxes}
-          footerTitle="Total products"
-          footerValue={productData.totalProductCount}
+          footerTitle="Total inactive products"
+          footerValue={productData.inactiveProductCount}
         />
       </section>
       <section className="grid grid-cols-1 lg:grid-cols-2 gap-4 gap-y-8">
@@ -215,6 +289,13 @@ export default async function DashboardPage({
           selectedRangeLabel={totalSalesRangeOption.label}
         >
           <OrdersByDayChart data={salesData.chartData} />
+        </ChartCard>
+        <ChartCard
+          title="Orders by Category"
+          // queryKey="ordersByCategory"
+          // selectedRangeLabel={}
+        >
+          <OrdersByCategoryChart />
         </ChartCard>
       </section>
     </div>
@@ -237,7 +318,7 @@ const DashboardCard = ({
   footerValue,
 }: DashboardCardProps) => {
   return (
-    <Card className="bg-white shadow-zinc-200 shadow-lg">
+    <Card className="bg-white shadow-zinc-200 shadow-md">
       <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2 ">
         <CardTitle className="text-base font-medium">{title}</CardTitle>
         <Icon className="h-4 w-4 text-muted-foreground" />

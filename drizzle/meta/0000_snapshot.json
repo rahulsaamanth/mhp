@@ -1,5 +1,5 @@
 {
-  "id": "b268cf24-39b3-4d41-acaf-8555662e039a",
+  "id": "e7609d32-796d-4eaf-8d3a-ad548ba5b5d9",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "version": "7",
   "dialect": "postgresql",
@@ -311,7 +311,8 @@
           "name": "orderDate",
           "type": "timestamp (3)",
           "primaryKey": false,
-          "notNull": true
+          "notNull": true,
+          "default": "now()"
         },
         "orderType": {
           "name": "orderType",

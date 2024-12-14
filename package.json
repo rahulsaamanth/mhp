@@ -9,7 +9,7 @@
     "start": "next start",
     "lint": "next lint",
     "format": "prettier --write \"**/*.{js,ts,jsx,tsx}\"",
-    "db:seed": "tsx drizzle/seed.ts"
+    "db:seed": "dotenv -e .env.local -- tsx db/seed.ts"
   },
   "dependencies": {
     "@auth/core": "^0.34.2",
@@ -82,8 +82,9 @@
     "@types/react": "19.0.1",
     "@types/react-dom": "19.0.2",
     "@types/uuid": "^9.0.8",
+    "dotenv-cli": "^7.4.4",
     "drizzle-kit": "^0.24.2",
-    "eslint": "^9.16.0",
+    "eslint": "9.16.0",
     "eslint-config-next": "15.1.0",
     "eslint-plugin-react-hooks": "^4.6.2",
     "prettier": "^3.2.5",
