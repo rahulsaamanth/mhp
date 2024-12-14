@@ -76,7 +76,7 @@ CREATE TABLE IF NOT EXISTS "Manufacturer" (
 CREATE TABLE IF NOT EXISTS "Order" (
 	"id" varchar(32) PRIMARY KEY NOT NULL,
 	"userId" varchar(32) NOT NULL,
-	"orderDate" timestamp (3) NOT NULL,
+	"orderDate" timestamp (3) DEFAULT now() NOT NULL,
 	"orderType" "OrderType" DEFAULT 'ONLINE' NOT NULL,
 	"totalAmountPaid" double precision NOT NULL,
 	"deliveryStatus" "DeliveryStatus" DEFAULT 'PROCESSING' NOT NULL,

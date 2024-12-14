@@ -1,1 +1,0 @@
-ALTER TABLE "Order" ALTER COLUMN "orderDate" SET DEFAULT now();
