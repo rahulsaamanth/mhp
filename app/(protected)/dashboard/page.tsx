@@ -1,5 +1,8 @@
 import { ChartCard } from "@/components/chart-card"
-import { OrdersByCategoryChart } from "@/components/charts/OrdersByCategoryChart"
+import {
+  OrdersByCategoryChart,
+  OrdersByCategoryChartData,
+} from "@/components/charts/OrdersByCategoryChart"
 import { OrdersByDayChart } from "@/components/charts/OrdersbyDayChart"
 import { UsersByDayChart } from "@/components/charts/UsersByDayChart"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
@@ -152,34 +155,20 @@ async function getProdcutsData() {
   }
 }
 
-async function getOrdersByMainCategory() {
+async function getProductsSoldByCategory({
+  createdAfter,
+  createdBefore,
+}: {
+  createdAfter: Date | null
+  createdBefore: Date | null
+}) {
+  const whereClause = []
+  if (createdAfter) whereClause.push(gte(order.orderDate, createdAfter))
+  if (createdBefore) whereClause.push(lte(order.orderDate, createdBefore))
+
   const mainCategory = aliasedTable(category, "mainCategory")
 
-  return await db
-    .select({
-      // mainCategoryId: mainCategory.id,
-      mainCategoryName: mainCategory.name,
-      totalOrders: countDistinct(order.id).mapWith(Number),
-      totalRevenue: sum(order.totalAmountPaid).mapWith(Number),
-      totalItemsSold: sum(orderDetails.quantity).mapWith(Number),
-    })
-    .from(order)
-    .innerJoin(orderDetails, sql`${orderDetails.orderId} = ${order.id}`)
-    .innerJoin(
-      productVariant,
-      sql`${productVariant.id} = ${orderDetails.productVariantId}`
-    )
-    .innerJoin(product, sql`${product.id} = ${productVariant.productId}`)
-    .innerJoin(category, sql`${category.id} = ${product.categoryId}`)
-    .innerJoin(mainCategory, sql`${category.parentId} = ${mainCategory.id}`)
-    .groupBy(mainCategory.id, mainCategory.name)
-    .orderBy(desc(sum(order.totalAmountPaid)))
-}
-
-async function getOrdersBySubCategory() {
-  const mainCategory = aliasedTable(category, "mainCategory")
-
-  return await db
+  const data = await db
     .select({
       // mainCategoryId: mainCategory.id,
       mainCategoryName: mainCategory.name,
@@ -198,8 +187,30 @@ async function getOrdersBySubCategory() {
     .innerJoin(product, sql`${product.id} = ${productVariant.productId}`)
     .innerJoin(category, sql`${category.id} = ${product.categoryId}`)
     .innerJoin(mainCategory, sql`${category.parentId} = ${mainCategory.id}`)
+    .where(and(...whereClause))
     .groupBy(mainCategory.id, mainCategory.name, category.id, category.name)
     .orderBy(desc(sum(order.totalAmountPaid)))
+
+  const mainCategoryMap = data.reduce((acc: any, item) => {
+    if (!acc[item.mainCategoryName]) {
+      acc[item.mainCategoryName] = {
+        name: item.mainCategoryName,
+        value: 0,
+      }
+    }
+    acc[item.mainCategoryName].value += item.totalItemsSold
+    return acc
+  }, {})
+
+  return {
+    mainCategoryArray: Object.values(
+      mainCategoryMap
+    ) as OrdersByCategoryChartData,
+    subCategoryArray: data.map((item) => ({
+      name: item.subCategoryName,
+      value: item.totalItemsSold,
+    })),
+  }
 }
 
 export default async function DashboardPage({
@@ -212,6 +223,9 @@ export default async function DashboardPage({
     newCustomersRange?: string
     newCustomersRangeFrom?: string
     newCustomersRangeTo?: string
+    productsSoldByCategoryRange?: string
+    productsSoldByCategoryRangeFrom?: string
+    productsSoldByCategoryRangeTo?: string
   }
 }) {
   const {
@@ -221,6 +235,9 @@ export default async function DashboardPage({
     totalSalesRange,
     totalSalesRangeFrom,
     totalSalesRangeTo,
+    productsSoldByCategoryRange,
+    productsSoldByCategoryRangeFrom,
+    productsSoldByCategoryRangeTo,
   } = await searchParams
 
   const totalSalesRangeOption =
@@ -234,21 +251,30 @@ export default async function DashboardPage({
       newCustomersRangeTo
     ) || RANGE_OPTIONS.last_90_days
 
-  const [salesData, userData, productData] = await Promise.all([
-    getSalesData({
-      createdAfter: totalSalesRangeOption.startDate,
-      createdBefore: totalSalesRangeOption.endDate,
-    }),
-    getUserData({
-      createdAfter: newCustomersRangeOption.startDate,
-      createdBefore: newCustomersRangeOption.endDate,
-    }),
-    getProdcutsData(),
-  ])
+  const productsSoldByCategoryRangeOption =
+    getRangeOption(
+      productsSoldByCategoryRange,
+      productsSoldByCategoryRangeFrom,
+      productsSoldByCategoryRangeTo
+    ) || RANGE_OPTIONS.last_90_days
 
-  const ordersByMainCategory = await getOrdersByMainCategory()
-  const ordersBySubCategory = await getOrdersBySubCategory()
-  console.log(ordersByMainCategory, ordersBySubCategory)
+  const [salesData, userData, productData, productsSoldByCategory] =
+    await Promise.all([
+      getSalesData({
+        createdAfter: totalSalesRangeOption.startDate,
+        createdBefore: totalSalesRangeOption.endDate,
+      }),
+      getUserData({
+        createdAfter: newCustomersRangeOption.startDate,
+        createdBefore: newCustomersRangeOption.endDate,
+      }),
+      getProdcutsData(),
+      getProductsSoldByCategory({
+        createdAfter: productsSoldByCategoryRangeOption.startDate,
+        createdBefore: productsSoldByCategoryRangeOption.endDate,
+      }),
+    ])
+
   return (
     <div className="w-full py-2 space-y-8">
       <section className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -291,11 +317,14 @@ export default async function DashboardPage({
           <OrdersByDayChart data={salesData.chartData} />
         </ChartCard>
         <ChartCard
-          title="Orders by Category"
-          // queryKey="ordersByCategory"
-          // selectedRangeLabel={}
+          title="Products sold by Category"
+          queryKey="productsSoldByCategory"
+          selectedRangeLabel={productsSoldByCategoryRangeOption.label}
         >
-          <OrdersByCategoryChart />
+          <OrdersByCategoryChart
+            data1={productsSoldByCategory.mainCategoryArray}
+            data2={productsSoldByCategory.subCategoryArray}
+          />
         </ChartCard>
       </section>
     </div>

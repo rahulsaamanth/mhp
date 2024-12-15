@@ -2,12 +2,6 @@
 
 import { Pie, PieChart, ResponsiveContainer, Tooltip, Cell } from "recharts"
 
-const data01 = [{ name: "Homeopathy", value: 6 }]
-const data02 = [
-  { name: "Mothertinctures", value: 5 },
-  { name: "Biochemics", value: 1 },
-]
-
 const colors = [
   "#8884d8",
   "#83a6ed",
@@ -23,27 +17,28 @@ const colors = [
   "#9b59b6",
 ]
 
-type ProductsSoldByMainCategory = {
-  mainCategoryName: string
-  totalItemsSold: number
+export type OrdersByCategoryChartData = {
+  name: string
+  value: number
 }[]
 
-type ProductsSoldBySubCategory = {
-  subCategoryName: string
-  totalItemsSold: number
-}[]
-
-export function OrdersByCategoryChart() {
+export function OrdersByCategoryChart({
+  data1,
+  data2,
+}: {
+  data1: OrdersByCategoryChartData
+  data2: OrdersByCategoryChartData
+}) {
   return (
-    <ResponsiveContainer width="100%" minHeight={300}>
+    <ResponsiveContainer width={400} height={400}>
       <PieChart width={400} height={400}>
-        <Pie data={data01} dataKey="value" cx={200} cy={200} outerRadius={60}>
-          {data01.map((entry, index) => (
+        <Pie data={data1} dataKey="value" cx={200} cy={200} outerRadius={60}>
+          {data1.map((entry, index) => (
             <Cell key={`cell-${index}`} fill={colors[index % colors.length]} />
           ))}
         </Pie>
         <Pie
-          data={data02}
+          data={data2}
           dataKey="value"
           cx={200}
           cy={200}
@@ -51,7 +46,7 @@ export function OrdersByCategoryChart() {
           outerRadius={90}
           label
         >
-          {data02.map((entry, index) => (
+          {data2.map((entry, index) => (
             <Cell key={`cell-${index}`} fill={colors[index % colors.length]} />
           ))}
         </Pie>
