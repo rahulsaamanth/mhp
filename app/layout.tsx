@@ -25,7 +25,7 @@ export default async function RootLayout({
 
   return (
     <SessionProvider session={session}>
-      <html lang="en" className={MontSerrat.className} suppressHydrationWarning>
+      <html lang="en" className={MontSerrat.className}>
         <body>
           <Toaster richColors theme="light" toastOptions={{}} />
           <NuqsAdapter>{children}</NuqsAdapter>
