@@ -1,3 +1,4 @@
+import type { Metadata } from "next"
 import { ChartCard } from "@/components/chart-card"
 import {
   OrdersByCategoryChart,
@@ -216,17 +217,17 @@ async function getProductsSoldByCategory({
 export default async function DashboardPage({
   searchParams,
 }: {
-  searchParams: {
-    totalSalesRange?: string
-    totalSalesRangeFrom?: string
-    totalSalesRangeTo?: string
+  searchParams: Promise<{
     newCustomersRange?: string
     newCustomersRangeFrom?: string
     newCustomersRangeTo?: string
+    totalSalesRange?: string
+    totalSalesRangeFrom?: string
+    totalSalesRangeTo?: string
     productsSoldByCategoryRange?: string
     productsSoldByCategoryRangeFrom?: string
     productsSoldByCategoryRangeTo?: string
-  }
+  }>
 }) {
   const {
     newCustomersRange,
@@ -241,22 +242,25 @@ export default async function DashboardPage({
   } = await searchParams
 
   const totalSalesRangeOption =
-    getRangeOption(totalSalesRange, totalSalesRangeFrom, totalSalesRangeTo) ||
-    RANGE_OPTIONS.last_90_days
+    getRangeOption(
+      totalSalesRange as string,
+      totalSalesRangeFrom as string,
+      totalSalesRangeTo as string
+    ) || RANGE_OPTIONS.last_90_days
 
   const newCustomersRangeOption =
     getRangeOption(
-      newCustomersRange,
-      newCustomersRangeFrom,
-      newCustomersRangeTo
+      newCustomersRange as string,
+      newCustomersRangeFrom as string,
+      newCustomersRangeTo as string
     ) || RANGE_OPTIONS.last_90_days
 
   const productsSoldByCategoryRangeOption =
     getRangeOption(
-      productsSoldByCategoryRange,
-      productsSoldByCategoryRangeFrom,
-      productsSoldByCategoryRangeTo
-    ) || RANGE_OPTIONS.last_90_days
+      productsSoldByCategoryRange as string,
+      productsSoldByCategoryRangeFrom as string,
+      productsSoldByCategoryRangeTo as string
+    ) || RANGE_OPTIONS.all_time
 
   const [salesData, userData, productData, productsSoldByCategory] =
     await Promise.all([
@@ -301,7 +305,7 @@ export default async function DashboardPage({
           footerValue={productData.inactiveProductCount}
         />
       </section>
-      <section className="grid grid-cols-1 lg:grid-cols-2 gap-4 gap-y-8">
+      <section className="grid grid-cols-1 lg:grid-cols-2 2xl:grid-cols-3 gap-4 gap-y-8">
         <ChartCard
           title="New Customers"
           queryKey="newCustomersRange"
@@ -318,8 +322,8 @@ export default async function DashboardPage({
         </ChartCard>
         <ChartCard
           title="Products sold by Category"
-          queryKey="productsSoldByCategory"
-          selectedRangeLabel={productsSoldByCategoryRangeOption.label}
+          // queryKey="productsSoldByCategory"
+          // selectedRangeLabel={productsSoldByCategoryRangeOption.label}
         >
           <OrdersByCategoryChart
             data1={productsSoldByCategory.mainCategoryArray}

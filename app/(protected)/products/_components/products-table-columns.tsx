@@ -46,13 +46,13 @@ export function getColumns({
       accessorKey: "image",
       header: ({ column }) => <></>,
       cell: ({ row }) => (
-        <img
-          alt="Product image"
-          className="aspect-square rounded-md object-cover"
-          height="64"
-          width="54"
-          src={row.getValue("image")}
-        />
+        <div className="size-40 flex items-center justify-center overflow-hidden">
+          <img
+            alt="Product image"
+            className="aspect-square rounded-md object-cover w-full h-full"
+            src={row.getValue("image")}
+          />
+        </div>
       ),
       enableSorting: false,
       enableHiding: false,
@@ -103,14 +103,16 @@ export function getColumns({
       header: ({ column }) => (
         <DataTableColumnHeader column={column} title="Sales" />
       ),
-      cell: ({ row }) => row.getValue("sales"),
+      cell: ({ row }) => <span className="pl-4">{row.getValue("sales")}</span>,
     },
     {
       accessorKey: "createdAt",
       header: ({ column }) => (
         <DataTableColumnHeader column={column} title="Created At" />
       ),
-      cell: ({ cell }) => formatDate(cell.getValue() as Date),
+      cell: ({ cell }) => (
+        <span className="pr-4">{formatDate(cell.getValue() as Date)}</span>
+      ),
     },
   ]
 }

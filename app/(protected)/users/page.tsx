@@ -70,11 +70,11 @@ async function getUserData({
 const UsersPage = async ({
   searchParams,
 }: {
-  searchParams: {
+  searchParams: Promise<{
     newCustomersRange?: string
     newCustomersRangeFrom?: string
     newCustomersRangeTo?: string
-  }
+  }>
 }) => {
   // const columnData = await getUsers()
 
