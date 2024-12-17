@@ -9,7 +9,7 @@ import { Card, CardContent, CardHeader } from "@/components/ui/card"
 
 import { toast } from "sonner"
 
-const AdminPage = async () => {
+const AdminPage = () => {
   const onServerActionClick = () => {
     admin().then((data) => {
       if (data.error) toast.error(data?.error)

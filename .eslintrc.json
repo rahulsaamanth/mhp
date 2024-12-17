@@ -1,10 +1,9 @@
 {
-  "plugins": ["@tanstack/query"],
+  "plugins": ["@tanstack/query", "react-hooks"],
   "extends": [
     "next/core-web-vitals",
-    "plugin:reacthooks/recommended",
-    "plugin:@tanstack/eslint-plugin-query/recommended",
-    "plugin:eslint-plugin-reacthooks/recommended"
+    "plugin:react-hooks/recommended",
+    "plugin:@tanstack/eslint-plugin-query/recommended"
   ],
 
   "rules": {
