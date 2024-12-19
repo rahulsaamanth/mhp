@@ -8,6 +8,7 @@ import { DataTableColumnHeader } from "@/components/data-table/data-table-column
 
 import { formatDate } from "@/lib/utils"
 import { Badge } from "@/components/ui/badge"
+import Link from "next/link"
 
 interface GetColumnProps {
   setRowAction: React.Dispatch<
@@ -63,7 +64,11 @@ export function getColumns({
         <DataTableColumnHeader column={column} title="Name" />
       ),
       cell: ({ row }) => (
-        <div className="py-4 text-wrap w-44">{row.getValue("name")}</div>
+        <div className="py-4 text-wrap w-44">
+          <Link href={`products/${row.original.id}`}>
+            {row.getValue("name")}
+          </Link>
+        </div>
       ),
       enableSorting: true,
       enableHiding: false,
