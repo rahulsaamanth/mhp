@@ -17,7 +17,7 @@ interface ProductPageProps {
   searchParams: Promise<SearchParams>
 }
 
-export default async function ProductPage(props: ProductPageProps) {
+export default async function ProductsPage(props: ProductPageProps) {
   const searchParams = await props.searchParams
   const search = searchParamsCache.parse(searchParams)
 

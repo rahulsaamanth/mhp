@@ -125,7 +125,7 @@ const MenuItem = ({
         <Link
           href={item.path}
           className={`flex flex-row items-center space-x-4 rounded-lg p-2 hover:bg-zinc-200 ${
-            item.path === pathname && "bg-zinc-200"
+            pathname.includes(item.path) && "bg-zinc-200"
           }`}
           onClick={() => setOpenSubMenu(null)}
         >
