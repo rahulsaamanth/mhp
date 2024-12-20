@@ -12,8 +12,6 @@ import {
   pgEnum,
   integer,
 } from "drizzle-orm/pg-core"
-import { InferSelectModel, sql } from "drizzle-orm"
-import { generateId } from "@/lib/id"
 
 const ENTITY_PREFIX = {
   USER: "USR",

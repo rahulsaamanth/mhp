@@ -32,6 +32,7 @@ import { product } from "@/db/schema"
 import { eq } from "drizzle-orm"
 import { ChevronLeft, PlusCircle, Upload } from "lucide-react"
 import Image from "next/image"
+import Link from "next/link"
 
 const ProductPage = async ({ params }: { params: Promise<{ id: string }> }) => {
   const product_id = (await params).id
@@ -47,10 +48,12 @@ const ProductPage = async ({ params }: { params: Promise<{ id: string }> }) => {
     <main className="grid flex-1 items-start gap-4 p-4 sm:px-6 sm:py-0 md:gap-8 w-full">
       <div className="grid  flex-1 auto-rows-max gap-4">
         <div className="flex items-center gap-4">
-          <Button variant="outline" size="icon" className="h-7 w-7">
-            <ChevronLeft className="h-4 w-4" />
-            <span className="sr-only">Back</span>
-          </Button>
+          <Link href="/products">
+            <Button variant="outline" size="icon" className="h-7 w-7">
+              <ChevronLeft className="h-4 w-4" />
+              <span className="sr-only">Back</span>
+            </Button>
+          </Link>
           <h1 className="flex-1 shrink-0 whitespace-nowrap text-xl font-semibold tracking-tight sm:grow-0">
             Pro Controller
           </h1>

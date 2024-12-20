@@ -35,6 +35,7 @@ import {
   aliasedTable,
 } from "drizzle-orm"
 import { Boxes, LucideIcon, ShoppingCart, Users } from "lucide-react"
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 
 async function getSalesData({
   createdAfter,
@@ -214,6 +215,22 @@ async function getProductsSoldByCategory({
   }
 }
 
+async function getLatestOrders() {
+  const data = await db
+    .select({
+      order_id: order.id,
+      user_name: user.name,
+      user_email: user.email,
+
+      order_amount: order.totalAmountPaid,
+    })
+    .from(order)
+    .leftJoin(user, eq(order.userId, user.id))
+    .orderBy(desc(order.orderDate))
+    .limit(5)
+  return data
+}
+
 export default async function DashboardPage({
   searchParams,
 }: {
@@ -262,25 +279,33 @@ export default async function DashboardPage({
       productsSoldByCategoryRangeTo as string
     ) || RANGE_OPTIONS.all_time
 
-  const [salesData, userData, productData, productsSoldByCategory] =
-    await Promise.all([
-      getSalesData({
-        createdAfter: totalSalesRangeOption.startDate,
-        createdBefore: totalSalesRangeOption.endDate,
-      }),
-      getUserData({
-        createdAfter: newCustomersRangeOption.startDate,
-        createdBefore: newCustomersRangeOption.endDate,
-      }),
-      getProdcutsData(),
-      getProductsSoldByCategory({
-        createdAfter: productsSoldByCategoryRangeOption.startDate,
-        createdBefore: productsSoldByCategoryRangeOption.endDate,
-      }),
-    ])
+  const [
+    salesData,
+    userData,
+    productData,
+    productsSoldByCategory,
+    recentOrders,
+  ] = await Promise.all([
+    getSalesData({
+      createdAfter: totalSalesRangeOption.startDate,
+      createdBefore: totalSalesRangeOption.endDate,
+    }),
+    getUserData({
+      createdAfter: newCustomersRangeOption.startDate,
+      createdBefore: newCustomersRangeOption.endDate,
+    }),
+    getProdcutsData(),
+    getProductsSoldByCategory({
+      createdAfter: productsSoldByCategoryRangeOption.startDate,
+      createdBefore: productsSoldByCategoryRangeOption.endDate,
+    }),
+    getLatestOrders(),
+  ])
+
+  console.log(recentOrders)
 
   return (
-    <div className="w-full py-2 space-y-8">
+    <div className="w-full py-2 sm:px-6 space-y-8">
       <section className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
         <DashboardCard
           title="Sales"
@@ -305,7 +330,7 @@ export default async function DashboardPage({
           footerValue={productData.inactiveProductCount}
         />
       </section>
-      <section className="grid grid-cols-1 lg:grid-cols-2 2xl:grid-cols-3 gap-4 gap-y-8">
+      <section className="grid grid-cols-1 lg:grid-cols-2  gap-4 gap-y-8">
         <ChartCard
           title="New Customers"
           queryKey="newCustomersRange"
@@ -320,18 +345,72 @@ export default async function DashboardPage({
         >
           <OrdersByDayChart data={salesData.chartData} />
         </ChartCard>
-        <ChartCard
-          title="Products sold by Category"
-          // queryKey="productsSoldByCategory"
-          // selectedRangeLabel={productsSoldByCategoryRangeOption.label}
-        >
-          <OrdersByCategoryChart
-            data1={productsSoldByCategory.mainCategoryArray}
-            data2={productsSoldByCategory.subCategoryArray}
-          />
-        </ChartCard>
+      </section>
+      <section className="grid grid-cols-1 lg:grid-cols-3  gap-4 gap-y-8">
+        <div className="sm:col-span-2">
+          <ChartCard
+            title="Products sold by Category"
+            // queryKey="productsSoldByCategory"
+            // selectedRangeLabel={productsSoldByCategoryRangeOption.label}
+          >
+            <OrdersByCategoryChart
+              data1={productsSoldByCategory.mainCategoryArray}
+              data2={productsSoldByCategory.subCategoryArray}
+            />
+          </ChartCard>
+        </div>
+        <DashboardRecentOrdersShortTable data={recentOrders} />
       </section>
     </div>
+  )
+}
+
+type DashboardRecentOrdersShortTableProps = {
+  data: {
+    order_id: string
+    user_name: string
+    user_email: string
+
+    order_amount: number
+  }[]
+}
+
+const DashboardRecentOrdersShortTable = ({
+  data,
+}: DashboardRecentOrdersShortTableProps) => {
+  return (
+    <Card>
+      <CardHeader>
+        <CardTitle>Recent Sales</CardTitle>
+      </CardHeader>
+      <CardContent className="grid gap-8 pt-4">
+        {data.map((order) => (
+          <div className="flex items-center gap-4" key={order.order_id}>
+            <Avatar className="hidden h-9 w-9 sm:flex">
+              <AvatarImage src="" alt="Avatar" />
+              <AvatarFallback>
+                {order.user_name
+                  .trim()
+                  .split(" ")
+                  .map((word) => word[0])
+                  .slice(0, 2)
+                  .join("")
+                  .toUpperCase()}
+              </AvatarFallback>
+            </Avatar>
+            <div className="grid gap-1">
+              <p className="text-sm font-medium leading-none">
+                {order.user_name}
+              </p>
+              <p className="text-sm text-muted-foreground">
+                {order.user_email}
+              </p>
+            </div>
+            <div className="ml-auto font-medium">+₹{order.order_amount}</div>
+          </div>
+        ))}
+      </CardContent>
+    </Card>
   )
 }
 
