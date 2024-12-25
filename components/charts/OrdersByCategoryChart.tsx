@@ -31,7 +31,7 @@ export function OrdersByCategoryChart({
 }) {
   return (
     <ResponsiveContainer width={400} height={400}>
-      <PieChart width={400} height={400}>
+      <PieChart className="size-full">
         <Pie data={data1} dataKey="value" cx={200} cy={200} outerRadius={60}>
           {data1.map((entry, index) => (
             <Cell key={`cell-${index}`} fill={colors[index % colors.length]} />

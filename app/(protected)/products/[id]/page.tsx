@@ -43,7 +43,7 @@ const ProductPage = async ({ params }: { params: Promise<{ id: string }> }) => {
 
   console.log(data)
 
-  if (!data) return <h1>User not found!</h1>
+  if (!data) return <h1>Product not found!</h1>
   return (
     <main className="grid flex-1 items-start gap-4 p-4 sm:px-6 sm:py-0 md:gap-8 w-full">
       <div className="grid  flex-1 auto-rows-max gap-4">
@@ -55,7 +55,7 @@ const ProductPage = async ({ params }: { params: Promise<{ id: string }> }) => {
             </Button>
           </Link>
           <h1 className="flex-1 shrink-0 whitespace-nowrap text-xl font-semibold tracking-tight sm:grow-0">
-            Pro Controller
+            {data.name}
           </h1>
           <Badge variant="outline" className="ml-auto sm:ml-0">
             In stock
