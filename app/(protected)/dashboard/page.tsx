@@ -302,8 +302,6 @@ export default async function DashboardPage({
     getLatestOrders(),
   ])
 
-  console.log(recentOrders)
-
   return (
     <div className="w-full py-2 sm:px-6 space-y-8">
       <section className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -339,24 +337,24 @@ export default async function DashboardPage({
           <UsersByDayChart data={userData.chartData} />
         </ChartCard>
         <ChartCard
-          title="Total Sales"
-          queryKey="totalSalesRange"
-          selectedRangeLabel={totalSalesRangeOption.label}
+          title="Products sold by Category"
+          // queryKey="productsSoldByCategory"
+          // selectedRangeLabel={productsSoldByCategoryRangeOption.label}
         >
-          <OrdersByDayChart data={salesData.chartData} />
+          <OrdersByCategoryChart
+            data1={productsSoldByCategory.mainCategoryArray}
+            data2={productsSoldByCategory.subCategoryArray}
+          />
         </ChartCard>
       </section>
-      <section className="grid grid-cols-1 lg:grid-cols-3  gap-4 gap-y-8">
-        <div className="sm:col-span-2">
+      <section className="grid grid-cols-1 lg:grid-cols-2 2xl:grid-cols-3  gap-4 gap-y-8">
+        <div className="2xl:col-span-2">
           <ChartCard
-            title="Products sold by Category"
-            // queryKey="productsSoldByCategory"
-            // selectedRangeLabel={productsSoldByCategoryRangeOption.label}
+            title="Total Sales"
+            queryKey="totalSalesRange"
+            selectedRangeLabel={totalSalesRangeOption.label}
           >
-            <OrdersByCategoryChart
-              data1={productsSoldByCategory.mainCategoryArray}
-              data2={productsSoldByCategory.subCategoryArray}
-            />
+            <OrdersByDayChart data={salesData.chartData} />
           </ChartCard>
         </div>
         <DashboardRecentOrdersShortTable data={recentOrders} />
@@ -368,8 +366,8 @@ export default async function DashboardPage({
 type DashboardRecentOrdersShortTableProps = {
   data: {
     order_id: string
-    user_name: string
-    user_email: string
+    user_name: string | null
+    user_email: string | null
 
     order_amount: number
   }[]
@@ -389,8 +387,8 @@ const DashboardRecentOrdersShortTable = ({
             <Avatar className="hidden h-9 w-9 sm:flex">
               <AvatarImage src="" alt="Avatar" />
               <AvatarFallback>
-                {order.user_name
-                  .trim()
+                {order
+                  .user_name!.trim()
                   .split(" ")
                   .map((word) => word[0])
                   .slice(0, 2)
