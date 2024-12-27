@@ -19,7 +19,7 @@ export const DashboardRecentOrdersShortTable = ({
       <CardHeader>
         <CardTitle>Recent Sales</CardTitle>
       </CardHeader>
-      <CardContent className="grid gap-8 pt-4">
+      <CardContent className="grid gap-6 pt-4">
         {data.map((order) => (
           <div className="flex items-center gap-4" key={order.order_id}>
             <Avatar className="hidden h-9 w-9 sm:flex">

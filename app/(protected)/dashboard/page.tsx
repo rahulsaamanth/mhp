@@ -36,6 +36,10 @@ import {
 import { Boxes, ShoppingCart, Users } from "lucide-react"
 import { DashboardRecentOrdersShortTable } from "./_components/recent-orders-table"
 import { DashboardCard } from "./_components/dashboard-card"
+import {
+  DashboardLatestProductsShortTable,
+  DashboardPopularProductsShortTable,
+} from "./_components/popular-and-recent-products"
 
 async function getSalesData({
   createdAfter,
@@ -234,8 +238,10 @@ async function getLatestOrders() {
 async function getPopularProducts() {
   const data = await db
     .select({
+      productId: product.id,
       productName: product.name,
-      variantName: productVariant.variantName,
+      productPotency: productVariant.potency,
+      productPackSize: productVariant.packSize,
       variantImage: productVariant.variantImage,
       totalOrders: sql<number>`sum(${orderDetails.quantity})`.as(
         "total_orders"
@@ -247,7 +253,6 @@ async function getPopularProducts() {
       orderDetails,
       eq(orderDetails.productVariantId, productVariant.id)
     )
-    .where(eq(product.status, "ACTIVE"))
     .groupBy(
       product.id,
       product.name,
@@ -268,12 +273,16 @@ async function getPopularProducts() {
 async function getRecentProducts() {
   const data = await db
     .select({
-      name: product.name,
-      status: product.status,
+      productVariantId: productVariant.id,
+      productName: product.name,
+      productPotency: productVariant.potency,
+      productPackSize: productVariant.packSize,
       dateAdded: product.createdAt,
       category: category.name,
+      stock: productVariant.stock,
     })
     .from(product)
+    .innerJoin(productVariant, eq(productVariant.productId, product.id))
     .innerJoin(manufacturer, eq(manufacturer.id, product.manufacturerId))
     .innerJoin(category, eq(category.id, product.categoryId))
     .where(eq(product.status, "ACTIVE"))
@@ -357,7 +366,7 @@ export default async function DashboardPage({
     getRecentProducts(),
   ])
 
-  console.log(popularProducts)
+  console.log(recentProducts)
   return (
     <div className="w-full py-2 sm:px-6 space-y-8">
       <section className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -415,7 +424,10 @@ export default async function DashboardPage({
         </div>
         <DashboardRecentOrdersShortTable data={recentOrders} />
       </section>
-      <section className="grid grid-cols-1 lg:grid-cols-2  gap-4 gap-y-8"></section>
+      <section className="grid grid-cols-1 lg:grid-cols-2  gap-4 gap-y-8">
+        <DashboardPopularProductsShortTable data={popularProducts} />
+        <DashboardLatestProductsShortTable data={recentProducts} />
+      </section>
     </div>
   )
 }
