@@ -6,7 +6,6 @@ import {
 } from "@/components/charts/OrdersByCategoryChart"
 import { OrdersByDayChart } from "@/components/charts/OrdersbyDayChart"
 import { UsersByDayChart } from "@/components/charts/UsersByDayChart"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { db } from "@/db/db"
 import {
   category,
@@ -34,8 +33,9 @@ import {
   desc,
   aliasedTable,
 } from "drizzle-orm"
-import { Boxes, LucideIcon, ShoppingCart, Users } from "lucide-react"
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
+import { Boxes, ShoppingCart, Users } from "lucide-react"
+import { DashboardRecentOrdersShortTable } from "./_components/recent-orders-table"
+import { DashboardCard } from "./_components/dashboard-card"
 
 async function getSalesData({
   createdAfter,
@@ -231,6 +231,57 @@ async function getLatestOrders() {
   return data
 }
 
+async function getPopularProducts() {
+  const data = await db
+    .select({
+      productName: product.name,
+      variantName: productVariant.variantName,
+      variantImage: productVariant.variantImage,
+      totalOrders: sql<number>`sum(${orderDetails.quantity})`.as(
+        "total_orders"
+      ),
+    })
+    .from(product)
+    .innerJoin(productVariant, eq(productVariant.productId, product.id))
+    .innerJoin(
+      orderDetails,
+      eq(orderDetails.productVariantId, productVariant.id)
+    )
+    .where(eq(product.status, "ACTIVE"))
+    .groupBy(
+      product.id,
+      product.name,
+      product.description,
+      productVariant.variantName,
+      productVariant.variantImage,
+      productVariant.potency,
+      productVariant.packSize,
+      productVariant.price,
+      productVariant.stock
+    )
+    .orderBy(sql`total_orders DESC`)
+    .limit(5)
+
+  return data
+}
+
+async function getRecentProducts() {
+  const data = await db
+    .select({
+      name: product.name,
+      status: product.status,
+      dateAdded: product.createdAt,
+      category: category.name,
+    })
+    .from(product)
+    .innerJoin(manufacturer, eq(manufacturer.id, product.manufacturerId))
+    .innerJoin(category, eq(category.id, product.categoryId))
+    .where(eq(product.status, "ACTIVE"))
+    .orderBy(desc(product.createdAt))
+    .limit(5)
+  return data
+}
+
 export default async function DashboardPage({
   searchParams,
 }: {
@@ -285,6 +336,8 @@ export default async function DashboardPage({
     productData,
     productsSoldByCategory,
     recentOrders,
+    popularProducts,
+    recentProducts,
   ] = await Promise.all([
     getSalesData({
       createdAfter: totalSalesRangeOption.startDate,
@@ -300,8 +353,11 @@ export default async function DashboardPage({
       createdBefore: productsSoldByCategoryRangeOption.endDate,
     }),
     getLatestOrders(),
+    getPopularProducts(),
+    getRecentProducts(),
   ])
 
+  console.log(popularProducts)
   return (
     <div className="w-full py-2 sm:px-6 space-y-8">
       <section className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -359,86 +415,7 @@ export default async function DashboardPage({
         </div>
         <DashboardRecentOrdersShortTable data={recentOrders} />
       </section>
+      <section className="grid grid-cols-1 lg:grid-cols-2  gap-4 gap-y-8"></section>
     </div>
-  )
-}
-
-type DashboardRecentOrdersShortTableProps = {
-  data: {
-    order_id: string
-    user_name: string | null
-    user_email: string | null
-
-    order_amount: number
-  }[]
-}
-
-const DashboardRecentOrdersShortTable = ({
-  data,
-}: DashboardRecentOrdersShortTableProps) => {
-  return (
-    <Card>
-      <CardHeader>
-        <CardTitle>Recent Sales</CardTitle>
-      </CardHeader>
-      <CardContent className="grid gap-8 pt-4">
-        {data.map((order) => (
-          <div className="flex items-center gap-4" key={order.order_id}>
-            <Avatar className="hidden h-9 w-9 sm:flex">
-              <AvatarImage src="" alt="Avatar" />
-              <AvatarFallback>
-                {order
-                  .user_name!.trim()
-                  .split(" ")
-                  .map((word) => word[0])
-                  .slice(0, 2)
-                  .join("")
-                  .toUpperCase()}
-              </AvatarFallback>
-            </Avatar>
-            <div className="grid gap-1">
-              <p className="text-sm font-medium leading-none">
-                {order.user_name}
-              </p>
-              <p className="text-sm text-muted-foreground">
-                {order.user_email}
-              </p>
-            </div>
-            <div className="ml-auto font-medium">+₹{order.order_amount}</div>
-          </div>
-        ))}
-      </CardContent>
-    </Card>
-  )
-}
-
-type DashboardCardProps = {
-  title: string
-  body: string | number | React.ReactNode
-  Icon: LucideIcon
-  footerTitle: string
-  footerValue: string | number | undefined
-}
-
-const DashboardCard = ({
-  title,
-  body,
-  Icon,
-  footerTitle,
-  footerValue,
-}: DashboardCardProps) => {
-  return (
-    <Card className="bg-white shadow-zinc-200 shadow-md">
-      <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2 ">
-        <CardTitle className="text-base font-medium">{title}</CardTitle>
-        <Icon className="h-4 w-4 text-muted-foreground" />
-      </CardHeader>
-      <CardContent>
-        <div className="text-2xl font-bold">{body}</div>
-        <p className="text-sm text-muted-foreground">
-          {footerTitle} {footerValue}
-        </p>
-      </CardContent>
-    </Card>
   )
 }
