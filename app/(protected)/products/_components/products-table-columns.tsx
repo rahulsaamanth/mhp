@@ -104,6 +104,17 @@ export function getColumns({
       enableHiding: false,
     },
     {
+      accessorKey: "stock",
+      header: ({ column }) => (
+        <DataTableColumnHeader column={column} title="Stock" />
+      ),
+      cell: ({ row }) => {
+        const stock = row.getValue("stock") as number
+        return <span className="pl-4">{stock}</span>
+      },
+      enableSorting: true,
+    },
+    {
       accessorKey: "sales",
       header: ({ column }) => (
         <DataTableColumnHeader column={column} title="Sales" />

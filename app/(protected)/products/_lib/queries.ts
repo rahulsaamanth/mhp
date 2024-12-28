@@ -73,6 +73,11 @@ export async function getProducts(input: GetProductsSchema) {
             FROM "ProductVariant" pv
             WHERE pv."productId" = "Product"."id"
             )`,
+            stock: sql<number>`(
+            SELECT SUM(pv."stock")
+            FROM "ProductVariant" pv
+            WHERE pv."productId" = "Product"."id"
+            )`,
             })
             .from(product)
             .limit(input.perPage)
