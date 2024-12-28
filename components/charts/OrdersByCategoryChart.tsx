@@ -1,6 +1,13 @@
 "use client"
 
-import { Pie, PieChart, ResponsiveContainer, Tooltip, Cell } from "recharts"
+import {
+  Pie,
+  PieChart,
+  ResponsiveContainer,
+  Tooltip,
+  Cell,
+  Legend,
+} from "recharts"
 
 const colors = [
   "#8884d8",
@@ -31,7 +38,10 @@ export function OrdersByCategoryChart({
 }) {
   return (
     <ResponsiveContainer width={400} height={400}>
-      <PieChart className="size-full">
+      <PieChart
+        className="size-full w-full h-full"
+        margin={{ top: 20, right: 30, left: 30, bottom: 20 }}
+      >
         <Pie data={data1} dataKey="value" cx={200} cy={200} outerRadius={60}>
           {data1.map((entry, index) => (
             <Cell key={`cell-${index}`} fill={colors[index % colors.length]} />
@@ -51,6 +61,12 @@ export function OrdersByCategoryChart({
           ))}
         </Pie>
         <Tooltip />
+        <Legend
+          align="right"
+          verticalAlign="bottom"
+          layout="vertical"
+          iconType="circle"
+        />
       </PieChart>
     </ResponsiveContainer>
   )

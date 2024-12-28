@@ -366,7 +366,6 @@ export default async function DashboardPage({
     getRecentProducts(),
   ])
 
-  console.log(recentProducts)
   return (
     <div className="w-full py-2 sm:px-6 space-y-8">
       <section className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
