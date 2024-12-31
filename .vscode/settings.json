@@ -1,3 +1,4 @@
 {
-  "editor.cursorStyle": "underline"
+  "editor.cursorStyle": "underline",
+  "typescript.tsdk": "node_modules/typescript/lib"
 }
