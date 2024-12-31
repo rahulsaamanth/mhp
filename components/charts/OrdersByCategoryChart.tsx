@@ -37,37 +37,37 @@ export function OrdersByCategoryChart({
   data2: OrdersByCategoryChartData
 }) {
   return (
-    <ResponsiveContainer width={400} height={400}>
-      <PieChart
-        className="size-full w-full h-full"
-        margin={{ top: 20, right: 30, left: 30, bottom: 20 }}
-      >
-        <Pie data={data1} dataKey="value" cx={200} cy={200} outerRadius={60}>
-          {data1.map((entry, index) => (
-            <Cell key={`cell-${index}`} fill={colors[index % colors.length]} />
-          ))}
-        </Pie>
-        <Pie
-          data={data2}
-          dataKey="value"
-          cx={200}
-          cy={200}
-          innerRadius={70}
-          outerRadius={90}
-          label
-        >
-          {data2.map((entry, index) => (
-            <Cell key={`cell-${index}`} fill={colors[index % colors.length]} />
-          ))}
-        </Pie>
-        <Tooltip />
-        <Legend
-          align="right"
-          verticalAlign="bottom"
-          layout="vertical"
-          iconType="circle"
-        />
-      </PieChart>
-    </ResponsiveContainer>
+    <div className="flex items-center justify-center">
+      <ResponsiveContainer width={400} height={400}>
+        <PieChart className="size-full w-full h-full" margin={{ top: -30 }}>
+          <Pie data={data1} dataKey="value" cx={200} cy={200} outerRadius={90}>
+            {data1.map((entry, index) => (
+              <Cell
+                key={`cell-${index}`}
+                fill={colors[index % colors.length]}
+              />
+            ))}
+          </Pie>
+          <Pie
+            data={data2}
+            dataKey="value"
+            cx={200}
+            cy={200}
+            innerRadius={100}
+            outerRadius={140}
+            label
+          >
+            {data2.map((entry, index) => (
+              <Cell
+                key={`cell-${index}`}
+                fill={colors[index % colors.length]}
+              />
+            ))}
+          </Pie>
+          <Tooltip />
+          <Legend />
+        </PieChart>
+      </ResponsiveContainer>
+    </div>
   )
 }
