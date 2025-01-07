@@ -78,10 +78,8 @@ export function DeleteProductsDialog({
           <DialogHeader>
             <DialogTitle>Are you sure?</DialogTitle>
             <DialogDescription>
-              This action cannot be undone. This will permanently delete your{" "}
-              <span className="font-medium">{products.length}</span>
-              {products.length === 1 ? " product" : "products"} from our
-              database.
+              This action cannot be undone. This will permanently delete{" "}
+              <b>{products.length}</b> prodcut(s) from the database.
             </DialogDescription>
           </DialogHeader>
           <DialogFooter className="gap-2 sm:space-x-0">
@@ -121,10 +119,9 @@ export function DeleteProductsDialog({
         <DrawerHeader>
           <DrawerTitle>Are you sure?</DrawerTitle>
           <DrawerDescription>
-            This action cannot be undone. This will permanently delete your{" "}
+            This action cannot be undone. This will permanently delete{" "}
+            <b>{products.length}</b> prodcut(s) from the database.
           </DrawerDescription>
-          <span className="font-medium">{products.length}</span>
-          {products.length === 1 ? "product" : "products"} from our database.
         </DrawerHeader>
         <DrawerFooter className="gap-2 sm:space-x-0">
           <DrawerClose asChild>

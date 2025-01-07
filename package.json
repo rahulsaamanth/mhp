@@ -9,7 +9,7 @@
     "start": "next start",
     "lint": "next lint",
     "format": "prettier --write \"**/*.{js,ts,jsx,tsx}\"",
-    "db:seed": "dotenv -e .env.local -- tsx db/seed.ts"
+    "db:seed": "dotenv -e .env -- tsx db/seed.ts"
   },
   "dependencies": {
     "@auth/core": "^0.34.2",

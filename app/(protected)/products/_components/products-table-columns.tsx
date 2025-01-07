@@ -9,6 +9,21 @@ import { DataTableColumnHeader } from "@/components/data-table/data-table-column
 import { formatDate } from "@/lib/utils"
 import { Badge } from "@/components/ui/badge"
 import Link from "next/link"
+import { Button } from "@/components/ui/button"
+import { Copy, Edit } from "lucide-react"
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu"
+import { Icon } from "@iconify/react/dist/iconify.js"
+import { deleteProduct } from "@/app/(protected)/products/_lib/actions"
+import { revalidatePath } from "next/cache"
+import { useRouter } from "next/navigation"
+import { Router } from "next/router"
 
 interface GetColumnProps {
   setRowAction: React.Dispatch<
@@ -129,6 +144,48 @@ export function getColumns({
       cell: ({ cell }) => (
         <span className="pr-4">{formatDate(cell.getValue() as Date)}</span>
       ),
+    },
+    {
+      id: "actions",
+      cell: ({ row }) => {
+        const user = row.original
+        const router = useRouter()
+
+        return (
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="ghost" className="h-8 w-8 p-0 outline-none">
+                <span className="sr-only">Open menu</span>
+                <Icon
+                  icon="material-symbols:more-horiz"
+                  width="24"
+                  height="24"
+                />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end">
+              <DropdownMenuLabel>Actions</DropdownMenuLabel>
+              <DropdownMenuItem
+                onClick={() => navigator.clipboard.writeText(String(user.id))}
+              >
+                Copy Product ID
+              </DropdownMenuItem>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem>View Product</DropdownMenuItem>
+              <DropdownMenuItem
+                onClick={async () => {
+                  await deleteProduct({ id: user.id })
+                  router.refresh()
+                }}
+              >
+                Delete Product
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        )
+      },
+      enableSorting: false,
+      enableHiding: false,
     },
   ]
 }
