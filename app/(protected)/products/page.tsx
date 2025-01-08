@@ -9,9 +9,6 @@ import { Skeleton } from "@/components/ui/skeleton"
 import { DateRangePicker } from "@/components/date-range-picker"
 import { DataTableSkeleton } from "@/components/data-table/data-table-skeleton"
 import { ProductsTable } from "./_components/products-table"
-import { product } from "@/db/schema"
-import { sql } from "drizzle-orm"
-import { db } from "@/db/db"
 
 interface ProductPageProps {
   searchParams: Promise<SearchParams>

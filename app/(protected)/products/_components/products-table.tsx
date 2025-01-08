@@ -26,7 +26,6 @@ export function ProductsTable({ promise }: ProductTableProps) {
   const { featureFlags } = useFeatureFlags()
 
   const { data, pageCount } = React.use(promise)
-  console.log(data)
 
   const [rowAction, setRowAction] =
     React.useState<DataTableRowAction<ProductForTable> | null>(null)
