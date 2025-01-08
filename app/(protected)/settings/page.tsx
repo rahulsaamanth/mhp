@@ -45,7 +45,6 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog"
-import { cloudinaryService } from "@/lib/cloudinary"
 
 const SettingsPage = () => {
   const user = useCurrentUser()
@@ -100,25 +99,25 @@ const SettingsPage = () => {
     return hashHex
   }
 
-  // const handleImageUpload = async (file: File) => {
-  //   const signedURLResult = await getSignedURL({
-  //     fileSize: file.size,
-  //     fileType: file.type,
-  //     checksum: await computeSHA256(file),
-  //   })
-  //   if (signedURLResult.error !== undefined)
-  //     throw new Error(signedURLResult.error)
-  //   const url = signedURLResult.success.url
-  //   await fetch(url, {
-  //     method: "PUT",
-  //     headers: {
-  //       "Content-Type": file.type,
-  //     },
-  //     body: file,
-  //   })
-  //   const fileUrl = url.split("?")[0]
-  //   return fileUrl as string
-  // }
+  const handleImageUpload = async (file: File) => {
+    const signedURLResult = await getSignedURL({
+      fileSize: file.size,
+      fileType: file.type,
+      checksum: await computeSHA256(file),
+    })
+    if (signedURLResult.error !== undefined)
+      throw new Error(signedURLResult.error)
+    const url = signedURLResult.success.url
+    await fetch(url, {
+      method: "PUT",
+      headers: {
+        "Content-Type": file.type,
+      },
+      body: file,
+    })
+    const fileUrl = url.split("?")[0]
+    return fileUrl as string
+  }
 
   const onSubmit = async (values: z.infer<typeof SettingsSchema>) => {
     if (!isDirty) {
@@ -128,18 +127,8 @@ const SettingsPage = () => {
     }
     let imageUrl: string | null = null
 
-    if (image) {
-      try {
-        imageUrl = await cloudinaryService.uploadImage(
-          image,
-          "profile",
-          user?.id
-        )
-      } catch (error) {
-        toast.error("Failed to upload image")
-        return
-      }
-    }
+    if (image) imageUrl = await handleImageUpload(image as File)
+
     startTransition(() => {
       const updateUserParams = imageUrl
         ? { ...values, image: imageUrl }
