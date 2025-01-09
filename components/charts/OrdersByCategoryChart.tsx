@@ -54,7 +54,7 @@ export function OrdersByCategoryChart({
             cx={200}
             cy={200}
             innerRadius={100}
-            outerRadius={140}
+            outerRadius={120}
             label
           >
             {data2.map((entry, index) => (
