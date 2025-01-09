@@ -87,3 +87,23 @@ export const RegisterSchema = z.object({
   password: z.string().min(8, { message: "Minimum 8 characters required!" }),
   name: z.string().min(3, { message: "Name is required" }),
 })
+
+export const productFormSchema = z.object({
+  name: z.string().min(1, "Name is required"),
+  description: z.string().min(1, "Description is required"),
+  status: z.enum(["ACTIVE", "DRAFT", "ARCHIVED"]),
+  tags: z.string().optional(),
+  categoryId: z.string().min(1, "Category is required"),
+  manufacturerId: z.string().min(1, "Manufacturer is required"),
+  properties: z.record(z.string()),
+  variants: z.array(
+    z.object({
+      variantName: z.string().min(1, "Variant name is required"),
+      variantImage: z.string().optional(),
+      potency: z.string().optional(),
+      packSize: z.string().optional(),
+      price: z.number().min(0, "Price must be positive"),
+      stock: z.number().min(0, "Stock must be non-negative"),
+    })
+  ),
+})

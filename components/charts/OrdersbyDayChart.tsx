@@ -25,10 +25,12 @@ export function OrdersByDayChart({ data }: OrdersByDayChartProps) {
         <CartesianGrid stroke="hsl(var(--muted))" />
         <XAxis dataKey="date" stroke="hsl(var(--primary))" />
         <YAxis
-          tickFormatter={(tick) => formatCurrency(tick)}
+          tickFormatter={(tick: number) => formatCurrency(tick)}
           stroke="hsl(var(--primary))"
         />
-        <Tooltip formatter={(value) => formatCurrency(value as number)} />
+        <Tooltip
+          formatter={(value: number) => formatCurrency(value as number)}
+        />
         <Line
           dot={false}
           dataKey="totalSales"
