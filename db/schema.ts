@@ -434,7 +434,7 @@ export const orderDetails = pgTable(
         name: "OrderDetails_productVariantId_fkey",
       })
         .onUpdate("cascade")
-        .onDelete("cascade"), // Change from "restrict" to "cascade"
+        .onDelete("cascade"),
     }
   }
 )

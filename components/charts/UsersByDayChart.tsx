@@ -20,7 +20,7 @@ type UsersByDayChartProps = {
 
 export function UsersByDayChart({ data }: UsersByDayChartProps) {
   return (
-    <ResponsiveContainer width="100%" minHeight={300}>
+    <ResponsiveContainer width="100%" minHeight={400}>
       <BarChart data={data}>
         <CartesianGrid stroke="hsl(var(--muted))" />
         <XAxis dataKey="date" stroke="hsl(var(--primary))" />
