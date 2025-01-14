@@ -1,5 +1,5 @@
 const AddNewProductPage = () => {
-  return "add new product"
+  return <>Add new Product</>
 }
 
 export default AddNewProductPage

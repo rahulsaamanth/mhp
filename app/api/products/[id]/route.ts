@@ -5,11 +5,11 @@ import { NextRequest, NextResponse } from "next/server"
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    // const { id } = await params
-    if (!params.id)
+    const { id } = await params
+    if (!id)
       return NextResponse.json(
         {
           error: "Product ID is required",
@@ -17,7 +17,7 @@ export async function GET(
         { status: 400 }
       )
     const _product = await db.query.product.findFirst({
-      where: eq(product.id, params.id),
+      where: eq(product.id, id),
       with: {
         category: true,
         manufacturer: true,
