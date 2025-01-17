@@ -167,7 +167,7 @@ const MenuItemWithSubMenu: React.FC<MenuItemWithSubMenuProps> = ({
         >
           <div className="flex w-full flex-row items-center justify-between">
             <span
-              className={`${pathname.includes(item.path) ? "font-bold" : ""}`}
+              className={`${pathname?.includes(item.path) ? "font-bold" : ""}`}
             >
               {item.title}
             </span>

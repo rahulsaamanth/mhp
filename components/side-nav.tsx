@@ -83,7 +83,7 @@ const MenuItem = ({
           <button
             onClick={() => handleToggleSubMenu(item.path)}
             className={`flex w-full flex-row items-center justify-between rounded-lg p-2 hover:bg-zinc-200 ${
-              pathname.includes(item.path) && "bg-zinc-200"
+              pathname?.includes(item.path) && "bg-zinc-200"
             }`}
           >
             <div className="flex flex-row items-center space-x-4">
@@ -125,7 +125,7 @@ const MenuItem = ({
         <Link
           href={item.path}
           className={`flex flex-row items-center space-x-4 rounded-lg p-2 hover:bg-zinc-200 ${
-            pathname.includes(item.path) && "bg-zinc-200"
+            pathname?.includes(item.path) && "bg-zinc-200"
           }`}
           onClick={() => setOpenSubMenu(null)}
         >
