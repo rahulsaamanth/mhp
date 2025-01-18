@@ -1,16 +1,19 @@
-import { Icon } from "@iconify/react/dist/iconify.js"
-import { CardWrapper } from "./card-wrapper"
+import { CardWrapper } from "@/components/auth/card-wrapper"
+import { ExclamationTriangleIcon } from "@radix-ui/react-icons"
 
-export const ErrorCard = () => {
+export const ErrorCard = ({ error }: { error?: string }) => {
   return (
     <CardWrapper
-      headerLabel="Oops! something went wrong!"
-      backButtonHref="/auth/login"
+      headerLabel="Oops! Something went wrong!"
       backButtonLabel="Back to login"
+      backButtonHref="/auth/login"
     >
-      <div className="flex w-full items-center justify-center">
-        <Icon icon="bi:exclamation-triangle" width="16" height="16" />
+      <div className="w-full flex justify-center items-center">
+        <ExclamationTriangleIcon className="text-destructive w-6 h-6" />
       </div>
+      <p className="text-sm text-muted-foreground text-center">
+        {error || "An error occurred during authentication."}
+      </p>
     </CardWrapper>
   )
 }
