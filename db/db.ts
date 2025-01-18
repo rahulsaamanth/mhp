@@ -1,12 +1,19 @@
 import { drizzle } from "drizzle-orm/postgres-js"
-// import { neon } from "@neondatabase/serverless"
 import postgres from "postgres"
 import * as schema from "./schema"
 import * as relations from "./relations"
 
-export const sql = postgres(process.env.DATABASE_URL!)
-
-export const db = drizzle(sql, {
-  schema: { ...schema, ...relations },
-  //   logger: true,
+// Connection pool configuration
+const connectionPool = postgres(process.env.DATABASE_URL!, {
+  max: 10,
+  idle_timeout: 20,
+  connect_timeout: 10,
+  prepare: false,
 })
+
+export const db = drizzle(connectionPool, {
+  schema: { ...schema, ...relations },
+})
+
+// Export the pool to be able to end the connection
+export const sql = connectionPool

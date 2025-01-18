@@ -27,16 +27,17 @@ import { login } from "@/actions/auth/login"
 
 export const LoginForm = () => {
   const searchParams = useSearchParams()
-  const callbackUrl = searchParams.get("callbackUrl")
+  const callbackUrl = searchParams?.get("callbackUrl") || "/dashboard"
+  const error = searchParams?.get("error")
 
   const urlError =
-    searchParams.get("error") === "OAuthAccountNotLinked"
-      ? "Email already in use with differnet provider!"
+    error === "OAuthAccountNotLinked"
+      ? "Email already in use with different provider!"
       : ""
 
   const [showTwoFactor, setShowTwoFactor] = useState(false)
 
-  const [error, setError] = useState<string | undefined>("")
+  const [_error, setError] = useState<string | undefined>("")
   const [success, setSuccess] = useState<string | undefined>("")
 
   const [isPending, startTransition] = React.useTransition()
@@ -143,7 +144,7 @@ export const LoginForm = () => {
               </>
             )}
           </div>
-          <FormError message={error || urlError} />
+          <FormError message={_error || urlError} />
           <FormSuccess message={success} />
           <Button type="submit" className="w-full" disabled={isPending}>
             {showTwoFactor ? "Confirm" : "Login"}
