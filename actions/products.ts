@@ -3,30 +3,29 @@
 import { db } from "@/db/db"
 import { category, manufacturer, product, productVariant } from "@/db/schema"
 import { productFormSchema } from "@/schemas"
-import { InferSelectModel, sql } from "drizzle-orm"
+import { InferSelectModel, eq, sql } from "drizzle-orm"
+
 import * as z from "zod"
 
-type Product = InferSelectModel<typeof product>
-type Category = InferSelectModel<typeof category>
-type Manufacturer = InferSelectModel<typeof manufacturer>
-type Variants = InferSelectModel<typeof productVariant>
-type fullProduct = Product & {
-  category: Category
-  manufacturer: Manufacturer
-  variants: Variants[]
-}
+// type Product = InferSelectModel<typeof product>
+// type Category = InferSelectModel<typeof category>
+// type Manufacturer = InferSelectModel<typeof manufacturer>
+// type Variants = InferSelectModel<typeof productVariant>
+// export type fullProduct = Product & {
+//   category: Category
+//   manufacturer: Manufacturer
+//   variants: Variants[]
+// }
 
-export const getProductsWithFullDetials = async (): Promise<fullProduct[]> => {
+export const getProductsWithFullDetials = async () => {
   try {
-    return await db.query.product
-      .findMany({
-        with: {
-          category: true,
-          manufacturer: true,
-          variants: true,
-        },
-      })
-      .execute()
+    return await db.query.product.findMany({
+      with: {
+        category: true,
+        manufacturer: true,
+        variants: true,
+      },
+    })
   } catch (error) {
     throw new Error(`Failed to get prodcuts: ${(error as Error).message}`)
   }
@@ -78,28 +77,23 @@ export async function updateProduct(
 }
 
 export async function getProduct(productId: string) {
-  const result = await db.execute(sql`
-    SELECT 
-    p.*,
-    c.name as category_name,
-    m.name as manufacturer_name,
-    json_agg(
-        json_build_object(
-        'id', pv.id,
-        'variantName', pv.variant_name,
-        'variantImage', pv.variant_image,
-        'potency', pv.potency,
-        'packSize', pv.pack_size,
-        'price', pv.price,
-        'stock', pv.stock
-        )
-    ) as variants
-    FROM "Product" p
-    LEFT JOIN "Category" c ON p.category_id = c.id
-    LEFT JOIN "Manufacturer" m ON p.manufacturer_id = m.id
-    LEFT JOIN "ProductVariant" pv ON pv.product_id = p.id
-    WHERE p.id = ${productId}
-    
-`)
-  return result[0]
+  try {
+    const _product = await db.query.product.findFirst({
+      where: eq(product.id, productId),
+      with: {
+        category: true,
+        manufacturer: true,
+        variants: true,
+      },
+    })
+
+    if (!_product) {
+      return { error: "Product not found" }
+    }
+
+    return _product
+  } catch (error) {
+    console.error("Error fetching product:", error)
+    return { error: "Internal server error" }
+  }
 }
