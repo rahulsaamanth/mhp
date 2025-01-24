@@ -7,17 +7,17 @@ import { InferSelectModel, eq, sql } from "drizzle-orm"
 
 import * as z from "zod"
 
-// type Product = InferSelectModel<typeof product>
-// type Category = InferSelectModel<typeof category>
-// type Manufacturer = InferSelectModel<typeof manufacturer>
-// type Variants = InferSelectModel<typeof productVariant>
-// export type fullProduct = Product & {
-//   category: Category
-//   manufacturer: Manufacturer
-//   variants: Variants[]
-// }
+type Product = InferSelectModel<typeof product>
+type Category = InferSelectModel<typeof category>
+type Manufacturer = InferSelectModel<typeof manufacturer>
+type Variants = InferSelectModel<typeof productVariant>
+export type fullProduct = Product & {
+  category: Category
+  manufacturer: Manufacturer
+  variants: Variants[]
+}
 
-export const getProductsWithFullDetials = async () => {
+export const getProductsWithFullDetials = async (): Promise<fullProduct[]> => {
   try {
     return await db.query.product.findMany({
       with: {
@@ -76,7 +76,9 @@ export async function updateProduct(
   }
 }
 
-export async function getProduct(productId: string) {
+export async function getProduct(
+  productId: string
+): Promise<fullProduct | { error: string }> {
   try {
     const _product = await db.query.product.findFirst({
       where: eq(product.id, productId),
@@ -91,9 +93,48 @@ export async function getProduct(productId: string) {
       return { error: "Product not found" }
     }
 
-    return _product
+    return _product as fullProduct
   } catch (error) {
     console.error("Error fetching product:", error)
     return { error: "Internal server error" }
+  }
+}
+
+const ProductSchema = z.object({
+  name: z.string().min(2, "Product name must be at least 2 characters"),
+  description: z.string(),
+  categoryId: z.string(),
+  manufacturerId: z.string(),
+})
+
+export async function createProduct(data: z.infer<typeof ProductSchema>) {
+  try {
+    const validatedData = ProductSchema.parse(data)
+
+    const [newProduct] = await db
+      .insert(product)
+      .values({
+        ...validatedData,
+      })
+      .returning()
+
+    return {
+      success: true,
+      product: newProduct,
+    }
+  } catch (error) {
+    console.error("Error creating product:", error)
+
+    if (error instanceof z.ZodError) {
+      return {
+        success: false,
+        error: error.errors.map((err) => err.message),
+      }
+    }
+
+    return {
+      success: false,
+      error: "Failed to create product",
+    }
   }
 }

@@ -45,6 +45,7 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog"
+import { Loader } from "lucide-react"
 
 const SettingsPage = () => {
   const user = useCurrentUser()
@@ -125,11 +126,11 @@ const SettingsPage = () => {
       setIsConfirmationDialogOpen(false)
       return
     }
-    let imageUrl: string | null = null
 
-    if (image) imageUrl = await handleImageUpload(image as File)
+    startTransition(async () => {
+      let imageUrl: string | null = null
 
-    startTransition(() => {
+      if (image) imageUrl = await handleImageUpload(image as File)
       const updateUserParams = imageUrl
         ? { ...values, image: imageUrl }
         : { ...values }
@@ -140,7 +141,16 @@ const SettingsPage = () => {
             setIsConfirmationDialogOpen(false)
           }
           if (data.success) {
-            update()
+            update({
+              user: {
+                ...user,
+                name: values.name,
+                email: values.email,
+                role: values.role,
+                isTwoFactorEnabled: values.isTwoFactorEnabled,
+                image: imageUrl || user?.image,
+              },
+            })
             toast.success(data.success)
             setImage(null)
             setPreviewUrl(undefined)
@@ -352,7 +362,16 @@ const SettingsPage = () => {
                     >
                       Cancel
                     </AlertDialogCancel>
-                    <AlertDialogAction onClick={form.handleSubmit(onSubmit)}>
+                    <AlertDialogAction
+                      onClick={form.handleSubmit(onSubmit)}
+                      disabled={isPending}
+                    >
+                      {isPending && (
+                        <Loader
+                          className="mr-2 size-4 animate-spin"
+                          aria-hidden="true"
+                        />
+                      )}
                       Confirm
                     </AlertDialogAction>
                   </AlertDialogFooter>
