@@ -9,6 +9,7 @@ import {
   DataTableRowAction,
   ProductForTable,
 } from "@/types"
+
 import { getColumns } from "./products-table-columns"
 import { useDataTable } from "@/hooks/use-data-table"
 import { useFeatureFlags } from "./feature-flags-provider"

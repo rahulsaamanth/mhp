@@ -15,7 +15,7 @@ export async function GET(request: NextRequest) {
 
     const offset = (page - 1) * pageSize
     const whereConditions = buildSearchCondition(search)
-    const orderByCondition = buildSortCondition(sortBy, sortOrder)
+    const orderByCondition = buildSortCondition(sortBy, sortOrder) || []
 
     const [totalCountResult, productsData] = await Promise.all([
       db
@@ -26,6 +26,7 @@ export async function GET(request: NextRequest) {
         .select()
         .from(product)
         .where(and(...whereConditions))
+        // .orderBy(...orderByCondition)
         .limit(pageSize)
         .offset(offset),
     ])
