@@ -135,6 +135,8 @@ export function getColumns({
         <DataTableColumnHeader column={column} title="Sales" />
       ),
       cell: ({ row }) => <span className="pl-4">{row.getValue("sales")}</span>,
+      enableSorting: true,
+      enableHiding: true,
     },
     {
       accessorKey: "createdAt",

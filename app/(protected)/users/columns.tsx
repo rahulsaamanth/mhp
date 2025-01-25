@@ -83,30 +83,30 @@ export const columns: ColumnDef<UsersWithOrders, any>[] = [
     ),
     filterFn: "equalsString",
   },
-  // {
-  //   accessorKey: "createdAt",
-  //   header: ({ column }) => {
-  //     return (
-  //       <Button
-  //         variant="ghost"
-  //         onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-  //         className="p-0 cursor-default"
-  //       >
-  //         Joined
-  //         <Icon
-  //           width="14"
-  //           height="14"
-  //           className="ml-2"
-  //           icon="ph:caret-up-down"
-  //         />
-  //       </Button>
-  //     )
-  //   },
-  //   cell: ({ row }) => {
-  //     const date: Date = row.getValue("createdAt")
-  //     return <span className="text-nowrap">{formatDate(date)}</span>
-  //   },
-  // },
+  {
+    accessorKey: "createdAt",
+    header: ({ column }) => {
+      return (
+        <Button
+          variant="ghost"
+          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+          className="p-0 cursor-default"
+        >
+          Joined
+          <Icon
+            width="14"
+            height="14"
+            className="ml-2"
+            icon="ph:caret-up-down"
+          />
+        </Button>
+      )
+    },
+    cell: ({ row }) => {
+      const date: Date = row.getValue("createdAt")
+      return <span className="text-nowrap">{formatDate(date)}</span>
+    },
+  },
   // {
   //   accessorKey: "status",
   //   header: "Status",

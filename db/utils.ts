@@ -27,8 +27,8 @@ export const buildSearchCondition = (search: string) => {
 
   return [
     or(
-      ilike(product.name, `%{search}%`),
-      ilike(product.description, `%{search}%`)
+    ilike(product.name, `%${search}%`),
+    ilike(product.description, `%${search}%`)
     ),
   ]
 }

@@ -6,18 +6,16 @@ import { Card } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
 import { useMutation } from "@tanstack/react-query"
-import { useCallback, useState } from "react"
+import { useState } from "react"
 import { toast } from "sonner"
 
 const AddNewProductPage = () => {
-  // const [isLoading, setIsLoading] = useState(false)
   const [formData, setFormData] = useState({
     name: "",
     description: "",
     categoryId: "",
     manufacturerId: "",
   })
-
   // const handleSubmit = useCallback(
   //   async (e: React.FormEvent) => {
   //     e.preventDefault()
@@ -52,17 +50,27 @@ const AddNewProductPage = () => {
   //   [formData]
   // )
 
-  const {
-    mutate: server_addProduct,
-    data,
-    isPending,
-    isSuccess,
-  } = useMutation({
+  const { mutate: server_addProduct, isPending } = useMutation({
     mutationFn: createProduct,
+    onSuccess: (data) => {
+      if (data.success) {
+        toast.success("Product created successfully!")
+        // Reset form after success
+        setFormData({
+          name: "",
+          description: "",
+          categoryId: "",
+          manufacturerId: "",
+        })
+      } else {
+        toast.error(data.error || "Failed to create product")
+      }
+    },
+    onError: (error) => {
+      toast.error("Something went wrong!")
+      console.error("Error creating product:", error)
+    },
   })
-
-  if (isSuccess) toast.success("Product created successfully!")
-  console.log(data)
 
   return (
     <div className="container mx-auto p-6">
