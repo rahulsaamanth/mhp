@@ -1,4 +1,6 @@
+import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import Link from "next/link"
 
 type DashboardPopularProductsShortTableProps = {
   data: {
@@ -64,8 +66,11 @@ export const DashboardLatestProductsShortTable = ({
 }: DashboardLatestProductsShortTableProps) => {
   return (
     <Card>
-      <CardHeader>
+      <CardHeader className="flex-row justify-between w-full">
         <CardTitle>Latest Products</CardTitle>
+        <Button variant="default">
+          <Link href="/products/new">Add New</Link>
+        </Button>
       </CardHeader>
       <CardContent className="grid gap-8 pt-4">
         {data.map((product) => (

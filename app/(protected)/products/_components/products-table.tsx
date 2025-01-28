@@ -8,6 +8,7 @@ import {
   DataTableFilterField,
   DataTableRowAction,
   ProductForTable,
+  ProductWithComputedFields,
 } from "@/types"
 
 import { getColumns } from "./products-table-columns"
@@ -36,7 +37,7 @@ export function ProductsTable({ promise }: ProductTableProps) {
     [setRowAction]
   )
 
-  const filterFields: DataTableFilterField<ProductForTable>[] = [
+  const filterFields: DataTableFilterField<ProductWithComputedFields>[] = [
     {
       id: "name",
       label: "Product Name",
@@ -44,7 +45,7 @@ export function ProductsTable({ promise }: ProductTableProps) {
     },
   ]
 
-  const advancedFilterFields: DataTableAdvancedFilterField<ProductForTable>[] =
+  const advancedFilterFields: DataTableAdvancedFilterField<ProductWithComputedFields>[] =
     [
       {
         id: "name",
