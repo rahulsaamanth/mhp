@@ -1,12 +1,13 @@
 import "server-only"
 
 import { product } from "@/db/schema"
-import { and, asc, count, desc, gte, ilike, lte, sql } from "drizzle-orm"
+import { SQLChunk, sql } from "drizzle-orm"
 
-import { type GetProductsSchema } from "./validations"
-import { unstable_cache } from "@/lib/unstable-cache"
 import { db } from "@/db/db"
 import { filterColumns } from "@/lib/filter-columns"
+import { unstable_cache } from "@/lib/unstable-cache"
+import { ProductWithComputedFields } from "@/types"
+import { type GetProductsSchema } from "./validations"
 
 export async function getProducts(input: GetProductsSchema) {
   return unstable_cache(
@@ -17,86 +18,114 @@ export async function getProducts(input: GetProductsSchema) {
         const toDate = input.to ? new Date(input.to) : undefined
         const advancedTable = input.flags.includes("advancedTable")
 
-        const advancedWhere = filterColumns({
-          table: product,
-          filters: input.filters,
-          joinOperator: input.joinOperator,
-        })
-        const where = advancedTable
-          ? advancedWhere
-          : and(
-              input.name ? ilike(product.name, `%${input.name}%`) : undefined,
-              fromDate ? gte(product.createdAt, fromDate) : undefined,
-              toDate ? lte(product.createdAt, toDate) : undefined
-            )
+        const advancedWhere =
+          input.filters && input.filters.length > 0
+            ? filterColumns({
+                table: product,
+                filters: input.filters,
+                joinOperator: input.joinOperator,
+              })
+            : []
 
-        const orderBy =
-          input.sort.length > 0
-            ? input.sort.map((item) =>
-                item.desc ? desc(product[item.id]) : asc(product[item.id])
-              )
-            : [asc(product.createdAt)]
+        const whereConditions = advancedTable
+          ? advancedWhere
+          : [
+              input.name ? sql`p."name" ILIKE ${`%${input.name}%`}` : sql`1=1`,
+              fromDate ? sql`p."createdAt" >= ${fromDate}` : sql`1=1`,
+              toDate ? sql`p."createdAt" <= ${toDate}` : sql`1=1`,
+            ].filter(Boolean)
+
+        const whereClause = sql`${sql.join(whereConditions as SQLChunk[], sql` AND `)}`
+
+        const orderBy = input.sort.map((item) => {
+          const direction = item.desc ? "DESC" : "ASC"
+          const column = item.id as keyof ProductWithComputedFields
+
+          switch (column) {
+            case "sales":
+              return sql`"sales" ${sql.raw(direction)} NULLS LAST`
+            case "stock":
+              return sql`"stock" ${sql.raw(direction)} NULLS LAST`
+            case "minPrice":
+              return sql`"minPrice" ${sql.raw(direction)} NULLS LAST`
+            case "maxPrice":
+              return sql`"maxPrice" ${sql.raw(direction)} NULLS LAST`
+            case "name":
+              return sql`"name" ${sql.raw(direction)}`
+            case "createdAt":
+              return sql`"createdAt" ${sql.raw(direction)}`
+            default:
+              return sql`"createdAt" DESC`
+          }
+        })
 
         const { data, total } = await db.transaction(async (tx) => {
-          // const data = await tx
-          //   .select()
-          //   .from(product)
-          //   .limit(input.perPage)
-          //   .offset(offset)
-          //   .where(where)
-          //   .orderBy(...orderBy)
-          const data = await tx
-            .select({
-              id: product.id,
-              name: product.name,
-              status: product.status,
-              createdAt: product.createdAt,
-              image: sql<string>`(
-            SELECT (pv."variantImage"[1])
-            FROM "ProductVariant" pv
-            WHERE pv."productId" = "Product"."id"
-            LIMIT 1
-            )`,
-              sales: sql<number>`(
-            SELECT COUNT(DISTINCT od."orderId")
-            FROM "OrderDetails" od
-            JOIN "ProductVariant" pv ON od."productVariantId" = pv."id"
-            WHERE pv."productId" = "Product"."id"
-            )`,
-              minPrice: sql<number>`(
-            SELECT MIN(pv."price")
-            FROM "ProductVariant" pv
-            WHERE pv."productId" = "Product"."id"
-            )`,
-              maxPrice: sql<number>`(
-            SELECT MAX(pv."price")
-            FROM "ProductVariant" pv
-            WHERE pv."productId" = "Product"."id"
-            )`,
-              stock: sql<number>`(
-            SELECT SUM(pv."stock")
-            FROM "ProductVariant" pv
-            WHERE pv."productId" = "Product"."id"
-            )`,
-            })
-            .from(product)
-            .limit(input.perPage)
-            .offset(offset)
-            .where(where)
-            .orderBy(...orderBy)
+          const data = await tx.execute(sql`
+            WITH ProductStats AS (
+              SELECT 
+                p."id",
+                p."name",
+                p."status",
+                p."createdAt",
+                (
+                  SELECT (pv."variantImage"[1])
+                  FROM "ProductVariant" pv
+                  WHERE pv."productId" = p.id
+                  LIMIT 1
+                ) as "image",
+                (
+                  SELECT COUNT(DISTINCT od."orderId")
+                  FROM "OrderDetails" od
+                  JOIN "ProductVariant" pv ON od."productVariantId" = pv.id
+                  WHERE pv."productId" = p.id
+                ) as "sales",
+                (
+                  SELECT MIN(pv.price)
+                  FROM "ProductVariant" pv
+                  WHERE pv."productId" = p.id
+                ) as "minPrice",
+                (
+                  SELECT MAX(pv.price)
+                  FROM "ProductVariant" pv
+                  WHERE pv."productId" = p.id
+                ) as "maxPrice",
+                (
+                  SELECT SUM(pv.stock)
+                  FROM "ProductVariant" pv
+                  WHERE pv."productId" = p.id
+                ) as "stock"
+              FROM "Product" p
+              WHERE ${whereClause}
+            )
+            SELECT *
+            FROM ProductStats
+            ${orderBy.length ? sql`ORDER BY ${sql.join(orderBy, sql`, `)}` : sql``}
+            LIMIT ${input.perPage}
+            OFFSET ${offset}
+          `)
 
           const total = await tx
-            .select({ count: count() })
-            .from(product)
-            .where(where)
-            .execute()
-            .then((res) => res[0]?.count ?? 0)
+            .execute(
+              sql`
+              SELECT COUNT(*) as count
+              FROM "Product" p
+              WHERE ${whereClause}
+            `
+            )
+            .then((res) => Number(res[0]?.count) ?? 0)
 
-          return { data, total }
+          return {
+            data: data as unknown as ProductWithComputedFields[],
+            total,
+          }
         })
+
         const pageCount = Math.ceil(total / input.perPage)
 
-        return { data: data, pageCount: pageCount }
+        return {
+          data,
+          pageCount,
+        }
       } catch (error) {
         console.log(error)
         return { data: [], pageCount: 0 }
