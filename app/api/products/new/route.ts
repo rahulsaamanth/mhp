@@ -5,9 +5,9 @@ import { product } from "@/db/schema"
 import { NextRequest, NextResponse } from "next/server"
 
 export async function POST(request: NextRequest) {
-  const sessoin = await auth()
-  console.log(sessoin)
-  if (!sessoin || sessoin.user.role !== "ADMIN") {
+  const session = await auth()
+  console.log(session)
+  if (!session || session.user.role !== "ADMIN") {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
   }
 
@@ -28,6 +28,8 @@ export async function POST(request: NextRequest) {
         manufacturerId,
       })
       .returning()
+
+    // add atleast one variant
 
     if (!_product) {
       return NextResponse.json(

@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button"
 
 import { DeleteProductsDialog } from "./delete-products-dialog"
 import { ProductForTable } from "@/types"
+import Link from "next/link"
 
 interface TasksTableToolbarActionsProps {
   table: Table<ProductForTable>
@@ -18,6 +19,9 @@ export function ProductsTableToolbarActions({
 }: TasksTableToolbarActionsProps) {
   return (
     <div className="flex items-center gap-2">
+      <Button variant="default" className="mr-4">
+        <Link href="/products/new">Add New Product</Link>
+      </Button>
       {table.getFilteredSelectedRowModel().rows.length > 0 ? (
         <DeleteProductsDialog
           products={table
