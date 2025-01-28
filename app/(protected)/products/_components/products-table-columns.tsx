@@ -1,6 +1,10 @@
 "use client"
 
-import { DataTableRowAction, ProductForTable } from "@/types"
+import {
+  DataTableRowAction,
+  ProductForTable,
+  ProductWithComputedFields,
+} from "@/types"
 
 import { ColumnDef } from "@tanstack/react-table"
 import { Checkbox } from "@/components/ui/checkbox"
@@ -21,18 +25,17 @@ import {
 } from "@/components/ui/dropdown-menu"
 import { Icon } from "@iconify/react/dist/iconify.js"
 import { deleteProduct } from "@/app/(protected)/products/_lib/actions"
-import { revalidatePath } from "next/cache"
+
 import { useRouter } from "next/navigation"
-import { Router } from "next/router"
 
 interface GetColumnProps {
   setRowAction: React.Dispatch<
-    React.SetStateAction<DataTableRowAction<ProductForTable> | null>
+    React.SetStateAction<DataTableRowAction<ProductWithComputedFields> | null>
   >
 }
 export function getColumns({
   setRowAction,
-}: GetColumnProps): ColumnDef<ProductForTable>[] {
+}: GetColumnProps): ColumnDef<ProductWithComputedFields>[] {
   return [
     {
       id: "select",
@@ -101,6 +104,8 @@ export function getColumns({
           </Badge>
         )
       },
+      enableSorting: false,
+      enableHiding: true,
     },
     {
       accessorKey: "minPrice",
@@ -127,6 +132,7 @@ export function getColumns({
         const stock = row.getValue("stock") as number
         return <span className="pl-4">{stock}</span>
       },
+      enableHiding: true,
       enableSorting: true,
     },
     {
@@ -135,8 +141,9 @@ export function getColumns({
         <DataTableColumnHeader column={column} title="Sales" />
       ),
       cell: ({ row }) => <span className="pl-4">{row.getValue("sales")}</span>,
-      enableSorting: true,
+
       enableHiding: true,
+      enableSorting: true,
     },
     {
       accessorKey: "createdAt",
@@ -146,6 +153,7 @@ export function getColumns({
       cell: ({ cell }) => (
         <span className="pr-4">{formatDate(cell.getValue() as Date)}</span>
       ),
+      enableSorting: true,
     },
     {
       id: "actions",
