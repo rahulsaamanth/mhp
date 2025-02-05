@@ -4,6 +4,9 @@ import { buildSearchCondition, buildSortCondition } from "@/db/utils"
 import { and, sql } from "drizzle-orm"
 import { NextRequest, NextResponse } from "next/server"
 
+import { productVariant } from "@/db/schema"
+import { auth } from "@/auth"
+
 export async function GET(request: NextRequest) {
   try {
     const searchParams = request.nextUrl.searchParams
@@ -46,3 +49,39 @@ export async function GET(request: NextRequest) {
     )
   }
 }
+
+// export async function POST(req: Request) {
+//   try {
+//     const session = await auth()
+//     if (!session) {
+//       return new NextResponse("Unauthorized", { status: 401 })
+//     }
+
+//     const body = await req.json()
+//     const { name, description, categoryId, manufacturerId, status, tags, variants } = body
+
+//     const newProduct = await db
+//       .insert(product)
+//       .values({
+//         name,
+//         description,
+//         categoryId,
+//         manufacturerId,
+//         status,
+//         tags,
+//       })
+//       .returning()
+
+//     const productVariants = variants.map((variant: any) => ({
+//       ...variant,
+//       productId: newProduct[0]?.id,
+//     }))
+
+//     await db.insert(productVariant).values(productVariants)
+
+//     return NextResponse.json(newProduct[0])
+//   } catch (error) {
+//     console.error("[PRODUCTS_POST]", error)
+//     return new NextResponse("Internal error", { status: 500 })
+//   }
+// }
