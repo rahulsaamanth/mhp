@@ -32,19 +32,16 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table"
-import { Textarea } from "@/components/ui/textarea"
+
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group"
 import { useRouter } from "next/navigation"
 import Tiptap from "@/components/editor"
-
-const description =
-  "A product edit page. The product edit page has a form to edit the product details, stock, product category, product status, and product images. The product edit page has a sidebar navigation and a main content area. The main content area has a form to edit the product details, stock, product category, product status, and product images. The sidebar navigation has links to product details, stock, product category, product status, and product images."
 
 export default function createProductPage() {
   const router = useRouter()
 
   return (
-    <div className="flex flex-col sm:gap-4 sm:py-4 s">
+    <div className="flex flex-col sm:gap-4 sm:py-4">
       <main className="grid flex-1 items-start gap-4 p-4 sm:px-6 sm:py-0 md:gap-8">
         <div className="grid  flex-1 auto-rows-max gap-4">
           <div className="flex items-center gap-4">
@@ -93,6 +90,55 @@ export default function createProductPage() {
                     <div className="grid gap-3">
                       <Label htmlFor="description">Description</Label>
                       <Tiptap val="" />
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+              <Card>
+                <CardHeader>
+                  <CardTitle>Product Category</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="grid gap-6 sm:grid-cols-3">
+                    <div className="grid gap-3">
+                      <Label htmlFor="category">Category</Label>
+                      <Select>
+                        <SelectTrigger
+                          id="category"
+                          aria-label="Select category"
+                        >
+                          <SelectValue placeholder="Select category" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="clothing">Clothing</SelectItem>
+                          <SelectItem value="electronics">
+                            Electronics
+                          </SelectItem>
+                          <SelectItem value="accessories">
+                            Accessories
+                          </SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                    <div className="grid gap-3">
+                      <Label htmlFor="subcategory">
+                        Subcategory (optional)
+                      </Label>
+                      <Select>
+                        <SelectTrigger
+                          id="subcategory"
+                          aria-label="Select subcategory"
+                        >
+                          <SelectValue placeholder="Select subcategory" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="t-shirts">T-Shirts</SelectItem>
+                          <SelectItem value="hoodies">Hoodies</SelectItem>
+                          <SelectItem value="sweatshirts">
+                            Sweatshirts
+                          </SelectItem>
+                        </SelectContent>
+                      </Select>
                     </div>
                   </div>
                 </CardContent>
@@ -228,55 +274,6 @@ export default function createProductPage() {
                     Add Variant
                   </Button>
                 </CardFooter>
-              </Card>
-              <Card>
-                <CardHeader>
-                  <CardTitle>Product Category</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="grid gap-6 sm:grid-cols-3">
-                    <div className="grid gap-3">
-                      <Label htmlFor="category">Category</Label>
-                      <Select>
-                        <SelectTrigger
-                          id="category"
-                          aria-label="Select category"
-                        >
-                          <SelectValue placeholder="Select category" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="clothing">Clothing</SelectItem>
-                          <SelectItem value="electronics">
-                            Electronics
-                          </SelectItem>
-                          <SelectItem value="accessories">
-                            Accessories
-                          </SelectItem>
-                        </SelectContent>
-                      </Select>
-                    </div>
-                    <div className="grid gap-3">
-                      <Label htmlFor="subcategory">
-                        Subcategory (optional)
-                      </Label>
-                      <Select>
-                        <SelectTrigger
-                          id="subcategory"
-                          aria-label="Select subcategory"
-                        >
-                          <SelectValue placeholder="Select subcategory" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="t-shirts">T-Shirts</SelectItem>
-                          <SelectItem value="hoodies">Hoodies</SelectItem>
-                          <SelectItem value="sweatshirts">
-                            Sweatshirts
-                          </SelectItem>
-                        </SelectContent>
-                      </Select>
-                    </div>
-                  </div>
-                </CardContent>
               </Card>
             </div>
             <div className="grid auto-rows-max items-start gap-4 lg:gap-8">

@@ -163,7 +163,7 @@ const SettingsPage = () => {
   }
 
   return (
-    <section className="grid h-full w-full place-items-center">
+    <section className="grid h-full w-full place-items-center px-6">
       <Card className="w-full rounded-lg bg-white py-2 shadow-lg sm:p-10">
         <CardContent>
           <Form {...form}>

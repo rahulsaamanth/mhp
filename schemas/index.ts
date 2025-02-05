@@ -88,22 +88,36 @@ export const RegisterSchema = z.object({
   name: z.string().min(3, { message: "Name is required" }),
 })
 
-export const productFormSchema = z.object({
-  name: z.string().min(1, "Name is required"),
-  description: z.string().min(1, "Description is required"),
-  status: z.enum(["ACTIVE", "DRAFT", "ARCHIVED"]),
-  tags: z.string().optional(),
-  categoryId: z.string().min(1, "Category is required"),
-  manufacturerId: z.string().min(1, "Manufacturer is required"),
-  properties: z.record(z.string()),
-  variants: z.array(
-    z.object({
-      variantName: z.string().min(1, "Variant name is required"),
-      variantImage: z.string().optional(),
-      potency: z.string().optional(),
-      packSize: z.string().optional(),
-      price: z.number().min(0, "Price must be positive"),
-      stock: z.number().min(0, "Stock must be non-negative"),
-    })
-  ),
+const productVariantSchema = z.object({
+  variantName: z.string().min(1, "Variant name is required"),
+  potency: z.string().optional(),
+  packSize: z.string().optional(),
+  price: z.number().min(0, "Price must be positive"),
+  stock: z.number().min(0, "Stock musn't be negative"),
+  variantImage: z
+    .array(
+      z
+        .any()
+        .refine(
+          (files) => ACCEPTED_IMAGE_MIME_TYPES.includes(files?.[0].type),
+          "Only .png, .jpg, .jpeg, and .webp formats are supported."
+        )
+        .refine(
+          (files) => !files || files?.[0].size <= MAX_UPLOAD_SIZE,
+          "Max upload size is 5MB"
+        )
+    )
+    .min(1, "At least one image is required"),
+})
+
+export const createProductSchema = z.object({
+  name: z.string().min(3, "Product name must be at least 3 characters"),
+  description: z.string().min(10, "Description must be at least 10 characters"),
+  status: z.enum(["ACTIVE", "DRAFT", "ARCHIVED"]).default("DRAFT"),
+  category: z.string().min(1, "Category is required"),
+  manufacturer: z.string().min(1, "Manufacturer is required"),
+  tags: z.array(z.string()).optional().default([]),
+  variants: z
+    .array(productVariantSchema)
+    .min(1, "At least one variant is required"),
 })

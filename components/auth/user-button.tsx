@@ -1,15 +1,15 @@
 "use client"
 
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
-import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar"
 import { useCurrentUser } from "@/hooks/use-current-user"
-import { LogoutButton } from "./logout-button"
 import { Icon } from "@iconify/react"
+import { LogoutButton } from "./logout-button"
 
 export const UserButton = () => {
   const user = useCurrentUser()
@@ -19,10 +19,9 @@ export const UserButton = () => {
       <DropdownMenuTrigger className="rounded-full border-2 focus-visible:invisible">
         <Avatar className="outline-none">
           <AvatarImage
-            src={
-              user?.image ||
-              "https://media.licdn.com/dms/image/v2/D4D0BAQGgmhTnU6j3eQ/company-logo_200_200/company-logo_200_200/0/1703768636553/8ase_logo?e=1739404800&v=beta&t=-lVnJP_MlKg8acV8w3kMLC14qd0mVd-XpOpKov2iOW0"
-            }
+            src={user?.image || ""}
+            alt="Profile"
+            className="object-cover"
           />
           <AvatarFallback className="bg-sky-500">
             <Icon

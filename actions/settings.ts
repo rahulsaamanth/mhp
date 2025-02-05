@@ -4,7 +4,7 @@ import * as z from "zod"
 import bcrypt from "bcryptjs"
 
 import { unstable_update as update } from "@/auth"
-// import db from "@/lib/db"
+
 import { SettingsSchema } from "@/schemas"
 import { getUserByEmail, getUserById } from "@/utils/user"
 import { currentUser } from "@/lib/auth"
@@ -68,12 +68,6 @@ export const updateUser = async (values: z.infer<typeof SettingsSchema>) => {
     values.newPassword = undefined
   }
 
-  // const updatedUser = await db._user.update({
-  //   where: { id: dbUser.id },
-  //   data: {
-  //     ...values,
-  //   },
-  // })
   const [updatedUser] = await db
     .update(user)
     .set({
@@ -124,7 +118,7 @@ const s3Client = new S3Client({
   region: process.env.AWS_BUCKET_REGION!,
   credentials: {
     accessKeyId: process.env.AWS_ACCESS_KEY!,
-    secretAccessKey: process.env.AWS_ACCESS_SECRET!,
+    secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY!,
   },
 })
 
