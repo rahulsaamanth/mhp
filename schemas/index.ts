@@ -114,10 +114,10 @@ export const createProductSchema = z.object({
   name: z.string().min(3, "Product name must be at least 3 characters"),
   description: z.string().min(10, "Description must be at least 10 characters"),
   status: z.enum(["ACTIVE", "DRAFT", "ARCHIVED"]).default("DRAFT"),
-  category: z.string().min(1, "Category is required"),
-  manufacturer: z.string().min(1, "Manufacturer is required"),
+  categoryId: z.string().min(1, "Category is required"),
+  manufacturerId: z.string().min(1, "Manufacturer is required"),
   tags: z.array(z.string()).optional().default([]),
-  variants: z
-    .array(productVariantSchema)
-    .min(1, "At least one variant is required"),
+  // variants: z
+  //   .array(productVariantSchema)
+  //   .min(1, "At least one variant is required"),
 })

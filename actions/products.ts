@@ -2,8 +2,9 @@
 
 import { db } from "@/db/db"
 import { category, manufacturer, product, productVariant } from "@/db/schema"
-import { productFormSchema } from "@/schemas"
+// import { productFormSchema } from "@/schemas"
 import { InferSelectModel, eq, sql } from "drizzle-orm"
+import { revalidatePath, revalidateTag } from "next/cache"
 
 import * as z from "zod"
 
@@ -31,50 +32,50 @@ export const getProductsWithFullDetials = async (): Promise<fullProduct[]> => {
   }
 }
 
-export type ProductFormValues = z.infer<typeof productFormSchema>
+// export type ProductFormValues = z.infer<typeof productFormSchema>
 
-export async function updateProduct(
-  productId: string,
-  data: ProductFormValues
-) {
-  try {
-    await db.transaction(async (tx) => {
-      // Update main product
-      await tx.execute(sql`
-        UPDATE "Product"
-        SET 
-        name = ${data.name},
-        description = ${data.description},
-        status = ${data.status},
-        tags = ${data.tags},
-        category_id = ${data.categoryId},
-        manufacturer_id = ${data.manufacturerId},
-        properties = ${JSON.stringify(data.properties)}
-        WHERE id = ${productId}
-    `)
+// export async function updateProduct(
+//   productId: string,
+//   data: ProductFormValues
+// ) {
+//   try {
+//     await db.transaction(async (tx) => {
+//       // Update main product
+//       await tx.execute(sql`
+//         UPDATE "Product"
+//         SET
+//         name = ${data.name},
+//         description = ${data.description},
+//         status = ${data.status},
+//         tags = ${data.tags},
+//         category_id = ${data.categoryId},
+//         manufacturer_id = ${data.manufacturerId},
+//         properties = ${JSON.stringify(data.properties)}
+//         WHERE id = ${productId}
+//     `)
 
-      // Update variants
-      for (const variant of data.variants) {
-        await tx.execute(sql`
-        UPDATE "ProductVariant"
-        SET
-            variant_name = ${variant.variantName},
-            variant_image = ${variant.variantImage},
-            potency = ${variant.potency},
-            pack_size = ${variant.packSize},
-            price = ${variant.price},
-            stock = ${variant.stock}
-        WHERE product_id = ${productId}
-        `)
-      }
-    })
+//       // Update variants
+//       for (const variant of data.variants) {
+//         await tx.execute(sql`
+//         UPDATE "ProductVariant"
+//         SET
+//             variant_name = ${variant.variantName},
+//             variant_image = ${variant.variantImage},
+//             potency = ${variant.potency},
+//             pack_size = ${variant.packSize},
+//             price = ${variant.price},
+//             stock = ${variant.stock}
+//         WHERE product_id = ${productId}
+//         `)
+//       }
+//     })
 
-    return { success: true }
-  } catch (error) {
-    console.error("Error updating product:", error)
-    return { success: false, error: "Failed to update product" }
-  }
-}
+//     return { success: true }
+//   } catch (error) {
+//     console.error("Error updating product:", error)
+//     return { success: false, error: "Failed to update product" }
+//   }
+// }
 
 export async function getProduct(
   productId: string
