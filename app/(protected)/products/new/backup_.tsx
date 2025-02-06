@@ -11,13 +11,19 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card"
-import { Form, FormControl, FormField, FormLabel } from "@/components/ui/form"
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+} from "@/components/ui/form"
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
 import { createProductSchema } from "@/schemas"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useMutation } from "@tanstack/react-query"
-import { ChevronLeft, FormInput } from "lucide-react"
+import { ChevronLeft } from "lucide-react"
 import { useRouter } from "next/navigation"
 import { useState } from "react"
 import { useForm } from "react-hook-form"
@@ -92,10 +98,10 @@ const AddNewProductPage = () => {
     defaultValues: {
       name: "",
       description: "",
-      category: "",
-      manufacturer: "",
+      categoryId: "",
+      manufacturerId: "",
       tags: [],
-      variants: [],
+      // variants: [],
     },
   })
 
@@ -144,12 +150,12 @@ const AddNewProductPage = () => {
                             control={form.control}
                             name="name"
                             render={({ field }) => (
-                              <FormInput>
+                              <FormItem>
                                 <FormLabel>Product Name</FormLabel>
                                 <FormControl>
                                   <Input {...field} placeholder="Dr. reckweg" />
                                 </FormControl>
-                              </FormInput>
+                              </FormItem>
                             )}
                           />
                         </div>
@@ -160,12 +166,12 @@ const AddNewProductPage = () => {
                             control={form.control}
                             name="description"
                             render={({ field }) => (
-                              <FormInput>
+                              <FormItem>
                                 <FormLabel>Description</FormLabel>
                                 <FormControl>
                                   <Tiptap val="" {...field} />
                                 </FormControl>
-                              </FormInput>
+                              </FormItem>
                             )}
                           />
                         </div>

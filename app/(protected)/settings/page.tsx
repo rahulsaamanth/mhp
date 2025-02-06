@@ -131,10 +131,10 @@ const SettingsPage = () => {
       let imageUrl: string | null = null
 
       if (image) imageUrl = await handleImageUpload(image as File)
-      const updateUserParams = imageUrl
+      const updatedUserParams = imageUrl
         ? { ...values, image: imageUrl }
         : { ...values }
-      updateUser(updateUserParams)
+      updateUser(updatedUserParams)
         .then((data) => {
           if (data.error) {
             toast.error(data.error)

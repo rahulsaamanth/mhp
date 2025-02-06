@@ -17,7 +17,7 @@ import Heading from "@tiptap/extension-heading"
 import { Placeholder } from "@tiptap/extension-placeholder"
 
 const Tiptap = ({ val }: { val: string }) => {
-  //   const { setValue } = useFormContext()
+  const { setValue } = useFormContext()
   const editor = useEditor({
     extensions: [
       Placeholder.configure({
@@ -48,16 +48,15 @@ const Tiptap = ({ val }: { val: string }) => {
 
     onUpdate: ({ editor }) => {
       const content = editor.getHTML()
-      //   setValue("description", content, {
-      //     shouldValidate: true,
-      //     shouldDirty: true,
-      //   })
-      console.log(content)
+      setValue("description", content, {
+        shouldValidate: true,
+        shouldDirty: true,
+      })
     },
     editorProps: {
       attributes: {
         class:
-          "min-h-[160px] w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-[1.5px] focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50",
+          "min-h-[160px] w-full rounded-lg border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-[1.5px] focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50",
       },
     },
     content: val,
