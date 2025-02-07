@@ -68,7 +68,7 @@ export function DeleteProductsDialog({
       <Dialog {...props}>
         {showTrigger ? (
           <DialogTrigger asChild>
-            <Button variant="outline" size="sm">
+            <Button variant="outline">
               <Trash className="mr-2 size-4" aria-hidden="true" />
               Delete ({products.length})
             </Button>

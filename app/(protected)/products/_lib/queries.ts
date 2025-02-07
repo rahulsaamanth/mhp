@@ -10,57 +10,57 @@ import { ProductWithComputedFields } from "@/types"
 import { type GetProductsSchema } from "./validations"
 
 export async function getProducts(input: GetProductsSchema) {
-  // return unstable_cache(
-  //   async () => {
-  try {
-    const offset = (input.page - 1) * input.perPage
-    const fromDate = input.from ? new Date(input.from) : undefined
-    const toDate = input.to ? new Date(input.to) : undefined
-    const advancedTable = input.flags.includes("advancedTable")
+  return unstable_cache(
+    async () => {
+      try {
+        const offset = (input.page - 1) * input.perPage
+        const fromDate = input.from ? new Date(input.from) : undefined
+        const toDate = input.to ? new Date(input.to) : undefined
+        const advancedTable = input.flags.includes("advancedTable")
 
-    const advancedWhere =
-      input.filters && input.filters.length > 0
-        ? filterColumns({
-            table: product,
-            filters: input.filters,
-            joinOperator: input.joinOperator,
-          })
-        : []
+        const advancedWhere =
+          input.filters && input.filters.length > 0
+            ? filterColumns({
+                table: product,
+                filters: input.filters,
+                joinOperator: input.joinOperator,
+              })
+            : []
 
-    const whereConditions = advancedTable
-      ? advancedWhere
-      : [
-          input.name ? sql`p."name" ILIKE ${`%${input.name}%`}` : sql`1=1`,
-          fromDate ? sql`p."createdAt" >= ${fromDate}` : sql`1=1`,
-          toDate ? sql`p."createdAt" <= ${toDate}` : sql`1=1`,
-        ].filter(Boolean)
+        const whereConditions = advancedTable
+          ? advancedWhere
+          : [
+              input.name ? sql`p."name" ILIKE ${`%${input.name}%`}` : sql`1=1`,
+              fromDate ? sql`p."createdAt" >= ${fromDate}` : sql`1=1`,
+              toDate ? sql`p."createdAt" <= ${toDate}` : sql`1=1`,
+            ].filter(Boolean)
 
-    const whereClause = sql`${sql.join(whereConditions as SQLChunk[], sql` AND `)}`
+        const whereClause = sql`${sql.join(whereConditions as SQLChunk[], sql` AND `)}`
 
-    const orderBy = input.sort.map((item) => {
-      const direction = item.desc ? "DESC" : "ASC"
-      const column = item.id as keyof ProductWithComputedFields
+        const orderBy = input.sort.map((item) => {
+          const direction = item.desc ? "DESC" : "ASC"
+          const column = item.id as keyof ProductWithComputedFields
 
-      switch (column) {
-        case "sales":
-          return sql`"sales" ${sql.raw(direction)} NULLS LAST`
-        case "stock":
-          return sql`"stock" ${sql.raw(direction)} NULLS LAST`
-        case "minPrice":
-          return sql`"minPrice" ${sql.raw(direction)} NULLS LAST`
-        case "maxPrice":
-          return sql`"maxPrice" ${sql.raw(direction)} NULLS LAST`
-        case "name":
-          return sql`"name" ${sql.raw(direction)}`
-        case "createdAt":
-          return sql`"createdAt" ${sql.raw(direction)}`
-        default:
-          return sql`"createdAt" DESC`
-      }
-    })
+          switch (column) {
+            case "sales":
+              return sql`"sales" ${sql.raw(direction)} NULLS LAST`
+            case "stock":
+              return sql`"stock" ${sql.raw(direction)} NULLS LAST`
+            case "minPrice":
+              return sql`"minPrice" ${sql.raw(direction)} NULLS LAST`
+            case "maxPrice":
+              return sql`"maxPrice" ${sql.raw(direction)} NULLS LAST`
+            case "name":
+              return sql`"name" ${sql.raw(direction)}`
+            case "createdAt":
+              return sql`"createdAt" ${sql.raw(direction)}`
+            default:
+              return sql`"createdAt" DESC`
+          }
+        })
 
-    const { data, total } = await db.transaction(async (tx) => {
-      const data = await tx.execute(sql`
+        const { data, total } = await db.transaction(async (tx) => {
+          const data = await tx.execute(sql`
             WITH ProductStats AS (
               SELECT 
                 p."id",
@@ -104,36 +104,37 @@ export async function getProducts(input: GetProductsSchema) {
             OFFSET ${offset}
           `)
 
-      const total = await tx
-        .execute(
-          sql`
+          const total = await tx
+            .execute(
+              sql`
               SELECT COUNT(*) as count
               FROM "Product" p
               WHERE ${whereClause}
             `
-        )
-        .then((res) => Number(res[0]?.count) ?? 0)
+            )
+            .then((res) => Number(res[0]?.count) ?? 0)
 
-      return {
-        data: data as unknown as ProductWithComputedFields[],
-        total,
+          return {
+            data: data as unknown as ProductWithComputedFields[],
+            total,
+          }
+        })
+
+        const pageCount = Math.ceil(total / input.perPage)
+
+        return {
+          data,
+          pageCount,
+        }
+      } catch (error) {
+        console.log(error)
+        return { data: [], pageCount: 0 }
       }
-    })
-
-    const pageCount = Math.ceil(total / input.perPage)
-
-    return {
-      data,
-      pageCount,
+    },
+    [JSON.stringify(input)],
+    {
+      revalidate: 3600,
+      tags: ["products"],
     }
-  } catch (error) {
-    console.log(error)
-    return { data: [], pageCount: 0 }
-  }
+  )()
 }
-//   [JSON.stringify(input)],
-//   {
-//     revalidate: 3600,
-//     tags: ["products"],
-//   }
-// )()

@@ -1,4 +1,3 @@
-import type { Metadata } from "next"
 import { ChartCard } from "@/components/chart-card"
 import {
   OrdersByCategoryChart,
@@ -40,6 +39,7 @@ import {
   DashboardLatestProductsShortTable,
   DashboardPopularProductsShortTable,
 } from "./_components/popular-and-recent-products"
+import { unstable_noStore } from "next/cache"
 
 async function getSalesData({
   createdAfter,
@@ -271,6 +271,7 @@ async function getPopularProducts() {
 }
 
 async function getRecentProducts() {
+  unstable_noStore()
   const data = await db
     .select({
       productVariantId: productVariant.id,

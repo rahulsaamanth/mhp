@@ -19,9 +19,6 @@ export function ProductsTableToolbarActions({
 }: TasksTableToolbarActionsProps) {
   return (
     <div className="flex items-center gap-2">
-      <Button variant="default" className="mr-4">
-        <Link href="/products/new">Add New Product</Link>
-      </Button>
       {table.getFilteredSelectedRowModel().rows.length > 0 ? (
         <DeleteProductsDialog
           products={table
@@ -30,6 +27,11 @@ export function ProductsTableToolbarActions({
           onSuccess={() => table.toggleAllRowsSelected(false)}
         />
       ) : null}
+      <Link href="/products/new">
+        <Button variant="default" className="mr-4">
+          Add New Product
+        </Button>
+      </Link>
       <Button
         variant="outline"
         size="sm"
