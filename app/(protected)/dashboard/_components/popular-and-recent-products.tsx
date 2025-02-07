@@ -68,9 +68,9 @@ export const DashboardLatestProductsShortTable = ({
     <Card>
       <CardHeader className="flex-row justify-between w-full">
         <CardTitle>Latest Products</CardTitle>
-        <Button variant="default">
-          <Link href="/products/new">Add New</Link>
-        </Button>
+        <Link href="/products/new">
+          <Button variant="default">Add New</Button>
+        </Link>
       </CardHeader>
       <CardContent className="grid gap-8 pt-4">
         {data.map((product) => (
