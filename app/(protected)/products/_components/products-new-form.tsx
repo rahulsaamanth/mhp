@@ -495,7 +495,6 @@ export const ProductsNewForm = ({
                   </CardDescription>
                 </CardHeader>
                 <CardContent>
-                  <div></div>
                   <Button size="sm" variant="secondary" type="button">
                     Archive Product
                   </Button>

@@ -147,6 +147,8 @@ export async function createProduct(data: z.infer<typeof createProductSchema>) {
       .insert(product)
       .values({
         ...validatedData,
+        form: "TABLETS",
+        unit: "TABLETS", // need to remove form and unit here, put to ignore the error
       })
       .returning()
 

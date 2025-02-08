@@ -44,3 +44,10 @@ backup.sql
 
 #cerfications
 /certs
+
+# Ignore generated migration files (if not needed in Git)
+drizzle/migrations/*.sql
+
+# Ignore Drizzle build files
+drizzle/*.db
+drizzle/*.lock

@@ -1,3 +1,4 @@
+import { table } from "console"
 import {
   pgTable,
   varchar,
@@ -27,6 +28,7 @@ const ENTITY_PREFIX = {
   ORDER_DETAILS: "ODT",
   ADDRESS: "ADDR",
   PAYMENT: "PYMT",
+  INVENTORY: "INV",
 } as const
 
 export const customId = (name: string, prefix: string) =>
@@ -45,6 +47,8 @@ export const customId = (name: string, prefix: string) =>
 export const orderType = pgEnum("OrderType", ["OFFLINE", "ONLINE"])
 
 export const userRole = pgEnum("UserRole", ["ADMIN", "USER"])
+
+export const movementType = pgEnum("MovemenType", ["IN", "OUT", "ADJUSTMENT"])
 
 export const deliveryStatus = pgEnum("DeliveryStatus", [
   "PROCESSING",
@@ -69,6 +73,33 @@ export const productStatus = pgEnum("ProductStatus", [
   "ACTIVE",
   "DRAFT",
   "ARCHIVED",
+])
+
+export const productForm = pgEnum("ProductForm", [
+  "DILUTIONS(P)",
+  "MOTHER_TINCTURES(Q)",
+  "TRITURATIONS",
+  "TABLETS",
+  "GLOBULES",
+  "BIO_CHEMIC",
+  "BIO_COMBINATION",
+  "OINTMENT",
+  "GEL",
+  "CREAM",
+  "SYRUP/TONIC",
+  "DROPS",
+  "EYE_DROPS",
+  "EAR_DROPS",
+  "NASAL_DROPS",
+  "INJECTIONS",
+])
+
+export const unitOfMeasure = pgEnum("UnitOfMeasure", [
+  "TABLETS",
+  "ML",
+  "GM",
+  "DROPS",
+  "AMPOULES",
 ])
 
 export type UserRole = (typeof userRole.enumValues)[number]
@@ -268,6 +299,8 @@ export const product = pgTable(
     id: customId("id", ENTITY_PREFIX.PRODUCT),
     name: text("name").notNull(),
     description: text("description").notNull(),
+    form: productForm("form").notNull(),
+    unit: unitOfMeasure("unit").notNull(),
     status: productStatus("status").default("ACTIVE").notNull(),
     tags: text("tags").array(),
     categoryId: varchar("categoryId", { length: 32 }).notNull(),
@@ -294,6 +327,16 @@ export const product = pgTable(
       })
         .onUpdate("cascade")
         .onDelete("restrict"),
+      productNameIndex: index("product_name_idx").on(table.name),
+      productStatusIndex: index("product_status_idx").on(table.status),
+      productCategoryIndex: index("product_category_idx").on(table.categoryId),
+      productCreatedAtIndex: index("product_created_at_idx").on(
+        table.createdAt
+      ),
+      productFormUnitIndex: index("product_form_unit_idx").on(
+        table.unit,
+        table.form
+      ),
     }
   }
 )
@@ -303,12 +346,15 @@ export const productVariant = pgTable(
   {
     id: customId("id", ENTITY_PREFIX.PRODUCT + "VAR"),
     productId: varchar("productId", { length: 32 }).notNull(),
+    sku: varchar("sku", { length: 50 }).notNull().unique(),
     variantName: text("variantName").notNull(),
     variantImage: text("variantImage").array().notNull(),
     potency: varchar("potency"),
-    packSize: varchar("packSize"),
-    price: doublePrecision("price").notNull(),
+    packSize: integer("packSize"),
     stock: integer("stock").notNull(),
+    costPrice: doublePrecision("costPrice").notNull(),
+    sellingPrice: doublePrecision("sellingPrice").notNull(),
+    discountedPrice: doublePrecision("discountedPrice"),
   },
   (table) => {
     return {
@@ -319,6 +365,18 @@ export const productVariant = pgTable(
       })
         .onDelete("cascade")
         .onUpdate("cascade"),
+      variantSkuIdx: index("idx_variant_sku").on(table.sku),
+      variantCostPriceIdx: index("idx_variant_costPrice").on(table.costPrice),
+      variantSellingPriceIdx: index("idx_variant_sellingPrice").on(
+        table.sellingPrice
+      ),
+      variantStockIdx: index("idx_variant_stock").on(table.stock),
+
+      variantSearchIdx: index("idx_variant_search").on(
+        table.productId,
+        table.potency,
+        table.packSize
+      ),
     }
   }
 )
@@ -406,6 +464,14 @@ export const order = pgTable(
       })
         .onUpdate("cascade")
         .onDelete("restrict"),
+      orderDateStatusIndex: index("order_date_status_idx").on(
+        table.orderDate,
+        table.deliveryStatus
+      ),
+      orderUserDateIndex: index("order_user_date_idx").on(
+        table.userId,
+        table.orderDate
+      ),
     }
   }
 )
@@ -504,4 +570,47 @@ export const address = pgTable(
       userAddressIndex: index("Adress_userId_index").on(table.userId),
     }
   }
+)
+
+export const inventoryManagement = pgTable(
+  "InventoryManagement",
+  {
+    id: customId("id", ENTITY_PREFIX.INVENTORY),
+    productVariantId: varchar("productVariantId", { length: 32 }).notNull(),
+    orderId: varchar("orderId", { length: 32 }),
+    type: movementType("type").notNull(),
+    quantity: integer("quantity").notNull(),
+    reason: text("reason").notNull(),
+    previousStock: integer("previousStock").notNull(),
+    newStock: integer("newStock").notNull(),
+    createdAt: timestamp("createdAt", { mode: "date" }).defaultNow().notNull(),
+    createdBy: varchar("createdBy", { length: 32 }).notNull(),
+  },
+  (table) => ({
+    inventoryManagementVariantFkey: foreignKey({
+      columns: [table.productVariantId],
+      foreignColumns: [productVariant.id],
+    })
+      .onDelete("restrict")
+      .onUpdate("cascade"),
+    inventoryMovementOrderFkey: foreignKey({
+      columns: [table.orderId],
+      foreignColumns: [order.id],
+    })
+      .onDelete("set null")
+      .onUpdate("cascade"),
+
+    inventoryMovementUserFkey: foreignKey({
+      columns: [table.createdBy],
+      foreignColumns: [user.id],
+    })
+      .onDelete("restrict")
+      .onUpdate("cascade"),
+
+    productVariantIdx: index("idx_inventory_movement_variant").on(
+      table.productVariantId
+    ),
+    dateIdx: index("idx_inventory_movement_date").on(table.createdAt),
+    orderIdx: index("idx_inventory_movement_order").on(table.orderId),
+  })
 )

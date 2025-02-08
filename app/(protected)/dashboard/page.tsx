@@ -261,7 +261,7 @@ async function getPopularProducts() {
       productVariant.variantImage,
       productVariant.potency,
       productVariant.packSize,
-      productVariant.price,
+      productVariant.sellingPrice,
       productVariant.stock
     )
     .orderBy(sql`total_orders DESC`)
@@ -271,7 +271,6 @@ async function getPopularProducts() {
 }
 
 async function getRecentProducts() {
-  unstable_noStore()
   const data = await db
     .select({
       productVariantId: productVariant.id,
@@ -307,6 +306,8 @@ export default async function DashboardPage({
     productsSoldByCategoryRangeTo?: string
   }>
 }) {
+  unstable_noStore()
+
   const {
     newCustomersRange,
     newCustomersRangeFrom,
