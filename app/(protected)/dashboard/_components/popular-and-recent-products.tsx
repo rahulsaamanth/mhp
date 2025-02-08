@@ -7,7 +7,7 @@ type DashboardPopularProductsShortTableProps = {
     productId: string
     productName: string | null
     productPotency: string | null
-    productPackSize: string | null
+    productPackSize: number | null
     variantImage: string[]
     totalOrders: number
   }[]
@@ -23,7 +23,10 @@ export const DashboardPopularProductsShortTable = ({
       </CardHeader>
       <CardContent className="grid gap-8 pt-4">
         {data.map((product) => (
-          <div className="flex items-center gap-4" key={product.productId}>
+          <div
+            className="flex items-center gap-4"
+            key={`${product.productId} - ${product.productPackSize}`}
+          >
             <img
               src={product.variantImage[0]}
               alt="Avatar"
@@ -54,7 +57,7 @@ type DashboardLatestProductsShortTableProps = {
     productVariantId: string
     productName: string | null
     productPotency: string | null
-    productPackSize: string | null
+    productPackSize: number | null
     dateAdded: Date
     category: string | null
     stock: number | null

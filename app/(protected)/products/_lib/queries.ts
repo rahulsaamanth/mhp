@@ -80,17 +80,17 @@ export async function getProducts(input: GetProductsSchema) {
                   WHERE pv."productId" = p.id
                 ) as "sales",
                 (
-                  SELECT MIN(pv.price)
+                  SELECT MIN(pv."sellingPrice")
                   FROM "ProductVariant" pv
                   WHERE pv."productId" = p.id
                 ) as "minPrice",
                 (
-                  SELECT MAX(pv.price)
+                  SELECT MAX(pv."sellingPrice")
                   FROM "ProductVariant" pv
                   WHERE pv."productId" = p.id
                 ) as "maxPrice",
                 (
-                  SELECT SUM(pv.stock)
+                  SELECT SUM(pv."stock")
                   FROM "ProductVariant" pv
                   WHERE pv."productId" = p.id
                 ) as "stock"

@@ -1,5 +1,6 @@
 "use client"
-import { getProduct } from "@/actions/products"
+
+import { getProduct } from "../_lib/actions"
 import { useQuery } from "@tanstack/react-query"
 import React from "react"
 
@@ -8,17 +9,7 @@ function ProductPage({ params }: { params: Promise<{ id: string }> }) {
 
   const { data, isPending, isError, error } = useQuery({
     queryKey: ["product", id],
-    queryFn: async () => {
-      try {
-        const result = await getProduct(id)
-        if ("error" in result) {
-          throw new Error(result.error)
-        }
-        return result
-      } catch (err) {
-        throw err
-      }
-    },
+    queryFn: () => getProduct(id),
   })
 
   if (isPending) return <div>Loading...</div>

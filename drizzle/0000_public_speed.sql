@@ -11,6 +11,12 @@ EXCEPTION
 END $$;
 --> statement-breakpoint
 DO $$ BEGIN
+ CREATE TYPE "public"."MovemenType" AS ENUM('IN', 'OUT', 'ADJUSTMENT');
+EXCEPTION
+ WHEN duplicate_object THEN null;
+END $$;
+--> statement-breakpoint
+DO $$ BEGIN
  CREATE TYPE "public"."OrderType" AS ENUM('OFFLINE', 'ONLINE');
 EXCEPTION
  WHEN duplicate_object THEN null;
@@ -23,7 +29,19 @@ EXCEPTION
 END $$;
 --> statement-breakpoint
 DO $$ BEGIN
+ CREATE TYPE "public"."ProductForm" AS ENUM('DILUTIONS(P)', 'MOTHER_TINCTURES(Q)', 'TRITURATIONS', 'TABLETS', 'GLOBULES', 'BIO_CHEMIC', 'BIO_COMBINATION', 'OINTMENT', 'GEL', 'CREAM', 'SYRUP/TONIC', 'DROPS', 'EYE_DROPS', 'EAR_DROPS', 'NASAL_DROPS', 'INJECTIONS');
+EXCEPTION
+ WHEN duplicate_object THEN null;
+END $$;
+--> statement-breakpoint
+DO $$ BEGIN
  CREATE TYPE "public"."ProductStatus" AS ENUM('ACTIVE', 'DRAFT', 'ARCHIVED');
+EXCEPTION
+ WHEN duplicate_object THEN null;
+END $$;
+--> statement-breakpoint
+DO $$ BEGIN
+ CREATE TYPE "public"."UnitOfMeasure" AS ENUM('TABLETS', 'ML', 'GM', 'DROPS', 'AMPOULES');
 EXCEPTION
  WHEN duplicate_object THEN null;
 END $$;
@@ -66,6 +84,19 @@ CREATE TABLE IF NOT EXISTS "Category" (
 	"id" varchar(32) PRIMARY KEY NOT NULL,
 	"name" text NOT NULL,
 	"parentId" varchar(32)
+);
+--> statement-breakpoint
+CREATE TABLE IF NOT EXISTS "InventoryManagement" (
+	"id" varchar(32) PRIMARY KEY NOT NULL,
+	"productVariantId" varchar(32) NOT NULL,
+	"orderId" varchar(32),
+	"type" "MovemenType" NOT NULL,
+	"quantity" integer NOT NULL,
+	"reason" text NOT NULL,
+	"previousStock" integer NOT NULL,
+	"newStock" integer NOT NULL,
+	"createdAt" timestamp DEFAULT now() NOT NULL,
+	"createdBy" varchar(32) NOT NULL
 );
 --> statement-breakpoint
 CREATE TABLE IF NOT EXISTS "Manufacturer" (
@@ -115,6 +146,8 @@ CREATE TABLE IF NOT EXISTS "Product" (
 	"id" varchar(32) PRIMARY KEY NOT NULL,
 	"name" text NOT NULL,
 	"description" text NOT NULL,
+	"form" "ProductForm" NOT NULL,
+	"unit" "UnitOfMeasure" NOT NULL,
 	"status" "ProductStatus" DEFAULT 'ACTIVE' NOT NULL,
 	"tags" text[],
 	"categoryId" varchar(32) NOT NULL,
@@ -127,12 +160,16 @@ CREATE TABLE IF NOT EXISTS "Product" (
 CREATE TABLE IF NOT EXISTS "ProductVariant" (
 	"id" varchar(32) PRIMARY KEY NOT NULL,
 	"productId" varchar(32) NOT NULL,
+	"sku" varchar(50) NOT NULL,
 	"variantName" text NOT NULL,
 	"variantImage" text[] NOT NULL,
 	"potency" varchar,
-	"packSize" varchar,
-	"price" double precision NOT NULL,
-	"stock" integer NOT NULL
+	"packSize" integer,
+	"stock" integer NOT NULL,
+	"costPrice" double precision NOT NULL,
+	"sellingPrice" double precision NOT NULL,
+	"discountedPrice" double precision,
+	CONSTRAINT "ProductVariant_sku_unique" UNIQUE("sku")
 );
 --> statement-breakpoint
 CREATE TABLE IF NOT EXISTS "Review" (
@@ -198,6 +235,24 @@ EXCEPTION
 END $$;
 --> statement-breakpoint
 DO $$ BEGIN
+ ALTER TABLE "InventoryManagement" ADD CONSTRAINT "InventoryManagement_productVariantId_ProductVariant_id_fk" FOREIGN KEY ("productVariantId") REFERENCES "public"."ProductVariant"("id") ON DELETE restrict ON UPDATE cascade;
+EXCEPTION
+ WHEN duplicate_object THEN null;
+END $$;
+--> statement-breakpoint
+DO $$ BEGIN
+ ALTER TABLE "InventoryManagement" ADD CONSTRAINT "InventoryManagement_orderId_Order_id_fk" FOREIGN KEY ("orderId") REFERENCES "public"."Order"("id") ON DELETE set null ON UPDATE cascade;
+EXCEPTION
+ WHEN duplicate_object THEN null;
+END $$;
+--> statement-breakpoint
+DO $$ BEGIN
+ ALTER TABLE "InventoryManagement" ADD CONSTRAINT "InventoryManagement_createdBy_User_id_fk" FOREIGN KEY ("createdBy") REFERENCES "public"."User"("id") ON DELETE restrict ON UPDATE cascade;
+EXCEPTION
+ WHEN duplicate_object THEN null;
+END $$;
+--> statement-breakpoint
+DO $$ BEGIN
  ALTER TABLE "Order" ADD CONSTRAINT "Order_userId_fkey" FOREIGN KEY ("userId") REFERENCES "public"."User"("id") ON DELETE cascade ON UPDATE cascade;
 EXCEPTION
  WHEN duplicate_object THEN null;
@@ -228,7 +283,7 @@ EXCEPTION
 END $$;
 --> statement-breakpoint
 DO $$ BEGIN
- ALTER TABLE "OrderDetails" ADD CONSTRAINT "OrderDetails_productVariantId_fkey" FOREIGN KEY ("productVariantId") REFERENCES "public"."ProductVariant"("id") ON DELETE restrict ON UPDATE cascade;
+ ALTER TABLE "OrderDetails" ADD CONSTRAINT "OrderDetails_productVariantId_fkey" FOREIGN KEY ("productVariantId") REFERENCES "public"."ProductVariant"("id") ON DELETE cascade ON UPDATE cascade;
 EXCEPTION
  WHEN duplicate_object THEN null;
 END $$;
@@ -277,9 +332,24 @@ END $$;
 --> statement-breakpoint
 CREATE UNIQUE INDEX IF NOT EXISTS "Account_provider_providerAccountId_key" ON "Account" USING btree ("provider","providerAccountId");--> statement-breakpoint
 CREATE INDEX IF NOT EXISTS "Adress_userId_index" ON "Address" USING btree ("userId");--> statement-breakpoint
+CREATE INDEX IF NOT EXISTS "idx_inventory_movement_variant" ON "InventoryManagement" USING btree ("productVariantId");--> statement-breakpoint
+CREATE INDEX IF NOT EXISTS "idx_inventory_movement_date" ON "InventoryManagement" USING btree ("createdAt");--> statement-breakpoint
+CREATE INDEX IF NOT EXISTS "idx_inventory_movement_order" ON "InventoryManagement" USING btree ("orderId");--> statement-breakpoint
+CREATE INDEX IF NOT EXISTS "order_date_status_idx" ON "Order" USING btree ("orderDate","deliveryStatus");--> statement-breakpoint
+CREATE INDEX IF NOT EXISTS "order_user_date_idx" ON "Order" USING btree ("userId","orderDate");--> statement-breakpoint
 CREATE UNIQUE INDEX IF NOT EXISTS "PasswordResetToken_email_token_key" ON "PasswordResetToken" USING btree ("email","token");--> statement-breakpoint
 CREATE UNIQUE INDEX IF NOT EXISTS "PasswordResetToken_token_key" ON "PasswordResetToken" USING btree ("token");--> statement-breakpoint
 CREATE INDEX IF NOT EXISTS "PaymentMethod_userId_index" ON "PaymentMethod" USING btree ("userId");--> statement-breakpoint
+CREATE INDEX IF NOT EXISTS "product_name_idx" ON "Product" USING btree ("name");--> statement-breakpoint
+CREATE INDEX IF NOT EXISTS "product_status_idx" ON "Product" USING btree ("status");--> statement-breakpoint
+CREATE INDEX IF NOT EXISTS "product_category_idx" ON "Product" USING btree ("categoryId");--> statement-breakpoint
+CREATE INDEX IF NOT EXISTS "product_created_at_idx" ON "Product" USING btree ("createdAt");--> statement-breakpoint
+CREATE INDEX IF NOT EXISTS "product_form_unit_idx" ON "Product" USING btree ("unit","form");--> statement-breakpoint
+CREATE INDEX IF NOT EXISTS "idx_variant_sku" ON "ProductVariant" USING btree ("sku");--> statement-breakpoint
+CREATE INDEX IF NOT EXISTS "idx_variant_costPrice" ON "ProductVariant" USING btree ("costPrice");--> statement-breakpoint
+CREATE INDEX IF NOT EXISTS "idx_variant_sellingPrice" ON "ProductVariant" USING btree ("sellingPrice");--> statement-breakpoint
+CREATE INDEX IF NOT EXISTS "idx_variant_stock" ON "ProductVariant" USING btree ("stock");--> statement-breakpoint
+CREATE INDEX IF NOT EXISTS "idx_variant_search" ON "ProductVariant" USING btree ("productId","potency","packSize");--> statement-breakpoint
 CREATE UNIQUE INDEX IF NOT EXISTS "TwoFactorConfirmation_userId_key" ON "TwoFactorConfirmation" USING btree ("userId");--> statement-breakpoint
 CREATE UNIQUE INDEX IF NOT EXISTS "TwoFactorToken_email_token_key" ON "TwoFactorToken" USING btree ("email","token");--> statement-breakpoint
 CREATE UNIQUE INDEX IF NOT EXISTS "TwoFactorToken_token_key" ON "TwoFactorToken" USING btree ("token");--> statement-breakpoint
