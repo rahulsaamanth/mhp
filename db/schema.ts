@@ -1,4 +1,3 @@
-import { table } from "console"
 import {
   pgTable,
   varchar,
@@ -107,6 +106,10 @@ export type UserRole = (typeof userRole.enumValues)[number]
 export type User = typeof user.$inferSelect
 export type Order = typeof order.$inferSelect
 export type Product = typeof product.$inferSelect
+
+export type Category = typeof category.$inferSelect
+export type Variants = typeof productVariant.$inferSelect
+export type Manufacturer = typeof manufacturer.$inferSelect
 
 export const verificationToken = pgTable(
   "VerificationToken",

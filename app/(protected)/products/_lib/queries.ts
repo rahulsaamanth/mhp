@@ -31,8 +31,10 @@ export async function getProducts(input: GetProductsSchema) {
           ? advancedWhere
           : [
               input.name ? sql`p."name" ILIKE ${`%${input.name}%`}` : sql`1=1`,
-              fromDate ? sql`p."createdAt" >= ${fromDate}` : sql`1=1`,
-              toDate ? sql`p."createdAt" <= ${toDate}` : sql`1=1`,
+              fromDate
+                ? sql`p."createdAt" >= ${fromDate.toISOString()}`
+                : sql`1=1`,
+              toDate ? sql`p."createdAt" <= ${toDate.toISOString()}` : sql`1=1`,
             ].filter(Boolean)
 
         const whereClause = sql`${sql.join(whereConditions as SQLChunk[], sql` AND `)}`

@@ -46,7 +46,7 @@ const HeaderMobile = () => {
       initial={false}
       animate={isOpen ? "open" : "closed"}
       custom={height}
-      className={`fixed inset-0 z-50 w-full overflow-auto xl:hidden ${
+      className={`fixed inset-0 z-50 w-full overflow-auto xl:hidden mt-2 ${
         isOpen ? "h-screen" : "pointer-events-none"
       }`}
       ref={containerRef}
@@ -57,7 +57,7 @@ const HeaderMobile = () => {
       />
       <motion.ul
         variants={variants}
-        className="absolute grid w-full gap-1 px-8 sm:gap-3"
+        className="absolute grid w-full gap-1 px-8 sm:gap-3 pt-4"
       >
         <MenuItem className="pb-4 sm:pb-10">
           <UserButton />

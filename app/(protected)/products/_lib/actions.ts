@@ -1,9 +1,20 @@
 "use server"
 
 import { db } from "@/db/db"
-import { category, manufacturer, product, productVariant } from "@/db/schema"
+import {
+  Category,
+  Manufacturer,
+  Product,
+  Variants,
+  category,
+  manufacturer,
+  product,
+  productVariant,
+} from "@/db/schema"
 import { getErrorMessage } from "@/lib/handle-error"
 import { createProductSchema } from "@/schemas"
+import { pause } from "@/utils/pause"
+
 import { InferSelectModel, eq, inArray } from "drizzle-orm"
 import { revalidatePath, revalidateTag, unstable_noStore } from "next/cache"
 import * as z from "zod"
@@ -45,10 +56,6 @@ export async function deleteProduct(input: { id: string }) {
   }
 }
 
-type Product = InferSelectModel<typeof product>
-type Category = InferSelectModel<typeof category>
-type Manufacturer = InferSelectModel<typeof manufacturer>
-type Variants = InferSelectModel<typeof productVariant>
 export type fullProduct = Product & {
   category: Category
   manufacturer: Manufacturer
@@ -118,6 +125,7 @@ export async function getProduct(
   productId: string
 ): Promise<fullProduct | { error: string }> {
   try {
+    pause(4000)
     const _product = await db.query.product.findFirst({
       where: eq(product.id, productId),
       with: {
@@ -147,8 +155,6 @@ export async function createProduct(data: z.infer<typeof createProductSchema>) {
       .insert(product)
       .values({
         ...validatedData,
-        form: "TABLETS",
-        unit: "TABLETS", // need to remove form and unit here, put to ignore the error
       })
       .returning()
 
@@ -158,18 +164,9 @@ export async function createProduct(data: z.infer<typeof createProductSchema>) {
       product: newProduct,
     }
   } catch (error) {
-    console.error("Error creating product:", error)
-
-    if (error instanceof z.ZodError) {
-      return {
-        success: false,
-        error: error.errors.map((err) => err.message),
-      }
-    }
-
     return {
       success: false,
-      error: "Failed to create product",
+      error: getErrorMessage(error),
     }
   }
 }

@@ -21,14 +21,14 @@ const SideNav = () => {
       <div className="flex w-full flex-col gap-6">
         <Link
           href="/dashboard"
-          className="flex h-16 w-full flex-row items-center justify-center space-x-3 border-b border-zinc-200 md:justify-start md:px-6"
+          className="flex h-20 w-full flex-row items-center justify-center space-x-3 border-b border-zinc-200 md:justify-start md:px-6"
         >
-          <span className="hidden text-3xl font-bold md:flex">
+          <span className="hidden text-3xl font-bold md:flex ml-4">
             <Image
-              src="/logo.jpg"
+              src="/logo.png"
               alt="failed to load logo : side-nav"
-              height={100}
-              width={100}
+              height={120}
+              width={120}
             />
           </span>
         </Link>
