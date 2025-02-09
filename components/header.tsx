@@ -19,7 +19,7 @@ const Header = () => {
   return (
     <div
       className={cn(
-        `sticky inset-x-0 top-0 z-50 h-16 w-full border-b border-border/40 border-gray-200 transition-all bg-white`,
+        `sticky inset-x-0 top-0 z-50 h-20 w-full border-b border-border/40 border-gray-200 transition-all bg-white`,
         {
           "bg-background/95 backdrop-blur-sm supports-[backdrop-filter]:bg-background/50":
             scrolled,
@@ -29,12 +29,12 @@ const Header = () => {
     >
       <div className="flex h-full items-center justify-between px-10">
         <div className="flex items-center space-x-4">
-          <Link href="/dashboard" className="xl:hidden">
+          <Link href="/dashboard" className="xl:hidden ml-4">
             <Image
-              src="/logo.jpg"
+              src="/logo.png"
               alt="failed to load logo : header"
-              width={100}
-              height={100}
+              width={120}
+              height={120}
             />
           </Link>
         </div>

@@ -177,8 +177,9 @@ export function getColumns({
               <DropdownMenuLabel>Actions</DropdownMenuLabel>
               <DropdownMenuItem
                 onClick={() => navigator.clipboard.writeText(String(user.id))}
+                className="cursor-copy"
               >
-                Copy Product ID
+                <Copy className="size-4 mr-2" /> Copy ID
               </DropdownMenuItem>
               <DropdownMenuSeparator />
               <DropdownMenuItem>View Product</DropdownMenuItem>

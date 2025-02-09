@@ -54,6 +54,7 @@ import { createProduct } from "../_lib/actions"
 import { toast } from "sonner"
 import { useMutation } from "@tanstack/react-query"
 import { zodResolver } from "@hookform/resolvers/zod"
+import { productForm, unitOfMeasure } from "@/db/schema"
 
 type FormattedCategory = {
   id: string
@@ -88,6 +89,8 @@ export const ProductsNewForm = ({
       manufacturerId: "",
       tags: [],
       status: "ACTIVE",
+      form: "DILUTIONS(P)",
+      unit: "ML",
     },
     mode: "onChange",
   })
@@ -107,6 +110,8 @@ export const ProductsNewForm = ({
       console.error("Error creating product:", error)
     },
   })
+  const { enumValues: productForms } = productForm
+  const { enumValues: productUnits } = unitOfMeasure
 
   return (
     <Form {...form}>
@@ -164,6 +169,7 @@ export const ProductsNewForm = ({
                             <FormControl>
                               <Input
                                 {...field}
+                                autoComplete="off"
                                 placeholder="Enter Product Name"
                               />
                             </FormControl>
@@ -192,10 +198,10 @@ export const ProductsNewForm = ({
               </Card>
               <Card>
                 <CardHeader>
-                  <CardTitle>Product Category and Manufacturer</CardTitle>
+                  <CardTitle>Product Properties</CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <div className="grid gap-6 sm:grid-cols-3">
+                  <div className="grid gap-6 sm:grid-cols-2">
                     <div className="grid gap-3">
                       <FormField
                         control={form.control}
@@ -261,6 +267,64 @@ export const ProductsNewForm = ({
                         )}
                       />
                     </div>
+                    <div className="grid gap-3">
+                      <FormField
+                        control={form.control}
+                        name="form"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>Select Form</FormLabel>
+                            <FormControl>
+                              <Select
+                                onValueChange={field.onChange}
+                                defaultValue={field.value}
+                              >
+                                <SelectTrigger>
+                                  <SelectValue placeholder="Select form" />
+                                </SelectTrigger>
+                                <SelectContent>
+                                  {productForms.map((form, idx) => (
+                                    <SelectItem key={idx} value={form}>
+                                      {form}
+                                    </SelectItem>
+                                  ))}
+                                </SelectContent>
+                              </Select>
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                    </div>
+                    <div className="grid gap-3">
+                      <FormField
+                        control={form.control}
+                        name="unit"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>Select Unit</FormLabel>
+                            <FormControl>
+                              <Select
+                                onValueChange={field.onChange}
+                                defaultValue={field.value}
+                              >
+                                <SelectTrigger>
+                                  <SelectValue placeholder="Select unit" />
+                                </SelectTrigger>
+                                <SelectContent>
+                                  {productUnits.map((unit, idx) => (
+                                    <SelectItem key={idx} value={unit}>
+                                      {unit}
+                                    </SelectItem>
+                                  ))}
+                                </SelectContent>
+                              </Select>
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                    </div>
                   </div>
                 </CardContent>
               </Card>
@@ -275,17 +339,19 @@ export const ProductsNewForm = ({
                   <Table>
                     <TableHeader>
                       <TableRow>
-                        <TableHead className="w-[100px]">SKU</TableHead>
+                        <TableHead className="w-[100px]">S NO.</TableHead>
+                        <TableHead>Potency</TableHead>
+                        <TableHead>Pack Size</TableHead>
                         <TableHead>Stock</TableHead>
-                        <TableHead>Price</TableHead>
+                        <TableHead>Cost Price</TableHead>
+                        <TableHead>Selling Price</TableHead>
+                        <TableHead>Discounted Price</TableHead>
                         <TableHead className="w-[100px]">Size</TableHead>
                       </TableRow>
                     </TableHeader>
                     <TableBody>
                       <TableRow>
-                        <TableCell className="font-semibold">
-                          GGPC-001
-                        </TableCell>
+                        <TableCell className="font-semibold">001</TableCell>
                         <TableCell>
                           <Label htmlFor="stock-1" className="sr-only">
                             Stock
@@ -302,74 +368,6 @@ export const ProductsNewForm = ({
                           </Label>
                           <Input
                             id="price-1"
-                            type="number"
-                            defaultValue="99.99"
-                          />
-                        </TableCell>
-                        <TableCell>
-                          <ToggleGroup
-                            type="single"
-                            defaultValue="s"
-                            variant="outline"
-                          >
-                            <ToggleGroupItem value="s">S</ToggleGroupItem>
-                            <ToggleGroupItem value="m">M</ToggleGroupItem>
-                            <ToggleGroupItem value="l">L</ToggleGroupItem>
-                          </ToggleGroup>
-                        </TableCell>
-                      </TableRow>
-                      <TableRow>
-                        <TableCell className="font-semibold">
-                          GGPC-002
-                        </TableCell>
-                        <TableCell>
-                          <Label htmlFor="stock-2" className="sr-only">
-                            Stock
-                          </Label>
-                          <Input
-                            id="stock-2"
-                            type="number"
-                            defaultValue="143"
-                          />
-                        </TableCell>
-                        <TableCell>
-                          <Label htmlFor="price-2" className="sr-only">
-                            Price
-                          </Label>
-                          <Input
-                            id="price-2"
-                            type="number"
-                            defaultValue="99.99"
-                          />
-                        </TableCell>
-                        <TableCell>
-                          <ToggleGroup
-                            type="single"
-                            defaultValue="m"
-                            variant="outline"
-                          >
-                            <ToggleGroupItem value="s">S</ToggleGroupItem>
-                            <ToggleGroupItem value="m">M</ToggleGroupItem>
-                            <ToggleGroupItem value="l">L</ToggleGroupItem>
-                          </ToggleGroup>
-                        </TableCell>
-                      </TableRow>
-                      <TableRow>
-                        <TableCell className="font-semibold">
-                          GGPC-003
-                        </TableCell>
-                        <TableCell>
-                          <Label htmlFor="stock-3" className="sr-only">
-                            Stock
-                          </Label>
-                          <Input id="stock-3" type="number" defaultValue="32" />
-                        </TableCell>
-                        <TableCell>
-                          <Label htmlFor="price-3" className="sr-only">
-                            Stock
-                          </Label>
-                          <Input
-                            id="price-3"
                             type="number"
                             defaultValue="99.99"
                           />

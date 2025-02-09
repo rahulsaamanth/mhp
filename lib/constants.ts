@@ -15,6 +15,11 @@ export const SIDENAV_ITEMS: SideNavItem[] = [
     // icon: "fluent:cube-add-20-regular",
   },
   {
+    title: "SKU",
+    path: "/sku-options",
+    icon: "fluent:options-20-regular",
+  },
+  {
     title: "Orders",
     path: "/orders",
     icon: "material-symbols:orders-outline",
@@ -38,6 +43,7 @@ export const SIDENAV_ITEMS: SideNavItem[] = [
     // discount icon
     // icon: "flowbite:sale-percent-outline",
   },
+
   {
     title: "Admin",
     path: "/admin",
