@@ -118,10 +118,13 @@ export const CategoriesForm = ({
               {cat.subCategories.length > 0 ? (
                 <ul className="list-none space-y-2">
                   {cat.subCategories.map((subCat, idx) => (
-                    <li key={idx}>
-                      - @{subCat}{" "}
+                    <li
+                      key={idx}
+                      className="whitespace-nowrap flex flex-nowrap items-center justify-between gap-2"
+                    >
+                      <span>- @{subCat}</span>
                       <Button
-                        variant="destructive"
+                        variant="ghost"
                         size="sm"
                         onClick={() => {
                           const subToDelete = rawCategories.find(
@@ -137,7 +140,7 @@ export const CategoriesForm = ({
                         {deleteIsPending && (
                           <Loader className="size-4 animate-spin" />
                         )}
-                        <CircleX className="size-4" />
+                        <CircleX className="size-4" color="red" />
                       </Button>
                     </li>
                   ))}

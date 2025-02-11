@@ -72,12 +72,12 @@ export function generateVariantName({
 
 export function generateSKU({
   productName,
-  manufacturerName,
+  productForm,
   potency,
   packSize,
 }: {
   productName: string
-  manufacturerName: string
+  productForm: string
   potency?: string
   packSize?: string
 }) {
@@ -88,7 +88,7 @@ export function generateSKU({
     .slice(0, 3)
 
   // Convert manufacturer name to uppercase and take first 2 characters
-  const manufacturerCode = manufacturerName
+  const productFormCode = productForm
     .replace(/[^A-Z]/gi, "")
     .toUpperCase()
     .slice(0, 2)
@@ -109,5 +109,5 @@ export function generateSKU({
     .padStart(3, "0")
 
   // Combine all parts
-  return `${productCode}${manufacturerCode}${potencyCode}${sizeCode}${random}`
+  return `${productCode}${productFormCode}${potencyCode}${sizeCode}${random}`
 }

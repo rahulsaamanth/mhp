@@ -88,7 +88,7 @@ export function DateRangePicker({
     function parseDate(dateString: string | null) {
       if (!dateString) return undefined
       const parsedDate = new Date(dateString)
-      return isNaN(parsedDate.getTime()) ? undefined : parsedDate
+      return Number.isNaN(parsedDate.getTime()) ? undefined : parsedDate
     }
 
     return {

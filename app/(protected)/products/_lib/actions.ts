@@ -12,6 +12,7 @@ import {
   productVariant,
 } from "@/db/schema"
 import { getErrorMessage } from "@/lib/handle-error"
+import { generateSKU, generateVariantName } from "@/lib/utils"
 import { createProductSchema } from "@/schemas"
 import { pause } from "@/utils/pause"
 
@@ -150,18 +151,50 @@ export async function createProduct(data: z.infer<typeof createProductSchema>) {
   unstable_noStore()
   try {
     const validatedData = createProductSchema.parse(data)
+    const { variants, ...productData } = validatedData
 
-    const [newProduct] = await db
-      .insert(product)
-      .values({
-        ...validatedData,
-      })
-      .returning()
+    const result = await db.transaction(async (tx) => {
+      const [newProduct] = await tx
+        .insert(product)
+        .values({
+          ...productData,
+        })
+        .returning()
 
-    revalidateTag("products")
+      if (!newProduct) throw new Error("Failed to create product")
+
+      const variantsToInsert = variants.map((variant) => ({
+        ...variant,
+        productId: newProduct.id,
+        sku: generateSKU({
+          productName: productData.name,
+          productForm: productData.form,
+          packSize: variant.packSize.toString(),
+          potency: variant.potency.toString(),
+        }),
+        variantName: generateVariantName({
+          productName: productData.name,
+          packSize: variant.packSize.toString(),
+          potency: variant.packSize.toString(),
+        }),
+      }))
+
+      const newVariants = await tx
+        .insert(productVariant)
+        .values(variantsToInsert)
+        .returning()
+
+      return {
+        ...newProduct,
+        variants: newVariants,
+      }
+    })
+
+    revalidatePath("products")
+
     return {
       success: true,
-      product: newProduct,
+      product: result,
     }
   } catch (error) {
     return {
