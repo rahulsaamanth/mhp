@@ -1,10 +1,12 @@
 import { db } from "@/db/db"
 import { CategoriesForm } from "./_components/categories-form"
-import { isNotNull, isNull } from "drizzle-orm"
-import { category } from "@/db/schema"
+import { ManufacturersForm } from "./_components/manufacturers-form"
 
 export default async function SkuOptionsPage() {
-  const categories = await db.query.category.findMany()
+  const [categories, manufacturers] = await Promise.all([
+    db.query.category.findMany(),
+    db.query.manufacturer.findMany(),
+  ])
 
   const formattedCategories = categories
     .filter((cat) => cat.parentId === null)
@@ -17,8 +19,12 @@ export default async function SkuOptionsPage() {
     }))
 
   return (
-    <div>
-      <CategoriesForm categories={formattedCategories} />
-    </div>
+    <>
+      <CategoriesForm
+        categories={formattedCategories}
+        rawCategories={categories}
+      />
+      <ManufacturersForm manufacturers={manufacturers} />
+    </>
   )
 }

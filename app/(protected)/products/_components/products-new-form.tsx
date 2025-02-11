@@ -339,14 +339,46 @@ export const ProductsNewForm = ({
                   <Table>
                     <TableHeader>
                       <TableRow>
-                        <TableHead className="w-[100px]">S NO.</TableHead>
-                        <TableHead>Potency</TableHead>
-                        <TableHead>Pack Size</TableHead>
-                        <TableHead>Stock</TableHead>
-                        <TableHead>Cost Price</TableHead>
-                        <TableHead>Selling Price</TableHead>
-                        <TableHead>Discounted Price</TableHead>
-                        <TableHead className="w-[100px]">Size</TableHead>
+                        <TableHead className="w-[80px] cursor-default">
+                          <span className="truncate" title="Serial Number">
+                            S.No
+                          </span>
+                        </TableHead>
+                        <TableHead className="w-[100px] cursor-default">
+                          <span className="truncate" title="Potency">
+                            Potency
+                          </span>
+                        </TableHead>
+                        <TableHead className="w-[100px] cursor-default">
+                          <span className="truncate" title="Pack Size">
+                            Pack
+                          </span>
+                        </TableHead>
+                        <TableHead className="w-[80px] cursor-default">
+                          <span className="truncate" title="Stock">
+                            Stock
+                          </span>
+                        </TableHead>
+                        <TableHead className="w-[100px] cursor-default">
+                          <span className="truncate" title="Cost Price">
+                            C.Price
+                          </span>
+                        </TableHead>
+                        <TableHead className="w-[100px] cursor-default">
+                          <span className="truncate" title="Selling Price">
+                            S.Price
+                          </span>
+                        </TableHead>
+                        <TableHead className="w-[100px] cursor-default">
+                          <span className="truncate" title="Discounted Price">
+                            D.Price
+                          </span>
+                        </TableHead>
+                        <TableHead className="w-[80px] cursor-default">
+                          <span className="truncate" title="Product Size">
+                            Size
+                          </span>
+                        </TableHead>
                       </TableRow>
                     </TableHeader>
                     <TableBody>

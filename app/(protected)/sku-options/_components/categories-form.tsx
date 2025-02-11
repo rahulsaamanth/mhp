@@ -1,7 +1,13 @@
 "use client"
 
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card"
 import {
   HoverCard,
   HoverCardContent,
@@ -9,10 +15,10 @@ import {
 } from "@/components/ui/hover-card"
 import { Input } from "@/components/ui/input"
 import { useMutation } from "@tanstack/react-query"
-import { addCategory, addSubCategory } from "../_lib/actions"
-import { toast } from "sonner"
+import { CircleX, Loader } from "lucide-react"
 import { parseAsString, useQueryState } from "nuqs"
-import { Loader } from "lucide-react"
+import { toast } from "sonner"
+import { addCategory, addSubCategory, deleteCategory } from "../_lib/actions"
 
 type Category = {
   id: string
@@ -20,7 +26,19 @@ type Category = {
   subCategories: string[]
 }
 
-export const CategoriesForm = ({ categories }: { categories: Category[] }) => {
+type RawCategories = {
+  id: string
+  name: string
+  parentId: string | null
+}
+
+export const CategoriesForm = ({
+  categories,
+  rawCategories,
+}: {
+  categories: Category[]
+  rawCategories: RawCategories[]
+}) => {
   const [category, setCategory] = useQueryState(
     "category",
     parseAsString.withDefault("")
@@ -34,7 +52,9 @@ export const CategoriesForm = ({ categories }: { categories: Category[] }) => {
     mutationFn: addCategory,
     onSuccess: (data) => {
       if (data.success) {
-        toast.success(`${data.category?.name} category created successfully`)
+        toast.success(
+          `${data.category?.name.toUpperCase()} category created successfully`
+        )
         setCategory("")
       }
       if (data.error) toast.error(data.error || "Failed to create category")
@@ -52,7 +72,7 @@ export const CategoriesForm = ({ categories }: { categories: Category[] }) => {
       onSuccess: (data) => {
         if (data.success) {
           toast.success(
-            `${data.category?.name} subcategory created successfully`
+            `${data.category?.name.toUpperCase()} subcategory created successfully`
           )
           setSubCategory("")
         }
@@ -66,10 +86,27 @@ export const CategoriesForm = ({ categories }: { categories: Category[] }) => {
       },
     })
 
+  const { mutate: server_deleteCategory, isPending: deleteIsPending } =
+    useMutation({
+      mutationFn: deleteCategory,
+      onSuccess: (data) => {
+        if (data.success)
+          toast.success(
+            `${data.category?.name.toUpperCase()} deleted successfully`
+          )
+        if (data.error) toast.error(data.error || "Failed to delete category")
+      },
+      onError: (error) => {
+        toast.error("Something went wrong!")
+        console.error("Error deleting category:", error)
+      },
+    })
+
   return (
     <Card>
       <CardHeader>
         <CardTitle>Categories</CardTitle>
+        <CardDescription>Hover to add subcategories</CardDescription>
       </CardHeader>
       <CardContent className="w-full flex flex-col justify-start items-start md:flex-row">
         {categories.map((cat) => (
@@ -79,10 +116,29 @@ export const CategoriesForm = ({ categories }: { categories: Category[] }) => {
             </HoverCardTrigger>
             <HoverCardContent className="w-fit p-4">
               {cat.subCategories.length > 0 ? (
-                <ul className="list-none">
-                  {cat.subCategories.map((cat, idx) => (
+                <ul className="list-none space-y-2">
+                  {cat.subCategories.map((subCat, idx) => (
                     <li key={idx}>
-                      <Button variant="link">- @{cat}</Button>
+                      - @{subCat}{" "}
+                      <Button
+                        variant="destructive"
+                        size="sm"
+                        onClick={() => {
+                          const subToDelete = rawCategories.find(
+                            (category) =>
+                              category.parentId === cat.id &&
+                              category.name === subCat
+                          )
+                          if (subToDelete)
+                            server_deleteCategory(subToDelete?.id)
+                          else toast.error("SubCategory not found")
+                        }}
+                      >
+                        {deleteIsPending && (
+                          <Loader className="size-4 animate-spin" />
+                        )}
+                        <CircleX className="size-4" />
+                      </Button>
                     </li>
                   ))}
                 </ul>
