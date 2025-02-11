@@ -96,3 +96,22 @@ export async function addManufacturer(name: string) {
     }
   }
 }
+
+export async function deleteManufacturer(id: string) {
+  try {
+    const [_manufacturer] = await db
+      .delete(manufacturer)
+      .where(eq(manufacturer.id, id))
+      .returning()
+    revalidatePath("/sku-options")
+    return {
+      success: true,
+      manufacturer: _manufacturer,
+    }
+  } catch (error) {
+    return {
+      success: false,
+      error: getErrorMessage(error),
+    }
+  }
+}

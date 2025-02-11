@@ -1,3 +1,4 @@
+import { potency } from "@/db/schema"
 import * as z from "zod"
 
 const ACCEPTED_IMAGE_MIME_TYPES = [
@@ -88,27 +89,56 @@ export const RegisterSchema = z.object({
   name: z.string().min(3, { message: "Name is required" }),
 })
 
-const productVariantSchema = z.object({
-  variantName: z.string().min(1, "Variant name is required"),
-  potency: z.string().optional(),
-  packSize: z.string().optional(),
-  price: z.number().min(0, "Price must be positive"),
-  stock: z.number().min(0, "Stock musn't be negative"),
-  variantImage: z
-    .array(
-      z
-        .any()
-        .refine(
-          (files) => ACCEPTED_IMAGE_MIME_TYPES.includes(files?.[0].type),
-          "Only .png, .jpg, .jpeg, and .webp formats are supported."
-        )
-        .refine(
-          (files) => !files || files?.[0].size <= MAX_UPLOAD_SIZE,
-          "Max upload size is 5MB"
-        )
-    )
-    .min(1, "At least one image is required"),
-})
+// const productVariantSchema = z.object({
+//   potency: z.enum(["NONE", ...potency.enumValues]),
+//   packSize: z.number().optional(),
+//   costPrice: z.number().min(0, "Price must be positive"),
+//   sellingPrice: z.number().min(0, "Price must be positive"),
+//   discountedPrice: z.number().min(0, "Price must be positive"),
+//   stock: z.number().min(0, "Stock musn't be negative"),
+//   variantImage: z
+//     .array(
+//       z
+//         .any()
+//         .refine(
+//           (files) => ACCEPTED_IMAGE_MIME_TYPES.includes(files?.[0].type),
+//           "Only .png, .jpg, .jpeg, and .webp formats are supported."
+//         )
+//         .refine(
+//           (files) => !files || files?.[0].size <= MAX_UPLOAD_SIZE,
+//           "Max upload size is 5MB"
+//         )
+//     )
+//     .min(1, "At least one image is required"),
+
+// })
+
+const productVariantSchema = z
+  .object({
+    potency: z.enum(["NONE", ...potency.enumValues]),
+    packSize: z.number().min(1, "Pack size must be at least 1"),
+    costPrice: z.number().min(0, "Price must be positive"),
+    sellingPrice: z.number().min(0, "Price must be positive"),
+    discountedPrice: z.number().min(0, "Price must be positive"),
+    stock: z.number().min(0, "Stock must not be negative"),
+    variantImage: z.array(z.any()),
+  })
+  .superRefine((data, ctx) => {
+    if (data.sellingPrice <= data.costPrice) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        path: ["sellingPrice"],
+        message: "Selling price must be greater than cost price",
+      })
+    }
+    if (data.discountedPrice > data.sellingPrice) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        path: ["discountedPrice"],
+        message: "Discounted price must be less than or equal to selling price",
+      })
+    }
+  })
 
 export const createProductSchema = z.object({
   name: z.string().min(3, "Product name must be at least 3 characters"),
@@ -118,6 +148,7 @@ export const createProductSchema = z.object({
   manufacturerId: z.string().min(1, "Manufacturer is required"),
   tags: z.array(z.string()).optional().default([]),
   form: z.enum([
+    "NONE",
     "DILUTIONS(P)",
     "MOTHER_TINCTURES(Q)",
     "TRITURATIONS",
@@ -135,8 +166,8 @@ export const createProductSchema = z.object({
     "NASAL_DROPS",
     "INJECTIONS",
   ]),
-  unit: z.enum(["TABLETS", "ML", "GM", "DROPS", "AMPOULES"]),
-  // variants: z
-  //   .array(productVariantSchema)
-  //   .min(1, "At least one variant is required"),
+  unit: z.enum(["NONE", "TABLETS", "ML", "GM(s)", "DROPS", "AMPOULES"]),
+  variants: z
+    .array(productVariantSchema)
+    .min(1, "At least one variant is required"),
 })

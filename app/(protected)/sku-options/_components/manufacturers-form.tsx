@@ -6,8 +6,9 @@ import { Input } from "@/components/ui/input"
 import { type Manufacturer } from "@/db/schema"
 import { useMutation } from "@tanstack/react-query"
 import { parseAsString, useQueryState } from "nuqs"
-import { addManufacturer } from "../_lib/actions"
+import { addManufacturer, deleteManufacturer } from "../_lib/actions"
 import { toast } from "sonner"
+import { CircleX, Loader } from "lucide-react"
 
 export const ManufacturersForm = ({
   manufacturers,
@@ -37,6 +38,21 @@ export const ManufacturersForm = ({
     },
   })
 
+  const { mutate: server_deleteManufacturer, isPending: isDeletePending } =
+    useMutation({
+      mutationFn: deleteManufacturer,
+      onSuccess: (data) => {
+        if (data.success)
+          toast.success(`${data.manufacturer?.name} deleted successfully`)
+        if (data.error)
+          toast.error(data.error || "Failed to delete manufacturer")
+      },
+      onError: (error) => {
+        toast.error("Something went wrong!")
+        console.error("Error deleting manufacturer:", error)
+      },
+    })
+
   return (
     <Card>
       <CardHeader>
@@ -47,9 +63,16 @@ export const ManufacturersForm = ({
           {manufacturers.map((manf) => (
             <li
               key={manf.id}
-              className="hover:underline cursor-default text-sm font-medium"
+              className="hover:underline cursor-default text-sm font-medium whitespace-nowrap flex flex-nowrap items-center justify-between"
             >
-              @{manf.name}
+              <span>@{manf.name}</span>
+              <Button
+                variant="ghost"
+                onClick={() => server_deleteManufacturer(manf.id)}
+              >
+                <CircleX className="size-4" color="red" />
+                {isDeletePending && <Loader className="size-4 animate-spin" />}
+              </Button>
             </li>
           ))}
         </ul>

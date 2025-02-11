@@ -36,7 +36,7 @@ import {
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group"
 import { useRouter } from "next/navigation"
 import Tiptap from "@/components/editor"
-import { useForm } from "react-hook-form"
+import { UseFormReturn, useFieldArray, useForm } from "react-hook-form"
 import * as z from "zod"
 import { createProductSchema } from "@/schemas"
 
@@ -54,7 +54,7 @@ import { createProduct } from "../_lib/actions"
 import { toast } from "sonner"
 import { useMutation } from "@tanstack/react-query"
 import { zodResolver } from "@hookform/resolvers/zod"
-import { productForm, unitOfMeasure } from "@/db/schema"
+import { potency, productForm, unitOfMeasure } from "@/db/schema"
 
 type FormattedCategory = {
   id: string
@@ -89,8 +89,19 @@ export const ProductsNewForm = ({
       manufacturerId: "",
       tags: [],
       status: "ACTIVE",
-      form: "DILUTIONS(P)",
-      unit: "ML",
+      form: "NONE",
+      unit: "NONE",
+      variants: [
+        {
+          potency: "NONE",
+          packSize: 0,
+          costPrice: 100,
+          sellingPrice: 150,
+          discountedPrice: 140,
+          stock: 20,
+          variantImage: [],
+        },
+      ],
     },
     mode: "onChange",
   })
@@ -112,6 +123,11 @@ export const ProductsNewForm = ({
   })
   const { enumValues: productForms } = productForm
   const { enumValues: productUnits } = unitOfMeasure
+
+  const { fields, append, remove } = useFieldArray({
+    control: form.control,
+    name: "variants",
+  })
 
   return (
     <Form {...form}>
@@ -351,7 +367,7 @@ export const ProductsNewForm = ({
                         </TableHead>
                         <TableHead className="w-[100px] cursor-default">
                           <span className="truncate" title="Pack Size">
-                            Pack
+                            Size
                           </span>
                         </TableHead>
                         <TableHead className="w-[80px] cursor-default">
@@ -374,61 +390,50 @@ export const ProductsNewForm = ({
                             D.Price
                           </span>
                         </TableHead>
-                        <TableHead className="w-[80px] cursor-default">
-                          <span className="truncate" title="Product Size">
-                            Size
-                          </span>
-                        </TableHead>
                       </TableRow>
                     </TableHeader>
                     <TableBody>
-                      <TableRow>
-                        <TableCell className="font-semibold">001</TableCell>
-                        <TableCell>
-                          <Label htmlFor="stock-1" className="sr-only">
-                            Stock
-                          </Label>
-                          <Input
-                            id="stock-1"
-                            type="number"
-                            defaultValue="100"
-                          />
-                        </TableCell>
-                        <TableCell>
-                          <Label htmlFor="price-1" className="sr-only">
-                            Price
-                          </Label>
-                          <Input
-                            id="price-1"
-                            type="number"
-                            defaultValue="99.99"
-                          />
-                        </TableCell>
-                        <TableCell>
-                          <ToggleGroup
-                            type="single"
-                            defaultValue="s"
-                            variant="outline"
-                          >
-                            <ToggleGroupItem value="s">S</ToggleGroupItem>
-                            <ToggleGroupItem value="m">M</ToggleGroupItem>
-                            <ToggleGroupItem value="l">L</ToggleGroupItem>
-                          </ToggleGroup>
-                        </TableCell>
-                      </TableRow>
+                      {fields.map((field, index) => (
+                        <VariantFields
+                          key={field.id}
+                          form={form}
+                          index={index}
+                        />
+                      ))}
                     </TableBody>
                   </Table>
                 </CardContent>
-                <CardFooter className="justify-center border-t p-4">
+                <CardFooter className="justify-between border-t p-4">
                   <Button
                     size="sm"
                     variant="ghost"
                     className="gap-1"
                     type="button"
+                    onClick={() =>
+                      append({
+                        potency: "NONE",
+                        packSize: 0,
+                        costPrice: 0,
+                        sellingPrice: 0,
+                        discountedPrice: 0,
+                        stock: 0,
+                        variantImage: [],
+                      })
+                    }
                   >
                     <PlusCircle className="h-3.5 w-3.5" />
                     Add Variant
                   </Button>
+                  {fields.length > 1 && (
+                    <Button
+                      size="sm"
+                      variant="destructive"
+                      type="button"
+                      onClick={() => remove(fields.length - 1)}
+                    >
+                      Remove Last Variant
+                    </Button>
+                  )}
                 </CardFooter>
               </Card>
             </div>
@@ -544,5 +549,140 @@ export const ProductsNewForm = ({
         </div>
       </form>
     </Form>
+  )
+}
+
+type VariantFieldsProps = {
+  form: UseFormReturn<any>
+  index: number
+}
+
+const VariantFields = ({ form, index }: VariantFieldsProps) => {
+  const { enumValues: potencies } = potency
+
+  return (
+    <TableRow>
+      <TableCell className="font-medium">{index + 1}</TableCell>
+      <TableCell>
+        <FormField
+          control={form.control}
+          name={`variants.${index}.potency`}
+          render={({ field }) => (
+            <FormItem>
+              <FormControl>
+                <Select onValueChange={field.onChange} value={field.value}>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select potency" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {potencies.map((p) => (
+                      <SelectItem key={p} value={p}>
+                        {p}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+      </TableCell>
+      <TableCell>
+        <FormField
+          control={form.control}
+          name={`variants.${index}.packSize`}
+          render={({ field }) => (
+            <FormItem>
+              <FormControl>
+                <Input
+                  type="number"
+                  {...field}
+                  value={field.value || 0}
+                  onChange={(e) => field.onChange(e.target.valueAsNumber || 0)}
+                />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+      </TableCell>
+      <TableCell>
+        <FormField
+          control={form.control}
+          name={`variants.${index}.stock`}
+          render={({ field }) => (
+            <FormItem>
+              <FormControl>
+                <Input
+                  type="number"
+                  {...field}
+                  value={field.value || 0}
+                  onChange={(e) => field.onChange(e.target.valueAsNumber || 0)}
+                />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+      </TableCell>
+      <TableCell>
+        <FormField
+          control={form.control}
+          name={`variants.${index}.costPrice`}
+          render={({ field }) => (
+            <FormItem>
+              <FormControl>
+                <Input
+                  type="number"
+                  {...field}
+                  value={field.value || 0}
+                  onChange={(e) => field.onChange(e.target.valueAsNumber || 0)}
+                />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+      </TableCell>
+      <TableCell>
+        <FormField
+          control={form.control}
+          name={`variants.${index}.sellingPrice`}
+          render={({ field }) => (
+            <FormItem>
+              <FormControl>
+                <Input
+                  type="number"
+                  {...field}
+                  value={field.value || 0}
+                  onChange={(e) => field.onChange(e.target.valueAsNumber || 0)}
+                />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+      </TableCell>
+      <TableCell>
+        <FormField
+          control={form.control}
+          name={`variants.${index}.discountedPrice`}
+          render={({ field }) => (
+            <FormItem>
+              <FormControl>
+                <Input
+                  type="number"
+                  {...field}
+                  value={field.value || 0}
+                  onChange={(e) => field.onChange(e.target.valueAsNumber || 0)}
+                />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+      </TableCell>
+    </TableRow>
   )
 }
