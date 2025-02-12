@@ -27,8 +27,8 @@ const SideNav = () => {
             <Image
               src="/logo.png"
               alt="failed to load logo : side-nav"
-              height={120}
-              width={120}
+              height={100}
+              width={100}
             />
           </span>
         </Link>

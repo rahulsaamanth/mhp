@@ -126,7 +126,6 @@ export async function getProduct(
   productId: string
 ): Promise<fullProduct | { error: string }> {
   try {
-    pause(4000)
     const _product = await db.query.product.findFirst({
       where: eq(product.id, productId),
       with: {
@@ -163,19 +162,24 @@ export async function createProduct(data: z.infer<typeof createProductSchema>) {
 
       if (!newProduct) throw new Error("Failed to create product")
 
+      const [_manufacturer] = await tx
+        .select({ name: manufacturer.name })
+        .from(manufacturer)
+        .where(eq(manufacturer.id, newProduct.manufacturerId))
+
       const variantsToInsert = variants.map((variant) => ({
         ...variant,
         productId: newProduct.id,
         sku: generateSKU({
-          productName: productData.name,
-          productForm: productData.form,
+          productManufacturer: _manufacturer?.name ?? "",
+          productName: newProduct.name,
           packSize: variant.packSize.toString(),
           potency: variant.potency.toString(),
         }),
         variantName: generateVariantName({
-          productName: productData.name,
+          productName: newProduct.name,
           packSize: variant.packSize.toString(),
-          potency: variant.packSize.toString(),
+          potency: variant.potency.toString(),
         }),
       }))
 
@@ -190,7 +194,9 @@ export async function createProduct(data: z.infer<typeof createProductSchema>) {
       }
     })
 
-    revalidatePath("products")
+    revalidateTag("products")
+
+    // revalidatePath("/products")
 
     return {
       success: true,

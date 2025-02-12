@@ -15,6 +15,13 @@
       "when": 1739301057470,
       "tag": "0001_dry_vindicator",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1739349760600,
+      "tag": "0002_clever_omega_sentinel",
+      "breakpoints": true
     }
   ]
 }

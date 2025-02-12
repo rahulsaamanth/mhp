@@ -48,66 +48,67 @@ export function toSentenceCase(str: string) {
     .trim()
 }
 
-export function generateVariantName({
+/**
+ * Format: [BRAND]-[PRODUCT]-[VARIANT]-[SIZE]
+ * Examples:
+ * - DR-SIL-3X-20T (Dr.Reckeweg Silicea 3X 20 tablets)
+ * - SBL-BC10-25T (SBL Bio Combination 10 25 tablets)
+ * - BAK-SUN-HRC-100G (Bakson Sunny Hair Removal Cream 100g)
+ */
+export function generateSKU({
+  productManufacturer,
   productName,
-  potency,
   packSize,
+  potency,
 }: {
+  productManufacturer: string
   productName: string
+  packSize: string
   potency?: string
-  packSize?: string
 }) {
-  const parts = [productName]
+  // Extract brand code (first 3 letters of manufacturer)
+  const brandCode = productManufacturer.slice(0, 3).toUpperCase()
 
-  if (potency) {
-    parts.push(potency)
-  }
+  // Get product code (abbreviated product name)
+  const productCode = getProductCode(productName)
 
-  if (packSize) {
-    parts.push(packSize)
-  }
+  // Get variant code (form/potency)
+  const variantCode = potency
 
-  return parts.join(" - ")
+  // Get size code
+  const sizeCode = packSize
+
+  return `${brandCode}-${productCode}-${variantCode}-${sizeCode}`.toUpperCase()
 }
 
-export function generateSKU({
+/**
+ * Format: [Product Name] - [Potency/Form] - ([Size])
+ * Examples:
+ * - Silicea - 3X - 20gms
+ * - Bio Combination 10 - 25gms
+ * - Sunny Hair Removal Cream - 100gms
+ */
+export function generateVariantName({
   productName,
-  productForm,
-  potency,
   packSize,
+  potency,
 }: {
   productName: string
-  productForm: string
+  packSize: string
   potency?: string
-  packSize?: string
 }) {
-  // Convert product name to uppercase and take first 3 characters
-  const productCode = productName
-    .replace(/[^A-Z]/gi, "")
-    .toUpperCase()
-    .slice(0, 3)
+  if (potency) {
+    return `${productName} - ${potency} - ${packSize}`
+  }
 
-  // Convert manufacturer name to uppercase and take first 2 characters
-  const productFormCode = productForm
-    .replace(/[^A-Z]/gi, "")
-    .toUpperCase()
-    .slice(0, 2)
+  return `${productName} - ${packSize}`
+}
 
-  // Format potency (e.g., "30C" -> "30C", "200CH" -> "200")
-  const potencyCode = potency
-    ? potency.replace(/[^0-9]/g, "").padStart(3, "0")
-    : "000"
-
-  // Format pack size (e.g., "30ml" -> "030", "100tabs" -> "100")
-  const sizeCode = packSize
-    ? packSize.replace(/[^0-9]/g, "").padStart(3, "0")
-    : "000"
-
-  // Generate random number for uniqueness
-  const random = Math.floor(Math.random() * 1000)
-    .toString()
-    .padStart(3, "0")
-
-  // Combine all parts
-  return `${productCode}${productFormCode}${potencyCode}${sizeCode}${random}`
+function getProductCode(productName: string): string {
+  // Extract meaningful part of product name
+  const name = productName.split(" ").slice(-2).join(" ")
+  return name
+    .split(" ")
+    .map((word) => word.slice(0, 3))
+    .join("")
 }
