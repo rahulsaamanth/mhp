@@ -167,6 +167,9 @@ export const createProductSchema = z.object({
     "INJECTIONS",
   ]),
   unit: z.enum(["NONE", "TABLETS", "ML", "GM(s)", "DROPS", "AMPOULES"]),
+  skuLocation: z
+    .enum(["MANGALORE-01", "MANGALORE-02", "KERALA-01"])
+    .default("MANGALORE-01"),
   variants: z
     .array(productVariantSchema)
     .min(1, "At least one variant is required"),
