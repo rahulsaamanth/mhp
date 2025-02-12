@@ -1,5 +1,6 @@
 "use server"
 
+import { getSignedURL } from "@/actions/settings"
 import { db } from "@/db/db"
 import {
   Category,
@@ -207,5 +208,38 @@ export async function createProduct(data: z.infer<typeof createProductSchema>) {
       success: false,
       error: getErrorMessage(error),
     }
+  }
+}
+
+export const computeSHA256 = async (file: File) => {
+  const buffer = await file.arrayBuffer()
+  const hashBuffer = await crypto.subtle.digest("SHA-256", buffer)
+  const hashArray = Array.from(new Uint8Array(hashBuffer))
+  const hashHex = hashArray.map((b) => b.toString(16).padStart(2, "0")).join("")
+  return hashHex
+}
+
+export const uploadProductImage = async (file: File): Promise<string> => {
+  try {
+    const signedURLResult = await getSignedURL({
+      fileSize: file.size,
+      fileType: file.type,
+      checksum: await computeSHA256(file),
+    })
+    if (signedURLResult.error !== undefined)
+      throw new Error(signedURLResult.error)
+    const url = signedURLResult.success.url
+    await fetch(url, {
+      method: "PUT",
+      headers: {
+        "Content-Type": file.type,
+      },
+      body: file,
+    })
+    const fileUrl = url.split("?")[0]
+    return fileUrl as string
+  } catch (error) {
+    console.error("Error uploading image:", error)
+    throw new Error("Failed to upload image")
   }
 }
