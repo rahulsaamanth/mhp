@@ -16,7 +16,6 @@ import {
   CardTitle,
 } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
 import {
   Select,
   SelectContent,
@@ -33,12 +32,11 @@ import {
   TableRow,
 } from "@/components/ui/table"
 
-import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group"
-import { useRouter } from "next/navigation"
 import Tiptap from "@/components/editor"
+import { createProductSchema } from "@/schemas"
+import { useRouter } from "next/navigation"
 import { UseFormReturn, useFieldArray, useForm } from "react-hook-form"
 import * as z from "zod"
-import { createProductSchema } from "@/schemas"
 
 import {
   Form,
@@ -48,13 +46,19 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form"
-import React from "react"
 
-import { createProduct } from "../_lib/actions"
-import { toast } from "sonner"
-import { useMutation } from "@tanstack/react-query"
-import { zodResolver } from "@hookform/resolvers/zod"
 import { potency, productForm, unitOfMeasure } from "@/db/schema"
+import { zodResolver } from "@hookform/resolvers/zod"
+import { useMutation } from "@tanstack/react-query"
+import { toast } from "sonner"
+import { createProduct } from "../_lib/actions"
+import {
+  Carousel,
+  CarouselContent,
+  CarouselItem,
+  CarouselNext,
+  CarouselPrevious,
+} from "@/components/ui/carousel"
 
 type FormattedCategory = {
   id: string
@@ -111,6 +115,7 @@ export const ProductsNewForm = ({
     onSuccess: (data) => {
       if (data.success) {
         toast.success("Product created successfully!")
+        console.log(data.product)
         router.push("/products")
       } else {
         toast.error(data.error || "Failed to create product")
@@ -484,42 +489,36 @@ export const ProductsNewForm = ({
                   </CardDescription>
                 </CardHeader>
                 <CardContent>
-                  <div className="grid gap-2">
-                    <Image
-                      alt="Product image"
-                      className="aspect-square w-full rounded-md object-cover"
-                      height="300"
-                      src="/placeholder.svg"
-                      width="300"
-                    />
-                    <div className="grid grid-cols-3 gap-2">
-                      <button type="button">
-                        <Image
-                          alt="Product image"
-                          className="aspect-square w-full rounded-md object-cover"
-                          height="84"
-                          src="/placeholder.svg"
-                          width="84"
-                        />
-                      </button>
-                      <button type="button">
-                        <Image
-                          alt="Product image"
-                          className="aspect-square w-full rounded-md object-cover"
-                          height="84"
-                          src="/placeholder.svg"
-                          width="84"
-                        />
-                      </button>
-                      <button
-                        type="button"
-                        className="flex aspect-square w-full items-center justify-center rounded-md border border-dashed"
-                      >
-                        <Upload className="h-4 w-4 text-muted-foreground" />
-                        <span className="sr-only">Upload</span>
-                      </button>
-                    </div>
-                  </div>
+                  <Image
+                    alt="Product image"
+                    className="aspect-square w-full rounded-md object-cover"
+                    height="300"
+                    src="/placeholder.svg"
+                    width="300"
+                  />
+
+                  <Carousel className="w-full max-w-sm mx-auto">
+                    <CarouselContent className="-ml-1">
+                      {Array.from({ length: 5 }).map((_, index) => (
+                        <CarouselItem
+                          key={index}
+                          className="pl-1 md:basis-1/2 lg:basis-1/3"
+                        >
+                          <div className="p-1">
+                            <Card>
+                              <CardContent className="flex aspect-square items-center justify-center p-6">
+                                <span className="text-2xl font-semibold">
+                                  {(index + 1).toString().padStart(2, "0")}
+                                </span>
+                              </CardContent>
+                            </Card>
+                          </div>
+                        </CarouselItem>
+                      ))}
+                    </CarouselContent>
+                    <CarouselPrevious type="button" />
+                    <CarouselNext type="button" />
+                  </Carousel>
                 </CardContent>
               </Card>
               <Card>
@@ -560,9 +559,11 @@ type VariantFieldsProps = {
 const VariantFields = ({ form, index }: VariantFieldsProps) => {
   const { enumValues: potencies } = potency
 
+  const fIndex = (index + 1).toString().padStart(2, "0")
+
   return (
     <TableRow>
-      <TableCell className="font-medium">{index + 1}</TableCell>
+      <TableCell className="font-medium">{fIndex}</TableCell>
       <TableCell>
         <FormField
           control={form.control}
@@ -598,8 +599,14 @@ const VariantFields = ({ form, index }: VariantFieldsProps) => {
                 <Input
                   type="number"
                   {...field}
-                  value={field.value || 0}
-                  onChange={(e) => field.onChange(e.target.valueAsNumber || 0)}
+                  value={field.value === 0 ? "" : field.value}
+                  onChange={(e) => {
+                    const value =
+                      e.target.value === "" ? 0 : e.target.valueAsNumber
+                    field.onChange(value)
+                  }}
+                  className="[appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                  placeholder="20"
                 />
               </FormControl>
               <FormMessage />
@@ -636,8 +643,14 @@ const VariantFields = ({ form, index }: VariantFieldsProps) => {
                 <Input
                   type="number"
                   {...field}
-                  value={field.value || 0}
-                  onChange={(e) => field.onChange(e.target.valueAsNumber || 0)}
+                  value={field.value === 0 ? "" : field.value}
+                  onChange={(e) => {
+                    const value =
+                      e.target.value === "" ? 0 : e.target.valueAsNumber
+                    field.onChange(value)
+                  }}
+                  className="[appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                  placeholder="20"
                 />
               </FormControl>
               <FormMessage />
@@ -655,8 +668,14 @@ const VariantFields = ({ form, index }: VariantFieldsProps) => {
                 <Input
                   type="number"
                   {...field}
-                  value={field.value || 0}
-                  onChange={(e) => field.onChange(e.target.valueAsNumber || 0)}
+                  value={field.value === 0 ? "" : field.value}
+                  onChange={(e) => {
+                    const value =
+                      e.target.value === "" ? 0 : e.target.valueAsNumber
+                    field.onChange(value)
+                  }}
+                  className="[appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                  placeholder="20"
                 />
               </FormControl>
               <FormMessage />
@@ -674,8 +693,14 @@ const VariantFields = ({ form, index }: VariantFieldsProps) => {
                 <Input
                   type="number"
                   {...field}
-                  value={field.value || 0}
-                  onChange={(e) => field.onChange(e.target.valueAsNumber || 0)}
+                  value={field.value === 0 ? "" : field.value}
+                  onChange={(e) => {
+                    const value =
+                      e.target.value === "" ? 0 : e.target.valueAsNumber
+                    field.onChange(value)
+                  }}
+                  className="[appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                  placeholder="20"
                 />
               </FormControl>
               <FormMessage />

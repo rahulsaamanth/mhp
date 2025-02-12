@@ -33,8 +33,8 @@ const Header = () => {
             <Image
               src="/logo.png"
               alt="failed to load logo : header"
-              width={120}
-              height={120}
+              width={100}
+              height={100}
             />
           </Link>
         </div>

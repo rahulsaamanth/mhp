@@ -362,7 +362,6 @@ export const product = pgTable(
     updatedAt: timestamp("updatedAt")
       .defaultNow()
       .$onUpdate(() => new Date()),
-    properties: jsonb("properties"),
   },
   (table) => {
     return {
