@@ -3,71 +3,65 @@
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
-import { type Manufacturer } from "@/db/schema"
+import { Tag, type Manufacturer } from "@/db/schema"
 import { useMutation } from "@tanstack/react-query"
 import { parseAsString, useQueryState } from "nuqs"
-import { addManufacturer, deleteManufacturer } from "../_lib/actions"
+import {
+  addManufacturer,
+  addTag,
+  deleteManufacturer,
+  deleteTag,
+} from "../_lib/actions"
 import { toast } from "sonner"
 import { CircleX, Loader } from "lucide-react"
 import { useState } from "react"
 
-export const ManufacturersForm = ({
-  manufacturers,
-}: {
-  manufacturers: Manufacturer[]
-}) => {
-  const [manufacturer, setManufacturer] = useQueryState(
-    "manufacturer",
-    parseAsString.withDefault("")
-  )
+export const TagsForm = ({ tags }: { tags: Tag[] }) => {
+  const [tag, setTag] = useQueryState("tag", parseAsString.withDefault(""))
 
-  const [deletingId, setDeletingId] = useState<string | null>(null)
+  const [deletingId, setDeletingId] = useState<null | string>(null)
 
-  const { mutate: server_addManufacturer, isPending } = useMutation({
-    mutationFn: addManufacturer,
+  const { mutate: server_addTag, isPending } = useMutation({
+    mutationFn: addTag,
     onSuccess: (data) => {
       if (data.success) {
-        toast.success(
-          `${data.manufacturer?.name} manufacturer created successfully`
-        )
-        setManufacturer("")
+        toast.success(`${data.tag?.name} tag created successfully`)
+        setTag("")
       }
-      if (data.error) toast.error(data.error || "Failed to create manufacturer")
+      if (data.error) toast.error(data.error || "Failed to create tag")
     },
 
     onError: (error) => {
       toast.error("Something went wrong!")
-      console.error("Error creating manufacturer:", error)
+      console.error("Error creating tag:", error)
     },
   })
 
-  const { mutate: server_deleteManufacturer } = useMutation({
-    mutationFn: deleteManufacturer,
+  const { mutate: server_deleteTag } = useMutation({
+    mutationFn: deleteTag,
     onSuccess: (data) => {
       setDeletingId(null)
       if (data.success)
-        toast.success(
-          `${data.manufacturer?.name} manufacturer deleted successfully`
-        )
-      if (data.error) toast.error(data.error || "Failed to delete manufacturer")
+        toast.success(`${data.tag?.name} tag deleted successfully`)
+      if (data.error) toast.error(data.error || "Failed to delete tag")
     },
     onError: (error) => {
       setDeletingId(null)
       toast.error("Something went wrong!")
-      console.error("Error deleting manufacturer:", error)
+      console.error("Error deleting tag:", error)
     },
   })
 
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Manufacturers</CardTitle>
+        <CardTitle>Tags</CardTitle>
       </CardHeader>
       <CardContent className="flex flex-col gap-4">
         <div className="w-full max-h-[200px] overflow-y-auto border rounded-md">
-          {manufacturers.length > 0 ? (
+          {tags.length > 0 ? (
             <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2 p-4">
-              {manufacturers.map((manf) => (
+              {tags.map((manf) => (
                 <div
                   key={manf.id}
                   className="flex items-center justify-between gap-2 px-3 py-1.5 bg-muted/50 rounded-md"
@@ -81,7 +75,7 @@ export const ManufacturersForm = ({
                     className="h-6 w-6"
                     onClick={() => {
                       setDeletingId(manf.id)
-                      server_deleteManufacturer(manf.id)
+                      server_deleteTag(manf.id)
                     }}
                     disabled={deletingId === manf.id}
                   >
@@ -96,28 +90,28 @@ export const ManufacturersForm = ({
             </div>
           ) : (
             <div className="flex items-center justify-center h-20 text-sm text-muted-foreground">
-              No manufacturers found
+              No Tags found
             </div>
           )}
         </div>
 
         <div className="flex gap-4 items-center">
           <Input
-            id="manufacturer"
+            id="tag"
             type="text"
             className="w-48"
             disabled={isPending}
-            onChange={(e) => setManufacturer(e.target.value)}
+            onChange={(e) => setTag(e.target.value)}
             placeholder="MinLength: 3"
-            value={manufacturer}
+            value={tag}
             minLength={3}
             maxLength={20}
             required
           />
           <Button
             variant="default"
-            onClick={() => server_addManufacturer(manufacturer)}
-            disabled={isPending || manufacturer.trim().length < 2}
+            onClick={() => server_addTag(tag)}
+            disabled={isPending || tag.trim().length < 2}
           >
             {isPending ? (
               <Loader className="h-4 w-4 animate-spin mr-2" />
