@@ -1,8 +1,6 @@
 "use client"
 
-import Image from "next/image"
-
-import { ChevronLeft, Loader, PlusCircle, Upload, X } from "lucide-react"
+import { ChevronLeft, Loader, PlusCircle } from "lucide-react"
 
 import { Badge } from "@/components/ui/badge"
 
@@ -51,15 +49,10 @@ import { potency, productForm, skuLocation, unitOfMeasure } from "@/db/schema"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useMutation } from "@tanstack/react-query"
 import { toast } from "sonner"
-import { createProduct } from "../_lib/actions"
-import {
-  Carousel,
-  CarouselContent,
-  CarouselItem,
-  CarouselNext,
-  CarouselPrevious,
-} from "@/components/ui/carousel"
+import { createProduct, uploadProductImage } from "../_lib/actions"
 import { VariantImageUpload } from "./variant-image-upload"
+import crypto from "crypto"
+import { MultiSelectInput } from "./multi-select-input"
 
 type FormattedCategory = {
   id: string
@@ -111,6 +104,14 @@ export const ProductsNewForm = ({
     },
     mode: "onChange",
   })
+  const { enumValues: productForms } = productForm
+  const { enumValues: productUnits } = unitOfMeasure
+  const { enumValues: locations } = skuLocation
+
+  const { fields, append, remove } = useFieldArray({
+    control: form.control,
+    name: "variants",
+  })
 
   const { mutate: server_addProduct, isPending } = useMutation({
     mutationFn: createProduct,
@@ -128,25 +129,46 @@ export const ProductsNewForm = ({
       console.error("Error creating product:", error)
     },
   })
-  const { enumValues: productForms } = productForm
-  const { enumValues: productUnits } = unitOfMeasure
-  const { enumValues: locations } = skuLocation
 
-  const { fields, append, remove } = useFieldArray({
-    control: form.control,
-    name: "variants",
-  })
+  const onSubmit = async (data: z.infer<typeof createProductSchema>) => {
+    try {
+      const generateFileName = (bytes = 32) =>
+        crypto.randomBytes(bytes).toString("hex")
+
+      const variantsWithImages = await Promise.all(
+        data.variants.map(async (variant) => {
+          if (!variant.variantImage?.length) return variant
+
+          const fileName = generateFileName()
+
+          const uploadedUrls = await Promise.all(
+            variant.variantImage.map((file: File) =>
+              uploadProductImage({ file, fileName })
+            )
+          )
+
+          return {
+            ...variant,
+            variantImage: uploadedUrls.filter(
+              (url): url is string => url !== null
+            ),
+          }
+        })
+      )
+
+      server_addProduct({
+        ...data,
+        variants: variantsWithImages,
+      })
+    } catch (error) {
+      console.error("form submission failed", error)
+      toast.error("Failed to submit form")
+    }
+  }
 
   return (
     <Form {...form}>
-      <form
-        onSubmit={form.handleSubmit(
-          (data: z.infer<typeof createProductSchema>) => {
-            console.log(data)
-            server_addProduct(data)
-          }
-        )}
-      >
+      <form onSubmit={form.handleSubmit(onSubmit)}>
         <div className="grid gap-4">
           <div className="grid  flex-1 auto-rows-max gap-4">
             <div className="flex items-center gap-4">
@@ -434,6 +456,46 @@ export const ProductsNewForm = ({
                         />
                       </div>
                     </div>
+                  </CardContent>
+                </Card>
+                <Card>
+                  <CardHeader>
+                    <CardTitle>Product Tags</CardTitle>
+                    <CardDescription>
+                      Add tags to help categorize your product
+                    </CardDescription>
+                  </CardHeader>
+                  <CardContent className="h-[260px]">
+                    <FormField
+                      control={form.control}
+                      name="tags"
+                      render={({ field }) => (
+                        <FormItem className="h-full">
+                          <FormControl>
+                            <MultiSelectInput
+                              options={[
+                                "Tablet",
+                                "Capsule",
+                                "Liquid",
+                                "Injection",
+                                "Syrup",
+                                "Cream",
+                                "Powder",
+                                "Gel",
+                                "Spray",
+                                "test1",
+                                "test2",
+                                "test3",
+                              ]}
+                              value={field.value}
+                              onChange={field.onChange}
+                              placeholder="Search product tags..."
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
                   </CardContent>
                 </Card>
               </div>
