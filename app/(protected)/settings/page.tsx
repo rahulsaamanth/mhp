@@ -33,6 +33,7 @@ import { useCurrentUser } from "@/hooks/use-current-user"
 import { getSignedURL } from "@/actions/settings"
 import { toast } from "sonner"
 import { Icon } from "@iconify/react"
+import crypto from "crypto"
 
 import {
   AlertDialog,
@@ -100,11 +101,15 @@ const SettingsPage = () => {
     return hashHex
   }
 
+  const generateFileName = (bytes = 32) =>
+    crypto.randomBytes(bytes).toString("hex")
+
   const handleImageUpload = async (file: File) => {
     const signedURLResult = await getSignedURL({
       fileSize: file.size,
       fileType: file.type,
       checksum: await computeSHA256(file),
+      fileName: generateFileName(),
     })
     if (signedURLResult.error !== undefined)
       throw new Error(signedURLResult.error)

@@ -219,12 +219,19 @@ export const computeSHA256 = async (file: File) => {
   return hashHex
 }
 
-export const uploadProductImage = async (file: File): Promise<string> => {
+export const uploadProductImage = async ({
+  file,
+  fileName,
+}: {
+  file: File
+  fileName: string
+}): Promise<string> => {
   try {
     const signedURLResult = await getSignedURL({
       fileSize: file.size,
       fileType: file.type,
       checksum: await computeSHA256(file),
+      fileName: fileName,
     })
     if (signedURLResult.error !== undefined)
       throw new Error(signedURLResult.error)

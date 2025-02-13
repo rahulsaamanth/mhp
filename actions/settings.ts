@@ -12,7 +12,6 @@ import { generateVerificationToken } from "@/lib/tokens"
 import { sendVerificationEmail } from "@/lib/mail"
 import { PutObjectCommand, S3Client } from "@aws-sdk/client-s3"
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner"
-import crypto from "crypto"
 import { db } from "@/db/db"
 import { user } from "@/db/schema"
 import { eq } from "drizzle-orm"
@@ -90,9 +89,6 @@ export const updateUser = async (values: z.infer<typeof SettingsSchema>) => {
   return { success: "User Profile Updated!" }
 }
 
-const generateFileName = (bytes = 32) =>
-  crypto.randomBytes(bytes).toString("hex")
-
 const allowedFileTypes = [
   "image/jpeg",
   "image/png",
@@ -112,6 +108,7 @@ type GetSignedURLParams = {
   fileType: string
   fileSize: number
   checksum: string
+  fileName: string
 }
 
 const s3Client = new S3Client({
@@ -126,6 +123,7 @@ export const getSignedURL = async ({
   fileType,
   fileSize,
   checksum,
+  fileName,
 }: GetSignedURLParams): SignedURLResponse => {
   const user = currentUser()
 
@@ -135,8 +133,6 @@ export const getSignedURL = async ({
     return { error: "File type not allowed" }
 
   if (fileSize > MaxFileSize) return { error: "File size too large" }
-
-  const fileName = generateFileName()
 
   const putObjectCommand = new PutObjectCommand({
     Bucket: process.env.AWS_BUCKET_NAME!,
