@@ -1,11 +1,14 @@
 import { db } from "@/db/db"
 import { CategoriesForm } from "./_components/categories-form"
 import { ManufacturersForm } from "./_components/manufacturers-form"
+import { getCategories, getManufacturers, getTags } from "./_lib/queries"
+import { TagsForm } from "./_components/tags-form"
 
 export default async function SkuOptionsPage() {
-  const [categories, manufacturers] = await Promise.all([
-    db.query.category.findMany(),
-    db.query.manufacturer.findMany(),
+  const [categories, manufacturers, tags] = await Promise.all([
+    getCategories(),
+    getManufacturers(),
+    getTags(),
   ])
 
   const formattedCategories = categories
@@ -25,6 +28,7 @@ export default async function SkuOptionsPage() {
         rawCategories={categories}
       />
       <ManufacturersForm manufacturers={manufacturers} />
+      <TagsForm tags={tags} />
     </>
   )
 }

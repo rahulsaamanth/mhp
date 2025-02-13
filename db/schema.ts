@@ -164,8 +164,9 @@ export type Order = typeof order.$inferSelect
 export type Product = typeof product.$inferSelect
 
 export type Category = typeof category.$inferSelect
-export type Variants = typeof productVariant.$inferSelect
+export type Variant = typeof productVariant.$inferSelect
 export type Manufacturer = typeof manufacturer.$inferSelect
+export type Tag = typeof tag.$inferSelect
 
 export const verificationToken = pgTable(
   "VerificationToken",
@@ -673,3 +674,8 @@ export const inventoryManagement = pgTable(
     orderIdx: index("idx_inventory_movement_order").on(table.orderId),
   })
 )
+
+export const tag = pgTable("Tags", {
+  id: customId("id", "TAG"),
+  name: text("name").notNull(),
+})

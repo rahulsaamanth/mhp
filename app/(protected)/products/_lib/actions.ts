@@ -6,7 +6,7 @@ import {
   Category,
   Manufacturer,
   Product,
-  Variants,
+  Variant,
   category,
   manufacturer,
   product,
@@ -61,7 +61,7 @@ export async function deleteProduct(input: { id: string }) {
 export type fullProduct = Product & {
   category: Category
   manufacturer: Manufacturer
-  variants: Variants[]
+  variants: Variant[]
 }
 
 export const getProductsWithFullDetials = async (): Promise<fullProduct[]> => {
