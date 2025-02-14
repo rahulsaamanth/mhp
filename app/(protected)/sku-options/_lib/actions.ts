@@ -132,7 +132,7 @@ export async function addTag(name: string) {
     const [_tag] = await db
       .insert(tag)
       .values({
-        name,
+        name: name.toUpperCase().trim(),
       })
       .returning()
 

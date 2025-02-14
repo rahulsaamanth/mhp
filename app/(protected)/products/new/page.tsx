@@ -1,10 +1,15 @@
-import { db } from "@/db/db"
 import { ProductsNewForm } from "../_components/products-new-form"
+import {
+  getCategories,
+  getManufacturers,
+  getTags,
+} from "../../sku-options/_lib/queries"
 
 export default async function createProductPage() {
-  const [categories, manufacturers] = await Promise.all([
-    db.query.category.findMany(),
-    db.query.manufacturer.findMany(),
+  const [categories, manufacturers, tags] = await Promise.all([
+    getCategories(),
+    getManufacturers(),
+    getTags(),
   ])
 
   const categoryMap = Object.fromEntries(
@@ -27,6 +32,7 @@ export default async function createProductPage() {
           props={{
             categories: formattedCategories,
             manufacturers,
+            tags,
           }}
         />
       </main>

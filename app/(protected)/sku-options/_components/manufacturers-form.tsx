@@ -111,7 +111,7 @@ export const ManufacturersForm = ({
             placeholder="MinLength: 3"
             value={manufacturer}
             minLength={3}
-            maxLength={20}
+            maxLength={40}
             required
           />
           <Button
