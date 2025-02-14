@@ -1,14 +1,12 @@
-import { useState } from "react"
 import { Button } from "@/components/ui/button"
 import { FormControl, FormItem, FormMessage } from "@/components/ui/form"
-import { Loader2, Upload, X } from "lucide-react"
-import Image from "next/image"
-import { ControllerRenderProps } from "react-hook-form"
-import { createProductSchema } from "@/schemas"
-import * as z from "zod"
-import { toast } from "sonner"
-import { uploadProductImage } from "../_lib/actions"
 import { cn } from "@/lib/utils"
+import { createProductSchema } from "@/schemas"
+import { Upload, X } from "lucide-react"
+import Image from "next/image"
+import { useState } from "react"
+import { ControllerRenderProps } from "react-hook-form"
+import * as z from "zod"
 
 type VariantImageUploadProps = {
   field: ControllerRenderProps<

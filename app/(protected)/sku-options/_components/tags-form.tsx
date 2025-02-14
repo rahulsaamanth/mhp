@@ -3,18 +3,13 @@
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
-import { Tag, type Manufacturer } from "@/db/schema"
+import { Tag } from "@/db/schema"
 import { useMutation } from "@tanstack/react-query"
-import { parseAsString, useQueryState } from "nuqs"
-import {
-  addManufacturer,
-  addTag,
-  deleteManufacturer,
-  deleteTag,
-} from "../_lib/actions"
-import { toast } from "sonner"
 import { CircleX, Loader } from "lucide-react"
+import { parseAsString, useQueryState } from "nuqs"
 import { useState } from "react"
+import { toast } from "sonner"
+import { addTag, deleteTag } from "../_lib/actions"
 
 export const TagsForm = ({ tags }: { tags: Tag[] }) => {
   const [tag, setTag] = useQueryState("tag", parseAsString.withDefault(""))
@@ -105,7 +100,7 @@ export const TagsForm = ({ tags }: { tags: Tag[] }) => {
             placeholder="MinLength: 3"
             value={tag}
             minLength={3}
-            maxLength={20}
+            maxLength={40}
             required
           />
           <Button

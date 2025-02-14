@@ -168,6 +168,11 @@ export type Variant = typeof productVariant.$inferSelect
 export type Manufacturer = typeof manufacturer.$inferSelect
 export type Tag = typeof tag.$inferSelect
 
+export type StockByLocation = {
+  location: (typeof skuLocation.enumValues)[number]
+  stock: number
+}
+
 export const verificationToken = pgTable(
   "VerificationToken",
   {
@@ -411,7 +416,10 @@ export const productVariant = pgTable(
     variantImage: text("variantImage").array().notNull(),
     potency: varchar("potency"),
     packSize: integer("packSize"),
-    stock: integer("stock").notNull(),
+    stockByLocation: jsonb("stockByLocation")
+      .$type<StockByLocation[]>()
+      .notNull()
+      .default([]),
     costPrice: doublePrecision("costPrice").notNull(),
     sellingPrice: doublePrecision("sellingPrice").notNull(),
     discountedPrice: doublePrecision("discountedPrice"),
@@ -430,7 +438,9 @@ export const productVariant = pgTable(
       variantSellingPriceIdx: index("idx_variant_sellingPrice").on(
         table.sellingPrice
       ),
-      variantStockIdx: index("idx_variant_stock").on(table.stock),
+      variantStockLocationIdx: index("idx_variant_stock_location").on(
+        table.stockByLocation
+      ),
 
       variantSearchIdx: index("idx_variant_search").on(
         table.productId,
@@ -641,6 +651,7 @@ export const inventoryManagement = pgTable(
     type: movementType("type").notNull(),
     quantity: integer("quantity").notNull(),
     reason: text("reason").notNull(),
+    location: skuLocation("location").notNull(),
     previousStock: integer("previousStock").notNull(),
     newStock: integer("newStock").notNull(),
     createdAt: timestamp("createdAt", { mode: "date" }).defaultNow().notNull(),
@@ -672,6 +683,7 @@ export const inventoryManagement = pgTable(
     ),
     dateIdx: index("idx_inventory_movement_date").on(table.createdAt),
     orderIdx: index("idx_inventory_movement_order").on(table.orderId),
+    locationIdx: index("idx_inventory_movement_location").on(table.location),
   })
 )
 

@@ -425,7 +425,11 @@ async function seed() {
         potency: "3X",
         costPrice: 120,
         sellingPrice: 165,
-        stock: 15,
+        stockByLocation: [
+          { location: "MANGALORE-01", stock: 15 },
+          { location: "MANGALORE-02", stock: 0 },
+          { location: "KERALA-01", stock: 0 },
+        ],
       },
       {
         productId: products[0]?.id!,
@@ -438,7 +442,11 @@ async function seed() {
         potency: "6X",
         costPrice: 120,
         sellingPrice: 165,
-        stock: 12,
+        stockByLocation: [
+          { location: "MANGALORE-01", stock: 12 },
+          { location: "MANGALORE-02", stock: 0 },
+          { location: "KERALA-01", stock: 0 },
+        ],
       },
       {
         productId: products[0]?.id!,
@@ -451,7 +459,11 @@ async function seed() {
         potency: "12X",
         costPrice: 120,
         sellingPrice: 165,
-        stock: 9,
+        stockByLocation: [
+          { location: "MANGALORE-01", stock: 9 },
+          { location: "MANGALORE-02", stock: 0 },
+          { location: "KERALA-01", stock: 0 },
+        ],
       },
       {
         productId: products[0]?.id!,
@@ -464,7 +476,11 @@ async function seed() {
         potency: "30X",
         costPrice: 150,
         sellingPrice: 200,
-        stock: 9,
+        stockByLocation: [
+          { location: "MANGALORE-01", stock: 9 },
+          { location: "MANGALORE-02", stock: 0 },
+          { location: "KERALA-01", stock: 0 },
+        ],
       },
       {
         productId: products[0]?.id!,
@@ -477,7 +493,11 @@ async function seed() {
         potency: "200X",
         costPrice: 200,
         sellingPrice: 250,
-        stock: 11,
+        stockByLocation: [
+          { location: "MANGALORE-01", stock: 11 },
+          { location: "MANGALORE-02", stock: 0 },
+          { location: "KERALA-01", stock: 0 },
+        ],
       },
       {
         productId: products[1]?.id!,
@@ -490,7 +510,11 @@ async function seed() {
         potency: "3X",
         costPrice: 120,
         sellingPrice: 165,
-        stock: 13,
+        stockByLocation: [
+          { location: "MANGALORE-01", stock: 13 },
+          { location: "MANGALORE-02", stock: 0 },
+          { location: "KERALA-01", stock: 0 },
+        ],
       },
       {
         productId: products[2]?.id!,
@@ -503,7 +527,11 @@ async function seed() {
         potency: "6X",
         costPrice: 120,
         sellingPrice: 165,
-        stock: 10,
+        stockByLocation: [
+          { location: "MANGALORE-01", stock: 10 },
+          { location: "MANGALORE-02", stock: 0 },
+          { location: "KERALA-01", stock: 0 },
+        ],
       },
       {
         productId: products[3]?.id!,
@@ -516,7 +544,11 @@ async function seed() {
         potency: "6X",
         costPrice: 60,
         sellingPrice: 90,
-        stock: 15,
+        stockByLocation: [
+          { location: "MANGALORE-01", stock: 15 },
+          { location: "MANGALORE-02", stock: 0 },
+          { location: "KERALA-01", stock: 0 },
+        ],
       },
       {
         productId: products[3]?.id!,
@@ -529,7 +561,11 @@ async function seed() {
         potency: "6X",
         costPrice: 500,
         sellingPrice: 650,
-        stock: 10,
+        stockByLocation: [
+          { location: "MANGALORE-01", stock: 10 },
+          { location: "MANGALORE-02", stock: 0 },
+          { location: "KERALA-01", stock: 0 },
+        ],
       },
       {
         productId: products[4]?.id!,
@@ -542,7 +578,11 @@ async function seed() {
         potency: "6X",
         costPrice: 60,
         sellingPrice: 90,
-        stock: 12,
+        stockByLocation: [
+          { location: "MANGALORE-01", stock: 12 },
+          { location: "MANGALORE-02", stock: 0 },
+          { location: "KERALA-01", stock: 0 },
+        ],
       },
       {
         productId: products[4]?.id!,
@@ -555,7 +595,11 @@ async function seed() {
         potency: "6X",
         costPrice: 500,
         sellingPrice: 650,
-        stock: 8,
+        stockByLocation: [
+          { location: "MANGALORE-01", stock: 8 },
+          { location: "MANGALORE-02", stock: 0 },
+          { location: "KERALA-01", stock: 0 },
+        ],
       },
       {
         productId: products[5]?.id!,
@@ -568,7 +612,11 @@ async function seed() {
         potency: "200X",
         costPrice: 60,
         sellingPrice: 90,
-        stock: 10,
+        stockByLocation: [
+          { location: "MANGALORE-01", stock: 10 },
+          { location: "MANGALORE-02", stock: 0 },
+          { location: "KERALA-01", stock: 0 },
+        ],
       },
       {
         productId: products[5]?.id!,
@@ -581,7 +629,11 @@ async function seed() {
         potency: "200X",
         costPrice: 500,
         sellingPrice: 650,
-        stock: 5,
+        stockByLocation: [
+          { location: "MANGALORE-01", stock: 5 },
+          { location: "MANGALORE-02", stock: 0 },
+          { location: "KERALA-01", stock: 0 },
+        ],
       },
       {
         productId: products[6]?.id!,
@@ -593,7 +645,11 @@ async function seed() {
         packSize: 25,
         costPrice: 60,
         sellingPrice: 90,
-        stock: 15,
+        stockByLocation: [
+          { location: "MANGALORE-01", stock: 15 },
+          { location: "MANGALORE-02", stock: 0 },
+          { location: "KERALA-01", stock: 0 },
+        ],
       },
       {
         productId: products[6]?.id!,
@@ -605,7 +661,11 @@ async function seed() {
         packSize: 450,
         costPrice: 500,
         sellingPrice: 650,
-        stock: 10,
+        stockByLocation: [
+          { location: "MANGALORE-01", stock: 10 },
+          { location: "MANGALORE-02", stock: 0 },
+          { location: "KERALA-01", stock: 0 },
+        ],
       },
       {
         productId: products[7]?.id!,
@@ -617,7 +677,11 @@ async function seed() {
         packSize: 25,
         costPrice: 60,
         sellingPrice: 90,
-        stock: 12,
+        stockByLocation: [
+          { location: "MANGALORE-01", stock: 12 },
+          { location: "MANGALORE-02", stock: 0 },
+          { location: "KERALA-01", stock: 0 },
+        ],
       },
       {
         productId: products[7]?.id!,
@@ -629,7 +693,11 @@ async function seed() {
         packSize: 450,
         costPrice: 500,
         sellingPrice: 650,
-        stock: 8,
+        stockByLocation: [
+          { location: "MANGALORE-01", stock: 8 },
+          { location: "MANGALORE-02", stock: 0 },
+          { location: "KERALA-01", stock: 0 },
+        ],
       },
       {
         productId: products[8]?.id!,
@@ -641,7 +709,11 @@ async function seed() {
         packSize: 25,
         costPrice: 60,
         sellingPrice: 90,
-        stock: 10,
+        stockByLocation: [
+          { location: "MANGALORE-01", stock: 10 },
+          { location: "MANGALORE-02", stock: 0 },
+          { location: "KERALA-01", stock: 0 },
+        ],
       },
       {
         productId: products[8]?.id!,
@@ -653,7 +725,11 @@ async function seed() {
         packSize: 450,
         costPrice: 500,
         sellingPrice: 650,
-        stock: 5,
+        stockByLocation: [
+          { location: "MANGALORE-01", stock: 5 },
+          { location: "MANGALORE-02", stock: 0 },
+          { location: "KERALA-01", stock: 0 },
+        ],
       },
       {
         productId: products[9]?.id!,
@@ -665,7 +741,11 @@ async function seed() {
         packSize: 20,
         costPrice: 120,
         sellingPrice: 165,
-        stock: 15,
+        stockByLocation: [
+          { location: "MANGALORE-01", stock: 15 },
+          { location: "MANGALORE-02", stock: 0 },
+          { location: "KERALA-01", stock: 0 },
+        ],
       },
       {
         productId: products[10]?.id!,
@@ -677,7 +757,11 @@ async function seed() {
         packSize: 20,
         costPrice: 120,
         sellingPrice: 165,
-        stock: 12,
+        stockByLocation: [
+          { location: "MANGALORE-01", stock: 12 },
+          { location: "MANGALORE-02", stock: 0 },
+          { location: "KERALA-01", stock: 0 },
+        ],
       },
       {
         productId: products[11]?.id!,
@@ -689,7 +773,11 @@ async function seed() {
         packSize: 20,
         costPrice: 120,
         sellingPrice: 165,
-        stock: 8,
+        stockByLocation: [
+          { location: "MANGALORE-01", stock: 8 },
+          { location: "MANGALORE-02", stock: 0 },
+          { location: "KERALA-01", stock: 0 },
+        ],
       },
       {
         productId: products[12]?.id!,
@@ -701,7 +789,11 @@ async function seed() {
         packSize: 20,
         costPrice: 60,
         sellingPrice: 85,
-        stock: 10,
+        stockByLocation: [
+          { location: "MANGALORE-01", stock: 10 },
+          { location: "MANGALORE-02", stock: 0 },
+          { location: "KERALA-01", stock: 0 },
+        ],
       },
       {
         productId: products[12]?.id!,
@@ -713,7 +805,11 @@ async function seed() {
         packSize: 550,
         costPrice: 600,
         sellingPrice: 730,
-        stock: 5,
+        stockByLocation: [
+          { location: "MANGALORE-01", stock: 5 },
+          { location: "MANGALORE-02", stock: 0 },
+          { location: "KERALA-01", stock: 0 },
+        ],
       },
       {
         productId: products[13]?.id!,
@@ -725,7 +821,11 @@ async function seed() {
         packSize: 20,
         costPrice: 60,
         sellingPrice: 85,
-        stock: 13,
+        stockByLocation: [
+          { location: "MANGALORE-01", stock: 13 },
+          { location: "MANGALORE-02", stock: 0 },
+          { location: "KERALA-01", stock: 0 },
+        ],
       },
       {
         productId: products[13]?.id!,
@@ -737,7 +837,11 @@ async function seed() {
         packSize: 550,
         costPrice: 600,
         sellingPrice: 730,
-        stock: 8,
+        stockByLocation: [
+          { location: "MANGALORE-01", stock: 8 },
+          { location: "MANGALORE-02", stock: 0 },
+          { location: "KERALA-01", stock: 0 },
+        ],
       },
       {
         productId: products[14]?.id!,
@@ -750,7 +854,11 @@ async function seed() {
         potency: "1000CH",
         costPrice: 100,
         sellingPrice: 130,
-        stock: 15,
+        stockByLocation: [
+          { location: "MANGALORE-01", stock: 15 },
+          { location: "MANGALORE-02", stock: 0 },
+          { location: "KERALA-01", stock: 0 },
+        ],
       },
       {
         productId: products[14]?.id!,
@@ -763,7 +871,11 @@ async function seed() {
         potency: "200CH",
         costPrice: 70,
         sellingPrice: 90,
-        stock: 12,
+        stockByLocation: [
+          { location: "MANGALORE-01", stock: 12 },
+          { location: "MANGALORE-02", stock: 0 },
+          { location: "KERALA-01", stock: 0 },
+        ],
       },
       {
         productId: products[14]?.id!,
@@ -776,7 +888,11 @@ async function seed() {
         potency: "30CH",
         costPrice: 60,
         sellingPrice: 85,
-        stock: 8,
+        stockByLocation: [
+          { location: "MANGALORE-01", stock: 8 },
+          { location: "MANGALORE-02", stock: 0 },
+          { location: "KERALA-01", stock: 0 },
+        ],
       },
       {
         productId: products[14]?.id!,
@@ -789,7 +905,11 @@ async function seed() {
         potency: "6CH",
         costPrice: 60,
         sellingPrice: 85,
-        stock: 10,
+        stockByLocation: [
+          { location: "MANGALORE-01", stock: 10 },
+          { location: "MANGALORE-02", stock: 0 },
+          { location: "KERALA-01", stock: 0 },
+        ],
       },
       {
         productId: products[15]?.id!,
@@ -802,7 +922,11 @@ async function seed() {
         potency: "1X",
         costPrice: 90,
         sellingPrice: 115,
-        stock: 15,
+        stockByLocation: [
+          { location: "MANGALORE-01", stock: 15 },
+          { location: "MANGALORE-02", stock: 0 },
+          { location: "KERALA-01", stock: 0 },
+        ],
       },
       {
         productId: products[16]?.id!,
@@ -813,7 +937,11 @@ async function seed() {
         ],
         costPrice: 200,
         sellingPrice: 290,
-        stock: 12,
+        stockByLocation: [
+          { location: "MANGALORE-01", stock: 12 },
+          { location: "MANGALORE-02", stock: 0 },
+          { location: "KERALA-01", stock: 0 },
+        ],
       },
       {
         productId: products[17]?.id!,
@@ -825,7 +953,11 @@ async function seed() {
         packSize: 100,
         costPrice: 100,
         sellingPrice: 155,
-        stock: 10,
+        stockByLocation: [
+          { location: "MANGALORE-01", stock: 10 },
+          { location: "MANGALORE-02", stock: 0 },
+          { location: "KERALA-01", stock: 0 },
+        ],
       },
       {
         productId: products[17]?.id!,
@@ -837,7 +969,11 @@ async function seed() {
         packSize: 60,
         costPrice: 60,
         sellingPrice: 95,
-        stock: 13,
+        stockByLocation: [
+          { location: "MANGALORE-01", stock: 13 },
+          { location: "MANGALORE-02", stock: 0 },
+          { location: "KERALA-01", stock: 0 },
+        ],
       },
       {
         productId: products[18]?.id!,
@@ -849,7 +985,11 @@ async function seed() {
         packSize: 25,
         costPrice: 50,
         sellingPrice: 80,
-        stock: 14,
+        stockByLocation: [
+          { location: "MANGALORE-01", stock: 14 },
+          { location: "MANGALORE-02", stock: 0 },
+          { location: "KERALA-01", stock: 0 },
+        ],
       },
       {
         productId: products[19]?.id!,
@@ -861,7 +1001,11 @@ async function seed() {
         packSize: 25,
         costPrice: 100,
         sellingPrice: 155,
-        stock: 11,
+        stockByLocation: [
+          { location: "MANGALORE-01", stock: 11 },
+          { location: "MANGALORE-02", stock: 0 },
+          { location: "KERALA-01", stock: 0 },
+        ],
       },
       {
         productId: products[20]?.id!,
@@ -873,7 +1017,11 @@ async function seed() {
         packSize: 30,
         costPrice: 250,
         sellingPrice: 385,
-        stock: 12,
+        stockByLocation: [
+          { location: "MANGALORE-01", stock: 12 },
+          { location: "MANGALORE-02", stock: 0 },
+          { location: "KERALA-01", stock: 0 },
+        ],
       },
       {
         productId: products[20]?.id!,
@@ -885,7 +1033,11 @@ async function seed() {
         packSize: 60,
         costPrice: 500,
         sellingPrice: 775,
-        stock: 10,
+        stockByLocation: [
+          { location: "MANGALORE-01", stock: 10 },
+          { location: "MANGALORE-02", stock: 0 },
+          { location: "KERALA-01", stock: 0 },
+        ],
       },
       {
         productId: products[21]?.id!,
@@ -897,7 +1049,11 @@ async function seed() {
         packSize: 30,
         costPrice: 60,
         sellingPrice: 85,
-        stock: 13,
+        stockByLocation: [
+          { location: "MANGALORE-01", stock: 13 },
+          { location: "MANGALORE-02", stock: 0 },
+          { location: "KERALA-01", stock: 0 },
+        ],
       },
     ])
     .returning()

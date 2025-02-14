@@ -56,6 +56,21 @@ export const SIDENAV_ITEMS: SideNavItem[] = [
   },
 ]
 
+export const COMMON_TAGS = [
+  "HOMOEOPATHY",
+  "NUTRITION-SUPPLEMENTS",
+  "BIOCHEMIC",
+  "BIOCOMBINATION",
+  "DILUTION",
+  "MOTHERTINCTURE",
+  "SBL",
+  "DR.RECKEWEG",
+  "6X",
+  "30X",
+  "200C",
+  "1M",
+]
+
 export const unknownError = "An unknown error occurred. Please try again later."
 
 export const databasePrefix = "shadcn"

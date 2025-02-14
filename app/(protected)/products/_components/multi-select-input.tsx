@@ -1,6 +1,7 @@
 import { useRef, useState } from "react"
 import { X, Search } from "lucide-react"
 import { cn } from "@/lib/utils"
+import { COMMON_TAGS } from "@/lib/constants"
 
 type MultiSelectInputProps = {
   options: string[]
@@ -8,21 +9,6 @@ type MultiSelectInputProps = {
   onChange?: (value: string[]) => void
   placeholder?: string
 }
-
-const COMMON_TAGS = [
-  "Tablet",
-  "Capsule",
-  "Liquid",
-  "Injection",
-  "Syrup",
-  "Cream",
-  "Powder",
-  "Gel",
-  "Spray",
-  "test1",
-  "test2",
-  "test3",
-]
 
 export const MultiSelectInput = ({
   options = [],
@@ -41,9 +27,9 @@ export const MultiSelectInput = ({
         opt.toLowerCase().includes(searchTerm.toLowerCase())
       )
     }
-    return options.filter((opt) => COMMON_TAGS.includes(opt)).length > 0
-      ? options.filter((opt) => COMMON_TAGS.includes(opt))
-      : options.slice(0, 12)
+    const commonTags = options.filter((opt) => COMMON_TAGS.includes(opt))
+
+    return commonTags.length > 0 ? commonTags : options.slice(0, 12)
   }
 
   const filteredOptions = getFilteredOptions()
@@ -79,10 +65,10 @@ export const MultiSelectInput = ({
         className="min-h-[42px] w-full border rounded-lg bg-background p-2 flex flex-wrap gap-2 cursor-text"
         onClick={() => inputRef.current?.focus()}
       >
-        {selectedOptions.map((option) => (
+        {selectedOptions.map((option, idx) => (
           <span
-            key={option}
-            className="bg-primary/10 text-primary px-2 py-1 rounded-md flex items-center gap-1 text-sm"
+            key={idx}
+            className="bg-primary/10 text-primary px-2 py-1 rounded-md flex items-center gap-1 text-xs"
           >
             {option}
             <button
@@ -116,14 +102,14 @@ export const MultiSelectInput = ({
 
       {/* Options Grid */}
       <div className="flex-1 overflow-y-auto">
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-2">
-          {filteredOptions.map((option) => (
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-1">
+          {filteredOptions.map((option, idx) => (
             <button
-              key={option}
+              key={idx}
               type="button"
               onClick={() => toggleOption(option)}
               className={cn(
-                "px-3 py-1.5 text-sm rounded-md transition-colors",
+                "px-1 py-1 text-xs rounded-md transition-colors",
                 "border border-input hover:bg-accent",
                 selectedOptions.includes(option) &&
                   "bg-primary text-primary-foreground hover:bg-primary/90",

@@ -1,6 +1,6 @@
 "use client"
 
-import { ChevronLeft, Loader, PlusCircle } from "lucide-react"
+import { ChevronLeft, Loader, PlusCircle, X } from "lucide-react"
 
 import { Badge } from "@/components/ui/badge"
 
@@ -45,14 +45,21 @@ import {
   FormMessage,
 } from "@/components/ui/form"
 
-import { potency, productForm, skuLocation, unitOfMeasure } from "@/db/schema"
+import {
+  Manufacturer,
+  Tag,
+  potency,
+  productForm,
+  skuLocation,
+  unitOfMeasure,
+} from "@/db/schema"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useMutation } from "@tanstack/react-query"
+import crypto from "crypto"
 import { toast } from "sonner"
 import { createProduct, uploadProductImage } from "../_lib/actions"
-import { VariantImageUpload } from "./variant-image-upload"
-import crypto from "crypto"
 import { MultiSelectInput } from "./multi-select-input"
+import { VariantImageUpload } from "./variant-image-upload"
 
 type FormattedCategory = {
   id: string
@@ -61,22 +68,18 @@ type FormattedCategory = {
   formattedName: string
 }
 
-type Manufacturer = {
-  name: string
-  id: string
-}
-
 export const ProductsNewForm = ({
   props,
 }: {
   props: {
     categories: FormattedCategory[]
     manufacturers: Manufacturer[]
+    tags: Tag[]
   }
 }) => {
   const router = useRouter()
 
-  const { categories, manufacturers } = props
+  const { categories, manufacturers, tags } = props
 
   const form = useForm<z.infer<typeof createProductSchema>>({
     resolver: zodResolver(createProductSchema),
@@ -118,7 +121,7 @@ export const ProductsNewForm = ({
     onSuccess: (data) => {
       if (data.success) {
         toast.success("Product created successfully!")
-        console.log(data.product)
+
         router.push("/products")
       } else {
         toast.error(data.error || "Failed to create product")
@@ -131,39 +134,58 @@ export const ProductsNewForm = ({
   })
 
   const onSubmit = async (data: z.infer<typeof createProductSchema>) => {
-    try {
-      const generateFileName = (bytes = 32) =>
-        crypto.randomBytes(bytes).toString("hex")
+    console.log(data)
+    // try {
+    //   const generateFileName = (bytes = 32) =>
+    //     crypto.randomBytes(bytes).toString("hex")
 
-      const variantsWithImages = await Promise.all(
-        data.variants.map(async (variant) => {
-          if (!variant.variantImage?.length) return variant
+    //   // const variantsWithImages = await Promise.all(
+    //   //   data.variants.map(async (variant) => {
+    //   //     if (!variant.variantImage?.length) return variant
 
-          const fileName = generateFileName()
+    //   //     const uploadedUrls = await Promise.all(
+    //   //       variant.variantImage.map((file: File) =>
+    //   //         uploadProductImage({ file, fileName: generateFileName() })
+    //   //       )
+    //   //     )
 
-          const uploadedUrls = await Promise.all(
-            variant.variantImage.map((file: File) =>
-              uploadProductImage({ file, fileName })
-            )
-          )
+    //   //     return {
+    //   //       ...variant,
+    //   //       variantImage: uploadedUrls.filter(
+    //   //         (url): url is string => url !== null
+    //   //       ),
+    //   //     }
+    //   //   })
+    //   // )
+    //   const _variants = []
+    //   for (const variant of data.variants) {
+    //     if (!variant.variantImage?.length) {
+    //       _variants.push(variant)
+    //       continue
+    //     }
 
-          return {
-            ...variant,
-            variantImage: uploadedUrls.filter(
-              (url): url is string => url !== null
-            ),
-          }
-        })
-      )
+    //     const uploadedUrls = await Promise.all(
+    //       variant.variantImage.map((file: File) =>
+    //         uploadProductImage({ file, fileName: generateFileName() })
+    //       )
+    //     )
 
-      server_addProduct({
-        ...data,
-        variants: variantsWithImages,
-      })
-    } catch (error) {
-      console.error("form submission failed", error)
-      toast.error("Failed to submit form")
-    }
+    //     _variants.push({
+    //       ...variant,
+    //       variantImage: uploadedUrls.filter(
+    //         (url): url is string => url !== null
+    //       ),
+    //     })
+    //   }
+
+    //   server_addProduct({
+    //     ...data,
+    //     variants: _variants,
+    //   })
+    // } catch (error) {
+    //   console.error("form submission failed", error)
+    //   toast.error("Failed to submit form")
+    // }
   }
 
   return (
@@ -473,20 +495,7 @@ export const ProductsNewForm = ({
                         <FormItem className="h-full">
                           <FormControl>
                             <MultiSelectInput
-                              options={[
-                                "Tablet",
-                                "Capsule",
-                                "Liquid",
-                                "Injection",
-                                "Syrup",
-                                "Cream",
-                                "Powder",
-                                "Gel",
-                                "Spray",
-                                "test1",
-                                "test2",
-                                "test3",
-                              ]}
+                              options={tags.map((tag) => tag.name)}
                               value={field.value}
                               onChange={field.onChange}
                               placeholder="Search product tags..."
@@ -554,12 +563,18 @@ export const ProductsNewForm = ({
                 </TableHeader>
                 <TableBody>
                   {fields.map((field, index) => (
-                    <VariantFields key={field.id} form={form} index={index} />
+                    <VariantFields
+                      key={field.id}
+                      form={form}
+                      index={index}
+                      onRemove={() => remove(index)}
+                      isOnly={fields.length === 1}
+                    />
                   ))}
                 </TableBody>
               </Table>
             </CardContent>
-            <CardFooter className="justify-between border-t p-4">
+            <CardFooter className="justify-center border-t p-4">
               <Button
                 size="sm"
                 variant="ghost"
@@ -580,16 +595,6 @@ export const ProductsNewForm = ({
                 <PlusCircle className="h-3.5 w-3.5" />
                 Add Variant
               </Button>
-              {fields.length > 1 && (
-                <Button
-                  size="sm"
-                  variant="destructive"
-                  type="button"
-                  onClick={() => remove(fields.length - 1)}
-                >
-                  Remove Last Variant
-                </Button>
-              )}
             </CardFooter>
           </Card>
           <div className="flex items-center justify-center gap-2 md:hidden">
@@ -612,11 +617,17 @@ type FormData = z.infer<typeof createProductSchema>
 type VariantFieldsProps = {
   form: UseFormReturn<FormData>
   index: number
+  onRemove: () => void
+  isOnly: boolean
 }
 
-const VariantFields = ({ form, index }: VariantFieldsProps) => {
+const VariantFields = ({
+  form,
+  index,
+  onRemove,
+  isOnly,
+}: VariantFieldsProps) => {
   const { enumValues: potencies } = potency
-
   const fIndex = (index + 1).toString().padStart(2, "0")
 
   return (
@@ -766,7 +777,7 @@ const VariantFields = ({ form, index }: VariantFieldsProps) => {
           )}
         />
       </TableCell>
-      <TableCell>
+      <TableCell className="flex justify-between">
         <FormField
           control={form.control}
           name={`variants.${index}.variantImage`}
@@ -774,6 +785,14 @@ const VariantFields = ({ form, index }: VariantFieldsProps) => {
             <VariantImageUpload field={field} index={index} />
           )}
         />
+        <div>
+          {!isOnly && (
+            <Button onClick={onRemove} variant="destructive" size="sm">
+              <X className="size-4" />
+              <span className="sr-only">Remove variant {fIndex}</span>
+            </Button>
+          )}
+        </div>
       </TableCell>
     </TableRow>
   )
