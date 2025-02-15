@@ -29,7 +29,13 @@ EXCEPTION
 END $$;
 --> statement-breakpoint
 DO $$ BEGIN
- CREATE TYPE "public"."ProductForm" AS ENUM('DILUTIONS(P)', 'MOTHER_TINCTURES(Q)', 'TRITURATIONS', 'TABLETS', 'GLOBULES', 'BIO_CHEMIC', 'BIO_COMBINATION', 'OINTMENT', 'GEL', 'CREAM', 'SYRUP/TONIC', 'DROPS', 'EYE_DROPS', 'EAR_DROPS', 'NASAL_DROPS', 'INJECTIONS');
+ CREATE TYPE "public"."potencies" AS ENUM('NONE', '1X', '3X', '6X', '12X', '30X', '6C', '12C', '30C', '200C', '1M', '10M', '50M', 'CM', 'Q', 'LM1', 'LM2', 'LM3', 'LM4', 'LM5', 'LM6', 'LM7', 'LM8', 'LM9', 'LM10', 'LM11', 'LM12', 'LM13', 'LM14', 'LM15', 'LM16', 'LM17', 'LM18', 'LM19', 'LM20', 'LM21', 'LM22', 'LM23', 'LM24', 'LM25', 'LM26', 'LM27', 'LM28', 'LM29', 'LM30');
+EXCEPTION
+ WHEN duplicate_object THEN null;
+END $$;
+--> statement-breakpoint
+DO $$ BEGIN
+ CREATE TYPE "public"."ProductForm" AS ENUM('NONE', 'DILUTIONS(P)', 'MOTHER_TINCTURES(Q)', 'TRITURATIONS', 'TABLETS', 'GLOBULES', 'BIO_CHEMIC', 'BIO_COMBINATION', 'OINTMENT', 'GEL', 'CREAM', 'SYRUP/TONIC', 'DROPS', 'EYE_DROPS', 'EAR_DROPS', 'NASAL_DROPS', 'INJECTIONS');
 EXCEPTION
  WHEN duplicate_object THEN null;
 END $$;
@@ -41,7 +47,13 @@ EXCEPTION
 END $$;
 --> statement-breakpoint
 DO $$ BEGIN
- CREATE TYPE "public"."UnitOfMeasure" AS ENUM('TABLETS', 'ML', 'GM', 'DROPS', 'AMPOULES');
+ CREATE TYPE "public"."SKULocation" AS ENUM('MANGALORE-01', 'MANGALORE-02', 'KERALA-01');
+EXCEPTION
+ WHEN duplicate_object THEN null;
+END $$;
+--> statement-breakpoint
+DO $$ BEGIN
+ CREATE TYPE "public"."UnitOfMeasure" AS ENUM('NONE', 'TABLETS', 'ML', 'GM(s)', 'DROPS', 'AMPOULES');
 EXCEPTION
  WHEN duplicate_object THEN null;
 END $$;
@@ -93,6 +105,7 @@ CREATE TABLE IF NOT EXISTS "InventoryManagement" (
 	"type" "MovemenType" NOT NULL,
 	"quantity" integer NOT NULL,
 	"reason" text NOT NULL,
+	"location" "SKULocation" NOT NULL,
 	"previousStock" integer NOT NULL,
 	"newStock" integer NOT NULL,
 	"createdAt" timestamp DEFAULT now() NOT NULL,
@@ -153,8 +166,7 @@ CREATE TABLE IF NOT EXISTS "Product" (
 	"categoryId" varchar(32) NOT NULL,
 	"manufacturerId" varchar(32) NOT NULL,
 	"createdAt" timestamp DEFAULT now() NOT NULL,
-	"updatedAt" timestamp DEFAULT now(),
-	"properties" jsonb
+	"updatedAt" timestamp DEFAULT now()
 );
 --> statement-breakpoint
 CREATE TABLE IF NOT EXISTS "ProductVariant" (
@@ -165,7 +177,7 @@ CREATE TABLE IF NOT EXISTS "ProductVariant" (
 	"variantImage" text[] NOT NULL,
 	"potency" varchar,
 	"packSize" integer,
-	"stock" integer NOT NULL,
+	"stockByLocation" jsonb DEFAULT '[]'::jsonb NOT NULL,
 	"costPrice" double precision NOT NULL,
 	"sellingPrice" double precision NOT NULL,
 	"discountedPrice" double precision,
@@ -180,6 +192,11 @@ CREATE TABLE IF NOT EXISTS "Review" (
 	"productId" varchar(32) NOT NULL,
 	"createdAt" timestamp (3) DEFAULT now() NOT NULL,
 	"updatedAt" timestamp (3) DEFAULT now()
+);
+--> statement-breakpoint
+CREATE TABLE IF NOT EXISTS "Tags" (
+	"id" varchar(32) PRIMARY KEY NOT NULL,
+	"name" text NOT NULL
 );
 --> statement-breakpoint
 CREATE TABLE IF NOT EXISTS "TwoFactorConfirmation" (
@@ -335,6 +352,7 @@ CREATE INDEX IF NOT EXISTS "Adress_userId_index" ON "Address" USING btree ("user
 CREATE INDEX IF NOT EXISTS "idx_inventory_movement_variant" ON "InventoryManagement" USING btree ("productVariantId");--> statement-breakpoint
 CREATE INDEX IF NOT EXISTS "idx_inventory_movement_date" ON "InventoryManagement" USING btree ("createdAt");--> statement-breakpoint
 CREATE INDEX IF NOT EXISTS "idx_inventory_movement_order" ON "InventoryManagement" USING btree ("orderId");--> statement-breakpoint
+CREATE INDEX IF NOT EXISTS "idx_inventory_movement_location" ON "InventoryManagement" USING btree ("location");--> statement-breakpoint
 CREATE INDEX IF NOT EXISTS "order_date_status_idx" ON "Order" USING btree ("orderDate","deliveryStatus");--> statement-breakpoint
 CREATE INDEX IF NOT EXISTS "order_user_date_idx" ON "Order" USING btree ("userId","orderDate");--> statement-breakpoint
 CREATE UNIQUE INDEX IF NOT EXISTS "PasswordResetToken_email_token_key" ON "PasswordResetToken" USING btree ("email","token");--> statement-breakpoint
@@ -348,7 +366,7 @@ CREATE INDEX IF NOT EXISTS "product_form_unit_idx" ON "Product" USING btree ("un
 CREATE INDEX IF NOT EXISTS "idx_variant_sku" ON "ProductVariant" USING btree ("sku");--> statement-breakpoint
 CREATE INDEX IF NOT EXISTS "idx_variant_costPrice" ON "ProductVariant" USING btree ("costPrice");--> statement-breakpoint
 CREATE INDEX IF NOT EXISTS "idx_variant_sellingPrice" ON "ProductVariant" USING btree ("sellingPrice");--> statement-breakpoint
-CREATE INDEX IF NOT EXISTS "idx_variant_stock" ON "ProductVariant" USING btree ("stock");--> statement-breakpoint
+CREATE INDEX IF NOT EXISTS "idx_variant_stock_location" ON "ProductVariant" USING btree ("stockByLocation");--> statement-breakpoint
 CREATE INDEX IF NOT EXISTS "idx_variant_search" ON "ProductVariant" USING btree ("productId","potency","packSize");--> statement-breakpoint
 CREATE UNIQUE INDEX IF NOT EXISTS "TwoFactorConfirmation_userId_key" ON "TwoFactorConfirmation" USING btree ("userId");--> statement-breakpoint
 CREATE UNIQUE INDEX IF NOT EXISTS "TwoFactorToken_email_token_key" ON "TwoFactorToken" USING btree ("email","token");--> statement-breakpoint

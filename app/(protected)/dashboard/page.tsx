@@ -261,8 +261,8 @@ async function getPopularProducts() {
       productVariant.variantImage,
       productVariant.potency,
       productVariant.packSize,
-      productVariant.sellingPrice,
-      productVariant.stock
+      productVariant.sellingPrice
+      // productVariant.stock
     )
     .orderBy(sql`total_orders DESC`)
     .limit(5)
@@ -279,7 +279,7 @@ async function getRecentProducts() {
       productPackSize: productVariant.packSize,
       dateAdded: product.createdAt,
       category: category.name,
-      stock: productVariant.stock,
+      // stock: productVariant.stock,
     })
     .from(product)
     .innerJoin(productVariant, eq(productVariant.productId, product.id))

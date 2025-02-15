@@ -113,14 +113,16 @@ export const RegisterSchema = z.object({
 
 // })
 
-const productVariantSchema = z
+export const productVariantSchema = z
   .object({
     potency: z.enum(["NONE", ...potency.enumValues]),
     packSize: z.number().min(1, "Pack size must be at least 1"),
     costPrice: z.number().min(0, "Price must be positive"),
     sellingPrice: z.number().min(0, "Price must be positive"),
     discountedPrice: z.number().min(0, "Price must be positive"),
-    stock: z.number().min(0, "Stock must not be negative"),
+    stock_MANG1: z.number().min(0, "Stock must not be negative").default(0),
+    stock_MANG2: z.number().min(0, "Stock must not be negative").default(0),
+    stock_KERALA1: z.number().min(0, "Stock must not be negative").default(0),
     variantImage: z.array(z.any()),
   })
   .superRefine((data, ctx) => {
@@ -167,9 +169,6 @@ export const createProductSchema = z.object({
     "INJECTIONS",
   ]),
   unit: z.enum(["NONE", "TABLETS", "ML", "GM(s)", "DROPS", "AMPOULES"]),
-  skuLocation: z
-    .enum(["MANGALORE-01", "MANGALORE-02", "KERALA-01"])
-    .default("MANGALORE-01"),
   variants: z
     .array(productVariantSchema)
     .min(1, "At least one variant is required"),

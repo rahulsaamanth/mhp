@@ -60,7 +60,7 @@ type DashboardLatestProductsShortTableProps = {
     productPackSize: number | null
     dateAdded: Date
     category: string | null
-    stock: number | null
+    // stock: number | null
   }[]
 }
 
@@ -93,7 +93,7 @@ export const DashboardLatestProductsShortTable = ({
             <div className="font-medium">
               {product.dateAdded.toDateString()}
             </div>
-            <div>{product.stock} </div>
+            {/* <div>{product.stock} </div> */}
           </div>
         ))}
       </CardContent>

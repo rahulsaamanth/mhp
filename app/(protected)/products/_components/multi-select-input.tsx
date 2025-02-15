@@ -59,7 +59,7 @@ export const MultiSelectInput = ({
   }
 
   return (
-    <div className="flex flex-col h-full space-y-4">
+    <div className="flex flex-col min-h-[240px] space-y-4">
       {/* Selected Tags Display */}
       <div
         className="min-h-[42px] w-full border rounded-lg bg-background p-2 flex flex-wrap gap-2 cursor-text"

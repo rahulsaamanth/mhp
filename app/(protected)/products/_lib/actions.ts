@@ -182,6 +182,23 @@ export async function createProduct(data: z.infer<typeof createProductSchema>) {
           packSize: variant.packSize.toString(),
           potency: variant.potency.toString(),
         }),
+        stockByLocation: [
+          {
+            location: "MANGALORE-01" as const,
+            stock: variant.stock_MANG1 || 0,
+          },
+          {
+            location: "MANGALORE-02" as const,
+            stock: variant.stock_MANG2 || 0,
+          },
+          {
+            location: "KERALA-01" as const,
+            stock: variant.stock_KERALA1 || 0,
+          },
+        ],
+        stock_MANG1: undefined,
+        stock_MANG2: undefined,
+        stock_KERALA1: undefined,
       }))
 
       const newVariants = await tx
