@@ -92,7 +92,6 @@ export const ProductsNewForm = ({
       status: "ACTIVE",
       form: "NONE",
       unit: "NONE",
-      skuLocation: "MANGALORE-01",
       variants: [
         {
           potency: "NONE",
@@ -100,7 +99,9 @@ export const ProductsNewForm = ({
           costPrice: 100,
           sellingPrice: 150,
           discountedPrice: 140,
-          stock: 20,
+          stock_MANG1: 0,
+          stock_MANG2: 0,
+          stock_KERALA1: 0,
           variantImage: [],
         },
       ],
@@ -109,7 +110,6 @@ export const ProductsNewForm = ({
   })
   const { enumValues: productForms } = productForm
   const { enumValues: productUnits } = unitOfMeasure
-  const { enumValues: locations } = skuLocation
 
   const { fields, append, remove } = useFieldArray({
     control: form.control,
@@ -134,58 +134,58 @@ export const ProductsNewForm = ({
   })
 
   const onSubmit = async (data: z.infer<typeof createProductSchema>) => {
-    console.log(data)
-    // try {
-    //   const generateFileName = (bytes = 32) =>
-    //     crypto.randomBytes(bytes).toString("hex")
+    // console.log(data)
+    try {
+      const generateFileName = (bytes = 32) =>
+        crypto.randomBytes(bytes).toString("hex")
 
-    //   // const variantsWithImages = await Promise.all(
-    //   //   data.variants.map(async (variant) => {
-    //   //     if (!variant.variantImage?.length) return variant
+      // const variantsWithImages = await Promise.all(
+      //   data.variants.map(async (variant) => {
+      //     if (!variant.variantImage?.length) return variant
 
-    //   //     const uploadedUrls = await Promise.all(
-    //   //       variant.variantImage.map((file: File) =>
-    //   //         uploadProductImage({ file, fileName: generateFileName() })
-    //   //       )
-    //   //     )
+      //     const uploadedUrls = await Promise.all(
+      //       variant.variantImage.map((file: File) =>
+      //         uploadProductImage({ file, fileName: generateFileName() })
+      //       )
+      //     )
 
-    //   //     return {
-    //   //       ...variant,
-    //   //       variantImage: uploadedUrls.filter(
-    //   //         (url): url is string => url !== null
-    //   //       ),
-    //   //     }
-    //   //   })
-    //   // )
-    //   const _variants = []
-    //   for (const variant of data.variants) {
-    //     if (!variant.variantImage?.length) {
-    //       _variants.push(variant)
-    //       continue
-    //     }
+      //     return {
+      //       ...variant,
+      //       variantImage: uploadedUrls.filter(
+      //         (url): url is string => url !== null
+      //       ),
+      //     }
+      //   })
+      // )
+      const _variants = []
+      for (const variant of data.variants) {
+        if (!variant.variantImage?.length) {
+          _variants.push(variant)
+          continue
+        }
 
-    //     const uploadedUrls = await Promise.all(
-    //       variant.variantImage.map((file: File) =>
-    //         uploadProductImage({ file, fileName: generateFileName() })
-    //       )
-    //     )
+        const uploadedUrls = await Promise.all(
+          variant.variantImage.map((file: File) =>
+            uploadProductImage({ file, fileName: generateFileName() })
+          )
+        )
 
-    //     _variants.push({
-    //       ...variant,
-    //       variantImage: uploadedUrls.filter(
-    //         (url): url is string => url !== null
-    //       ),
-    //     })
-    //   }
+        _variants.push({
+          ...variant,
+          variantImage: uploadedUrls.filter(
+            (url): url is string => url !== null
+          ),
+        })
+      }
 
-    //   server_addProduct({
-    //     ...data,
-    //     variants: _variants,
-    //   })
-    // } catch (error) {
-    //   console.error("form submission failed", error)
-    //   toast.error("Failed to submit form")
-    // }
+      server_addProduct({
+        ...data,
+        variants: _variants,
+      })
+    } catch (error) {
+      console.error("form submission failed", error)
+      toast.error("Failed to submit form")
+    }
   }
 
   return (
@@ -368,118 +368,48 @@ export const ProductsNewForm = ({
                           )}
                         />
                       </div>
-                      <div className="grid gap-3">
-                        <FormField
-                          control={form.control}
-                          name="unit"
-                          render={({ field }) => (
-                            <FormItem>
-                              <FormLabel>Select Unit</FormLabel>
-                              <FormControl>
-                                <Select
-                                  onValueChange={field.onChange}
-                                  defaultValue={field.value}
-                                >
-                                  <SelectTrigger>
-                                    <SelectValue placeholder="Select unit" />
-                                  </SelectTrigger>
-                                  <SelectContent>
-                                    {productUnits.map((unit, idx) => (
-                                      <SelectItem key={idx} value={unit}>
-                                        {unit}
-                                      </SelectItem>
-                                    ))}
-                                  </SelectContent>
-                                </Select>
-                              </FormControl>
-                              <FormMessage />
-                            </FormItem>
-                          )}
-                        />
-                      </div>
                     </div>
                   </CardContent>
                 </Card>
               </div>
-              <div className="grid auto-rows-max items-start gap-4 lg:gap-8">
+              <div className="grid auto-rows-max items-start gap-4">
                 <Card>
                   <CardHeader>
                     <CardTitle>Product Status</CardTitle>
                   </CardHeader>
                   <CardContent>
-                    <div className="grid gap-6">
-                      <div className="grid gap-3">
-                        <FormField
-                          control={form.control}
-                          name="status"
-                          render={({ field }) => (
-                            <FormItem>
-                              <FormLabel>Status</FormLabel>
-                              <FormControl>
-                                <Select
-                                  onValueChange={field.onChange}
-                                  defaultValue={"ACTIVE"}
-                                >
-                                  <SelectTrigger>
-                                    <SelectValue placeholder="Select status" />
-                                  </SelectTrigger>
-                                  <SelectContent>
-                                    <SelectItem value="DRAFT">Draft</SelectItem>
-                                    <SelectItem value="ACTIVE">
-                                      Active
-                                    </SelectItem>
-                                    <SelectItem value="ARCHIVED">
-                                      Archived
-                                    </SelectItem>
-                                  </SelectContent>
-                                </Select>
-                              </FormControl>
-                              <FormMessage />
-                            </FormItem>
-                          )}
-                        />
-                      </div>
+                    <div className="grid gap-3">
+                      <FormField
+                        control={form.control}
+                        name="status"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>Status</FormLabel>
+                            <FormControl>
+                              <Select
+                                onValueChange={field.onChange}
+                                defaultValue={"ACTIVE"}
+                              >
+                                <SelectTrigger>
+                                  <SelectValue placeholder="Select status" />
+                                </SelectTrigger>
+                                <SelectContent>
+                                  <SelectItem value="DRAFT">Draft</SelectItem>
+                                  <SelectItem value="ACTIVE">Active</SelectItem>
+                                  <SelectItem value="ARCHIVED">
+                                    Archived
+                                  </SelectItem>
+                                </SelectContent>
+                              </Select>
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
                     </div>
                   </CardContent>
                 </Card>
-                <Card>
-                  <CardHeader>
-                    <CardTitle>Product Location</CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <div className="grid gap-6">
-                      <div className="grid gap-3">
-                        <FormField
-                          control={form.control}
-                          name="skuLocation"
-                          render={({ field }) => (
-                            <FormItem>
-                              <FormLabel>Location</FormLabel>
-                              <FormControl>
-                                <Select
-                                  onValueChange={field.onChange}
-                                  defaultValue={"MANGALORE-01"}
-                                >
-                                  <SelectTrigger>
-                                    <SelectValue placeholder="Select location" />
-                                  </SelectTrigger>
-                                  <SelectContent>
-                                    {locations.map((loc, idx) => (
-                                      <SelectItem key={idx} value={loc}>
-                                        {loc}
-                                      </SelectItem>
-                                    ))}
-                                  </SelectContent>
-                                </Select>
-                              </FormControl>
-                              <FormMessage />
-                            </FormItem>
-                          )}
-                        />
-                      </div>
-                    </div>
-                  </CardContent>
-                </Card>
+
                 <Card>
                   <CardHeader>
                     <CardTitle>Product Tags</CardTitle>
@@ -487,12 +417,12 @@ export const ProductsNewForm = ({
                       Add tags to help categorize your product
                     </CardDescription>
                   </CardHeader>
-                  <CardContent className="h-[260px]">
+                  <CardContent>
                     <FormField
                       control={form.control}
                       name="tags"
                       render={({ field }) => (
-                        <FormItem className="h-full">
+                        <FormItem>
                           <FormControl>
                             <MultiSelectInput
                               options={tags.map((tag) => tag.name)}
@@ -505,6 +435,46 @@ export const ProductsNewForm = ({
                         </FormItem>
                       )}
                     />
+                  </CardContent>
+                </Card>
+
+                <Card>
+                  <CardHeader>
+                    <CardTitle>Product Unit</CardTitle>
+                    <CardDescription>
+                      Select unit to measure @ size
+                    </CardDescription>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="grid gap-3">
+                      <FormField
+                        control={form.control}
+                        name="unit"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>Select Unit</FormLabel>
+                            <FormControl>
+                              <Select
+                                onValueChange={field.onChange}
+                                defaultValue={field.value}
+                              >
+                                <SelectTrigger>
+                                  <SelectValue placeholder="Select unit" />
+                                </SelectTrigger>
+                                <SelectContent>
+                                  {productUnits.map((unit, idx) => (
+                                    <SelectItem key={idx} value={unit}>
+                                      {unit}
+                                    </SelectItem>
+                                  ))}
+                                </SelectContent>
+                              </Select>
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                    </div>
                   </CardContent>
                 </Card>
               </div>
@@ -535,8 +505,18 @@ export const ProductsNewForm = ({
                       </span>
                     </TableHead>
                     <TableHead className="w-[80px] cursor-default">
-                      <span className="truncate" title="Stock">
-                        Stock
+                      <span className="truncate" title="Stock at Mangalore-01">
+                        Stock@MANG-01
+                      </span>
+                    </TableHead>
+                    <TableHead className="w-[80px] cursor-default">
+                      <span className="truncate" title="Stock at Mangalore-02">
+                        Stock@MANG-02
+                      </span>
+                    </TableHead>
+                    <TableHead className="w-[80px] cursor-default">
+                      <span className="truncate" title="Stock at Kerala-01">
+                        Stock@KERALA-01
                       </span>
                     </TableHead>
                     <TableHead className="w-[100px] cursor-default">
@@ -587,7 +567,9 @@ export const ProductsNewForm = ({
                     costPrice: 0,
                     sellingPrice: 0,
                     discountedPrice: 0,
-                    stock: 0,
+                    stock_MANG1: 0,
+                    stock_MANG2: 0,
+                    stock_KERALA1: 0,
                     variantImage: [],
                   })
                 }
@@ -686,7 +668,45 @@ const VariantFields = ({
       <TableCell>
         <FormField
           control={form.control}
-          name={`variants.${index}.stock`}
+          name={`variants.${index}.stock_MANG1`}
+          render={({ field }) => (
+            <FormItem>
+              <FormControl>
+                <Input
+                  type="number"
+                  {...field}
+                  value={field.value || 0}
+                  onChange={(e) => field.onChange(e.target.valueAsNumber || 0)}
+                />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+      </TableCell>
+      <TableCell>
+        <FormField
+          control={form.control}
+          name={`variants.${index}.stock_MANG2`}
+          render={({ field }) => (
+            <FormItem>
+              <FormControl>
+                <Input
+                  type="number"
+                  {...field}
+                  value={field.value || 0}
+                  onChange={(e) => field.onChange(e.target.valueAsNumber || 0)}
+                />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+      </TableCell>
+      <TableCell>
+        <FormField
+          control={form.control}
+          name={`variants.${index}.stock_KERALA1`}
           render={({ field }) => (
             <FormItem>
               <FormControl>
@@ -787,7 +807,12 @@ const VariantFields = ({
         />
         <div>
           {!isOnly && (
-            <Button onClick={onRemove} variant="destructive" size="sm">
+            <Button
+              onClick={onRemove}
+              variant="secondary"
+              size="sm"
+              className="text-destructive"
+            >
               <X className="size-4" />
               <span className="sr-only">Remove variant {fIndex}</span>
             </Button>

@@ -24,7 +24,6 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import { Icon } from "@iconify/react/dist/iconify.js"
-import { deleteProduct } from "@/app/(protected)/products/_lib/actions"
 
 import { useRouter } from "next/navigation"
 
@@ -67,8 +66,8 @@ export function getColumns({
       cell: ({ row }) => (
         <div className="size-40 flex items-center justify-center overflow-hidden">
           <img
-            alt="Product image"
-            className="aspect-square rounded-md object-cover w-full h-full"
+            alt="failed to load"
+            className="aspect-square rounded-md object-contain w-full h-full"
             src={row.getValue("image")}
           />
         </div>
@@ -83,7 +82,10 @@ export function getColumns({
       ),
       cell: ({ row }) => (
         <div className="py-4 text-wrap w-44">
-          <Link href={`products/${row.original.id}`}>
+          <Link
+            href={`products/${row.original.id}`}
+            className="hover:underline"
+          >
             {row.getValue("name")}
           </Link>
         </div>
@@ -184,10 +186,7 @@ export function getColumns({
               <DropdownMenuSeparator />
               <DropdownMenuItem>View Product</DropdownMenuItem>
               <DropdownMenuItem
-                onClick={async () => {
-                  await deleteProduct({ id: user.id })
-                  router.refresh()
-                }}
+                onClick={() => setRowAction({ row, type: "delete" })}
               >
                 Delete Product
               </DropdownMenuItem>

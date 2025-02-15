@@ -5,36 +5,8 @@
     {
       "idx": 0,
       "version": "7",
-      "when": 1739037433745,
-      "tag": "0000_public_speed",
-      "breakpoints": true
-    },
-    {
-      "idx": 1,
-      "version": "7",
-      "when": 1739301057470,
-      "tag": "0001_dry_vindicator",
-      "breakpoints": true
-    },
-    {
-      "idx": 2,
-      "version": "7",
-      "when": 1739349760600,
-      "tag": "0002_clever_omega_sentinel",
-      "breakpoints": true
-    },
-    {
-      "idx": 3,
-      "version": "7",
-      "when": 1739379673496,
-      "tag": "0003_confused_shen",
-      "breakpoints": true
-    },
-    {
-      "idx": 4,
-      "version": "7",
-      "when": 1739461769510,
-      "tag": "0004_real_speed",
+      "when": 1739606117936,
+      "tag": "0000_conscious_devos",
       "breakpoints": true
     }
   ]

@@ -367,7 +367,6 @@ export const product = pgTable(
     form: productForm("form").notNull(),
     unit: unitOfMeasure("unit").notNull(),
     status: productStatus("status").default("ACTIVE").notNull(),
-    skuLocation: skuLocation("skuLocation").default("MANGALORE-01").notNull(),
     tags: text("tags").array(),
     categoryId: varchar("categoryId", { length: 32 }).notNull(),
     manufacturerId: varchar("manufacturerId", { length: 32 }).notNull(),
