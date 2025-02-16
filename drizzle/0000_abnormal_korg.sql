@@ -1,5 +1,5 @@
 DO $$ BEGIN
- CREATE TYPE "public"."AdressType" AS ENUM('SHIPPING', 'BILLING');
+ CREATE TYPE "public"."AddressType" AS ENUM('SHIPPING', 'BILLING');
 EXCEPTION
  WHEN duplicate_object THEN null;
 END $$;
@@ -11,13 +11,19 @@ EXCEPTION
 END $$;
 --> statement-breakpoint
 DO $$ BEGIN
- CREATE TYPE "public"."MovemenType" AS ENUM('IN', 'OUT', 'ADJUSTMENT');
+ CREATE TYPE "public"."MovementType" AS ENUM('IN', 'OUT', 'ADJUSTMENT');
 EXCEPTION
  WHEN duplicate_object THEN null;
 END $$;
 --> statement-breakpoint
 DO $$ BEGIN
  CREATE TYPE "public"."OrderType" AS ENUM('OFFLINE', 'ONLINE');
+EXCEPTION
+ WHEN duplicate_object THEN null;
+END $$;
+--> statement-breakpoint
+DO $$ BEGIN
+ CREATE TYPE "public"."PaymentStatus" AS ENUM('PENDING', 'AUTHORIZED', 'PAID', 'FAILED', 'REFUNDED');
 EXCEPTION
  WHEN duplicate_object THEN null;
 END $$;
@@ -87,7 +93,7 @@ CREATE TABLE IF NOT EXISTS "Address" (
 	"state" varchar(100) NOT NULL,
 	"postalCode" varchar(10) NOT NULL,
 	"country" varchar(50) DEFAULT 'India' NOT NULL,
-	"addressType" "AdressType" DEFAULT 'SHIPPING' NOT NULL,
+	"addressType" "AddressType" DEFAULT 'SHIPPING' NOT NULL,
 	"createdAt" timestamp (3) DEFAULT now() NOT NULL,
 	"updatedAt" timestamp (3) DEFAULT now()
 );
@@ -102,7 +108,7 @@ CREATE TABLE IF NOT EXISTS "InventoryManagement" (
 	"id" varchar(32) PRIMARY KEY NOT NULL,
 	"productVariantId" varchar(32) NOT NULL,
 	"orderId" varchar(32),
-	"type" "MovemenType" NOT NULL,
+	"type" "MovementType" NOT NULL,
 	"quantity" integer NOT NULL,
 	"reason" text NOT NULL,
 	"location" "SKULocation" NOT NULL,
@@ -121,11 +127,23 @@ CREATE TABLE IF NOT EXISTS "Order" (
 	"id" varchar(32) PRIMARY KEY NOT NULL,
 	"userId" varchar(32) NOT NULL,
 	"orderDate" timestamp (3) DEFAULT now() NOT NULL,
-	"orderType" "OrderType" DEFAULT 'ONLINE' NOT NULL,
+	"subtotal" double precision NOT NULL,
+	"shippingCost" double precision DEFAULT 0 NOT NULL,
+	"discount" double precision DEFAULT 0 NOT NULL,
+	"tax" double precision DEFAULT 0 NOT NULL,
 	"totalAmountPaid" double precision NOT NULL,
+	"orderType" "OrderType" DEFAULT 'ONLINE' NOT NULL,
 	"deliveryStatus" "DeliveryStatus" DEFAULT 'PROCESSING' NOT NULL,
-	"shippingAddress" varchar(32) NOT NULL,
-	"billingAddress" varchar(32) NOT NULL,
+	"shippingAddressId" varchar(32) NOT NULL,
+	"billingAddressId" varchar(32) NOT NULL,
+	"paymentStatus" "PaymentStatus" DEFAULT 'PENDING' NOT NULL,
+	"paymentIntentId" varchar(100),
+	"invoiceNumber" varchar(50),
+	"customerNotes" text,
+	"adminNotes" text,
+	"cancellationReason" text,
+	"estimatedDeliveryDate" timestamp,
+	"deliveredAt" timestamp,
 	"paymentMethodId" varchar(32)
 );
 --> statement-breakpoint
@@ -133,8 +151,16 @@ CREATE TABLE IF NOT EXISTS "OrderDetails" (
 	"id" varchar(32) PRIMARY KEY NOT NULL,
 	"orderId" varchar(32) NOT NULL,
 	"productVariantId" varchar(32) NOT NULL,
+	"originalPrice" double precision NOT NULL,
+	"discountAmount" double precision DEFAULT 0 NOT NULL,
+	"taxAmount" double precision DEFAULT 0 NOT NULL,
+	"unitPrice" double precision NOT NULL,
 	"quantity" integer NOT NULL,
-	"unitPrice" double precision NOT NULL
+	"itemStatus" "DeliveryStatus" DEFAULT 'PROCESSING' NOT NULL,
+	"returnReason" text,
+	"returnedAt" timestamp,
+	"refundAmount" double precision,
+	"fulfilledFromLocation" "SKULocation"
 );
 --> statement-breakpoint
 CREATE TABLE IF NOT EXISTS "PasswordResetToken" (
@@ -276,13 +302,13 @@ EXCEPTION
 END $$;
 --> statement-breakpoint
 DO $$ BEGIN
- ALTER TABLE "Order" ADD CONSTRAINT "Order_shippingAddress_fkey" FOREIGN KEY ("shippingAddress") REFERENCES "public"."Address"("id") ON DELETE restrict ON UPDATE cascade;
+ ALTER TABLE "Order" ADD CONSTRAINT "Order_shippingAddress_fkey" FOREIGN KEY ("shippingAddressId") REFERENCES "public"."Address"("id") ON DELETE restrict ON UPDATE cascade;
 EXCEPTION
  WHEN duplicate_object THEN null;
 END $$;
 --> statement-breakpoint
 DO $$ BEGIN
- ALTER TABLE "Order" ADD CONSTRAINT "Order_billingAddress_fkey" FOREIGN KEY ("billingAddress") REFERENCES "public"."Address"("id") ON DELETE restrict ON UPDATE cascade;
+ ALTER TABLE "Order" ADD CONSTRAINT "Order_billingAddress_fkey" FOREIGN KEY ("billingAddressId") REFERENCES "public"."Address"("id") ON DELETE restrict ON UPDATE cascade;
 EXCEPTION
  WHEN duplicate_object THEN null;
 END $$;
@@ -355,6 +381,10 @@ CREATE INDEX IF NOT EXISTS "idx_inventory_movement_order" ON "InventoryManagemen
 CREATE INDEX IF NOT EXISTS "idx_inventory_movement_location" ON "InventoryManagement" USING btree ("location");--> statement-breakpoint
 CREATE INDEX IF NOT EXISTS "order_date_status_idx" ON "Order" USING btree ("orderDate","deliveryStatus");--> statement-breakpoint
 CREATE INDEX IF NOT EXISTS "order_user_date_idx" ON "Order" USING btree ("userId","orderDate");--> statement-breakpoint
+CREATE INDEX IF NOT EXISTS "order_payment_status_idx" ON "Order" USING btree ("paymentStatus");--> statement-breakpoint
+CREATE INDEX IF NOT EXISTS "order_invoice_number_idx" ON "Order" USING btree ("invoiceNumber");--> statement-breakpoint
+CREATE INDEX IF NOT EXISTS "order_details_status_idx" ON "OrderDetails" USING btree ("itemStatus");--> statement-breakpoint
+CREATE INDEX IF NOT EXISTS "order_details_fulfillment_idx" ON "OrderDetails" USING btree ("fulfilledFromLocation");--> statement-breakpoint
 CREATE UNIQUE INDEX IF NOT EXISTS "PasswordResetToken_email_token_key" ON "PasswordResetToken" USING btree ("email","token");--> statement-breakpoint
 CREATE UNIQUE INDEX IF NOT EXISTS "PasswordResetToken_token_key" ON "PasswordResetToken" USING btree ("token");--> statement-breakpoint
 CREATE INDEX IF NOT EXISTS "PaymentMethod_userId_index" ON "PaymentMethod" USING btree ("userId");--> statement-breakpoint

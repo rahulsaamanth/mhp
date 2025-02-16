@@ -1058,18 +1058,6 @@ async function seed() {
     ])
     .returning()
 
-  // await db.insert(schema.inventoryManagement).values(
-  //   productVariants.map((variant) => ({
-  //     productVariantId: variant.id,
-  //     type: "IN",
-  //     quantity: variant.stock,
-  //     reason: "Initial stock entry",
-  //     previousStock: 0,
-  //     newStock: variant.stock,
-  //     createdBy: users[3]?.id!, // Using admin user
-  //   }))
-  // )
-
   const orders = await db
     .insert(schema.order)
     .values([
@@ -1077,46 +1065,76 @@ async function seed() {
         userId: users[0]?.id!,
         orderDate: new Date(),
         orderType: "ONLINE",
+        subtotal: 985,
+        shippingCost: 50,
+        discount: 0,
+        tax: 0,
         totalAmountPaid: 1035,
         deliveryStatus: "OUT_FOR_DELIVERY",
+        paymentStatus: "PAID",
         shippingAddressId: addresses[0]?.id!,
         billingAddressId: addresses[0]?.id!,
+        estimatedDeliveryDate: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000), // 7 days from now
       },
       {
         userId: users[1]?.id!,
         orderDate: new Date(),
         orderType: "ONLINE",
+        subtotal: 85,
+        shippingCost: 0,
+        discount: 0,
+        tax: 0,
         totalAmountPaid: 85,
         deliveryStatus: "DELIVERED",
+        paymentStatus: "PAID",
         shippingAddressId: addresses[1]?.id!,
         billingAddressId: addresses[1]?.id!,
+        estimatedDeliveryDate: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000), // 7 days from now
       },
       {
         userId: users[2]?.id!,
         orderDate: new Date(),
         orderType: "ONLINE",
+        subtotal: 775,
+        shippingCost: 0,
+        discount: 0,
+        tax: 0,
         totalAmountPaid: 775,
         deliveryStatus: "PROCESSING",
+        paymentStatus: "PAID",
         shippingAddressId: addresses[2]?.id!,
         billingAddressId: addresses[2]?.id!,
+        estimatedDeliveryDate: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000), // 7 days from now
       },
       {
         userId: users[3]?.id!,
         orderDate: new Date(),
         orderType: "ONLINE",
+        subtotal: 290,
+        shippingCost: 0,
+        discount: 0,
+        tax: 0,
         totalAmountPaid: 290,
         deliveryStatus: "SHIPPED",
+        paymentStatus: "PAID",
         shippingAddressId: addresses[3]?.id!,
         billingAddressId: addresses[3]?.id!,
+        estimatedDeliveryDate: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000), // 7 days from now
       },
       {
         userId: users[4]?.id!,
         orderDate: new Date(),
         orderType: "ONLINE",
+        subtotal: 155,
+        shippingCost: 0,
+        discount: 0,
+        tax: 0,
         totalAmountPaid: 155,
         deliveryStatus: "DELIVERED",
+        paymentStatus: "PAID",
         shippingAddressId: addresses[4]?.id!,
         billingAddressId: addresses[4]?.id!,
+        estimatedDeliveryDate: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000), // 7 days from now
       },
     ])
     .returning()
@@ -1126,37 +1144,67 @@ async function seed() {
       orderId: orders[0]?.id!,
       productVariantId: productVariants[6]?.id!,
       quantity: 1,
+      originalPrice: 650,
+      discountAmount: 0,
+      taxAmount: 0,
       unitPrice: 650,
+      itemStatus: "OUT_FOR_DELIVERY",
+      fulfilledFromLocation: "MANGALORE-01",
     },
     {
       orderId: orders[0]?.id!,
       productVariantId: productVariants[32]?.id!,
       quantity: 1,
+      originalPrice: 385,
+      discountAmount: 0,
+      taxAmount: 0,
       unitPrice: 385,
+      itemStatus: "OUT_FOR_DELIVERY",
+      fulfilledFromLocation: "MANGALORE-01",
     },
     {
       orderId: orders[1]?.id!,
       productVariantId: productVariants[34]?.id!,
       quantity: 1,
+      originalPrice: 85,
+      discountAmount: 0,
+      taxAmount: 0,
       unitPrice: 85,
+      itemStatus: "DELIVERED",
+      fulfilledFromLocation: "MANGALORE-01",
     },
     {
       orderId: orders[2]?.id!,
       productVariantId: productVariants[33]?.id!,
       quantity: 1,
+      originalPrice: 775,
+      discountAmount: 0,
+      taxAmount: 0,
       unitPrice: 775,
+      itemStatus: "PROCESSING",
+      fulfilledFromLocation: "MANGALORE-01",
     },
     {
       orderId: orders[3]?.id!,
       productVariantId: productVariants[31]?.id!,
       quantity: 1,
+      originalPrice: 290,
+      discountAmount: 0,
+      taxAmount: 0,
       unitPrice: 290,
+      itemStatus: "SHIPPED",
+      fulfilledFromLocation: "MANGALORE-01",
     },
     {
       orderId: orders[4]?.id!,
       productVariantId: productVariants[30]?.id!,
       quantity: 1,
+      originalPrice: 155,
+      discountAmount: 0,
+      taxAmount: 0,
       unitPrice: 155,
+      itemStatus: "DELIVERED",
+      fulfilledFromLocation: "MANGALORE-01",
     },
   ])
 
