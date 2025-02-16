@@ -47,7 +47,7 @@ export const orderType = pgEnum("OrderType", ["OFFLINE", "ONLINE"])
 
 export const userRole = pgEnum("UserRole", ["ADMIN", "USER"])
 
-export const movementType = pgEnum("MovemenType", ["IN", "OUT", "ADJUSTMENT"])
+export const movementType = pgEnum("MovementType", ["IN", "OUT", "ADJUSTMENT"])
 
 export const deliveryStatus = pgEnum("DeliveryStatus", [
   "PROCESSING",
@@ -66,7 +66,7 @@ export const paymentType = pgEnum("PaymentType", [
   "WALLET",
 ])
 
-export const addressType = pgEnum("AdressType", ["SHIPPING", "BILLING"])
+export const addressType = pgEnum("AddressType", ["SHIPPING", "BILLING"])
 
 export const productStatus = pgEnum("ProductStatus", [
   "ACTIVE",
@@ -98,6 +98,14 @@ export const productForm = pgEnum("ProductForm", [
   "EAR_DROPS",
   "NASAL_DROPS",
   "INJECTIONS",
+])
+
+export const paymentStatus = pgEnum("PaymentStatus", [
+  "PENDING",
+  "AUTHORIZED",
+  "PAID",
+  "FAILED",
+  "REFUNDED",
 ])
 
 export const unitOfMeasure = pgEnum("UnitOfMeasure", [
@@ -493,13 +501,30 @@ export const order = pgTable(
     })
       .defaultNow()
       .notNull(),
-    orderType: orderType("orderType").default("ONLINE").notNull(),
+
+    subtotal: doublePrecision("subtotal").notNull(),
+    shippingCost: doublePrecision("shippingCost").default(0).notNull(),
+    discount: doublePrecision("discount").default(0).notNull(),
+    tax: doublePrecision("tax").default(0).notNull(),
     totalAmountPaid: doublePrecision("totalAmountPaid").notNull(),
+
+    orderType: orderType("orderType").default("ONLINE").notNull(),
     deliveryStatus: deliveryStatus("deliveryStatus")
       .default("PROCESSING")
       .notNull(),
-    shippingAddressId: varchar("shippingAddress", { length: 32 }).notNull(),
-    billingAddressId: varchar("billingAddress", { length: 32 }).notNull(),
+    shippingAddressId: varchar("shippingAddressId", { length: 32 }).notNull(),
+    billingAddressId: varchar("billingAddressId", { length: 32 }).notNull(),
+
+    paymentStatus: paymentStatus("paymentStatus").default("PENDING").notNull(),
+    paymentIntentId: varchar("paymentIntentId", { length: 100 }),
+    invoiceNumber: varchar("invoiceNumber", { length: 50 }),
+
+    customerNotes: text("customerNotes"),
+    adminNotes: text("adminNotes"),
+    cancellationReason: text("cancellationReason"),
+
+    estimatedDeliveryDate: timestamp("estimatedDeliveryDate", { mode: "date" }),
+    deliveredAt: timestamp("deliveredAt", { mode: "date" }),
     // payment method is mandatory, but not required for now.
     paymentMethodId: varchar("paymentMethodId", { length: 32 }),
   },
@@ -533,13 +558,19 @@ export const order = pgTable(
       })
         .onUpdate("cascade")
         .onDelete("restrict"),
-      orderDateStatusIndex: index("order_date_status_idx").on(
+      orderDateStatusIdx: index("order_date_status_idx").on(
         table.orderDate,
         table.deliveryStatus
       ),
-      orderUserDateIndex: index("order_user_date_idx").on(
+      orderUserDateIdx: index("order_user_date_idx").on(
         table.userId,
         table.orderDate
+      ),
+      orderPaymentStatusIdx: index("order_payment_status_idx").on(
+        table.paymentStatus
+      ),
+      orderInvoiceNumberIdx: index("order_invoice_number_idx").on(
+        table.invoiceNumber
       ),
     }
   }
@@ -551,8 +582,18 @@ export const orderDetails = pgTable(
     id: customId("id", ENTITY_PREFIX.ORDER_DETAILS),
     orderId: varchar("orderId", { length: 32 }).notNull(),
     productVariantId: varchar("productVariantId", { length: 32 }).notNull(),
-    quantity: integer("quantity").notNull(),
+    originalPrice: doublePrecision("originalPrice").notNull(),
+    discountAmount: doublePrecision("discountAmount").default(0).notNull(),
+    taxAmount: doublePrecision("taxAmount").default(0).notNull(),
     unitPrice: doublePrecision("unitPrice").notNull(),
+    quantity: integer("quantity").notNull(),
+
+    itemStatus: deliveryStatus("itemStatus").default("PROCESSING").notNull(),
+    returnReason: text("returnReason"),
+    returnedAt: timestamp("returnedAt", { mode: "date" }),
+    refundAmount: doublePrecision("refundAmount"),
+
+    fulfilledFromLocation: skuLocation("fulfilledFromLocation"),
   },
   (table) => {
     return {
@@ -570,6 +611,12 @@ export const orderDetails = pgTable(
       })
         .onUpdate("cascade")
         .onDelete("cascade"),
+      orderDetailsStatusIdx: index("order_details_status_idx").on(
+        table.itemStatus
+      ),
+      orderDetailsFulfillmentIdx: index("order_details_fulfillment_idx").on(
+        table.fulfilledFromLocation
+      ),
     }
   }
 )
