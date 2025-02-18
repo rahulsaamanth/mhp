@@ -165,6 +165,8 @@ export const potency = pgEnum("potencies", [
   "LM30",
 ])
 
+export const discountType = pgEnum("discountType", ["percentage", "ruppees"])
+
 export type UserRole = (typeof userRole.enumValues)[number]
 
 export type User = typeof user.$inferSelect
@@ -421,7 +423,7 @@ export const productVariant = pgTable(
     sku: varchar("sku", { length: 50 }).notNull().unique(),
     variantName: text("variantName").notNull(),
     variantImage: text("variantImage").array().notNull(),
-    potency: varchar("potency"),
+    potency: potency("potency").default("NONE"),
     packSize: integer("packSize"),
     stockByLocation: jsonb("stockByLocation")
       .$type<StockByLocation[]>()
@@ -429,7 +431,8 @@ export const productVariant = pgTable(
       .default([]),
     costPrice: doublePrecision("costPrice").notNull(),
     sellingPrice: doublePrecision("sellingPrice").notNull(),
-    discountedPrice: doublePrecision("discountedPrice"),
+    discounted: doublePrecision("discountedPrice"),
+    discountType: discountType("discountType").default("ruppees"),
   },
   (table) => {
     return {
