@@ -1,10 +1,6 @@
 "use client"
 
-import {
-  DataTableRowAction,
-  ProductForTable,
-  ProductWithComputedFields,
-} from "@/types"
+import { DataTableRowAction, ProductForTable } from "@/types"
 
 import { ColumnDef } from "@tanstack/react-table"
 import { Checkbox } from "@/components/ui/checkbox"
@@ -29,12 +25,12 @@ import { useRouter } from "next/navigation"
 
 interface GetColumnProps {
   setRowAction: React.Dispatch<
-    React.SetStateAction<DataTableRowAction<ProductWithComputedFields> | null>
+    React.SetStateAction<DataTableRowAction<ProductForTable> | null>
   >
 }
 export function getColumns({
   setRowAction,
-}: GetColumnProps): ColumnDef<ProductWithComputedFields>[] {
+}: GetColumnProps): ColumnDef<ProductForTable>[] {
   return [
     {
       id: "select",
@@ -161,7 +157,6 @@ export function getColumns({
       id: "actions",
       cell: ({ row }) => {
         const user = row.original
-        const router = useRouter()
 
         return (
           <DropdownMenu>

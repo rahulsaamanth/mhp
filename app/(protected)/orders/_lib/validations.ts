@@ -15,11 +15,11 @@ export const searchParamsCache = createSearchParamsCache({
   ),
   page: parseAsInteger.withDefault(1),
   perPage: parseAsInteger.withDefault(50),
-  sort: getSortingStateParser<Order & { customerName: string }>().withDefault([
+  sort: getSortingStateParser<Order>().withDefault([
     { id: "orderDate", desc: true },
   ]),
   orderId: parseAsString.withDefault(""),
-  customerName: parseAsString.withDefault(""),
+  userName: parseAsString.withDefault(""),
   from: parseAsString.withDefault(""),
   to: parseAsString.withDefault(""),
   filters: getFiltersStateParser().withDefault([]),
