@@ -8,6 +8,7 @@ import { DateRangePicker } from "@/components/date-range-picker"
 import { DataTableSkeleton } from "@/components/data-table/data-table-skeleton"
 import { getOrders } from "./_lib/queries"
 import { FeatureFlagsProvider } from "./_components/feature-flags-provider"
+import { OrdersTable } from "./_components/orders-table"
 
 interface OrderPageProps {
   searchParams: Promise<SearchParams>
@@ -19,12 +20,10 @@ export default async function OrdersPage(props: OrderPageProps) {
 
   const validFilters = getValidFilters(search.filters)
 
-  const productsPromise = getOrders({
+  const ordersPromise = getOrders({
     ...search,
     filters: validFilters,
   })
-
-  console.log(productsPromise)
 
   return (
     // <Shell className="gap-2">
@@ -49,7 +48,7 @@ export default async function OrdersPage(props: OrderPageProps) {
             />
           }
         >
-          {/* <ProductsTable promise={productsPromise} /> */}
+          <OrdersTable promise={ordersPromise} />
         </React.Suspense>
       </FeatureFlagsProvider>
     </div>

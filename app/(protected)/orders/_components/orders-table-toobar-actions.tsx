@@ -3,18 +3,18 @@
 import { type Table } from "@tanstack/react-table"
 import { Download } from "lucide-react"
 
-import { exportTableToCSV } from "@/lib/export"
 import { Button } from "@/components/ui/button"
+import { exportTableToCSV } from "@/lib/export"
 
 // import { DeleteProductsDialog } from "./delete-products-dialog"
-import { ProductForTable } from "@/types"
+import { OrderForTable } from "@/types"
 import Link from "next/link"
 
 interface TasksTableToolbarActionsProps {
-  table: Table<ProductForTable>
+  table: Table<OrderForTable>
 }
 
-export function ProductsTableToolbarActions({
+export function OrdersTableToolbarActions({
   table,
 }: TasksTableToolbarActionsProps) {
   return (

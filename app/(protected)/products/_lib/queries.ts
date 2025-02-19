@@ -6,7 +6,7 @@ import { SQLChunk, sql } from "drizzle-orm"
 import { db } from "@/db/db"
 import { filterColumns } from "@/lib/filter-columns"
 import { unstable_cache } from "@/lib/unstable-cache"
-import { ProductWithComputedFields } from "@/types"
+import { ProductForTable } from "@/types"
 import { type GetProductsSchema } from "./validations"
 
 export async function getProducts(input: GetProductsSchema) {
@@ -41,7 +41,7 @@ export async function getProducts(input: GetProductsSchema) {
 
         const orderBy = input.sort.map((item) => {
           const direction = item.desc ? "DESC" : "ASC"
-          const column = item.id as keyof ProductWithComputedFields
+          const column = item.id as keyof ProductForTable
 
           switch (column) {
             case "sales":
@@ -119,7 +119,7 @@ export async function getProducts(input: GetProductsSchema) {
             .then((res) => Number(res[0]?.count) ?? 0)
 
           return {
-            data: data as unknown as ProductWithComputedFields[],
+            data: data as unknown as ProductForTable[],
             total,
           }
         })

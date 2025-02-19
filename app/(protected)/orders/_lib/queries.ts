@@ -1,10 +1,12 @@
 import "server-only"
-import { GetOrdersSchema } from "./validations"
+
+import { type GetOrdersSchema } from "./validations"
 import { unstable_cache } from "next/cache"
 import { filterColumns } from "@/lib/filter-columns"
 import { order } from "@/db/schema"
 import { SQLChunk, sql } from "drizzle-orm"
 import { db } from "@/db/db"
+import { OrderForTable } from "@/types"
 
 export async function getOrders(input: GetOrdersSchema) {
   return unstable_cache(
@@ -37,18 +39,18 @@ export async function getOrders(input: GetOrdersSchema) {
               toDate ? sql`o."orderDate" <= ${toDate.toISOString()}` : sql`1=1`,
             ].filter(Boolean)
 
-        const whereClause = sql`${sql.join(whereConditions as SQLChunk[], sql`AND`)}`
+        const whereClause = sql`${sql.join(whereConditions as SQLChunk[], sql` AND `)}`
 
         const orderBy = input.sort.map((item) => {
           const direction = item.desc ? "DESC" : "ASC"
-          const column = item.id
+          const column = item.id as keyof OrderForTable
 
           switch (column) {
             case "totalAmountPaid":
               return sql`"totalAmountPaid" ${sql.raw(direction)} NULLS LAST`
             case "orderDate":
               return sql`"orderDate" ${sql.raw(direction)}`
-            case "customerName":
+            case "userName":
               return sql`"userName" ${sql.raw(direction)} NULLS LAST`
             default:
               return sql`"orderDate" DESC`
@@ -59,7 +61,7 @@ export async function getOrders(input: GetOrdersSchema) {
           const data = await tx.execute(sql`
                             WITH OrderStats AS(
                                SELECT 
-                                o."id" as "orderId",
+                                o."id",
                                 o."orderDate",
                                 o."totalAmountPaid",
                                 o."paymentStatus",
@@ -85,10 +87,10 @@ export async function getOrders(input: GetOrdersSchema) {
                                 WHERE ${whereClause}
                                 `
             )
-            .then((res) => Number(res[0]?.COUNT) ?? 0)
+            .then((res) => Number(res[0]?.count) ?? 0)
 
           return {
-            data,
+            data: data as unknown as OrderForTable[],
             total,
           }
         })
@@ -112,5 +114,5 @@ export async function getOrders(input: GetOrdersSchema) {
       revalidate: 3600,
       tags: ["orders"],
     }
-  )
+  )()
 }

@@ -1,7 +1,7 @@
 import { type Row } from "@tanstack/react-table"
 import { type SQL } from "drizzle-orm"
 import { DataTableConfig } from "./config/data-table"
-import { deliveryStatus, orderType } from "./db/schema"
+import { deliveryStatus, orderType, paymentStatus } from "./db/schema"
 
 export type SideNavItem = {
   title: string
@@ -178,7 +178,10 @@ export interface ProductWithComputedFields extends Product {
 export type ProductForTable = ProductWithComputedFields
 
 export interface OrderWithComputedFields extends Order {
+  paymentStatus: typeof paymentStatus
   deliveryStatus: typeof deliveryStatus
   orderType: typeof orderType
   userName: string
 }
+
+export type OrderForTable = OrderWithComputedFields
