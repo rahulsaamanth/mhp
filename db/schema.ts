@@ -165,7 +165,11 @@ export const potency = pgEnum("potencies", [
   "LM30",
 ])
 
-export const discountType = pgEnum("discountType", ["percentage", "ruppees"])
+export const discountType = pgEnum("discountType", [
+  "NONE",
+  "PERCENTAGE",
+  "RUPPEES",
+])
 
 export type UserRole = (typeof userRole.enumValues)[number]
 
@@ -431,8 +435,8 @@ export const productVariant = pgTable(
       .default([]),
     costPrice: doublePrecision("costPrice").notNull(),
     sellingPrice: doublePrecision("sellingPrice").notNull(),
-    discounted: doublePrecision("discountedPrice"),
-    discountType: discountType("discountType").default("ruppees"),
+    discount: integer("discount").default(10),
+    discountType: discountType("discountType").default("PERCENTAGE"),
   },
   (table) => {
     return {

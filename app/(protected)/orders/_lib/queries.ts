@@ -67,6 +67,7 @@ export async function getOrders(input: GetOrdersSchema) {
                                 o."paymentStatus",
                                 o."orderType",
                                 o."userId",
+                                o."invoiceNumber",
                                 u."name" as "userName"
                             FROM "Order" o
                             LEFT JOIN "User" u ON u."id" = o."userId"
