@@ -1,6 +1,7 @@
 "use client"
 
 import { DataTableColumnHeader } from "@/components/data-table/data-table-column-header"
+import { Badge } from "@/components/ui/badge"
 import { Checkbox } from "@/components/ui/checkbox"
 import { DataTableRowAction, Order, OrderForTable } from "@/types"
 import { ColumnDef } from "@tanstack/react-table"
@@ -62,7 +63,45 @@ export function getColumns({
       cell: ({ row }) => <span>{row.original.userName}</span>,
       enableSorting: true,
       enableHiding: false,
-      enableResizing: true,
+    },
+    {
+      accessorKey: "totalAmountPaid",
+      header: ({ column }) => (
+        <DataTableColumnHeader column={column} title="Total Amount" />
+      ),
+      cell: ({ row }) => <span>{row.original.totalAmountPaid}</span>,
+      enableSorting: true,
+      enableHiding: false,
+    },
+    {
+      accessorKey: "orderType",
+      header: ({ column }) => (
+        <DataTableColumnHeader column={column} title="Order Type" />
+      ),
+      cell: ({ row }) => (
+        <span className="cursor-default">
+          <Badge
+            variant={
+              row.original.orderType.toString() === "OFFLINE"
+                ? "secondary"
+                : "default"
+            }
+          >
+            {row.original.orderType.toString()}
+          </Badge>
+        </span>
+      ),
+      enableSorting: true,
+      enableHiding: true,
+    },
+    {
+      accessorKey: "paymentStatus",
+      header: ({ column }) => (
+        <DataTableColumnHeader column={column} title="Payment Status" />
+      ),
+      cell: ({ row }) => <span>{row.original.paymentStatus.toString()}</span>,
+      enableSorting: false,
+      enableHiding: true,
     },
   ]
 }

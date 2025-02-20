@@ -425,6 +425,8 @@ async function seed() {
         potency: "3X",
         costPrice: 120,
         sellingPrice: 165,
+        discount: 10,
+        discountType: "PERCENTAGE",
         stockByLocation: [
           { location: "MANGALORE-01", stock: 15 },
           { location: "MANGALORE-02", stock: 0 },
@@ -442,6 +444,8 @@ async function seed() {
         potency: "6X",
         costPrice: 120,
         sellingPrice: 165,
+        discount: 10,
+        discountType: "PERCENTAGE",
         stockByLocation: [
           { location: "MANGALORE-01", stock: 12 },
           { location: "MANGALORE-02", stock: 0 },
@@ -459,6 +463,8 @@ async function seed() {
         potency: "12X",
         costPrice: 120,
         sellingPrice: 165,
+        discount: 10,
+        discountType: "PERCENTAGE",
         stockByLocation: [
           { location: "MANGALORE-01", stock: 9 },
           { location: "MANGALORE-02", stock: 0 },
@@ -476,6 +482,8 @@ async function seed() {
         potency: "30X",
         costPrice: 150,
         sellingPrice: 200,
+        discount: 10,
+        discountType: "PERCENTAGE",
         stockByLocation: [
           { location: "MANGALORE-01", stock: 9 },
           { location: "MANGALORE-02", stock: 0 },
@@ -493,6 +501,8 @@ async function seed() {
         potency: "200X",
         costPrice: 200,
         sellingPrice: 250,
+        discount: 10,
+        discountType: "PERCENTAGE",
         stockByLocation: [
           { location: "MANGALORE-01", stock: 11 },
           { location: "MANGALORE-02", stock: 0 },
@@ -510,6 +520,8 @@ async function seed() {
         potency: "3X",
         costPrice: 120,
         sellingPrice: 165,
+        discount: 10,
+        discountType: "PERCENTAGE",
         stockByLocation: [
           { location: "MANGALORE-01", stock: 13 },
           { location: "MANGALORE-02", stock: 0 },
@@ -527,6 +539,8 @@ async function seed() {
         potency: "6X",
         costPrice: 120,
         sellingPrice: 165,
+        discount: 10,
+        discountType: "PERCENTAGE",
         stockByLocation: [
           { location: "MANGALORE-01", stock: 10 },
           { location: "MANGALORE-02", stock: 0 },
@@ -544,6 +558,8 @@ async function seed() {
         potency: "6X",
         costPrice: 60,
         sellingPrice: 90,
+        discount: 10,
+        discountType: "PERCENTAGE",
         stockByLocation: [
           { location: "MANGALORE-01", stock: 15 },
           { location: "MANGALORE-02", stock: 0 },
@@ -561,6 +577,8 @@ async function seed() {
         potency: "6X",
         costPrice: 500,
         sellingPrice: 650,
+        discount: 10,
+        discountType: "PERCENTAGE",
         stockByLocation: [
           { location: "MANGALORE-01", stock: 10 },
           { location: "MANGALORE-02", stock: 0 },
@@ -578,6 +596,8 @@ async function seed() {
         potency: "6X",
         costPrice: 60,
         sellingPrice: 90,
+        discount: 10,
+        discountType: "PERCENTAGE",
         stockByLocation: [
           { location: "MANGALORE-01", stock: 12 },
           { location: "MANGALORE-02", stock: 0 },
@@ -595,6 +615,8 @@ async function seed() {
         potency: "6X",
         costPrice: 500,
         sellingPrice: 650,
+        discount: 10,
+        discountType: "PERCENTAGE",
         stockByLocation: [
           { location: "MANGALORE-01", stock: 8 },
           { location: "MANGALORE-02", stock: 0 },
@@ -612,6 +634,8 @@ async function seed() {
         potency: "200X",
         costPrice: 60,
         sellingPrice: 90,
+        discount: 10,
+        discountType: "PERCENTAGE",
         stockByLocation: [
           { location: "MANGALORE-01", stock: 10 },
           { location: "MANGALORE-02", stock: 0 },
@@ -629,6 +653,8 @@ async function seed() {
         potency: "200X",
         costPrice: 500,
         sellingPrice: 650,
+        discount: 10,
+        discountType: "PERCENTAGE",
         stockByLocation: [
           { location: "MANGALORE-01", stock: 5 },
           { location: "MANGALORE-02", stock: 0 },
@@ -645,6 +671,8 @@ async function seed() {
         packSize: 25,
         costPrice: 60,
         sellingPrice: 90,
+        discount: 10,
+        discountType: "PERCENTAGE",
         stockByLocation: [
           { location: "MANGALORE-01", stock: 15 },
           { location: "MANGALORE-02", stock: 0 },
@@ -661,6 +689,8 @@ async function seed() {
         packSize: 450,
         costPrice: 500,
         sellingPrice: 650,
+        discount: 10,
+        discountType: "PERCENTAGE",
         stockByLocation: [
           { location: "MANGALORE-01", stock: 10 },
           { location: "MANGALORE-02", stock: 0 },
@@ -677,6 +707,8 @@ async function seed() {
         packSize: 25,
         costPrice: 60,
         sellingPrice: 90,
+        discount: 10,
+        discountType: "PERCENTAGE",
         stockByLocation: [
           { location: "MANGALORE-01", stock: 12 },
           { location: "MANGALORE-02", stock: 0 },
@@ -693,6 +725,8 @@ async function seed() {
         packSize: 450,
         costPrice: 500,
         sellingPrice: 650,
+        discount: 10,
+        discountType: "PERCENTAGE",
         stockByLocation: [
           { location: "MANGALORE-01", stock: 8 },
           { location: "MANGALORE-02", stock: 0 },
@@ -709,6 +743,8 @@ async function seed() {
         packSize: 25,
         costPrice: 60,
         sellingPrice: 90,
+        discount: 10,
+        discountType: "PERCENTAGE",
         stockByLocation: [
           { location: "MANGALORE-01", stock: 10 },
           { location: "MANGALORE-02", stock: 0 },
@@ -725,6 +761,8 @@ async function seed() {
         packSize: 450,
         costPrice: 500,
         sellingPrice: 650,
+        discount: 10,
+        discountType: "PERCENTAGE",
         stockByLocation: [
           { location: "MANGALORE-01", stock: 5 },
           { location: "MANGALORE-02", stock: 0 },
@@ -741,6 +779,8 @@ async function seed() {
         packSize: 20,
         costPrice: 120,
         sellingPrice: 165,
+        discount: 10,
+        discountType: "PERCENTAGE",
         stockByLocation: [
           { location: "MANGALORE-01", stock: 15 },
           { location: "MANGALORE-02", stock: 0 },
@@ -757,6 +797,8 @@ async function seed() {
         packSize: 20,
         costPrice: 120,
         sellingPrice: 165,
+        discount: 10,
+        discountType: "PERCENTAGE",
         stockByLocation: [
           { location: "MANGALORE-01", stock: 12 },
           { location: "MANGALORE-02", stock: 0 },
@@ -773,6 +815,8 @@ async function seed() {
         packSize: 20,
         costPrice: 120,
         sellingPrice: 165,
+        discount: 10,
+        discountType: "PERCENTAGE",
         stockByLocation: [
           { location: "MANGALORE-01", stock: 8 },
           { location: "MANGALORE-02", stock: 0 },
@@ -789,6 +833,8 @@ async function seed() {
         packSize: 20,
         costPrice: 60,
         sellingPrice: 85,
+        discount: 10,
+        discountType: "PERCENTAGE",
         stockByLocation: [
           { location: "MANGALORE-01", stock: 10 },
           { location: "MANGALORE-02", stock: 0 },
@@ -805,6 +851,8 @@ async function seed() {
         packSize: 550,
         costPrice: 600,
         sellingPrice: 730,
+        discount: 10,
+        discountType: "PERCENTAGE",
         stockByLocation: [
           { location: "MANGALORE-01", stock: 5 },
           { location: "MANGALORE-02", stock: 0 },
@@ -821,6 +869,8 @@ async function seed() {
         packSize: 20,
         costPrice: 60,
         sellingPrice: 85,
+        discount: 10,
+        discountType: "PERCENTAGE",
         stockByLocation: [
           { location: "MANGALORE-01", stock: 13 },
           { location: "MANGALORE-02", stock: 0 },
@@ -837,6 +887,8 @@ async function seed() {
         packSize: 550,
         costPrice: 600,
         sellingPrice: 730,
+        discount: 10,
+        discountType: "PERCENTAGE",
         stockByLocation: [
           { location: "MANGALORE-01", stock: 8 },
           { location: "MANGALORE-02", stock: 0 },
@@ -854,6 +906,8 @@ async function seed() {
         potency: "1000CH",
         costPrice: 100,
         sellingPrice: 130,
+        discount: 10,
+        discountType: "PERCENTAGE",
         stockByLocation: [
           { location: "MANGALORE-01", stock: 15 },
           { location: "MANGALORE-02", stock: 0 },
@@ -871,6 +925,8 @@ async function seed() {
         potency: "200CH",
         costPrice: 70,
         sellingPrice: 90,
+        discount: 10,
+        discountType: "PERCENTAGE",
         stockByLocation: [
           { location: "MANGALORE-01", stock: 12 },
           { location: "MANGALORE-02", stock: 0 },
@@ -888,6 +944,8 @@ async function seed() {
         potency: "30CH",
         costPrice: 60,
         sellingPrice: 85,
+        discount: 10,
+        discountType: "PERCENTAGE",
         stockByLocation: [
           { location: "MANGALORE-01", stock: 8 },
           { location: "MANGALORE-02", stock: 0 },
@@ -905,6 +963,8 @@ async function seed() {
         potency: "6CH",
         costPrice: 60,
         sellingPrice: 85,
+        discount: 10,
+        discountType: "PERCENTAGE",
         stockByLocation: [
           { location: "MANGALORE-01", stock: 10 },
           { location: "MANGALORE-02", stock: 0 },
@@ -922,6 +982,8 @@ async function seed() {
         potency: "1X",
         costPrice: 90,
         sellingPrice: 115,
+        discount: 10,
+        discountType: "PERCENTAGE",
         stockByLocation: [
           { location: "MANGALORE-01", stock: 15 },
           { location: "MANGALORE-02", stock: 0 },
@@ -937,6 +999,8 @@ async function seed() {
         ],
         costPrice: 200,
         sellingPrice: 290,
+        discount: 10,
+        discountType: "PERCENTAGE",
         stockByLocation: [
           { location: "MANGALORE-01", stock: 12 },
           { location: "MANGALORE-02", stock: 0 },
@@ -953,6 +1017,8 @@ async function seed() {
         packSize: 100,
         costPrice: 100,
         sellingPrice: 155,
+        discount: 10,
+        discountType: "PERCENTAGE",
         stockByLocation: [
           { location: "MANGALORE-01", stock: 10 },
           { location: "MANGALORE-02", stock: 0 },
@@ -969,6 +1035,8 @@ async function seed() {
         packSize: 60,
         costPrice: 60,
         sellingPrice: 95,
+        discount: 10,
+        discountType: "PERCENTAGE",
         stockByLocation: [
           { location: "MANGALORE-01", stock: 13 },
           { location: "MANGALORE-02", stock: 0 },
@@ -985,6 +1053,8 @@ async function seed() {
         packSize: 25,
         costPrice: 50,
         sellingPrice: 80,
+        discount: 10,
+        discountType: "PERCENTAGE",
         stockByLocation: [
           { location: "MANGALORE-01", stock: 14 },
           { location: "MANGALORE-02", stock: 0 },
@@ -1001,6 +1071,8 @@ async function seed() {
         packSize: 25,
         costPrice: 100,
         sellingPrice: 155,
+        discount: 10,
+        discountType: "PERCENTAGE",
         stockByLocation: [
           { location: "MANGALORE-01", stock: 11 },
           { location: "MANGALORE-02", stock: 0 },
@@ -1017,6 +1089,8 @@ async function seed() {
         packSize: 30,
         costPrice: 250,
         sellingPrice: 385,
+        discount: 10,
+        discountType: "PERCENTAGE",
         stockByLocation: [
           { location: "MANGALORE-01", stock: 12 },
           { location: "MANGALORE-02", stock: 0 },
@@ -1033,6 +1107,8 @@ async function seed() {
         packSize: 60,
         costPrice: 500,
         sellingPrice: 775,
+        discount: 10,
+        discountType: "PERCENTAGE",
         stockByLocation: [
           { location: "MANGALORE-01", stock: 10 },
           { location: "MANGALORE-02", stock: 0 },
@@ -1049,6 +1125,8 @@ async function seed() {
         packSize: 30,
         costPrice: 60,
         sellingPrice: 85,
+        discount: 10,
+        discountType: "PERCENTAGE",
         stockByLocation: [
           { location: "MANGALORE-01", stock: 13 },
           { location: "MANGALORE-02", stock: 0 },
