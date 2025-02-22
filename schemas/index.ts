@@ -1,4 +1,4 @@
-import { potency } from "@/db/schema"
+import { discountType, potency } from "@/db/schema"
 import * as z from "zod"
 
 const ACCEPTED_IMAGE_MIME_TYPES = [
@@ -115,11 +115,16 @@ export const RegisterSchema = z.object({
 
 export const productVariantSchema = z
   .object({
-    potency: z.enum(["NONE", ...potency.enumValues]),
+    potency: z.enum([...potency.enumValues]),
     packSize: z.number().min(1, "Pack size must be at least 1"),
     costPrice: z.number().min(0, "Price must be positive"),
+    basePrice: z.number().min(0, "Price must be positive"),
     sellingPrice: z.number().min(0, "Price must be positive"),
-    discountedPrice: z.number().min(0, "Price must be positive"),
+    discount: z
+      .number()
+      .min(0, "discount musn't be negative")
+      .max(100, "discount musn't be greater than 100"),
+    discountType: z.enum(["NONE", "PERCENTAGE", "RUPPEES"]),
     stock_MANG1: z.number().min(0, "Stock must not be negative").default(0),
     stock_MANG2: z.number().min(0, "Stock must not be negative").default(0),
     stock_KERALA1: z.number().min(0, "Stock must not be negative").default(0),
@@ -131,13 +136,6 @@ export const productVariantSchema = z
         code: z.ZodIssueCode.custom,
         path: ["sellingPrice"],
         message: "Selling price must be greater than cost price",
-      })
-    }
-    if (data.discountedPrice > data.sellingPrice) {
-      ctx.addIssue({
-        code: z.ZodIssueCode.custom,
-        path: ["discountedPrice"],
-        message: "Discounted price must be less than or equal to selling price",
       })
     }
   })
@@ -169,6 +167,12 @@ export const createProductSchema = z.object({
     "INJECTIONS",
   ]),
   unit: z.enum(["NONE", "TABLETS", "ML", "GM(s)", "DROPS", "AMPOULES"]),
+  hsnCode: z.string().default("30049014"),
+  tax: z
+    .number()
+    .min(0, "Tax musn't be negative")
+    .max(28, "Tax musn't excee the tax slab 28")
+    .default(0),
   variants: z
     .array(productVariantSchema)
     .min(1, "At least one variant is required"),
