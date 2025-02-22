@@ -384,6 +384,10 @@ export const product = pgTable(
     tags: text("tags").array(),
     categoryId: varchar("categoryId", { length: 32 }).notNull(),
     manufacturerId: varchar("manufacturerId", { length: 32 }).notNull(),
+
+    hsnCode: varchar("hsnCode", { length: 8 }).default("30049014"),
+    tax: integer("tax").default(0).notNull(),
+
     createdAt: timestamp("createdAt", { mode: "date" }).defaultNow().notNull(),
     updatedAt: timestamp("updatedAt")
       .defaultNow()
@@ -433,10 +437,13 @@ export const productVariant = pgTable(
       .$type<StockByLocation[]>()
       .notNull()
       .default([]),
-    costPrice: doublePrecision("costPrice").notNull(),
-    sellingPrice: doublePrecision("sellingPrice").notNull(),
-    discount: integer("discount").default(10),
+    costPrice: doublePrecision("costPrice"),
+    basePrice: doublePrecision("basePrice").notNull(),
+
+    discount: integer("discount").default(0),
     discountType: discountType("discountType").default("PERCENTAGE"),
+
+    sellingPrice: doublePrecision("sellingPrice").notNull(),
   },
   (table) => {
     return {

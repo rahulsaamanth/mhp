@@ -19,6 +19,7 @@ import { Placeholder } from "@tiptap/extension-placeholder"
 const Tiptap = ({ val }: { val: string }) => {
   const { setValue } = useFormContext()
   const editor = useEditor({
+    immediatelyRender: false,
     extensions: [
       Placeholder.configure({
         placeholder: "Add a description",

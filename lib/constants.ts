@@ -57,7 +57,7 @@ export const SIDENAV_ITEMS: SideNavItem[] = [
 ]
 
 export const COMMON_TAGS = [
-  "HOMOEOPATHY",
+  "HOMEOPATHY",
   "NUTRITION-SUPPLEMENTS",
   "BIOCHEMIC",
   "BIOCOMBINATION",

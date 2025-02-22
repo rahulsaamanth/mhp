@@ -60,6 +60,7 @@ import { toast } from "sonner"
 import { createProduct, uploadProductImage } from "../_lib/actions"
 import { MultiSelectInput } from "./multi-select-input"
 import { VariantImageUpload } from "./variant-image-upload"
+import React from "react"
 
 type FormattedCategory = {
   id: string
@@ -92,13 +93,17 @@ export const ProductsNewForm = ({
       status: "ACTIVE",
       form: "NONE",
       unit: "NONE",
+      hsnCode: "30049014",
+      tax: 5,
       variants: [
         {
           potency: "NONE",
           packSize: 0,
-          costPrice: 100,
-          sellingPrice: 150,
-          discountedPrice: 140,
+          costPrice: 0,
+          basePrice: 0,
+          sellingPrice: 0,
+          discount: 0,
+          discountType: "PERCENTAGE",
           stock_MANG1: 0,
           stock_MANG2: 0,
           stock_KERALA1: 0,
@@ -222,7 +227,7 @@ export const ProductsNewForm = ({
             </div>
             <div className="grid gap-4 md:grid-cols-[1fr_250px] lg:grid-cols-3 lg:gap-8">
               <div className="grid auto-rows-max items-start gap-4 lg:col-span-2 lg:gap-8">
-                <Card>
+                <Card className="py-3">
                   <CardHeader>
                     <CardTitle>Product Details</CardTitle>
                     <CardDescription>
@@ -268,7 +273,7 @@ export const ProductsNewForm = ({
                     </div>
                   </CardContent>
                 </Card>
-                <Card>
+                <Card className="py-4">
                   <CardHeader>
                     <CardTitle>Product Properties</CardTitle>
                   </CardHeader>
@@ -368,6 +373,36 @@ export const ProductsNewForm = ({
                           )}
                         />
                       </div>
+
+                      <div className="grid gap-3">
+                        <FormField
+                          control={form.control}
+                          name="unit"
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel>Select Unit</FormLabel>
+                              <FormControl>
+                                <Select
+                                  onValueChange={field.onChange}
+                                  defaultValue={field.value}
+                                >
+                                  <SelectTrigger>
+                                    <SelectValue placeholder="Select unit" />
+                                  </SelectTrigger>
+                                  <SelectContent>
+                                    {productUnits.map((unit, idx) => (
+                                      <SelectItem key={idx} value={unit}>
+                                        {unit}
+                                      </SelectItem>
+                                    ))}
+                                  </SelectContent>
+                                </Select>
+                              </FormControl>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+                      </div>
                     </div>
                   </CardContent>
                 </Card>
@@ -440,33 +475,48 @@ export const ProductsNewForm = ({
 
                 <Card>
                   <CardHeader>
-                    <CardTitle>Product Unit</CardTitle>
-                    <CardDescription>
-                      Select unit to measure @ size
-                    </CardDescription>
+                    <CardTitle>Taxation</CardTitle>
                   </CardHeader>
                   <CardContent>
                     <div className="grid gap-3">
                       <FormField
                         control={form.control}
-                        name="unit"
+                        name="hsnCode"
                         render={({ field }) => (
                           <FormItem>
-                            <FormLabel>Select Unit</FormLabel>
+                            <FormLabel>HSN Code</FormLabel>
+                            <FormControl>
+                              <Input
+                                defaultValue="30049014"
+                                onChange={field.onChange}
+                                placeholder="30049014"
+                              />
+                            </FormControl>
+                          </FormItem>
+                        )}
+                      />
+                      <FormField
+                        control={form.control}
+                        name="tax"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>Select tax slab</FormLabel>
                             <FormControl>
                               <Select
-                                onValueChange={field.onChange}
-                                defaultValue={field.value}
+                                onValueChange={(val) =>
+                                  form.setValue("tax", Number(val))
+                                }
+                                defaultValue="12"
                               >
                                 <SelectTrigger>
-                                  <SelectValue placeholder="Select unit" />
+                                  <SelectValue placeholder="Select tax slab" />
                                 </SelectTrigger>
                                 <SelectContent>
-                                  {productUnits.map((unit, idx) => (
-                                    <SelectItem key={idx} value={unit}>
-                                      {unit}
-                                    </SelectItem>
-                                  ))}
+                                  <SelectItem value="0">0</SelectItem>
+                                  <SelectItem value="5">5</SelectItem>
+                                  <SelectItem value="12">12</SelectItem>
+                                  <SelectItem value="18">18</SelectItem>
+                                  <SelectItem value="28">28</SelectItem>
                                 </SelectContent>
                               </Select>
                             </FormControl>
@@ -486,20 +536,20 @@ export const ProductsNewForm = ({
               <CardDescription>Add atleast one product variant</CardDescription>
             </CardHeader>
             <CardContent>
-              <Table>
+              <Table className="overflow-x-scroll w-auto md:w-full">
                 <TableHeader>
                   <TableRow>
-                    <TableHead className="w-[80px] cursor-default">
+                    <TableHead className="w-[20px] cursor-default">
                       <span className="truncate" title="Serial Number">
                         S.No
                       </span>
                     </TableHead>
-                    <TableHead className="w-[100px] cursor-default">
+                    <TableHead className="w-[80px] cursor-default">
                       <span className="truncate" title="Potency">
                         Potency
                       </span>
                     </TableHead>
-                    <TableHead className="w-[100px] cursor-default">
+                    <TableHead className="w-[80px] cursor-default">
                       <span className="truncate" title="Pack Size">
                         Size
                       </span>
@@ -519,22 +569,32 @@ export const ProductsNewForm = ({
                         Stock@KERALA-01
                       </span>
                     </TableHead>
-                    <TableHead className="w-[100px] cursor-default">
+                    <TableHead className="w-[80px] cursor-default">
                       <span className="truncate" title="Cost Price">
-                        C.Price
+                        C.Price(optional)
                       </span>
                     </TableHead>
-                    <TableHead className="w-[100px] cursor-default">
+                    <TableHead className="w-[80px] cursor-default">
                       <span className="truncate" title="Selling Price">
-                        S.Price
+                        Base Price
                       </span>
                     </TableHead>
-                    <TableHead className="w-[100px] cursor-default">
+                    <TableHead className="w-[80px] cursor-default">
                       <span className="truncate" title="Discounted Price">
-                        D.Price
+                        Discount
                       </span>
                     </TableHead>
-                    <TableHead className="w-[200px] cursor-default">
+                    <TableHead className="w-[80px] cursor-default">
+                      <span className="truncate" title="Discounted Price">
+                        DiscountType
+                      </span>
+                    </TableHead>
+                    <TableHead className="w-[80px] cursor-default">
+                      <span className="truncate" title="Discounted Price">
+                        sellingPrice
+                      </span>
+                    </TableHead>
+                    <TableHead className="w-[160px] cursor-default">
                       <span className="truncate" title="Variant Images">
                         Images
                       </span>
@@ -566,7 +626,9 @@ export const ProductsNewForm = ({
                     packSize: 0,
                     costPrice: 0,
                     sellingPrice: 0,
-                    discountedPrice: 0,
+                    basePrice: 0,
+                    discount: 0,
+                    discountType: "PERCENTAGE",
                     stock_MANG1: 0,
                     stock_MANG2: 0,
                     stock_KERALA1: 0,
@@ -611,6 +673,36 @@ const VariantFields = ({
 }: VariantFieldsProps) => {
   const { enumValues: potencies } = potency
   const fIndex = (index + 1).toString().padStart(2, "0")
+
+  React.useEffect(() => {
+    const variant = form.getValues(`variants.${index}`)
+    const tax = form.getValues("tax")
+
+    const basePrice = variant.basePrice
+
+    const discountAmount =
+      variant.discountType === "PERCENTAGE"
+        ? (basePrice * variant.discount) / 100
+        : variant.discount
+
+    const priceAfterDiscount = basePrice - discountAmount
+
+    const taxAmount = (priceAfterDiscount * tax) / 100
+
+    const finalPrice = priceAfterDiscount + taxAmount
+
+    form.setValue(
+      `variants.${index}.sellingPrice`,
+      Number(finalPrice.toFixed(2))
+    )
+  }, [
+    form.watch(`variants.${index}.basePrice`),
+    form.watch(`variants.${index}.discount`),
+    form.watch(`variants.${index}.discountType`),
+    form.watch("tax"),
+    index,
+    form,
+  ])
 
   return (
     <TableRow>
@@ -675,8 +767,14 @@ const VariantFields = ({
                 <Input
                   type="number"
                   {...field}
-                  value={field.value || 0}
-                  onChange={(e) => field.onChange(e.target.valueAsNumber || 0)}
+                  value={field.value === 0 ? "" : field.value}
+                  onChange={(e) => {
+                    const value =
+                      e.target.value === "" ? 0 : e.target.valueAsNumber
+                    field.onChange(value)
+                  }}
+                  placeholder="20"
+                  className="[appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
                 />
               </FormControl>
               <FormMessage />
@@ -694,8 +792,14 @@ const VariantFields = ({
                 <Input
                   type="number"
                   {...field}
-                  value={field.value || 0}
-                  onChange={(e) => field.onChange(e.target.valueAsNumber || 0)}
+                  value={field.value === 0 ? "" : field.value}
+                  onChange={(e) => {
+                    const value =
+                      e.target.value === "" ? 0 : e.target.valueAsNumber
+                    field.onChange(value)
+                  }}
+                  placeholder="20"
+                  className="[appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
                 />
               </FormControl>
               <FormMessage />
@@ -713,8 +817,14 @@ const VariantFields = ({
                 <Input
                   type="number"
                   {...field}
-                  value={field.value || 0}
-                  onChange={(e) => field.onChange(e.target.valueAsNumber || 0)}
+                  value={field.value === 0 ? "" : field.value}
+                  onChange={(e) => {
+                    const value =
+                      e.target.value === "" ? 0 : e.target.valueAsNumber
+                    field.onChange(value)
+                  }}
+                  placeholder="20"
+                  className="[appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
                 />
               </FormControl>
               <FormMessage />
@@ -739,8 +849,83 @@ const VariantFields = ({
                     field.onChange(value)
                   }}
                   className="[appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
-                  placeholder="20"
+                  placeholder="100"
                 />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+      </TableCell>
+      <TableCell>
+        <FormField
+          control={form.control}
+          name={`variants.${index}.basePrice`}
+          render={({ field }) => (
+            <FormItem>
+              <FormControl>
+                <Input
+                  type="number"
+                  {...field}
+                  value={field.value === 0 ? "" : field.value}
+                  onChange={(e) => {
+                    const value =
+                      e.target.value === "" ? 0 : e.target.valueAsNumber
+                    field.onChange(value)
+                  }}
+                  className="[appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+      </TableCell>
+
+      <TableCell>
+        <FormField
+          control={form.control}
+          name={`variants.${index}.discount`}
+          render={({ field }) => (
+            <FormItem>
+              <FormControl>
+                <Input
+                  type="number"
+                  {...field}
+                  value={field.value === 0 ? "" : field.value}
+                  onChange={(e) => {
+                    const value =
+                      e.target.value === "" ? 0 : e.target.valueAsNumber
+                    field.onChange(value)
+                  }}
+                  className="[appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+      </TableCell>
+      <TableCell>
+        <FormField
+          control={form.control}
+          name={`variants.${index}.discountType`}
+          render={({ field }) => (
+            <FormItem>
+              <FormControl>
+                <Select
+                  defaultValue="PERCENTAGE"
+                  value={field.value}
+                  onValueChange={field.onChange}
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select Type" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="PERCENTAGE">%</SelectItem>
+                    <SelectItem value="RUPPEES">RS.</SelectItem>
+                  </SelectContent>
+                </Select>
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -757,39 +942,14 @@ const VariantFields = ({
                 <Input
                   type="number"
                   {...field}
-                  value={field.value === 0 ? "" : field.value}
+                  value={field.value}
                   onChange={(e) => {
                     const value =
                       e.target.value === "" ? 0 : e.target.valueAsNumber
                     field.onChange(value)
                   }}
                   className="[appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
-                  placeholder="20"
-                />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-      </TableCell>
-      <TableCell>
-        <FormField
-          control={form.control}
-          name={`variants.${index}.discountedPrice`}
-          render={({ field }) => (
-            <FormItem>
-              <FormControl>
-                <Input
-                  type="number"
-                  {...field}
-                  value={field.value === 0 ? "" : field.value}
-                  onChange={(e) => {
-                    const value =
-                      e.target.value === "" ? 0 : e.target.valueAsNumber
-                    field.onChange(value)
-                  }}
-                  className="[appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
-                  placeholder="20"
+                  disabled={true}
                 />
               </FormControl>
               <FormMessage />
