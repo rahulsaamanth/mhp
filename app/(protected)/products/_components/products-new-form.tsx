@@ -82,35 +82,37 @@ export const ProductsNewForm = ({
 
   const { categories, manufacturers, tags } = props
 
+  const defaultValues = {
+    name: "",
+    description: "",
+    categoryId: "",
+    manufacturerId: "",
+    tags: [],
+    status: "ACTIVE" as const,
+    form: "NONE" as const,
+    unit: "NONE" as const,
+    hsnCode: "30049014",
+    tax: 5,
+    variants: [
+      {
+        potency: "NONE" as const,
+        packSize: 0,
+        costPrice: 0,
+        basePrice: 0,
+        sellingPrice: 0,
+        discount: 0,
+        discountType: "PERCENTAGE" as const,
+        stock_MANG1: 0,
+        stock_MANG2: 0,
+        stock_KERALA1: 0,
+        variantImage: [],
+      },
+    ],
+  }
+
   const form = useForm<z.infer<typeof createProductSchema>>({
     resolver: zodResolver(createProductSchema),
-    defaultValues: {
-      name: "",
-      description: "",
-      categoryId: "",
-      manufacturerId: "",
-      tags: [],
-      status: "ACTIVE",
-      form: "NONE",
-      unit: "NONE",
-      hsnCode: "30049014",
-      tax: 5,
-      variants: [
-        {
-          potency: "NONE",
-          packSize: 0,
-          costPrice: 0,
-          basePrice: 0,
-          sellingPrice: 0,
-          discount: 0,
-          discountType: "PERCENTAGE",
-          stock_MANG1: 0,
-          stock_MANG2: 0,
-          stock_KERALA1: 0,
-          variantImage: [],
-        },
-      ],
-    },
+    defaultValues,
     mode: "onChange",
   })
   const { enumValues: productForms } = productForm
@@ -121,13 +123,26 @@ export const ProductsNewForm = ({
     name: "variants",
   })
 
+  function resetForm() {
+    form.reset()
+    form.setValue("description", "")
+    form.setValue("categoryId", defaultValues.categoryId)
+    form.setValue("manufacturerId", defaultValues.manufacturerId)
+    form.setValue("form", defaultValues.form)
+    form.setValue("unit", defaultValues.unit)
+    form.setValue("status", defaultValues.status)
+    form.setValue("tax", defaultValues.tax)
+
+    form.setValue("variants", defaultValues.variants)
+  }
+
   const { mutate: server_addProduct, isPending } = useMutation({
     mutationFn: createProduct,
     onSuccess: (data) => {
       if (data.success) {
         toast.success("Product created successfully!")
 
-        router.push("/products")
+        resetForm()
       } else {
         toast.error(data.error || "Failed to create product")
       }
@@ -139,29 +154,10 @@ export const ProductsNewForm = ({
   })
 
   const onSubmit = async (data: z.infer<typeof createProductSchema>) => {
-    // console.log(data)
     try {
       const generateFileName = (bytes = 32) =>
         crypto.randomBytes(bytes).toString("hex")
 
-      // const variantsWithImages = await Promise.all(
-      //   data.variants.map(async (variant) => {
-      //     if (!variant.variantImage?.length) return variant
-
-      //     const uploadedUrls = await Promise.all(
-      //       variant.variantImage.map((file: File) =>
-      //         uploadProductImage({ file, fileName: generateFileName() })
-      //       )
-      //     )
-
-      //     return {
-      //       ...variant,
-      //       variantImage: uploadedUrls.filter(
-      //         (url): url is string => url !== null
-      //       ),
-      //     }
-      //   })
-      // )
       const _variants = []
       for (const variant of data.variants) {
         if (!variant.variantImage?.length) {
@@ -216,8 +212,13 @@ export const ProductsNewForm = ({
                 new
               </Badge>
               <div className="hidden items-center gap-2 md:ml-auto md:flex">
-                <Button variant="outline" size="sm" type="button">
-                  Discard
+                <Button
+                  variant="outline"
+                  size="sm"
+                  type="button"
+                  onClick={() => resetForm()}
+                >
+                  Reset
                 </Button>
                 <Button size="sm" disabled={isPending} type="submit">
                   {isPending && <Loader className="size-4 mr-2 animate-spin" />}
@@ -506,7 +507,7 @@ export const ProductsNewForm = ({
                                 onValueChange={(val) =>
                                   form.setValue("tax", Number(val))
                                 }
-                                defaultValue="12"
+                                defaultValue="5"
                               >
                                 <SelectTrigger>
                                   <SelectValue placeholder="Select tax slab" />
@@ -642,8 +643,13 @@ export const ProductsNewForm = ({
             </CardFooter>
           </Card>
           <div className="flex items-center justify-center gap-2 md:hidden">
-            <Button variant="outline" size="sm" type="button">
-              Discard
+            <Button
+              variant="outline"
+              size="sm"
+              type="button"
+              onClick={() => resetForm()}
+            >
+              Reset
             </Button>
             <Button size="sm" disabled={isPending} type="submit">
               {isPending && <Loader className="size-4 mr-2 animate-spin" />}
@@ -874,6 +880,7 @@ const VariantFields = ({
                     field.onChange(value)
                   }}
                   className="[appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                  placeholder="150"
                 />
               </FormControl>
               <FormMessage />
@@ -899,6 +906,7 @@ const VariantFields = ({
                     field.onChange(value)
                   }}
                   className="[appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                  placeholder="10"
                 />
               </FormControl>
               <FormMessage />

@@ -1,6 +1,6 @@
 {
-  "id": "b4265418-ddaa-4117-82b0-46dbea804af7",
-  "prevId": "00000000-0000-0000-0000-000000000000",
+  "id": "50104f10-a83c-4f30-aef0-01fbbd3b707e",
+  "prevId": "b4265418-ddaa-4117-82b0-46dbea804af7",
   "version": "7",
   "dialect": "postgresql",
   "tables": {
@@ -1301,7 +1301,7 @@
           "type": "potency",
           "typeSchema": "public",
           "primaryKey": false,
-          "notNull": false,
+          "notNull": true,
           "default": "'NONE'"
         },
         "packSize": {
@@ -1947,10 +1947,15 @@
         "6X",
         "12X",
         "30X",
+        "200X",
         "6C",
         "12C",
         "30C",
         "200C",
+        "6CH",
+        "30CH",
+        "200CH",
+        "1000CH",
         "1M",
         "10M",
         "50M",

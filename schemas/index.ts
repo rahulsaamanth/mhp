@@ -124,7 +124,7 @@ export const productVariantSchema = z
       .number()
       .min(0, "discount musn't be negative")
       .max(100, "discount musn't be greater than 100"),
-    discountType: z.enum(["NONE", "PERCENTAGE", "RUPPEES"]),
+    discountType: z.enum(["PERCENTAGE", "RUPPEES"]),
     stock_MANG1: z.number().min(0, "Stock must not be negative").default(0),
     stock_MANG2: z.number().min(0, "Stock must not be negative").default(0),
     stock_KERALA1: z.number().min(0, "Stock must not be negative").default(0),

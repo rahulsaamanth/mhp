@@ -117,17 +117,22 @@ export const unitOfMeasure = pgEnum("UnitOfMeasure", [
   "AMPOULES",
 ])
 
-export const potency = pgEnum("potencies", [
+export const potency = pgEnum("potency", [
   "NONE",
   "1X",
   "3X",
   "6X",
   "12X",
   "30X",
+  "200X",
   "6C",
   "12C",
   "30C",
   "200C",
+  "6CH",
+  "30CH",
+  "200CH",
+  "1000CH",
   "1M",
   "10M",
   "50M",
@@ -165,11 +170,7 @@ export const potency = pgEnum("potencies", [
   "LM30",
 ])
 
-export const discountType = pgEnum("discountType", [
-  "NONE",
-  "PERCENTAGE",
-  "RUPPEES",
-])
+export const discountType = pgEnum("discountType", ["PERCENTAGE", "RUPPEES"])
 
 export type UserRole = (typeof userRole.enumValues)[number]
 
@@ -431,7 +432,7 @@ export const productVariant = pgTable(
     sku: varchar("sku", { length: 50 }).notNull().unique(),
     variantName: text("variantName").notNull(),
     variantImage: text("variantImage").array().notNull(),
-    potency: potency("potency").default("NONE"),
+    potency: potency("potency").default("NONE").notNull(),
     packSize: integer("packSize"),
     stockByLocation: jsonb("stockByLocation")
       .$type<StockByLocation[]>()
