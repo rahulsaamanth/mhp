@@ -16,7 +16,13 @@ import { useFormContext } from "react-hook-form"
 import Heading from "@tiptap/extension-heading"
 import { Placeholder } from "@tiptap/extension-placeholder"
 
-const Tiptap = ({ val }: { val: string }) => {
+const Tiptap = ({
+  val,
+  onChange,
+}: {
+  val: string
+  onChange?: (value: string) => void
+}) => {
   const { setValue } = useFormContext()
   const editor = useEditor({
     immediatelyRender: false,
@@ -53,23 +59,24 @@ const Tiptap = ({ val }: { val: string }) => {
         shouldValidate: true,
         shouldDirty: true,
       })
+      onChange?.(content)
     },
     editorProps: {
       attributes: {
         class:
-          "min-h-[160px] w-full rounded-lg border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-[1.5px] focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50",
+          "h-[160px] overflow-y-auto w-full rounded-lg border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-[1.5px] focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50",
       },
     },
     content: val,
   })
 
   useEffect(() => {
-    if (editor?.isEmpty) editor.commands.setContent(val)
-  }, [val])
+    if (editor && val !== editor.getHTML()) editor.commands.setContent(val)
+  }, [val, editor])
 
   return (
     <div className="flex flex-col gap-2">
-      {editor && (
+      {editor ? (
         <div className="border-input border rounded-md">
           <Toggle
             pressed={editor.isActive("heading")}
@@ -120,8 +127,8 @@ const Tiptap = ({ val }: { val: string }) => {
             <List className="w-4 h-4" />
           </Toggle>
         </div>
-      )}
-      <EditorContent placeholder="heyy" editor={editor} />
+      ) : null}
+      <EditorContent editor={editor} />
     </div>
   )
 }

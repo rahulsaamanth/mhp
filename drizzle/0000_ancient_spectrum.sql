@@ -11,6 +11,12 @@ EXCEPTION
 END $$;
 --> statement-breakpoint
 DO $$ BEGIN
+ CREATE TYPE "public"."discountType" AS ENUM('PERCENTAGE', 'RUPPEES');
+EXCEPTION
+ WHEN duplicate_object THEN null;
+END $$;
+--> statement-breakpoint
+DO $$ BEGIN
  CREATE TYPE "public"."MovementType" AS ENUM('IN', 'OUT', 'ADJUSTMENT');
 EXCEPTION
  WHEN duplicate_object THEN null;
@@ -35,7 +41,7 @@ EXCEPTION
 END $$;
 --> statement-breakpoint
 DO $$ BEGIN
- CREATE TYPE "public"."potencies" AS ENUM('NONE', '1X', '3X', '6X', '12X', '30X', '6C', '12C', '30C', '200C', '1M', '10M', '50M', 'CM', 'Q', 'LM1', 'LM2', 'LM3', 'LM4', 'LM5', 'LM6', 'LM7', 'LM8', 'LM9', 'LM10', 'LM11', 'LM12', 'LM13', 'LM14', 'LM15', 'LM16', 'LM17', 'LM18', 'LM19', 'LM20', 'LM21', 'LM22', 'LM23', 'LM24', 'LM25', 'LM26', 'LM27', 'LM28', 'LM29', 'LM30');
+ CREATE TYPE "public"."potency" AS ENUM('NONE', '1X', '3X', '6X', '12X', '30X', '6C', '12C', '30C', '200C', '1M', '10M', '50M', 'CM', 'Q', 'LM1', 'LM2', 'LM3', 'LM4', 'LM5', 'LM6', 'LM7', 'LM8', 'LM9', 'LM10', 'LM11', 'LM12', 'LM13', 'LM14', 'LM15', 'LM16', 'LM17', 'LM18', 'LM19', 'LM20', 'LM21', 'LM22', 'LM23', 'LM24', 'LM25', 'LM26', 'LM27', 'LM28', 'LM29', 'LM30');
 EXCEPTION
  WHEN duplicate_object THEN null;
 END $$;
@@ -191,6 +197,8 @@ CREATE TABLE IF NOT EXISTS "Product" (
 	"tags" text[],
 	"categoryId" varchar(32) NOT NULL,
 	"manufacturerId" varchar(32) NOT NULL,
+	"hsnCode" varchar(8) DEFAULT '30049014',
+	"tax" integer DEFAULT 0 NOT NULL,
 	"createdAt" timestamp DEFAULT now() NOT NULL,
 	"updatedAt" timestamp DEFAULT now()
 );
@@ -201,12 +209,14 @@ CREATE TABLE IF NOT EXISTS "ProductVariant" (
 	"sku" varchar(50) NOT NULL,
 	"variantName" text NOT NULL,
 	"variantImage" text[] NOT NULL,
-	"potency" varchar,
+	"potency" "potency" DEFAULT 'NONE',
 	"packSize" integer,
 	"stockByLocation" jsonb DEFAULT '[]'::jsonb NOT NULL,
-	"costPrice" double precision NOT NULL,
+	"costPrice" double precision,
+	"basePrice" double precision NOT NULL,
+	"discount" integer DEFAULT 0,
+	"discountType" "discountType" DEFAULT 'PERCENTAGE',
 	"sellingPrice" double precision NOT NULL,
-	"discountedPrice" double precision,
 	CONSTRAINT "ProductVariant_sku_unique" UNIQUE("sku")
 );
 --> statement-breakpoint
