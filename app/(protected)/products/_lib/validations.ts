@@ -29,22 +29,16 @@ export const searchParamsCache = createSearchParamsCache({
   joinOperator: parseAsStringEnum(["and", "or"]).withDefault("and"),
 })
 
-// export const createTaskSchema = z.object({
-//   title: z.string(),
-//   label: z.enum(tasks.label.enumValues),
-//   status: z.enum(tasks.status.enumValues),
-//   priority: z.enum(tasks.priority.enumValues),
-// })
+export const getProductsSchema = z.object({
+  page: z.number().min(1).default(1),
+  perPage: z.number().min(1).default(10),
+  sort: z.array(z.object({ id: z.string(), desc: z.boolean() })).default([]),
+  name: z.string().optional(),
+  filters: z.array(z.any()).optional(),
+  flags: z.array(z.string()).default([]),
+  from: z.string().nullable(),
+  to: z.string().nullable(),
+  joinOperator: z.enum(["and", "or"]).default("and"),
+})
 
-// export const updateTaskSchema = z.object({
-//   title: z.string().optional(),
-//   label: z.enum(tasks.label.enumValues).optional(),
-//   status: z.enum(tasks.status.enumValues).optional(),
-//   priority: z.enum(tasks.priority.enumValues).optional(),
-// })
-
-export type GetProductsSchema = Awaited<
-  ReturnType<typeof searchParamsCache.parse>
->
-// export type CreateTaskSchema = z.infer<typeof createTaskSchema>
-// export type UpdateTaskSchema = z.infer<typeof updateTaskSchema>
+export type GetProductsSchema = z.infer<typeof getProductsSchema>

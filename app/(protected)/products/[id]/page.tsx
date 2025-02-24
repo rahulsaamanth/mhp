@@ -1,29 +1,56 @@
-"use client"
-
 import { useQuery } from "@tanstack/react-query"
 import { Loader } from "lucide-react"
 import React from "react"
 import { getProduct } from "../_lib/actions"
+import { ProductsForm } from "../_components/product-form"
+import { notFound } from "next/navigation"
+import {
+  getCategories,
+  getManufacturers,
+  getTags,
+} from "../../sku-options/_lib/queries"
 
-function ProductPage({ params }: { params: Promise<{ id: string }> }) {
-  const { id } = React.use(params)
+async function EditProductPage({
+  params,
+}: {
+  params: Promise<{ id: string }>
+}) {
+  const { id } = await params
 
-  const { data, isPending, isError, error } = useQuery({
-    queryKey: ["product", id],
-    queryFn: () => getProduct(id),
-  })
+  const product = await getProduct(id)
 
-  if (isPending)
-    return (
-      <div className="flex items-center justify-center gap-4 w-full h-full">
-        <Loader className="size-8 animate-spin" />
-        Loading...
-      </div>
-    )
-  if (isError) return <div>Error: {(error as Error).message}</div>
-  if (!data) return <div>No product found</div>
+  if (!product || "error" in product) notFound()
 
-  return <div>{JSON.stringify(data)}</div>
+  const [categories, manufacturers, tags = []] = await Promise.all([
+    getCategories(),
+    getManufacturers(),
+    getTags(),
+  ])
+
+  const categoryMap = Object.fromEntries(
+    categories.map(({ id, name }) => [id, name])
+  )
+
+  const formattedCategories = categories
+    .map(({ id, name, parentId }) => ({
+      id,
+      name,
+      parentId,
+      formattedName: parentId ? `${categoryMap[parentId]}/${name}` : name,
+    }))
+    .sort((a, b) => a.formattedName.localeCompare(b.formattedName))
+
+  return (
+    <ProductsForm
+      mode="edit"
+      productData={product}
+      props={{
+        categories: formattedCategories,
+        manufacturers,
+        tags,
+      }}
+    />
+  )
 }
 
-export default ProductPage
+export default EditProductPage

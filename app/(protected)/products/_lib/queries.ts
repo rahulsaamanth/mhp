@@ -27,7 +27,7 @@ export async function getProducts(input: GetProductsSchema) {
               })
             : []
 
-        const whereConditions = advancedTable
+        const whereConditions: any = advancedTable
           ? advancedWhere
           : [
               input.name ? sql`p."name" ILIKE ${`%${input.name}%`}` : sql`1=1`,
@@ -37,9 +37,12 @@ export async function getProducts(input: GetProductsSchema) {
               toDate ? sql`p."createdAt" <= ${toDate.toISOString()}` : sql`1=1`,
             ].filter(Boolean)
 
-        const whereClause = sql`${sql.join(whereConditions as SQLChunk[], sql` AND `)}`
+        const whereClause =
+          whereConditions.length > 0
+            ? sql`${sql.join(whereConditions as SQLChunk[], sql` AND `)}`
+            : sql`1=1`
 
-        const orderBy = input.sort.map((item) => {
+        const orderByChunks = input.sort.map((item) => {
           const direction = item.desc ? "DESC" : "ASC"
           const column = item.id as keyof ProductForTable
 
@@ -60,6 +63,11 @@ export async function getProducts(input: GetProductsSchema) {
               return sql`"createdAt" DESC`
           }
         })
+
+        const orderByClause =
+          orderByChunks.length > 0
+            ? sql`ORDER BY ${sql.join(orderByChunks, sql`, `)}`
+            : sql`ORDER BY "createdAt" DESC`
 
         const { data, total } = await db.transaction(async (tx) => {
           const data = await tx.execute(sql`
@@ -103,7 +111,7 @@ export async function getProducts(input: GetProductsSchema) {
             )
             SELECT *
             FROM ProductStats
-            ${orderBy.length ? sql`ORDER BY ${sql.join(orderBy, sql`, `)}` : sql``}
+            ${orderByClause}            
             LIMIT ${input.perPage}
             OFFSET ${offset}
           `)
