@@ -119,6 +119,8 @@ export const productVariantSchema = z
     packSize: z.number().min(1, "Pack size must be at least 1"),
     costPrice: z.number().min(0, "Price must be positive"),
     basePrice: z.number().min(0, "Price must be positive"),
+    sku: z.string(),
+    variantName: z.string(),
     sellingPrice: z.number().min(0, "Price must be positive"),
     discount: z
       .number()

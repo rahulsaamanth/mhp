@@ -26,8 +26,7 @@ export default async function ProductsPage(props: ProductPageProps) {
   })
 
   return (
-    // <Shell className="gap-2">
-    <div className="w-full py-2 sm:px-6">
+    <div className="space-y-4">
       <FeatureFlagsProvider>
         <React.Suspense fallback={<Skeleton className="h-7 w-52" />}>
           <DateRangePicker
@@ -52,6 +51,5 @@ export default async function ProductsPage(props: ProductPageProps) {
         </React.Suspense>
       </FeatureFlagsProvider>
     </div>
-    // </Shell>
   )
 }

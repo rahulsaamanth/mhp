@@ -47,20 +47,26 @@ import {
 
 import {
   Manufacturer,
+  Product,
   Tag,
+  Variant,
   potency,
   productForm,
-  skuLocation,
   unitOfMeasure,
 } from "@/db/schema"
+import { generateSKU, generateVariantName } from "@/lib/utils"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useMutation } from "@tanstack/react-query"
-import crypto from "crypto"
+import React from "react"
 import { toast } from "sonner"
-import { createProduct, uploadProductImage } from "../_lib/actions"
+import {
+  createProduct,
+  FullProduct,
+  updateProduct,
+  uploadProductImage,
+} from "../_lib/actions"
 import { MultiSelectInput } from "./multi-select-input"
 import { VariantImageUpload } from "./variant-image-upload"
-import React from "react"
 
 type FormattedCategory = {
   id: string
@@ -69,39 +75,61 @@ type FormattedCategory = {
   formattedName: string
 }
 
-export const ProductsNewForm = ({
-  props,
-}: {
+type ProductsFormProps = {
   props: {
     categories: FormattedCategory[]
     manufacturers: Manufacturer[]
     tags: Tag[]
   }
-}) => {
+  mode?: "create" | "edit"
+  productData?: FullProduct
+}
+
+export const ProductsForm = ({
+  props,
+  mode = "create",
+  productData,
+}: ProductsFormProps) => {
   const router = useRouter()
 
   const { categories, manufacturers, tags } = props
 
   const defaultValues = {
-    name: "",
-    description: "",
-    categoryId: "",
-    manufacturerId: "",
-    tags: [],
-    status: "ACTIVE" as const,
-    form: "NONE" as const,
-    unit: "NONE" as const,
-    hsnCode: "30049014",
-    tax: 5,
-    variants: [
+    name: productData?.name ?? "",
+    description: productData?.description ?? "",
+    categoryId: productData?.categoryId ?? "",
+    manufacturerId: productData?.manufacturerId ?? "",
+    tags: productData?.tags ?? [],
+    status: productData?.status ?? ("ACTIVE" as const),
+    form: productData?.form ?? ("NONE" as const),
+    unit: productData?.unit ?? ("NONE" as const),
+    hsnCode: productData?.hsnCode ?? "30049014",
+    tax: productData?.tax ?? 5,
+    variants: productData?.variants.map((v) => ({
+      potency: v.potency,
+      packSize: v.packSize ?? 0,
+      costPrice: v.costPrice ?? 0,
+      basePrice: v.basePrice,
+      sellingPrice: v.sellingPrice,
+      sku: v.sku,
+      variantName: v.variantName,
+      discount: v.discount ?? 0,
+      discountType: v.discountType ?? "PERCENTAGE",
+      stock_MANG1: v.stockByLocation[0]?.stock ?? 0,
+      stock_MANG2: v.stockByLocation[1]?.stock ?? 0,
+      stock_KERALA1: v.stockByLocation[2]?.stock ?? 0,
+      variantImage: v.variantImage,
+    })) ?? [
       {
         potency: "NONE" as const,
-        packSize: 0,
+        packSize: 0 as number,
         costPrice: 0,
         basePrice: 0,
         sellingPrice: 0,
+        sku: "",
+        variantName: "",
         discount: 0,
-        discountType: "PERCENTAGE" as const,
+        discountType: "PERCENTAGE",
         stock_MANG1: 0,
         stock_MANG2: 0,
         stock_KERALA1: 0,
@@ -136,50 +164,89 @@ export const ProductsNewForm = ({
     form.setValue("variants", defaultValues.variants)
   }
 
-  const { mutate: server_addProduct, isPending } = useMutation({
-    mutationFn: createProduct,
+  const { mutate: server_handleProduct, isPending } = useMutation({
+    mutationFn:
+      mode === "edit"
+        ? (data: z.infer<typeof createProductSchema>) =>
+            updateProduct(productData?.id as string, data)
+        : createProduct,
     onSuccess: (data) => {
       if (data.success) {
-        toast.success("Product created successfully!")
+        toast.success(
+          mode === "edit"
+            ? "Product updated successfully"
+            : "Product created successfully"
+        )
 
-        resetForm()
+        if (mode === "edit") router.push("/products")
+        else resetForm()
       } else {
-        toast.error(data.error || "Failed to create product")
+        toast.error(
+          data.error || mode === "edit"
+            ? "Failed to update product"
+            : "Failed to create product"
+        )
       }
     },
     onError: (error) => {
       toast.error("Something went wrong!")
-      console.error("Error creating product:", error)
+      console.error(
+        mode === "edit" ? "Error updating prodcut:" : "Error creating product:",
+        error
+      )
     },
   })
 
   const onSubmit = async (data: z.infer<typeof createProductSchema>) => {
     try {
-      const generateFileName = (bytes = 32) =>
-        crypto.randomBytes(bytes).toString("hex")
-
       const _variants = []
+      const manufacturerName = manufacturers.find(
+        (man) => man.id === data.manufacturerId
+      )?.name
+
       for (const variant of data.variants) {
+        if (mode === "edit" && typeof variant.variantImage[0] === "string") {
+          _variants.push(variant)
+          continue
+        }
+
         if (!variant.variantImage?.length) {
           _variants.push(variant)
           continue
         }
 
+        const sku = generateSKU({
+          productManufacturer: manufacturerName ?? "",
+          productName: data.name,
+          packSize: variant.packSize.toString(),
+          potency: variant.potency.toString(),
+        })
+
+        const variantName = generateVariantName({
+          productName: data.name,
+          packSize: variant.packSize.toString(),
+          potency: variant.potency.toString(),
+        })
+
+        const generateFileName = (index: number) => `${sku}-${index + 1}`
+
         const uploadedUrls = await Promise.all(
-          variant.variantImage.map((file: File) =>
-            uploadProductImage({ file, fileName: generateFileName() })
+          variant.variantImage.map((file: File, idx: number) =>
+            uploadProductImage({ file, fileName: generateFileName(idx) })
           )
         )
 
         _variants.push({
           ...variant,
+          sku,
+          variantName,
           variantImage: uploadedUrls.filter(
             (url): url is string => url !== null
           ),
         })
       }
 
-      server_addProduct({
+      server_handleProduct({
         ...data,
         variants: _variants,
       })
@@ -206,23 +273,26 @@ export const ProductsNewForm = ({
                 <span className="sr-only">Back</span>
               </Button>
               <h1 className="flex-1 shrink-0 whitespace-nowrap text-xl font-semibold tracking-tight sm:grow-0">
-                Add Product
+                {mode === "edit" ? "Edit Product" : "Add New Product"}
               </h1>
               <Badge variant="default" className="ml-auto sm:ml-0">
-                new
+                {mode === "edit" ? productData?.id : "Add New Product"}
               </Badge>
               <div className="hidden items-center gap-2 md:ml-auto md:flex">
-                <Button
-                  variant="outline"
-                  size="sm"
-                  type="button"
-                  onClick={() => resetForm()}
-                >
-                  Reset
-                </Button>
+                {mode === "create" ? (
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    type="button"
+                    onClick={() => resetForm()}
+                  >
+                    Reset
+                  </Button>
+                ) : null}
+
                 <Button size="sm" disabled={isPending} type="submit">
                   {isPending && <Loader className="size-4 mr-2 animate-spin" />}
-                  Save Product
+                  {mode === "edit" ? "Update Product" : "Save Product"}
                 </Button>
               </div>
             </div>
@@ -628,6 +698,8 @@ export const ProductsNewForm = ({
                     costPrice: 0,
                     sellingPrice: 0,
                     basePrice: 0,
+                    sku: "",
+                    variantName: "",
                     discount: 0,
                     discountType: "PERCENTAGE",
                     stock_MANG1: 0,
@@ -643,14 +715,16 @@ export const ProductsNewForm = ({
             </CardFooter>
           </Card>
           <div className="flex items-center justify-center gap-2 md:hidden">
-            <Button
-              variant="outline"
-              size="sm"
-              type="button"
-              onClick={() => resetForm()}
-            >
-              Reset
-            </Button>
+            {mode === "create" ? (
+              <Button
+                variant="outline"
+                size="sm"
+                type="button"
+                onClick={() => resetForm()}
+              >
+                Reset
+              </Button>
+            ) : null}
             <Button size="sm" disabled={isPending} type="submit">
               {isPending && <Loader className="size-4 mr-2 animate-spin" />}
               Save Product
