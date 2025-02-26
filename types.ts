@@ -173,6 +173,8 @@ export interface ProductWithComputedFields extends Product {
   maxPrice: number
   image: string
   createdAt: string
+  categoryName: string | null
+  manufacturerName: string | null
 }
 
 export type ProductForTable = ProductWithComputedFields

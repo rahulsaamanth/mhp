@@ -1357,6 +1357,25 @@ async function seed() {
     },
   ])
 
+  const tags = await db
+    .insert(schema.tag)
+    .values(
+      [
+        "HOMEOPATHY",
+        "NUTRITION-SUPPLEMENTS",
+        "BIOCHEMIC",
+        "BIOCOMBINATION",
+        "DILUTION",
+        "MOTHERTINCTURE",
+        "SBL",
+        "DR.RECKEWEG",
+        "6X",
+        "30X",
+        "200C",
+        "1M",
+      ].map((name) => ({ name }))
+    )
+
   console.log("✅ Seeding completed!")
   process.exit(0)
 }

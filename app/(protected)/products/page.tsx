@@ -1,7 +1,11 @@
 import { type SearchParams } from "@/types"
 import { searchParamsCache } from "./_lib/validations"
 import { getValidFilters } from "@/lib/data-table"
-import { getProducts } from "./_lib/queries"
+import {
+  getCategoryCounts,
+  getManufacturerCounts,
+  getProducts,
+} from "./_lib/queries"
 
 import { FeatureFlagsProvider } from "./_components/feature-flags-provider"
 import * as React from "react"
@@ -9,6 +13,7 @@ import { Skeleton } from "@/components/ui/skeleton"
 import { DateRangePicker } from "@/components/date-range-picker"
 import { DataTableSkeleton } from "@/components/data-table/data-table-skeleton"
 import { ProductsTable } from "./_components/products-table"
+import { getCategories, getManufacturers } from "../sku-options/_lib/queries"
 
 interface ProductPageProps {
   searchParams: Promise<SearchParams>
@@ -24,6 +29,20 @@ export default async function ProductsPage(props: ProductPageProps) {
     ...search,
     filters: validFilters,
   })
+
+  const [categories, manufacturers] = await Promise.all([
+    getCategories(),
+    getManufacturers(),
+  ])
+
+  const categoryCountsPromise = getCategoryCounts()
+  const manufacturerCountsPromise = getManufacturerCounts()
+
+  const promises = Promise.all([
+    productsPromise,
+    categoryCountsPromise,
+    manufacturerCountsPromise,
+  ])
 
   return (
     <div className="space-y-4">
@@ -47,7 +66,11 @@ export default async function ProductsPage(props: ProductPageProps) {
             />
           }
         >
-          <ProductsTable promise={productsPromise} />
+          <ProductsTable
+            promises={promises}
+            categories={categories}
+            manufacturers={manufacturers}
+          />
         </React.Suspense>
       </FeatureFlagsProvider>
     </div>

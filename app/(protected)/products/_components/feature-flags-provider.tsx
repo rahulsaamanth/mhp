@@ -75,7 +75,7 @@ export function FeatureFlagsProvider({ children }: FeatureFlagsProviderProps) {
                 <ToggleGroupItem
                   value={flag.value}
                   className={cn(
-                    "gap-2 whitespace-nowrap rounded-none px-3 text-xs data-[state=on]:bg-accent/70 data-[state=on]:hover:bg-accent/90",
+                    "gap-2 whitespace-nowrap rounded-none px-3 text-xs data-[state=on]:bg-accent/70 data-[state=on]:hover:bg-accent/90 bg-white",
                     {
                       "rounded-l-sm": index === 0,
                       "rounded-r-sm":

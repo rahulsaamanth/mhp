@@ -273,10 +273,10 @@ export const ProductsForm = ({
                 <span className="sr-only">Back</span>
               </Button>
               <h1 className="flex-1 shrink-0 whitespace-nowrap text-xl font-semibold tracking-tight sm:grow-0">
-                {mode === "edit" ? "Edit Product" : "Add New Product"}
+                {mode === "edit" ? "Edit Product" : "Add Product"}
               </h1>
               <Badge variant="default" className="ml-auto sm:ml-0">
-                {mode === "edit" ? productData?.id : "Add New Product"}
+                {mode === "edit" ? productData?.id : "New"}
               </Badge>
               <div className="hidden items-center gap-2 md:ml-auto md:flex">
                 {mode === "create" ? (
@@ -494,7 +494,7 @@ export const ProductsForm = ({
                             <FormControl>
                               <Select
                                 onValueChange={field.onChange}
-                                defaultValue={"ACTIVE"}
+                                value={field.value}
                               >
                                 <SelectTrigger>
                                   <SelectValue placeholder="Select status" />
