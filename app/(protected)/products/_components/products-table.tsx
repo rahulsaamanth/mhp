@@ -1,7 +1,11 @@
 "use client"
 
 import React from "react"
-import { getProducts } from "../_lib/queries"
+import {
+  getCategoryCounts,
+  getManufacturerCounts,
+  getProducts,
+} from "../_lib/queries"
 
 import {
   DataTableAdvancedFilterField,
@@ -19,15 +23,29 @@ import { DataTableAdvancedToolbar } from "@/components/data-table/data-table-adv
 import { ProductsTableToolbarActions } from "./products-table-toobar-actions"
 import { DataTableToolbar } from "@/components/data-table/data-table-toolbar"
 import { DeleteProductsDialog } from "./delete-products-dialog"
+import { Category, Manufacturer } from "@/db/schema"
 
-interface ProductTableProps {
-  promise: Promise<Awaited<ReturnType<typeof getProducts>>>
+type ProductTableProps = {
+  promises: Promise<
+    [
+      Awaited<ReturnType<typeof getProducts>>,
+      Awaited<ReturnType<typeof getCategoryCounts>>,
+      Awaited<ReturnType<typeof getManufacturerCounts>>,
+    ]
+  >
+  categories: Category[]
+  manufacturers: Manufacturer[]
 }
 
-export function ProductsTable({ promise }: ProductTableProps) {
+export function ProductsTable({
+  promises,
+  categories,
+  manufacturers,
+}: ProductTableProps) {
   const { featureFlags } = useFeatureFlags()
 
-  const { data, pageCount } = React.use(promise)
+  const [{ data, pageCount }, categoryCounts, manufacturerCounts] =
+    React.use(promises)
 
   const [rowAction, setRowAction] =
     React.useState<DataTableRowAction<ProductForTable> | null>(null)
@@ -42,6 +60,24 @@ export function ProductsTable({ promise }: ProductTableProps) {
       id: "name",
       label: "Product Name",
       placeholder: "Filter products...",
+    },
+    {
+      id: "categoryName",
+      label: "Category",
+      options: categories.map((category) => ({
+        label: category.name,
+        value: category.name,
+        count: categoryCounts[category.name],
+      })),
+    },
+    {
+      id: "manufacturerName",
+      label: "Manufacturer",
+      options: manufacturers.map((manufacturer) => ({
+        label: manufacturer.name,
+        value: manufacturer.name,
+        count: manufacturerCounts[manufacturer.name],
+      })),
     },
   ]
 
@@ -60,7 +96,6 @@ export function ProductsTable({ promise }: ProductTableProps) {
     ]
 
   const enableAdvancedTable = featureFlags.includes("advancedTable")
-  // const enableFloatingBar = featureFlags.includes("floatingBar")
 
   const { table } = useDataTable({
     data,

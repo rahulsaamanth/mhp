@@ -90,6 +90,28 @@ export function getColumns({
       enableHiding: false,
     },
     {
+      accessorKey: "categoryName",
+      header: ({ column }) => (
+        <DataTableColumnHeader column={column} title="Category" />
+      ),
+      cell: ({ row }) => (
+        <span className="pl-4">{row.getValue("categoryName")}</span>
+      ),
+      enableSorting: true,
+      enableHiding: true,
+    },
+    {
+      accessorKey: "manufacturerName",
+      header: ({ column }) => (
+        <DataTableColumnHeader column={column} title="Manufacturer" />
+      ),
+      cell: ({ row }) => (
+        <span className="pl-4">{row.getValue("manufacturerName")}</span>
+      ),
+      enableSorting: true,
+      enableHiding: true,
+    },
+    {
       accessorKey: "status",
       header: ({ column }) => (
         <DataTableColumnHeader column={column} title="Status" />

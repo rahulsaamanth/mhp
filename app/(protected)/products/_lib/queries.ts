@@ -1,7 +1,13 @@
 import "server-only"
 
-import { product } from "@/db/schema"
-import { SQLChunk, sql } from "drizzle-orm"
+import {
+  Category,
+  Manufacturer,
+  category,
+  manufacturer,
+  product,
+} from "@/db/schema"
+import { SQLChunk, count, eq, gt, sql } from "drizzle-orm"
 
 import { db } from "@/db/db"
 import { filterColumns } from "@/lib/filter-columns"
@@ -18,19 +24,32 @@ export async function getProducts(input: GetProductsSchema) {
         const toDate = input.to ? new Date(input.to) : undefined
         const advancedTable = input.flags.includes("advancedTable")
 
-        const advancedWhere =
+        const advancedWhere: SQLChunk[] =
           input.filters && input.filters.length > 0
-            ? filterColumns({
+            ? (filterColumns({
                 table: product,
                 filters: input.filters,
                 joinOperator: input.joinOperator,
-              })
+              }) as unknown as SQLChunk[]) || []
             : []
 
-        const whereConditions: any = advancedTable
+        const whereConditions: SQLChunk[] = advancedTable
           ? advancedWhere
           : [
               input.name ? sql`p."name" ILIKE ${`%${input.name}%`}` : sql`1=1`,
+              input.categoryName && input.categoryName.length > 0
+                ? Array.isArray(input.categoryName)
+                  ? sql`c."name" IN ${input.categoryName}`
+                  : sql`c."name" ILIKE ${`%${input.categoryName}%`}`
+                : sql`1=1`,
+              input.manufacturerName && input.manufacturerName.length > 0
+                ? Array.isArray(input.manufacturerName)
+                  ? sql`m."name" IN ${input.manufacturerName}`
+                  : sql`m."name" ILIKE ${`%${input.manufacturerName}%`}`
+                : sql`1=1`,
+              input.status
+                ? sql`p."status" = ${input.status.toString()}`
+                : sql`1=1`,
               fromDate
                 ? sql`p."createdAt" >= ${fromDate.toISOString()}`
                 : sql`1=1`,
@@ -59,6 +78,10 @@ export async function getProducts(input: GetProductsSchema) {
               return sql`"name" ${sql.raw(direction)}`
             case "createdAt":
               return sql`"createdAt" ${sql.raw(direction)}`
+            case "categoryName":
+              return sql`COALESCE("categoryName", '') ${sql.raw(direction)} NULLS LAST`
+            case "manufacturerName":
+              return sql`COALESCE("manufacturerName", '') ${sql.raw(direction)} NULLS LAST`
             default:
               return sql`"createdAt" DESC`
           }
@@ -71,12 +94,15 @@ export async function getProducts(input: GetProductsSchema) {
 
         const { data, total } = await db.transaction(async (tx) => {
           const data = await tx.execute(sql`
-            WITH ProductStats AS (
+            WITH 
+            ProductStats AS (
               SELECT 
                 p."id",
                 p."name",
                 p."status",
                 p."createdAt",
+                c."name" as "categoryName",
+                m."name" as "manufacturerName",
                 (
                   SELECT (pv."variantImage"[1])
                   FROM "ProductVariant" pv
@@ -107,6 +133,8 @@ export async function getProducts(input: GetProductsSchema) {
                 WHERE pv."productId" = p.id
                 ) as "stock"
               FROM "Product" p
+              LEFT JOIN "Category" c ON p."categoryId" = c."id"
+              LEFT JOIN "Manufacturer" m ON p."manufacturerId" = m."id"
               WHERE ${whereClause}
             )
             SELECT *
@@ -121,6 +149,8 @@ export async function getProducts(input: GetProductsSchema) {
               sql`
               SELECT COUNT(*) as count
               FROM "Product" p
+              LEFT JOIN "Category" c ON p."categoryId" = c."id"
+              LEFT JOIN "Manufacturer" m ON p."manufacturerId" = m."id"
               WHERE ${whereClause}
             `
             )
@@ -147,6 +177,72 @@ export async function getProducts(input: GetProductsSchema) {
     {
       revalidate: 3600,
       tags: ["products"],
+    }
+  )()
+}
+
+export async function getCategoryCounts() {
+  return unstable_cache(
+    async () => {
+      try {
+        return await db
+          .select({
+            category: category.name,
+            count: count(product.id),
+          })
+          .from(category)
+          .leftJoin(product, eq(category.id, product.categoryId))
+          .groupBy(category.name)
+          .having(gt(count(product.id), 0))
+          .then((res) =>
+            res.reduce(
+              (acc, { category, count }) => {
+                acc[category] = count
+                return acc
+              },
+              {} as Record<Category["name"], number>
+            )
+          )
+      } catch (_err) {
+        return {} as Record<Category["name"], number>
+      }
+    },
+    ["category-product-counts"],
+    {
+      revalidate: 3600,
+    }
+  )()
+}
+
+export async function getManufacturerCounts() {
+  return unstable_cache(
+    async () => {
+      try {
+        return await db
+          .select({
+            manufacturer: manufacturer.name,
+            count: count(manufacturer.id),
+          })
+          .from(manufacturer)
+          .leftJoin(product, eq(manufacturer.id, product.manufacturerId))
+          .groupBy(manufacturer.name)
+          .having(gt(count(manufacturer.id), 0))
+          .then((res) =>
+            res.reduce(
+              (acc, { manufacturer, count }) => {
+                acc[manufacturer] = count
+                return acc
+              },
+              {} as Record<Manufacturer["name"], number>
+            )
+          )
+      } catch (_err) {
+        return {} as Record<Manufacturer["name"], number>
+      }
+    },
+    ["manufacturer-product-counts"],
+    {
+      revalidate: 3600,
     }
   )()
 }
