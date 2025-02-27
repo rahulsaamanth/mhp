@@ -92,10 +92,14 @@ export function getColumns({
     {
       accessorKey: "categoryName",
       header: ({ column }) => (
-        <DataTableColumnHeader column={column} title="Category" />
+        <DataTableColumnHeader
+          column={column}
+          title="Category"
+          className="ml-2"
+        />
       ),
       cell: ({ row }) => (
-        <span className="pl-4">{row.getValue("categoryName")}</span>
+        <span className="text-nowrap px-2">{row.getValue("categoryName")}</span>
       ),
       enableSorting: true,
       enableHiding: true,
@@ -106,27 +110,14 @@ export function getColumns({
         <DataTableColumnHeader column={column} title="Manufacturer" />
       ),
       cell: ({ row }) => (
-        <span className="pl-4">{row.getValue("manufacturerName")}</span>
+        <span className="px-4 text-center">
+          {row.getValue("manufacturerName")}
+        </span>
       ),
       enableSorting: true,
       enableHiding: true,
     },
-    {
-      accessorKey: "status",
-      header: ({ column }) => (
-        <DataTableColumnHeader column={column} title="Status" />
-      ),
-      cell: ({ row }) => {
-        const status = row.getValue("status")
-        return (
-          <Badge variant={status === "ACTIVE" ? "secondary" : "outline"}>
-            {status as string}
-          </Badge>
-        )
-      },
-      enableSorting: false,
-      enableHiding: true,
-    },
+
     {
       accessorKey: "minPrice",
       header: ({ column }) => (
@@ -142,6 +133,34 @@ export function getColumns({
       },
       enableSorting: false,
       enableHiding: false,
+    },
+    {
+      accessorKey: "status",
+      header: ({ column }) => (
+        <DataTableColumnHeader column={column} title="Status" />
+      ),
+      cell: ({ row }) => {
+        const status = row.getValue("status")
+        const variants = {
+          ACTIVE: "default",
+          ARCHIVED: "secondary",
+          DRAFT: "outline",
+        }
+        return (
+          <Badge
+            variant={
+              variants[status as keyof typeof variants] as
+                | "default"
+                | "secondary"
+                | "outline"
+            }
+          >
+            {status as string}
+          </Badge>
+        )
+      },
+      enableSorting: false,
+      enableHiding: true,
     },
     {
       accessorKey: "stock",
@@ -174,6 +193,7 @@ export function getColumns({
         <span className="pr-4">{formatDate(cell.getValue() as Date)}</span>
       ),
       enableSorting: true,
+      enableHiding: true,
     },
     {
       id: "actions",

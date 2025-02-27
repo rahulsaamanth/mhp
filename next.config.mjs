@@ -10,7 +10,17 @@ const nextConfig = {
     },
   },
   images: {
-    domains: ["mhp-local.s3.ap-south-1.amazonaws.com", "healthyghar.com"],
+    remotePatterns: [
+      {
+        protocol: "https",
+        hostname: "mhp-local.s3.ap-south-1.amazonaws.com",
+      },
+      {
+        protocol: "https",
+        hostname: "healthyghar.com",
+      },
+    ],
+    // domains: ["mhp-local.s3.ap-south-1.amazonaws.com", "healthyghar.com"],
   },
 }
 

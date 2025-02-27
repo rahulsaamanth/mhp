@@ -1,4 +1,4 @@
-import { type Product } from "@/db/schema"
+import { product, type Product } from "@/db/schema"
 import {
   createSearchParamsCache,
   parseAsArrayOf,
@@ -22,7 +22,7 @@ export const searchParamsCache = createSearchParamsCache({
   name: parseAsString.withDefault(""),
   categoryName: parseAsArrayOf(z.string()).withDefault([]),
   manufacturerName: parseAsArrayOf(z.string()).withDefault([]),
-  // status: parseAsArrayOf(z.enum(product.status.enumValues)).withDefault([]),
+  status: parseAsArrayOf(z.enum(product.status.enumValues)).withDefault([]),
   // priority: parseAsArrayOf(z.enum(tasks.priority.enumValues)).withDefault([]),
   from: parseAsString.withDefault(""),
   to: parseAsString.withDefault(""),
@@ -38,7 +38,7 @@ export const getProductsSchema = z.object({
   name: z.string().optional(),
   categoryName: z.union([z.string(), z.array(z.string())]).default([]),
   manufacturerName: z.union([z.string(), z.array(z.string())]).default([]),
-  status: z.string().optional(),
+  status: z.union([z.string(), z.array(z.string())]).default([]),
   from: z.string().nullable(),
   to: z.string().nullable(),
   filters: z.array(z.any()).optional(),

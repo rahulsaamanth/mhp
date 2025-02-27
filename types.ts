@@ -1,7 +1,12 @@
 import { type Row } from "@tanstack/react-table"
 import { type SQL } from "drizzle-orm"
 import { DataTableConfig } from "./config/data-table"
-import { deliveryStatus, orderType, paymentStatus } from "./db/schema"
+import {
+  deliveryStatus,
+  orderType,
+  paymentStatus,
+  Product as ProductFromSchema,
+} from "./db/schema"
 
 export type SideNavItem = {
   title: string
@@ -166,7 +171,8 @@ export interface QueryBuilderOpts {
   nullish?: boolean
 }
 
-export interface ProductWithComputedFields extends Product {
+export interface ProductWithComputedFields
+  extends Omit<ProductFromSchema, "createdAt"> {
   sales: number
   stock: number
   minPrice: number

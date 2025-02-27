@@ -33,6 +33,9 @@ export async function getOrders(input: GetOrdersSchema) {
               input.orderId
                 ? sql`o."id" ILIKE ${`%${input.orderId}`}`
                 : sql`1=1`,
+              input.userName
+                ? sql`u."name" ILIKE ${`%${input.userName}%`}`
+                : sql`1=1`,
               fromDate
                 ? sql`o."orderDate" >= ${fromDate.toISOString()}`
                 : sql`1=1`,
@@ -85,6 +88,7 @@ export async function getOrders(input: GetOrdersSchema) {
               sql`
                                 SELECT COUNT(*) as count
                                 FROM "Order" o
+                                LEFT JOIN "User" u ON u."id" = o."userId"
                                 WHERE ${whereClause}
                                 `
             )

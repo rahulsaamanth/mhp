@@ -20,6 +20,8 @@ async function seed() {
 
   const hashedPassword = await hash("password123", 10)
 
+  const adminPassword = await hash("Awavauatsh", 10)
+
   const users = await db
     .insert(schema.user)
     .values([
@@ -61,7 +63,7 @@ async function seed() {
         email: "emily@example.com",
         emailVerified: new Date(),
         password: hashedPassword,
-        role: "ADMIN",
+        role: "USER",
         lastActive: new Date(),
         phone: "+5544332211",
         isTwoFactorEnabled: false,
@@ -77,6 +79,17 @@ async function seed() {
         phone: "+6677889900",
         isTwoFactorEnabled: true,
         image: "",
+      },
+      {
+        name: "Rahul Saamanth",
+        email: "rahulsaamanth@yahoo.com",
+        emailVerified: new Date(),
+        password: adminPassword,
+        role: "ADMIN",
+        lastActive: new Date(),
+        isTwoFactorEnabled: false,
+        image:
+          "https://media.licdn.com/dms/image/v2/D5603AQG8JpG77J0Waw/profile-displayphoto-shrink_400_400/B56ZUPc4oDGQAg-/0/1739720985620?e=1746057600&v=beta&t=x61CfV22Yv08gMjpAXsU3oHTqAGZSGJhWM_lfRjLwe0",
       },
     ])
     .returning()
@@ -586,7 +599,6 @@ async function seed() {
         packSize: 25,
         potency: "NONE",
         costPrice: 60,
-
         basePrice: 80, // Add base price before tax and discount
         sellingPrice: 90,
         discount: 10,
