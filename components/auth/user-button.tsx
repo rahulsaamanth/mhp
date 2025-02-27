@@ -9,6 +9,7 @@ import {
 } from "@/components/ui/dropdown-menu"
 import { useCurrentUser } from "@/hooks/use-current-user"
 import { Icon } from "@iconify/react"
+import { User } from "lucide-react"
 import { LogoutButton } from "./logout-button"
 
 export const UserButton = () => {
@@ -23,13 +24,8 @@ export const UserButton = () => {
             alt="Profile"
             className="object-cover"
           />
-          <AvatarFallback className="bg-sky-500">
-            <Icon
-              icon="fa:user"
-              width="24"
-              height="24"
-              style={{ color: "white" }}
-            />
+          <AvatarFallback>
+            <User />
           </AvatarFallback>
         </Avatar>
       </DropdownMenuTrigger>

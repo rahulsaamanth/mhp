@@ -47,9 +47,12 @@ export async function getProducts(input: GetProductsSchema) {
                   ? sql`m."name" IN ${input.manufacturerName}`
                   : sql`m."name" ILIKE ${`%${input.manufacturerName}%`}`
                 : sql`1=1`,
-              input.status
-                ? sql`p."status" = ${input.status.toString()}`
+              input.status && input.status.length > 0
+                ? Array.isArray(input.status)
+                  ? sql`p."status" IN ${input.status}`
+                  : sql`p."status" ILIKE ${`%${input.status}%`}`
                 : sql`1=1`,
+
               fromDate
                 ? sql`p."createdAt" >= ${fromDate.toISOString()}`
                 : sql`1=1`,
@@ -241,6 +244,37 @@ export async function getManufacturerCounts() {
       }
     },
     ["manufacturer-product-counts"],
+    {
+      revalidate: 3600,
+    }
+  )()
+}
+
+export async function getStatusCounts() {
+  return unstable_cache(
+    async () => {
+      try {
+        return await db
+          .select({
+            status: product.status,
+            count: count(product.id),
+          })
+          .from(product)
+          .groupBy(product.status)
+          .then((res) =>
+            res.reduce(
+              (acc, { status, count }) => {
+                acc[status] = count
+                return acc
+              },
+              {} as Record<ProductForTable["status"], number>
+            )
+          )
+      } catch (_err) {
+        return {} as Record<ProductForTable["status"], number>
+      }
+    },
+    ["status-product-counts"],
     {
       revalidate: 3600,
     }

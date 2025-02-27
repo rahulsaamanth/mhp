@@ -5,6 +5,7 @@ import {
   getCategoryCounts,
   getManufacturerCounts,
   getProducts,
+  getStatusCounts,
 } from "../_lib/queries"
 
 import {
@@ -15,15 +16,15 @@ import {
   ProductWithComputedFields,
 } from "@/types"
 
-import { getColumns } from "./products-table-columns"
-import { useDataTable } from "@/hooks/use-data-table"
-import { useFeatureFlags } from "./feature-flags-provider"
 import { DataTable } from "@/components/data-table/data-table"
 import { DataTableAdvancedToolbar } from "@/components/data-table/data-table-advanced-toolbar"
-import { ProductsTableToolbarActions } from "./products-table-toobar-actions"
 import { DataTableToolbar } from "@/components/data-table/data-table-toolbar"
+import { Category, Manufacturer, productStatus } from "@/db/schema"
+import { useDataTable } from "@/hooks/use-data-table"
 import { DeleteProductsDialog } from "./delete-products-dialog"
-import { Category, Manufacturer } from "@/db/schema"
+import { useFeatureFlags } from "./feature-flags-provider"
+import { getColumns } from "./products-table-columns"
+import { ProductsTableToolbarActions } from "./products-table-toobar-actions"
 
 type ProductTableProps = {
   promises: Promise<
@@ -31,6 +32,7 @@ type ProductTableProps = {
       Awaited<ReturnType<typeof getProducts>>,
       Awaited<ReturnType<typeof getCategoryCounts>>,
       Awaited<ReturnType<typeof getManufacturerCounts>>,
+      Awaited<ReturnType<typeof getStatusCounts>>,
     ]
   >
   categories: Category[]
@@ -44,8 +46,12 @@ export function ProductsTable({
 }: ProductTableProps) {
   const { featureFlags } = useFeatureFlags()
 
-  const [{ data, pageCount }, categoryCounts, manufacturerCounts] =
-    React.use(promises)
+  const [
+    { data, pageCount },
+    categoryCounts,
+    manufacturerCounts,
+    statusCounts,
+  ] = React.use(promises)
 
   const [rowAction, setRowAction] =
     React.useState<DataTableRowAction<ProductForTable> | null>(null)
@@ -79,6 +85,15 @@ export function ProductsTable({
         count: manufacturerCounts[manufacturer.name],
       })),
     },
+    {
+      id: "status",
+      label: "Status",
+      options: productStatus.enumValues.map((status) => ({
+        label: status,
+        value: status,
+        count: statusCounts[status],
+      })),
+    },
   ]
 
   const advancedFilterFields: DataTableAdvancedFilterField<ProductWithComputedFields>[] =
@@ -106,6 +121,9 @@ export function ProductsTable({
     initialState: {
       sorting: [{ id: "createdAt", desc: true }],
       columnPinning: { right: ["actions"] },
+      columnVisibility: {
+        createdAt: false,
+      },
     },
     getRowId: (originalRow, index) => `${originalRow.id}-${index}`,
     shallow: false,

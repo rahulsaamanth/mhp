@@ -5,6 +5,7 @@ import {
   getCategoryCounts,
   getManufacturerCounts,
   getProducts,
+  getStatusCounts,
 } from "./_lib/queries"
 
 import { FeatureFlagsProvider } from "./_components/feature-flags-provider"
@@ -37,11 +38,13 @@ export default async function ProductsPage(props: ProductPageProps) {
 
   const categoryCountsPromise = getCategoryCounts()
   const manufacturerCountsPromise = getManufacturerCounts()
+  const statusCountsPromise = getStatusCounts()
 
   const promises = Promise.all([
     productsPromise,
     categoryCountsPromise,
     manufacturerCountsPromise,
+    statusCountsPromise,
   ])
 
   return (
