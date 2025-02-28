@@ -1,3 +1,4 @@
+import { table } from "console"
 import {
   pgTable,
   varchar,
@@ -170,7 +171,7 @@ export const potency = pgEnum("potency", [
   "LM30",
 ])
 
-export const discountType = pgEnum("discountType", ["PERCENTAGE", "RUPPEES"])
+export const discountType = pgEnum("discountType", ["PERCENTAGE", "FIXED"])
 
 export type UserRole = (typeof userRole.enumValues)[number]
 
@@ -752,3 +753,65 @@ export const tag = pgTable("Tags", {
   id: customId("id", "TAG"),
   name: text("name").notNull(),
 })
+
+// model DiscountCode {
+//   id             String           @id @default(uuid())
+//   code           String           @unique
+//   discountAmount Int
+//   discountType   DiscountCodeType
+//   uses           Int              @default(0)
+//   isActive       Boolean          @default(true)
+//   allProducts    Boolean          @default(false)
+//   createdAt      DateTime         @default(now())
+//   limit          Int?
+//   expiresAt      DateTime?
+
+//   products Product[]
+//   orders   Order[]
+// }
+
+// enum DiscountCodeType {
+//   PERCENTAGE
+//   FIXED
+// }
+
+export const couponCode = pgTable(
+  "CouponCode",
+  {
+    id: customId("id", "COUPON"),
+    code: varchar("code", { length: 10 }).notNull().unique(),
+    discountAmount: integer("discountAmount").notNull(),
+    discountType: discountType("discountType").default("PERCENTAGE").notNull(),
+    uses: integer("uses").default(0).notNull(),
+    isActive: boolean("isActive").default(true).notNull(),
+    allProducts: boolean("allProducts").default(false).notNull(),
+    createdAt: timestamp("createdAt", { mode: "date" }).defaultNow().notNull(),
+    limit: integer("limit"),
+    expiresAt: timestamp("expiresAt", { mode: "date" }),
+
+    productId: varchar("productId", { length: 32 }).array(),
+    orderId: varchar("orderId", { length: 32 }).array(),
+  },
+  (table) => ({
+    couponCodeProductFkey: foreignKey({
+      columns: [table.productId],
+      foreignColumns: [product.id],
+      name: "Coupon_productId_fkey",
+    })
+      .onDelete("set null")
+      .onUpdate("cascade"),
+
+    couponCodeOrderFkey: foreignKey({
+      columns: [table.orderId],
+      foreignColumns: [order.id],
+      name: "Coupon_orderId_fkey",
+    })
+      .onDelete("set null")
+      .onUpdate("cascade"),
+
+    couponCodeProductIdx: index("idx_coupon_code_product").on(table.productId),
+    couponCodeOrderIdx: index("idx_coupon_code_order").on(table.orderId),
+    couponCodeDateIdx: index("idx_coupon_code_date").on(table.createdAt),
+    couponCodeCodeIdx: index("idx_coupon_code_code").on(table.code),
+  })
+)
