@@ -11,6 +11,8 @@ import {
   review,
   productVariant,
   address,
+  paymentMethod,
+  couponCode,
 } from "./schema"
 
 export const accountRelations = relations(account, ({ one }) => ({
@@ -85,6 +87,18 @@ export const orderRelations = relations(order, ({ one, many }) => ({
     references: [user.id],
   }),
   orderDetails: many(orderDetails),
+  shippingAddres: one(address, {
+    fields: [order.shippingAddressId],
+    references: [address.id],
+  }),
+  billingAddress: one(address, {
+    fields: [order.billingAddressId],
+    references: [address.id],
+  }),
+  paymentMethod: one(paymentMethod, {
+    fields: [order.paymentMethodId],
+    references: [paymentMethod.id],
+  }),
 }))
 
 export const orderDetailsRelations = relations(orderDetails, ({ one }) => ({
@@ -109,9 +123,26 @@ export const reviewRelations = relations(review, ({ one }) => ({
   }),
 }))
 
-export const adressRelations = relations(address, ({ one }) => ({
+export const addressRelations = relations(address, ({ one, many }) => ({
   user: one(user, {
     fields: [address.userId],
     references: [user.id],
+  }),
+  shippingOrders: many(order, {
+    relationName: "order_shipping_address",
+  }),
+  billingOrders: many(order, {
+    relationName: "order_billing_address",
+  }),
+}))
+
+export const couponCodeRelations = relations(couponCode, ({ one }) => ({
+  product: one(product, {
+    fields: [couponCode.productId],
+    references: [product.id],
+  }),
+  order: one(order, {
+    fields: [couponCode.orderId],
+    references: [order.id],
   }),
 }))
