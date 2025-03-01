@@ -122,22 +122,36 @@ export const productVariantSchema = z
     sku: z.string(),
     variantName: z.string(),
     sellingPrice: z.number().min(0, "Price must be positive"),
-    discount: z
-      .number()
-      .min(0, "discount musn't be negative")
-      .max(100, "discount musn't be greater than 100"),
-    discountType: z.enum(["PERCENTAGE", "RUPPEES"]),
+    discount: z.number().min(0, "discount musn't be negative"),
+
+    discountType: z.enum(["PERCENTAGE", "FIXED"]).default("PERCENTAGE"),
+    priceCalcMode: z.enum(["FORWARD", "BACKWARD"]).default("BACKWARD"),
     stock_MANG1: z.number().min(0, "Stock must not be negative").default(0),
     stock_MANG2: z.number().min(0, "Stock must not be negative").default(0),
     stock_KERALA1: z.number().min(0, "Stock must not be negative").default(0),
     variantImage: z.array(z.any()),
   })
   .superRefine((data, ctx) => {
-    if (data.sellingPrice <= data.costPrice) {
+    if (data.basePrice <= data.sellingPrice) {
       ctx.addIssue({
         code: z.ZodIssueCode.custom,
-        path: ["sellingPrice"],
-        message: "Selling price must be greater than cost price",
+        path: ["basePrice"],
+        message: "Base price must be greater than selling price",
+      })
+    }
+    if (data.discountType === "PERCENTAGE" && data.discount > 100) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        path: ["discount"],
+        message: "Percentage discount cannot be more than 100%",
+      })
+    }
+
+    if (data.discountType === "FIXED" && data.discount > data.basePrice) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        path: ["discount"],
+        message: "Fixed discount cannot be more than base price",
       })
     }
   })

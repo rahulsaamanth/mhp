@@ -11,6 +11,7 @@ async function seed() {
   await db.delete(schema.product)
   await db.delete(schema.category)
   await db.delete(schema.manufacturer)
+  await db.delete(schema.tag)
   await db.delete(schema.twoFactorConfirmation)
   await db.delete(schema.account)
   await db.delete(schema.user)

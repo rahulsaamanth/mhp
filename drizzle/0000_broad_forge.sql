@@ -11,7 +11,7 @@ EXCEPTION
 END $$;
 --> statement-breakpoint
 DO $$ BEGIN
- CREATE TYPE "public"."discountType" AS ENUM('PERCENTAGE', 'RUPPEES');
+ CREATE TYPE "public"."discountType" AS ENUM('PERCENTAGE', 'FIXED');
 EXCEPTION
  WHEN duplicate_object THEN null;
 END $$;
@@ -41,7 +41,7 @@ EXCEPTION
 END $$;
 --> statement-breakpoint
 DO $$ BEGIN
- CREATE TYPE "public"."potency" AS ENUM('NONE', '1X', '3X', '6X', '12X', '30X', '6C', '12C', '30C', '200C', '1M', '10M', '50M', 'CM', 'Q', 'LM1', 'LM2', 'LM3', 'LM4', 'LM5', 'LM6', 'LM7', 'LM8', 'LM9', 'LM10', 'LM11', 'LM12', 'LM13', 'LM14', 'LM15', 'LM16', 'LM17', 'LM18', 'LM19', 'LM20', 'LM21', 'LM22', 'LM23', 'LM24', 'LM25', 'LM26', 'LM27', 'LM28', 'LM29', 'LM30');
+ CREATE TYPE "public"."potency" AS ENUM('NONE', '1X', '3X', '6X', '12X', '30X', '200X', '6C', '12C', '30C', '200C', '6CH', '30CH', '200CH', '1000CH', '1M', '10M', '50M', 'CM', 'Q', 'LM1', 'LM2', 'LM3', 'LM4', 'LM5', 'LM6', 'LM7', 'LM8', 'LM9', 'LM10', 'LM11', 'LM12', 'LM13', 'LM14', 'LM15', 'LM16', 'LM17', 'LM18', 'LM19', 'LM20', 'LM21', 'LM22', 'LM23', 'LM24', 'LM25', 'LM26', 'LM27', 'LM28', 'LM29', 'LM30');
 EXCEPTION
  WHEN duplicate_object THEN null;
 END $$;
@@ -88,7 +88,8 @@ CREATE TABLE IF NOT EXISTS "Account" (
 	"token_type" text,
 	"scope" text,
 	"id_token" text,
-	"session_state" text
+	"session_state" text,
+	CONSTRAINT "Account_id_unique" UNIQUE("id")
 );
 --> statement-breakpoint
 CREATE TABLE IF NOT EXISTS "Address" (
@@ -101,13 +102,15 @@ CREATE TABLE IF NOT EXISTS "Address" (
 	"country" varchar(50) DEFAULT 'India' NOT NULL,
 	"addressType" "AddressType" DEFAULT 'SHIPPING' NOT NULL,
 	"createdAt" timestamp (3) DEFAULT now() NOT NULL,
-	"updatedAt" timestamp (3) DEFAULT now()
+	"updatedAt" timestamp (3) DEFAULT now(),
+	CONSTRAINT "Address_id_unique" UNIQUE("id")
 );
 --> statement-breakpoint
 CREATE TABLE IF NOT EXISTS "Category" (
 	"id" varchar(32) PRIMARY KEY NOT NULL,
 	"name" text NOT NULL,
-	"parentId" varchar(32)
+	"parentId" varchar(32),
+	CONSTRAINT "Category_id_unique" UNIQUE("id")
 );
 --> statement-breakpoint
 CREATE TABLE IF NOT EXISTS "InventoryManagement" (
@@ -121,12 +124,14 @@ CREATE TABLE IF NOT EXISTS "InventoryManagement" (
 	"previousStock" integer NOT NULL,
 	"newStock" integer NOT NULL,
 	"createdAt" timestamp DEFAULT now() NOT NULL,
-	"createdBy" varchar(32) NOT NULL
+	"createdBy" varchar(32) NOT NULL,
+	CONSTRAINT "InventoryManagement_id_unique" UNIQUE("id")
 );
 --> statement-breakpoint
 CREATE TABLE IF NOT EXISTS "Manufacturer" (
 	"id" varchar(32) PRIMARY KEY NOT NULL,
-	"name" text NOT NULL
+	"name" text NOT NULL,
+	CONSTRAINT "Manufacturer_id_unique" UNIQUE("id")
 );
 --> statement-breakpoint
 CREATE TABLE IF NOT EXISTS "Order" (
@@ -150,7 +155,8 @@ CREATE TABLE IF NOT EXISTS "Order" (
 	"cancellationReason" text,
 	"estimatedDeliveryDate" timestamp,
 	"deliveredAt" timestamp,
-	"paymentMethodId" varchar(32)
+	"paymentMethodId" varchar(32),
+	CONSTRAINT "Order_id_unique" UNIQUE("id")
 );
 --> statement-breakpoint
 CREATE TABLE IF NOT EXISTS "OrderDetails" (
@@ -166,14 +172,16 @@ CREATE TABLE IF NOT EXISTS "OrderDetails" (
 	"returnReason" text,
 	"returnedAt" timestamp,
 	"refundAmount" double precision,
-	"fulfilledFromLocation" "SKULocation"
+	"fulfilledFromLocation" "SKULocation",
+	CONSTRAINT "OrderDetails_id_unique" UNIQUE("id")
 );
 --> statement-breakpoint
 CREATE TABLE IF NOT EXISTS "PasswordResetToken" (
 	"id" varchar(32) PRIMARY KEY NOT NULL,
 	"email" text NOT NULL,
 	"token" text NOT NULL,
-	"expires" timestamp (3) NOT NULL
+	"expires" timestamp (3) NOT NULL,
+	CONSTRAINT "PasswordResetToken_id_unique" UNIQUE("id")
 );
 --> statement-breakpoint
 CREATE TABLE IF NOT EXISTS "PaymentMethod" (
@@ -184,7 +192,8 @@ CREATE TABLE IF NOT EXISTS "PaymentMethod" (
 	"paymentDetails" jsonb NOT NULL,
 	"displayDetails" jsonb NOT NULL,
 	"createdAt" timestamp (3) DEFAULT now() NOT NULL,
-	"updatedAt" timestamp (3) DEFAULT now()
+	"updatedAt" timestamp (3) DEFAULT now(),
+	CONSTRAINT "PaymentMethod_id_unique" UNIQUE("id")
 );
 --> statement-breakpoint
 CREATE TABLE IF NOT EXISTS "Product" (
@@ -200,7 +209,8 @@ CREATE TABLE IF NOT EXISTS "Product" (
 	"hsnCode" varchar(8) DEFAULT '30049014',
 	"tax" integer DEFAULT 0 NOT NULL,
 	"createdAt" timestamp DEFAULT now() NOT NULL,
-	"updatedAt" timestamp DEFAULT now()
+	"updatedAt" timestamp DEFAULT now(),
+	CONSTRAINT "Product_id_unique" UNIQUE("id")
 );
 --> statement-breakpoint
 CREATE TABLE IF NOT EXISTS "ProductVariant" (
@@ -209,7 +219,7 @@ CREATE TABLE IF NOT EXISTS "ProductVariant" (
 	"sku" varchar(50) NOT NULL,
 	"variantName" text NOT NULL,
 	"variantImage" text[] NOT NULL,
-	"potency" "potency" DEFAULT 'NONE',
+	"potency" "potency" DEFAULT 'NONE' NOT NULL,
 	"packSize" integer,
 	"stockByLocation" jsonb DEFAULT '[]'::jsonb NOT NULL,
 	"costPrice" double precision,
@@ -217,6 +227,7 @@ CREATE TABLE IF NOT EXISTS "ProductVariant" (
 	"discount" integer DEFAULT 0,
 	"discountType" "discountType" DEFAULT 'PERCENTAGE',
 	"sellingPrice" double precision NOT NULL,
+	CONSTRAINT "ProductVariant_id_unique" UNIQUE("id"),
 	CONSTRAINT "ProductVariant_sku_unique" UNIQUE("sku")
 );
 --> statement-breakpoint
@@ -227,24 +238,28 @@ CREATE TABLE IF NOT EXISTS "Review" (
 	"userId" varchar(32) NOT NULL,
 	"productId" varchar(32) NOT NULL,
 	"createdAt" timestamp (3) DEFAULT now() NOT NULL,
-	"updatedAt" timestamp (3) DEFAULT now()
+	"updatedAt" timestamp (3) DEFAULT now(),
+	CONSTRAINT "Review_id_unique" UNIQUE("id")
 );
 --> statement-breakpoint
 CREATE TABLE IF NOT EXISTS "Tags" (
 	"id" varchar(32) PRIMARY KEY NOT NULL,
-	"name" text NOT NULL
+	"name" text NOT NULL,
+	CONSTRAINT "Tags_id_unique" UNIQUE("id")
 );
 --> statement-breakpoint
 CREATE TABLE IF NOT EXISTS "TwoFactorConfirmation" (
 	"id" varchar(32) PRIMARY KEY NOT NULL,
-	"userId" varchar(32) NOT NULL
+	"userId" varchar(32) NOT NULL,
+	CONSTRAINT "TwoFactorConfirmation_id_unique" UNIQUE("id")
 );
 --> statement-breakpoint
 CREATE TABLE IF NOT EXISTS "TwoFactorToken" (
 	"id" varchar(32) PRIMARY KEY NOT NULL,
 	"email" text NOT NULL,
 	"token" text NOT NULL,
-	"expires" timestamp (3) NOT NULL
+	"expires" timestamp (3) NOT NULL,
+	CONSTRAINT "TwoFactorToken_id_unique" UNIQUE("id")
 );
 --> statement-breakpoint
 CREATE TABLE IF NOT EXISTS "User" (
@@ -259,14 +274,16 @@ CREATE TABLE IF NOT EXISTS "User" (
 	"isTwoFactorEnabled" boolean DEFAULT false NOT NULL,
 	"phone" text,
 	"createdAt" timestamp (3) DEFAULT now() NOT NULL,
-	"updatedAt" timestamp (3) DEFAULT now()
+	"updatedAt" timestamp (3) DEFAULT now(),
+	CONSTRAINT "User_id_unique" UNIQUE("id")
 );
 --> statement-breakpoint
 CREATE TABLE IF NOT EXISTS "VerificationToken" (
 	"id" varchar(32) PRIMARY KEY NOT NULL,
 	"email" text NOT NULL,
 	"token" text NOT NULL,
-	"expires" timestamp (3) NOT NULL
+	"expires" timestamp (3) NOT NULL,
+	CONSTRAINT "VerificationToken_id_unique" UNIQUE("id")
 );
 --> statement-breakpoint
 DO $$ BEGIN

@@ -54,7 +54,7 @@ import {
   productForm,
   unitOfMeasure,
 } from "@/db/schema"
-import { generateSKU, generateVariantName } from "@/lib/utils"
+import { cn, generateSKU, generateVariantName } from "@/lib/utils"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useMutation } from "@tanstack/react-query"
 import React from "react"
@@ -115,6 +115,7 @@ export const ProductsForm = ({
       variantName: v.variantName,
       discount: v.discount ?? 0,
       discountType: v.discountType ?? "PERCENTAGE",
+      priceCalcMode: v.priceCalcMode ?? "BACKWARD",
       stock_MANG1: v.stockByLocation[0]?.stock ?? 0,
       stock_MANG2: v.stockByLocation[1]?.stock ?? 0,
       stock_KERALA1: v.stockByLocation[2]?.stock ?? 0,
@@ -130,6 +131,7 @@ export const ProductsForm = ({
         variantName: "",
         discount: 0,
         discountType: "PERCENTAGE",
+        priceCalcMode: "BACKWARD",
         stock_MANG1: 0,
         stock_MANG2: 0,
         stock_KERALA1: 0,
@@ -180,13 +182,8 @@ export const ProductsForm = ({
 
         if (mode === "edit") router.push("/products")
         else resetForm()
-      } else {
-        toast.error(
-          data.error || mode === "edit"
-            ? "Failed to update product"
-            : "Failed to create product"
-        )
       }
+      if ("error" in data && data.error) toast.error(data.error)
     },
     onError: (error) => {
       toast.error("Something went wrong!")
@@ -198,6 +195,7 @@ export const ProductsForm = ({
   })
 
   const onSubmit = async (data: z.infer<typeof createProductSchema>) => {
+    console.log(data)
     try {
       const _variants = []
       const manufacturerName = manufacturers.find(
@@ -577,6 +575,7 @@ export const ProductsForm = ({
                                 onValueChange={(val) =>
                                   form.setValue("tax", Number(val))
                                 }
+                                value={field.value.toString()}
                                 defaultValue="5"
                               >
                                 <SelectTrigger>
@@ -632,17 +631,22 @@ export const ProductsForm = ({
                     </TableHead>
                     <TableHead className="w-[80px] cursor-default">
                       <span className="truncate" title="Stock at Mangalore-02">
-                        Stock@MANG-02
+                        @MANG-02
                       </span>
                     </TableHead>
                     <TableHead className="w-[80px] cursor-default">
                       <span className="truncate" title="Stock at Kerala-01">
-                        Stock@KERALA-01
+                        @KERALA-01
                       </span>
                     </TableHead>
                     <TableHead className="w-[80px] cursor-default">
                       <span className="truncate" title="Cost Price">
                         C.Price(optional)
+                      </span>
+                    </TableHead>
+                    <TableHead className="w-[80px] cursor-default">
+                      <span className="truncate" title="Price Calculation Mode">
+                        Price Calc Mode
                       </span>
                     </TableHead>
                     <TableHead className="w-[80px] cursor-default">
@@ -702,6 +706,7 @@ export const ProductsForm = ({
                     variantName: "",
                     discount: 0,
                     discountType: "PERCENTAGE",
+                    priceCalcMode: "BACKWARD",
                     stock_MANG1: 0,
                     stock_MANG2: 0,
                     stock_KERALA1: 0,
@@ -755,30 +760,74 @@ const VariantFields = ({
   const fIndex = (index + 1).toString().padStart(2, "0")
 
   React.useEffect(() => {
+    const calculateForwardPrice = (
+      basePrice: number,
+      discount: number,
+      discountType: "PERCENTAGE" | "FIXED",
+      taxPercentage: number
+    ) => {
+      const discountAmount =
+        discountType === "PERCENTAGE" ? (basePrice * discount) / 100 : discount
+
+      const priceAfterDiscount = basePrice - discountAmount
+      const taxAmount = (priceAfterDiscount * taxPercentage) / 100
+      const finalPrice = priceAfterDiscount + taxAmount
+
+      return Number(finalPrice.toFixed(2))
+    }
+
+    const calculateBackwardPrice = (
+      sellingPrice: number,
+      discount: number,
+      discountType: "PERCENTAGE" | "FIXED",
+      taxPercentage: number
+    ) => {
+      const priceBeforeTax = sellingPrice / (1 + taxPercentage / 100)
+
+      let basePrice
+      if (discountType === "PERCENTAGE") {
+        basePrice = priceBeforeTax / (1 - discount / 100)
+      } else {
+        basePrice = priceBeforeTax + discount
+      }
+
+      return Number(basePrice.toFixed(2))
+    }
+
     const variant = form.getValues(`variants.${index}`)
     const tax = form.getValues("tax")
+    const mode = variant.priceCalcMode
 
-    const basePrice = variant.basePrice
+    if (!variant.basePrice && !variant.sellingPrice) return
 
-    const discountAmount =
-      variant.discountType === "PERCENTAGE"
-        ? (basePrice * variant.discount) / 100
-        : variant.discount
+    const currentSellingPrice = form.getValues(`variants.${index}.sellingPrice`)
+    const currentBasePrice = form.getValues(`variants.${index}.basePrice`)
 
-    const priceAfterDiscount = basePrice - discountAmount
-
-    const taxAmount = (priceAfterDiscount * tax) / 100
-
-    const finalPrice = priceAfterDiscount + taxAmount
-
-    form.setValue(
-      `variants.${index}.sellingPrice`,
-      Number(finalPrice.toFixed(2))
-    )
+    if (mode === "FORWARD") {
+      const calculatedSellingPrice = calculateForwardPrice(
+        variant.basePrice,
+        variant.discount,
+        variant.discountType,
+        tax
+      )
+      if (Math.abs(calculatedSellingPrice - currentSellingPrice) > 0.01)
+        form.setValue(`variants.${index}.sellingPrice`, calculatedSellingPrice)
+    } else {
+      const calculatedBasePrice = calculateBackwardPrice(
+        variant.sellingPrice,
+        variant.discount,
+        variant.discountType,
+        tax
+      )
+      if (Math.abs(calculatedBasePrice - currentBasePrice) > 0.01)
+        form.setValue(`variants.${index}.basePrice`, calculatedBasePrice)
+    }
   }, [
     form.watch(`variants.${index}.basePrice`),
+    form.watch(`variants.${index}.sellingPrice`),
     form.watch(`variants.${index}.discount`),
     form.watch(`variants.${index}.discountType`),
+    form.watch(`variants.${index}.priceCalcMode`),
     form.watch("tax"),
     index,
     form,
@@ -937,6 +986,33 @@ const VariantFields = ({
           )}
         />
       </TableCell>
+
+      <TableCell>
+        <FormField
+          control={form.control}
+          name={`variants.${index}.priceCalcMode`}
+          render={({ field }) => (
+            <FormItem>
+              <FormControl>
+                <Select
+                  defaultValue="BACKWARD"
+                  value={field.value}
+                  onValueChange={field.onChange}
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select Mode" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="FORWARD">Base → Selling</SelectItem>
+                    <SelectItem value="BACKWARD">Base ← Selling</SelectItem>
+                  </SelectContent>
+                </Select>
+              </FormControl>
+            </FormItem>
+          )}
+        />
+      </TableCell>
+
       <TableCell>
         <FormField
           control={form.control}
@@ -953,8 +1029,15 @@ const VariantFields = ({
                       e.target.value === "" ? 0 : e.target.valueAsNumber
                     field.onChange(value)
                   }}
-                  className="[appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
-                  placeholder="150"
+                  disabled={
+                    form.watch(`variants.${index}.priceCalcMode`) === "BACKWARD"
+                  }
+                  className={cn(
+                    "[appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none",
+                    form.watch(`variants.${index}.priceCalcMode`) ===
+                      "BACKWARD" && "bg-muted"
+                  )}
+                  placeholder="180"
                 />
               </FormControl>
               <FormMessage />
@@ -1005,7 +1088,7 @@ const VariantFields = ({
                   </SelectTrigger>
                   <SelectContent>
                     <SelectItem value="PERCENTAGE">%</SelectItem>
-                    <SelectItem value="RUPPEES">RS.</SelectItem>
+                    <SelectItem value="FIXED">RS.</SelectItem>
                   </SelectContent>
                 </Select>
               </FormControl>
@@ -1024,14 +1107,21 @@ const VariantFields = ({
                 <Input
                   type="number"
                   {...field}
-                  value={field.value}
+                  value={field.value === 0 ? "" : field.value}
                   onChange={(e) => {
                     const value =
                       e.target.value === "" ? 0 : e.target.valueAsNumber
                     field.onChange(value)
                   }}
-                  className="[appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
-                  disabled={true}
+                  disabled={
+                    form.watch(`variants.${index}.priceCalcMode`) === "FORWARD"
+                  }
+                  className={cn(
+                    "[appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none",
+                    form.watch(`variants.${index}.priceCalcMode`) ===
+                      "FORWARD" && "bg-muted"
+                  )}
+                  placeholder="150"
                 />
               </FormControl>
               <FormMessage />
