@@ -1,6 +1,6 @@
 {
-  "id": "50104f10-a83c-4f30-aef0-01fbbd3b707e",
-  "prevId": "b4265418-ddaa-4117-82b0-46dbea804af7",
+  "id": "5fe81164-22e4-473c-9880-8f60918af3e1",
+  "prevId": "dd51af40-c22e-4ed3-963d-01a05caecab2",
   "version": "7",
   "dialect": "postgresql",
   "tables": {
@@ -120,7 +120,15 @@
         }
       },
       "compositePrimaryKeys": {},
-      "uniqueConstraints": {}
+      "uniqueConstraints": {
+        "Account_id_unique": {
+          "name": "Account_id_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "id"
+          ]
+        }
+      }
     },
     "public.Address": {
       "name": "Address",
@@ -225,7 +233,15 @@
         }
       },
       "compositePrimaryKeys": {},
-      "uniqueConstraints": {}
+      "uniqueConstraints": {
+        "Address_id_unique": {
+          "name": "Address_id_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "id"
+          ]
+        }
+      }
     },
     "public.Category": {
       "name": "Category",
@@ -267,7 +283,15 @@
         }
       },
       "compositePrimaryKeys": {},
-      "uniqueConstraints": {}
+      "uniqueConstraints": {
+        "Category_id_unique": {
+          "name": "Category_id_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "id"
+          ]
+        }
+      }
     },
     "public.InventoryManagement": {
       "name": "InventoryManagement",
@@ -447,7 +471,15 @@
         }
       },
       "compositePrimaryKeys": {},
-      "uniqueConstraints": {}
+      "uniqueConstraints": {
+        "InventoryManagement_id_unique": {
+          "name": "InventoryManagement_id_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "id"
+          ]
+        }
+      }
     },
     "public.Manufacturer": {
       "name": "Manufacturer",
@@ -469,7 +501,15 @@
       "indexes": {},
       "foreignKeys": {},
       "compositePrimaryKeys": {},
-      "uniqueConstraints": {}
+      "uniqueConstraints": {
+        "Manufacturer_id_unique": {
+          "name": "Manufacturer_id_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "id"
+          ]
+        }
+      }
     },
     "public.Order": {
       "name": "Order",
@@ -741,7 +781,15 @@
         }
       },
       "compositePrimaryKeys": {},
-      "uniqueConstraints": {}
+      "uniqueConstraints": {
+        "Order_id_unique": {
+          "name": "Order_id_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "id"
+          ]
+        }
+      }
     },
     "public.OrderDetails": {
       "name": "OrderDetails",
@@ -892,7 +940,15 @@
         }
       },
       "compositePrimaryKeys": {},
-      "uniqueConstraints": {}
+      "uniqueConstraints": {
+        "OrderDetails_id_unique": {
+          "name": "OrderDetails_id_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "id"
+          ]
+        }
+      }
     },
     "public.PasswordResetToken": {
       "name": "PasswordResetToken",
@@ -963,7 +1019,15 @@
       },
       "foreignKeys": {},
       "compositePrimaryKeys": {},
-      "uniqueConstraints": {}
+      "uniqueConstraints": {
+        "PasswordResetToken_id_unique": {
+          "name": "PasswordResetToken_id_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "id"
+          ]
+        }
+      }
     },
     "public.PaymentMethod": {
       "name": "PaymentMethod",
@@ -1055,7 +1119,15 @@
         }
       },
       "compositePrimaryKeys": {},
-      "uniqueConstraints": {}
+      "uniqueConstraints": {
+        "PaymentMethod_id_unique": {
+          "name": "PaymentMethod_id_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "id"
+          ]
+        }
+      }
     },
     "public.Product": {
       "name": "Product",
@@ -1260,7 +1332,15 @@
         }
       },
       "compositePrimaryKeys": {},
-      "uniqueConstraints": {}
+      "uniqueConstraints": {
+        "Product_id_unique": {
+          "name": "Product_id_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "id"
+          ]
+        }
+      }
     },
     "public.ProductVariant": {
       "name": "ProductVariant",
@@ -1343,6 +1423,14 @@
           "primaryKey": false,
           "notNull": false,
           "default": "'PERCENTAGE'"
+        },
+        "priceCalcMode": {
+          "name": "priceCalcMode",
+          "type": "priceCalcMode",
+          "typeSchema": "public",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "'BACKWARD'"
         },
         "sellingPrice": {
           "name": "sellingPrice",
@@ -1457,6 +1545,13 @@
       },
       "compositePrimaryKeys": {},
       "uniqueConstraints": {
+        "ProductVariant_id_unique": {
+          "name": "ProductVariant_id_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "id"
+          ]
+        },
         "ProductVariant_sku_unique": {
           "name": "ProductVariant_sku_unique",
           "nullsNotDistinct": false,
@@ -1546,7 +1641,15 @@
         }
       },
       "compositePrimaryKeys": {},
-      "uniqueConstraints": {}
+      "uniqueConstraints": {
+        "Review_id_unique": {
+          "name": "Review_id_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "id"
+          ]
+        }
+      }
     },
     "public.Tags": {
       "name": "Tags",
@@ -1568,7 +1671,15 @@
       "indexes": {},
       "foreignKeys": {},
       "compositePrimaryKeys": {},
-      "uniqueConstraints": {}
+      "uniqueConstraints": {
+        "Tags_id_unique": {
+          "name": "Tags_id_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "id"
+          ]
+        }
+      }
     },
     "public.TwoFactorConfirmation": {
       "name": "TwoFactorConfirmation",
@@ -1620,7 +1731,15 @@
         }
       },
       "compositePrimaryKeys": {},
-      "uniqueConstraints": {}
+      "uniqueConstraints": {
+        "TwoFactorConfirmation_id_unique": {
+          "name": "TwoFactorConfirmation_id_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "id"
+          ]
+        }
+      }
     },
     "public.TwoFactorToken": {
       "name": "TwoFactorToken",
@@ -1691,7 +1810,15 @@
       },
       "foreignKeys": {},
       "compositePrimaryKeys": {},
-      "uniqueConstraints": {}
+      "uniqueConstraints": {
+        "TwoFactorToken_id_unique": {
+          "name": "TwoFactorToken_id_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "id"
+          ]
+        }
+      }
     },
     "public.User": {
       "name": "User",
@@ -1795,7 +1922,15 @@
       },
       "foreignKeys": {},
       "compositePrimaryKeys": {},
-      "uniqueConstraints": {}
+      "uniqueConstraints": {
+        "User_id_unique": {
+          "name": "User_id_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "id"
+          ]
+        }
+      }
     },
     "public.VerificationToken": {
       "name": "VerificationToken",
@@ -1866,7 +2001,15 @@
       },
       "foreignKeys": {},
       "compositePrimaryKeys": {},
-      "uniqueConstraints": {}
+      "uniqueConstraints": {
+        "VerificationToken_id_unique": {
+          "name": "VerificationToken_id_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "id"
+          ]
+        }
+      }
     }
   },
   "enums": {
@@ -1895,7 +2038,7 @@
       "schema": "public",
       "values": [
         "PERCENTAGE",
-        "RUPPEES"
+        "FIXED"
       ]
     },
     "public.MovementType": {
@@ -1991,6 +2134,14 @@
         "LM28",
         "LM29",
         "LM30"
+      ]
+    },
+    "public.priceCalcMode": {
+      "name": "priceCalcMode",
+      "schema": "public",
+      "values": [
+        "FORWARD",
+        "BACKWARD"
       ]
     },
     "public.ProductForm": {

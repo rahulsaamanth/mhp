@@ -12,7 +12,6 @@ import {
   productVariant,
   address,
   paymentMethod,
-  couponCode,
 } from "./schema"
 
 export const accountRelations = relations(account, ({ one }) => ({
@@ -133,16 +132,5 @@ export const addressRelations = relations(address, ({ one, many }) => ({
   }),
   billingOrders: many(order, {
     relationName: "order_billing_address",
-  }),
-}))
-
-export const couponCodeRelations = relations(couponCode, ({ one }) => ({
-  product: one(product, {
-    fields: [couponCode.productId],
-    references: [product.id],
-  }),
-  order: one(order, {
-    fields: [couponCode.orderId],
-    references: [order.id],
   }),
 }))

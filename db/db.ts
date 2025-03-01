@@ -13,7 +13,7 @@ const connectionPool = postgres(process.env.DATABASE_URL!, {
 
 export const db = drizzle(connectionPool, {
   schema: { ...schema, ...relations },
-  logger: true,
+  // logger: true,
 })
 
 // Export the pool to be able to end the connection

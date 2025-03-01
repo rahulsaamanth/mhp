@@ -84,6 +84,8 @@ export async function updateProduct(
   productId: string,
   data: z.infer<typeof createProductSchema>
 ) {
+  unstable_noStore()
+  console.log("update called")
   try {
     const result = await db.transaction(async (tx) => {
       // Update main product
@@ -173,13 +175,44 @@ export async function getProduct(
   }
 }
 
+async function validateForeignKeys(data: z.infer<typeof createProductSchema>) {
+  const categoryExists = await db.query.category.findFirst({
+    where: eq(category.id, data.categoryId),
+  })
+
+  if (!categoryExists) {
+    return {
+      success: false,
+      error: `Category with ID ${data.categoryId} does not exist`,
+    }
+  }
+
+  const manufacturerExists = await db.query.manufacturer.findFirst({
+    where: eq(manufacturer.id, data.manufacturerId),
+  })
+
+  if (!manufacturerExists) {
+    return {
+      success: false,
+      error: `Manufacturer with ID ${data.manufacturerId} does not exist`,
+    }
+  }
+
+  return { success: true }
+}
+
 export async function createProduct(data: z.infer<typeof createProductSchema>) {
   unstable_noStore()
   try {
     const validatedData = createProductSchema.parse(data)
+
+    const validation = await validateForeignKeys(validatedData)
+    if (!validation.success) return validation
+
     const { variants, ...productData } = validatedData
 
     const result = await db.transaction(async (tx) => {
+      console.log("Inserting Product:", productData)
       const [newProduct] = await tx
         .insert(product)
         .values({
@@ -210,6 +243,8 @@ export async function createProduct(data: z.infer<typeof createProductSchema>) {
         stock_MANG2: undefined,
         stock_KERALA1: undefined,
       }))
+
+      console.log("Inserting variants:", variantsToInsert)
 
       const newVariants = await tx
         .insert(productVariant)
