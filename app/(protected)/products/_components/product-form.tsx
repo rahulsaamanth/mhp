@@ -391,7 +391,7 @@ export const ProductsForm = ({
                               <FormControl>
                                 <Select
                                   onValueChange={field.onChange}
-                                  defaultValue={field.value}
+                                  value={field.value}
                                 >
                                   <SelectTrigger>
                                     <SelectValue placeholder="Select manufacturer" />
@@ -606,88 +606,59 @@ export const ProductsForm = ({
               <CardDescription>Add atleast one product variant</CardDescription>
             </CardHeader>
             <CardContent>
-              <Table className="overflow-x-scroll w-auto md:w-full">
-                <TableHeader>
-                  <TableRow>
-                    <TableHead className="w-[20px] cursor-default">
-                      <span className="truncate" title="Serial Number">
-                        S.No
-                      </span>
-                    </TableHead>
-                    <TableHead className="w-[80px] cursor-default">
-                      <span className="truncate" title="Potency">
-                        Potency
-                      </span>
-                    </TableHead>
-                    <TableHead className="w-[80px] cursor-default">
-                      <span className="truncate" title="Pack Size">
-                        Size
-                      </span>
-                    </TableHead>
-                    <TableHead className="w-[80px] cursor-default">
-                      <span className="truncate" title="Stock at Mangalore-01">
-                        Stock@MANG-01
-                      </span>
-                    </TableHead>
-                    <TableHead className="w-[80px] cursor-default">
-                      <span className="truncate" title="Stock at Mangalore-02">
-                        @MANG-02
-                      </span>
-                    </TableHead>
-                    <TableHead className="w-[80px] cursor-default">
-                      <span className="truncate" title="Stock at Kerala-01">
-                        @KERALA-01
-                      </span>
-                    </TableHead>
-                    <TableHead className="w-[80px] cursor-default">
-                      <span className="truncate" title="Cost Price">
-                        C.Price(optional)
-                      </span>
-                    </TableHead>
-                    <TableHead className="w-[80px] cursor-default">
-                      <span className="truncate" title="Price Calculation Mode">
-                        Price Calc Mode
-                      </span>
-                    </TableHead>
-                    <TableHead className="w-[80px] cursor-default">
-                      <span className="truncate" title="Selling Price">
-                        Base Price
-                      </span>
-                    </TableHead>
-                    <TableHead className="w-[80px] cursor-default">
-                      <span className="truncate" title="Discounted Price">
-                        Discount
-                      </span>
-                    </TableHead>
-                    <TableHead className="w-[80px] cursor-default">
-                      <span className="truncate" title="Discounted Price">
-                        DiscountType
-                      </span>
-                    </TableHead>
-                    <TableHead className="w-[80px] cursor-default">
-                      <span className="truncate" title="Discounted Price">
-                        sellingPrice
-                      </span>
-                    </TableHead>
-                    <TableHead className="w-[160px] cursor-default">
-                      <span className="truncate" title="Variant Images">
-                        Images
-                      </span>
-                    </TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {fields.map((field, index) => (
-                    <VariantFields
-                      key={field.id}
-                      form={form}
-                      index={index}
-                      onRemove={() => remove(index)}
-                      isOnly={fields.length === 1}
-                    />
-                  ))}
-                </TableBody>
-              </Table>
+              <div className="overflow-x-auto mx-4 sm:mx-0">
+                <div className="inline-block min-w-full align-middle">
+                  <Table className="min-w-full">
+                    <TableHeader>
+                      <TableRow>
+                        <TableHead className="w-[40px] whitespace-nowrap">
+                          No.
+                        </TableHead>
+                        <TableHead className="min-w-[100px]">
+                          <span className="hidden md:inline">Potency</span>
+                          <span className="md:hidden">Pot.</span>
+                        </TableHead>
+                        <TableHead className="min-w-[80px]">Size</TableHead>
+                        <TableHead className="hidden md:table-cell min-w-[90px]">
+                          Stock@M1
+                        </TableHead>
+                        <TableHead className="hidden lg:table-cell min-w-[90px]">
+                          Stock@M2
+                        </TableHead>
+                        <TableHead className="hidden lg:table-cell min-w-[90px]">
+                          Stock@K1
+                        </TableHead>
+                        <TableHead className="hidden xl:table-cell min-w-[100px]">
+                          Cost
+                        </TableHead>
+                        <TableHead className="min-w-[120px]">
+                          <span className="hidden md:inline">Calc Mode</span>
+                          <span className="md:hidden">Mode</span>
+                        </TableHead>
+                        <TableHead className="min-w-[100px]">Base ₹</TableHead>
+                        <TableHead className="min-w-[90px]">Disc.</TableHead>
+                        <TableHead className="min-w-[90px]">
+                          <span className="hidden md:inline">Disc.Type</span>
+                          <span className="md:hidden">Type</span>
+                        </TableHead>
+                        <TableHead className="min-w-[100px]">Sell ₹</TableHead>
+                        <TableHead className="min-w-[160px]">Images</TableHead>
+                      </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                      {fields.map((field, index) => (
+                        <VariantFields
+                          key={field.id}
+                          form={form}
+                          index={index}
+                          onRemove={() => remove(index)}
+                          isOnly={fields.length === 1}
+                        />
+                      ))}
+                    </TableBody>
+                  </Table>
+                </div>
+              </div>
             </CardContent>
             <CardFooter className="justify-center border-t p-4">
               <Button
@@ -877,7 +848,7 @@ const VariantFields = ({
                       e.target.value === "" ? 0 : e.target.valueAsNumber
                     field.onChange(value)
                   }}
-                  className="[appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                  className="[appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none w-ful l min-w-[80px] px-2 text-sm"
                   placeholder="20"
                 />
               </FormControl>
@@ -886,7 +857,7 @@ const VariantFields = ({
           )}
         />
       </TableCell>
-      <TableCell>
+      <TableCell className="hidden md:table-cell">
         <FormField
           control={form.control}
           name={`variants.${index}.stock_MANG1`}
@@ -903,7 +874,7 @@ const VariantFields = ({
                     field.onChange(value)
                   }}
                   placeholder="20"
-                  className="[appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                  className="[appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none w-ful  min-w-[80px] px-2 text-sm"
                 />
               </FormControl>
               <FormMessage />
@@ -928,7 +899,7 @@ const VariantFields = ({
                     field.onChange(value)
                   }}
                   placeholder="20"
-                  className="[appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                  className="[appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none w-ful l min-w-[80px] px-2 text-sm"
                 />
               </FormControl>
               <FormMessage />
@@ -953,7 +924,7 @@ const VariantFields = ({
                     field.onChange(value)
                   }}
                   placeholder="20"
-                  className="[appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                  className="[appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none w-ful l min-w-[80px] px-2 text-sm"
                 />
               </FormControl>
               <FormMessage />
@@ -977,7 +948,7 @@ const VariantFields = ({
                       e.target.value === "" ? 0 : e.target.valueAsNumber
                     field.onChange(value)
                   }}
-                  className="[appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                  className="[appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none w-ful l min-w-[80px] px-2 text-sm"
                   placeholder="100"
                 />
               </FormControl>
@@ -1034,6 +1005,7 @@ const VariantFields = ({
                   }
                   className={cn(
                     "[appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none",
+                    "w-full min-w-[80px] px-2 text-sm",
                     form.watch(`variants.${index}.priceCalcMode`) ===
                       "BACKWARD" && "bg-muted"
                   )}
@@ -1062,7 +1034,7 @@ const VariantFields = ({
                       e.target.value === "" ? 0 : e.target.valueAsNumber
                     field.onChange(value)
                   }}
-                  className="[appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                  className="[appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none w-ful l min-w-[80px] px-2 text-sm"
                   placeholder="10"
                 />
               </FormControl>
@@ -1118,6 +1090,7 @@ const VariantFields = ({
                   }
                   className={cn(
                     "[appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none",
+                    "w-full min-w-[80px] px-2 text-sm",
                     form.watch(`variants.${index}.priceCalcMode`) ===
                       "FORWARD" && "bg-muted"
                   )}

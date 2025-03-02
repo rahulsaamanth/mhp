@@ -41,7 +41,13 @@ EXCEPTION
 END $$;
 --> statement-breakpoint
 DO $$ BEGIN
- CREATE TYPE "public"."potency" AS ENUM('NONE', '1X', '3X', '6X', '12X', '30X', '200X', '6C', '12C', '30C', '200C', '6CH', '30CH', '200CH', '1000CH', '1M', '10M', '50M', 'CM', 'Q', 'LM1', 'LM2', 'LM3', 'LM4', 'LM5', 'LM6', 'LM7', 'LM8', 'LM9', 'LM10', 'LM11', 'LM12', 'LM13', 'LM14', 'LM15', 'LM16', 'LM17', 'LM18', 'LM19', 'LM20', 'LM21', 'LM22', 'LM23', 'LM24', 'LM25', 'LM26', 'LM27', 'LM28', 'LM29', 'LM30');
+ CREATE TYPE "public"."potency" AS ENUM('NONE', '1X', '2X', '3X', '6X', '12X', '30X', '200X', '3C', '6C', '12C', '30C', '200C', '1M', '10M', '50M', 'CM', '3CH', '6CH', '9CH', '12CH', '15CH', '30CH', '200CH', '1M CH', '10M CH', '50M CH', 'CM CH', 'Q', 'LM1', 'LM2', 'LM3', 'LM4', 'LM5', 'LM6', 'LM7', 'LM8', 'LM9', 'LM10', 'LM11', 'LM12', 'LM13', 'LM14', 'LM15', 'LM16', 'LM17', 'LM18', 'LM19', 'LM20', 'LM21', 'LM22', 'LM23', 'LM24', 'LM25', 'LM26', 'LM27', 'LM28', 'LM29', 'LM30', 'LM50');
+EXCEPTION
+ WHEN duplicate_object THEN null;
+END $$;
+--> statement-breakpoint
+DO $$ BEGIN
+ CREATE TYPE "public"."priceCalcMode" AS ENUM('FORWARD', 'BACKWARD');
 EXCEPTION
  WHEN duplicate_object THEN null;
 END $$;
@@ -226,6 +232,7 @@ CREATE TABLE IF NOT EXISTS "ProductVariant" (
 	"basePrice" double precision NOT NULL,
 	"discount" integer DEFAULT 0,
 	"discountType" "discountType" DEFAULT 'PERCENTAGE',
+	"priceCalcMode" "priceCalcMode" DEFAULT 'BACKWARD',
 	"sellingPrice" double precision NOT NULL,
 	CONSTRAINT "ProductVariant_id_unique" UNIQUE("id"),
 	CONSTRAINT "ProductVariant_sku_unique" UNIQUE("sku")
