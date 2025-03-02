@@ -1,5 +1,5 @@
 {
-  "id": "dd51af40-c22e-4ed3-963d-01a05caecab2",
+  "id": "c5fafd51-dd04-40f3-a146-e5f7b272d49f",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "version": "7",
   "dialect": "postgresql",
@@ -1424,6 +1424,14 @@
           "notNull": false,
           "default": "'PERCENTAGE'"
         },
+        "priceCalcMode": {
+          "name": "priceCalcMode",
+          "type": "priceCalcMode",
+          "typeSchema": "public",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "'BACKWARD'"
+        },
         "sellingPrice": {
           "name": "sellingPrice",
           "type": "double precision",
@@ -2078,23 +2086,32 @@
       "values": [
         "NONE",
         "1X",
+        "2X",
         "3X",
         "6X",
         "12X",
         "30X",
         "200X",
+        "3C",
         "6C",
         "12C",
         "30C",
         "200C",
-        "6CH",
-        "30CH",
-        "200CH",
-        "1000CH",
         "1M",
         "10M",
         "50M",
         "CM",
+        "3CH",
+        "6CH",
+        "9CH",
+        "12CH",
+        "15CH",
+        "30CH",
+        "200CH",
+        "1M CH",
+        "10M CH",
+        "50M CH",
+        "CM CH",
         "Q",
         "LM1",
         "LM2",
@@ -2125,7 +2142,16 @@
         "LM27",
         "LM28",
         "LM29",
-        "LM30"
+        "LM30",
+        "LM50"
+      ]
+    },
+    "public.priceCalcMode": {
+      "name": "priceCalcMode",
+      "schema": "public",
+      "values": [
+        "FORWARD",
+        "BACKWARD"
       ]
     },
     "public.ProductForm": {

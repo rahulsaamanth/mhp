@@ -973,7 +973,7 @@ async function seed() {
           "https://healthyghar.com/wp-content/uploads/2022/05/SBL-Abel-Moschus-1M-1000-CH-30ml.png",
         ],
         packSize: 30,
-        potency: "1000CH",
+        potency: "1M CH",
         costPrice: 100,
         basePrice: 120, // Add base price before tax and discount
         sellingPrice: 130,

@@ -15,6 +15,7 @@ import { DateRangePicker } from "@/components/date-range-picker"
 import { DataTableSkeleton } from "@/components/data-table/data-table-skeleton"
 import { ProductsTable } from "./_components/products-table"
 import { getCategories, getManufacturers } from "../sku-options/_lib/queries"
+import { db } from "@/db/db"
 
 interface ProductPageProps {
   searchParams: Promise<SearchParams>
@@ -32,8 +33,8 @@ export default async function ProductsPage(props: ProductPageProps) {
   })
 
   const [categories, manufacturers] = await Promise.all([
-    getCategories(),
-    getManufacturers(),
+    db.query.category.findMany(),
+    db.query.manufacturer.findMany(),
   ])
 
   const categoryCountsPromise = getCategoryCounts()
@@ -63,7 +64,7 @@ export default async function ProductsPage(props: ProductPageProps) {
             <DataTableSkeleton
               columnCount={6}
               searchableColumnCount={1}
-              filterableColumnCount={2}
+              filterableColumnCount={3}
               cellWidths={["10rem", "40rem", "12rem", "12rem", "8rem", "8rem"]}
               shrinkZero
             />
