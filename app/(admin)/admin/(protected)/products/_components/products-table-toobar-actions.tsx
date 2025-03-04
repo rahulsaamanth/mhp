@@ -27,7 +27,7 @@ export function ProductsTableToolbarActions({
           onSuccess={() => table.toggleAllRowsSelected(false)}
         />
       ) : null}
-      <Link href="/products/new">
+      <Link href="/admin/products/new">
         <Button variant="default" className="mr-4">
           Add New Product
         </Button>

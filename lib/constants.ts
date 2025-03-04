@@ -3,40 +3,40 @@ import { SideNavItem } from "@/types"
 export const SIDENAV_ITEMS: SideNavItem[] = [
   {
     title: "Dashboard",
-    path: "/dashboard",
+    path: "/admin/dashboard",
     icon: "carbon:dashboard-reference",
   },
 
   {
     title: "Products",
-    path: "/products",
+    path: "/admin/products",
     icon: "fluent-mdl2:product-variant",
     // add new product icon
     // icon: "fluent:cube-add-20-regular",
   },
   {
     title: "SKU",
-    path: "/sku-options",
+    path: "/admin/sku-options",
     icon: "fluent:options-20-regular",
   },
   {
     title: "Orders",
-    path: "/orders",
+    path: "/admin/orders",
     icon: "material-symbols:orders-outline",
   },
   {
     title: "Customers",
-    path: "/users",
+    path: "/admin/users",
     icon: "ph:users-three",
   },
   {
     title: "Invoices",
-    path: "/invoices",
+    path: "/admin/invoices",
     icon: "basil:invoice-outline",
   },
   {
     title: "Offers",
-    path: "/offers",
+    path: "/admin/offers",
     icon: "ic:outline-local-offer",
     // coupon icon
     // icon: "mdi:coupon-outline",
@@ -46,12 +46,12 @@ export const SIDENAV_ITEMS: SideNavItem[] = [
 
   {
     title: "Admin",
-    path: "/admin",
+    path: "/admin/admin",
     icon: "eos-icons:admin-outlined",
   },
   {
     title: "Settings",
-    path: "/settings",
+    path: "/admin/settings",
     icon: "material-symbols:settings-outline",
   },
 ]

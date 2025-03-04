@@ -52,11 +52,14 @@ async function getSalesData({
   if (createdAfter) whereClause.push(gte(order.orderDate, createdAfter))
   if (createdBefore) whereClause.push(lte(order.orderDate, createdBefore))
 
-  const [salesData, salesChartData] = await Promise.all([
+  const [salesData, salesChartData]: [
+    { salesCount: number; totalAmount: number }[],
+    { createdAt: Date; totalAmountPaid: number }[],
+  ] = await Promise.all([
     db
       .select({
         salesCount: count(),
-        totalAmount: sum(order.totalAmountPaid),
+        totalAmount: sql<number>`coalesce(sum(${order.totalAmountPaid}), 0)`,
       })
       .from(order),
     db

@@ -25,8 +25,8 @@ export const {
   unstable_update,
 } = NextAuth({
   pages: {
-    signIn: "/auth/login",
-    error: "/auth/error",
+    signIn: "/admin/auth/login",
+    error: "/admin/auth/error",
   },
   events: {
     async linkAccount({ user }) {

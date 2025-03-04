@@ -180,7 +180,7 @@ export const ProductsForm = ({
             : "Product created successfully"
         )
 
-        if (mode === "edit") router.push("/products")
+        if (mode === "edit") router.push("/admin/products")
         else resetForm()
       }
       if ("error" in data && data.error) toast.error(data.error)
