@@ -16,7 +16,7 @@ export const metadata: Metadata = {
   description: "Mangalore Homeopathic Pharmacy - Admin Panel",
 }
 
-export default async function RootLayout({
+export default async function AdminRootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode

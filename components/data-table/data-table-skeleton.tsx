@@ -117,7 +117,7 @@ export function DataTableSkeleton(props: DataTableSkeletonProps) {
                       minWidth: shrinkZero ? cellWidths[j] : "auto",
                     }}
                   >
-                    <Skeleton className="h-6 w-full" />
+                    <Skeleton className="h-16 w-full" />
                   </TableHead>
                 ))}
               </TableRow>
@@ -134,7 +134,7 @@ export function DataTableSkeleton(props: DataTableSkeletonProps) {
                       minWidth: shrinkZero ? cellWidths[j] : "auto",
                     }}
                   >
-                    <Skeleton className="h-6 w-full" />
+                    <Skeleton className="h-16 w-full" />
                   </TableCell>
                 ))}
               </TableRow>

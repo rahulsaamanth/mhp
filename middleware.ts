@@ -33,7 +33,7 @@ export default auth((req) => {
     const encodedCallbackUrl = encodeURIComponent(callbackUrl)
 
     return NextResponse.redirect(
-      new URL(`/auth/login?callbackUrl=${encodedCallbackUrl}`, nextUrl)
+      new URL(`/admin/auth/login?callbackUrl=${encodedCallbackUrl}`, nextUrl)
     )
   }
 
