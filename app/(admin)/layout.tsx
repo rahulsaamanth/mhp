@@ -1,10 +1,11 @@
 import type { Metadata } from "next"
 import { Montserrat } from "next/font/google"
 import { SessionProvider } from "next-auth/react"
-import "./styles/globals.css"
+import "./admin/styles/globals.css"
 import { auth } from "@/auth"
 import { Toaster } from "@/components/ui/sonner"
 import { NuqsAdapter } from "nuqs/adapters/next/app"
+import { redirect } from "next/navigation"
 
 const MontSerrat = Montserrat({
   weight: ["100", "200", "300", "400", "500", "600", "700", "800", "900"],
@@ -22,6 +23,8 @@ export default async function AdminRootLayout({
   children: React.ReactNode
 }>) {
   const session = await auth()
+
+  if (!session) redirect("/admin/auth/signin")
 
   return (
     <SessionProvider session={session}>

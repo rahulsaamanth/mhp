@@ -20,7 +20,7 @@ export const UserButton = () => {
       <DropdownMenuTrigger className="rounded-full border-2 focus-visible:invisible">
         <Avatar className="outline-none">
           <AvatarImage
-            src={user?.image || ""}
+            src={user?.image || undefined}
             alt="Profile"
             className="object-cover"
           />
@@ -32,7 +32,7 @@ export const UserButton = () => {
       <DropdownMenuContent className="w-40" align="end">
         <DropdownMenuItem className="flex items-center justify-center gap-3 pb-2">
           <Avatar className="size-8">
-            <AvatarImage src={user?.image || ""} />
+            <AvatarImage src={user?.image || undefined} />
             <AvatarFallback className="size-8 bg-sky-500">
               <Icon
                 icon="fa:user"
