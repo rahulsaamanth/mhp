@@ -1,6 +1,6 @@
 "use client"
 
-import React from "react"
+import React, { useEffect } from "react"
 import { getOrders } from "../_lib/queries"
 import {
   DataTableAdvancedFilterField,
@@ -15,12 +15,16 @@ import { DataTable } from "@/components/data-table/data-table"
 import { DataTableAdvancedToolbar } from "@/components/data-table/data-table-advanced-toolbar"
 import { OrdersTableToolbarActions } from "./orders-table-toobar-actions"
 import { DataTableToolbar } from "@/components/data-table/data-table-toolbar"
+import { useMediaQuery } from "@/hooks/use-media-query"
 
 interface OrderTableProps {
   promise: Promise<Awaited<ReturnType<typeof getOrders>>>
 }
 
 export function OrdersTable({ promise }: OrderTableProps) {
+  const isDesktop = useMediaQuery("(min-width: 1800px)")
+  const isTablet = useMediaQuery("(min-width: 1440px)")
+
   const { featureFlags } = useFeatureFlags()
   const { data, pageCount } = React.use(promise)
 
@@ -65,10 +69,39 @@ export function OrdersTable({ promise }: OrderTableProps) {
     clearOnDefault: true,
   })
 
-  console.log(data)
+  useEffect(() => {
+    const alwaysVisibleColumns = ["select", "userName", "totalAmountPaid"]
+
+    const tabletColumns = [
+      "userName",
+      "totalAmountPaid",
+      "orderType",
+      "paymentStatus",
+    ]
+
+    const desktopColumns = ["id", "orderDate"]
+
+    table.getAllColumns().forEach((column) => {
+      const columnId = column.id
+
+      if (alwaysVisibleColumns.includes(columnId)) {
+        column.toggleVisibility(true)
+        return
+      }
+
+      if (desktopColumns.includes(columnId)) {
+        column.toggleVisibility(isDesktop)
+        return
+      }
+
+      if (tabletColumns.includes(columnId)) {
+        column.toggleVisibility(isTablet)
+      }
+    })
+  }, [isDesktop, isTablet, table])
 
   return (
-    <>
+    <section>
       <DataTable table={table}>
         {enableAdvancedTable ? (
           <DataTableAdvancedToolbar
@@ -84,6 +117,6 @@ export function OrdersTable({ promise }: OrderTableProps) {
           </DataTableToolbar>
         )}
       </DataTable>
-    </>
+    </section>
   )
 }

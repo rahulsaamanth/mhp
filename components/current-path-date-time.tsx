@@ -1,15 +1,20 @@
 "use client"
-
 import { usePathname } from "next/navigation"
 import React, { useEffect, useState } from "react"
 import { Card, CardContent } from "./ui/card"
 import { formatDate } from "@/lib/formatters"
 
+const TimeDisplay = React.memo(({ date }: { date: Date }) => {
+  return <span className="w-24">{date.toLocaleTimeString()}</span>
+})
+
+const DateDisplay = React.memo(({ date }: { date: Date }) => {
+  return <span>{formatDate(date)}</span>
+})
+
 export const CurrentPathAndDateTime = () => {
   const path = usePathname()
-
-  const [date, setDate] = React.useState(new Date())
-
+  const [date, setDate] = useState(new Date())
   const [showDateTime, setShowDateTime] = useState(false)
 
   useEffect(() => {
@@ -17,9 +22,13 @@ export const CurrentPathAndDateTime = () => {
   }, [])
 
   useEffect(() => {
-    let timer = setInterval(() => setDate(new Date()), 1000)
-    return () => clearInterval(timer)
-  })
+    if (showDateTime) {
+      let timer = setInterval(() => setDate(new Date()), 1000)
+      return () => {
+        clearInterval(timer)
+      }
+    }
+  }, [showDateTime])
 
   return (
     <Card>
@@ -30,11 +39,14 @@ export const CurrentPathAndDateTime = () => {
         </span>
         {showDateTime && (
           <div className="space-x-3 border-2 border-[#069307] px-2 py-2 font-bold text-[#069307] max-sm:hidden sm:px-4">
-            <span>{formatDate(date)}</span>
-            <span>{date.toLocaleTimeString()}</span>
+            <DateDisplay date={date} />
+            <TimeDisplay date={date} />
           </div>
         )}
       </CardContent>
     </Card>
   )
 }
+
+// Memoize the entire component to prevent unnecessary re-renders when parent components update
+export default React.memo(CurrentPathAndDateTime)

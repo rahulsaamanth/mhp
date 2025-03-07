@@ -18,7 +18,7 @@ export function ProductsTableToolbarActions({
   table,
 }: TasksTableToolbarActionsProps) {
   return (
-    <div className="flex items-center gap-2">
+    <div className="flex items-center gap-1 sm:gap-2">
       {table.getFilteredSelectedRowModel().rows.length > 0 ? (
         <DeleteProductsDialog
           products={table
@@ -28,7 +28,7 @@ export function ProductsTableToolbarActions({
         />
       ) : null}
       <Link href="/admin/products/new">
-        <Button variant="default" className="mr-4">
+        <Button variant="default" className="sm:mr-4">
           Add New Product
         </Button>
       </Link>

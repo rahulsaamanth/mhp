@@ -1,6 +1,6 @@
 "use client"
 
-import React from "react"
+import React, { useEffect } from "react"
 import {
   getCategoryCounts,
   getManufacturerCounts,
@@ -25,6 +25,7 @@ import { DeleteProductsDialog } from "./delete-products-dialog"
 import { useFeatureFlags } from "./feature-flags-provider"
 import { getColumns } from "./products-table-columns"
 import { ProductsTableToolbarActions } from "./products-table-toobar-actions"
+import { useMediaQuery } from "@/hooks/use-media-query"
 
 type ProductTableProps = {
   promises: Promise<
@@ -44,6 +45,10 @@ export function ProductsTable({
   categories,
   manufacturers,
 }: ProductTableProps) {
+  const isDesktop = useMediaQuery("(min-width: 1440px)")
+  const isTablet = useMediaQuery("(min-width: 1024px)")
+  const isMobile = useMediaQuery("(min-width: 768px)")
+
   const { featureFlags } = useFeatureFlags()
 
   const [
@@ -61,40 +66,56 @@ export function ProductsTable({
     [setRowAction]
   )
 
-  const filterFields: DataTableFilterField<ProductWithComputedFields>[] = [
-    {
-      id: "name",
-      label: "Product Name",
-      placeholder: "Filter products...",
-    },
-    {
-      id: "categoryName",
-      label: "Category",
-      options: categories.map((category) => ({
-        label: category.name,
-        value: category.name,
-        count: categoryCounts[category.name],
-      })),
-    },
-    {
-      id: "manufacturerName",
-      label: "Manufacturer",
-      options: manufacturers.map((manufacturer) => ({
-        label: manufacturer.name,
-        value: manufacturer.name,
-        count: manufacturerCounts[manufacturer.name],
-      })),
-    },
-    {
-      id: "status",
-      label: "Status",
-      options: productStatus.enumValues.map((status) => ({
-        label: status,
-        value: status,
-        count: statusCounts[status],
-      })),
-    },
-  ]
+  const getResponsiveFilterFields = () => {
+    const baseFields: DataTableFilterField<ProductWithComputedFields>[] = [
+      {
+        id: "name",
+        label: "Product Name",
+        placeholder: "Filter products...",
+      },
+    ]
+
+    if (isMobile) {
+      baseFields.push({
+        id: "categoryName",
+        label: "Category",
+        options: categories.map((category) => ({
+          label: category.name,
+          value: category.name,
+          count: categoryCounts[category.name],
+        })),
+      })
+    }
+
+    if (isTablet) {
+      baseFields.push({
+        id: "manufacturerName",
+        label: "Manufacturer",
+        options: manufacturers.map((manufacturer) => ({
+          label: manufacturer.name,
+          value: manufacturer.name,
+          count: manufacturerCounts[manufacturer.name],
+        })),
+      })
+    }
+
+    if (isDesktop) {
+      baseFields.push({
+        id: "status",
+        label: "Status",
+        options: productStatus.enumValues.map((status) => ({
+          label: status,
+          value: status,
+          count: statusCounts[status],
+        })),
+      })
+    }
+
+    return baseFields
+  }
+
+  const filterFields: DataTableFilterField<ProductWithComputedFields>[] =
+    getResponsiveFilterFields()
 
   const advancedFilterFields: DataTableAdvancedFilterField<ProductWithComputedFields>[] =
     [
@@ -129,6 +150,37 @@ export function ProductsTable({
     shallow: false,
     clearOnDefault: true,
   })
+
+  useEffect(() => {
+    const alwaysVisibleColumns = ["select", "image", "name", "actions"]
+
+    const tabletColumns = ["status", "minPrice", "stock"]
+
+    const desktopColumns = [
+      "categoryName",
+      "manufacturerName",
+      "sales",
+      "createdAt",
+    ]
+
+    table.getAllColumns().forEach((column) => {
+      const columnId = column.id
+
+      if (alwaysVisibleColumns.includes(columnId)) {
+        column.toggleVisibility(true)
+        return
+      }
+
+      if (desktopColumns.includes(columnId)) {
+        column.toggleVisibility(isDesktop)
+        return
+      }
+
+      if (tabletColumns.includes(columnId)) {
+        column.toggleVisibility(isTablet)
+      }
+    })
+  }, [isDesktop, isTablet, table])
 
   return (
     <>
