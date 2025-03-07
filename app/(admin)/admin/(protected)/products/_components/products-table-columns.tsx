@@ -77,10 +77,10 @@ export function getColumns({
         <DataTableColumnHeader column={column} title="Name" />
       ),
       cell: ({ row }) => (
-        <div className="py-4 text-wrap w-44">
+        <div className="w-[150px] sm:w-full">
           <Link
             href={`products/${row.original.id}`}
-            className="hover:underline"
+            className="hover:underline block  truncate sm:overflow-visible sm:whitespace-normal"
           >
             {row.getValue("name")}
           </Link>
@@ -132,7 +132,7 @@ export function getColumns({
         return `₹${minPrice} - ₹${maxPrice}`
       },
       enableSorting: false,
-      enableHiding: false,
+      enableHiding: true,
     },
     {
       accessorKey: "status",

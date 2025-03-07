@@ -25,7 +25,7 @@ export async function getProducts(input: GetProductsSchema) {
         const advancedTable = input.flags.includes("advancedTable")
 
         const advancedWhere: SQLChunk[] =
-          input.filters && input.filters.length > 0
+          advancedTable && input.filters && input.filters.length > 0
             ? (filterColumns({
                 table: product,
                 filters: input.filters,

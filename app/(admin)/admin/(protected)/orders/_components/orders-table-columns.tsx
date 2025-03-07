@@ -48,12 +48,12 @@ export function getColumns({
         <DataTableColumnHeader column={column} title="OrderId" />
       ),
       cell: ({ row }) => (
-        <div className="py-4 text-wrap w-44 hover:underline">
+        <div className="py-4 text-wrap hover:underline">
           <Link href={`orders/${row.original.id}`}>{row.original.id}</Link>
         </div>
       ),
       enableSorting: false,
-      enableHiding: false,
+      enableHiding: true,
     },
     {
       accessorKey: "userName",

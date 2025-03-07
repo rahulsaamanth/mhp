@@ -18,16 +18,16 @@ export async function getOrders(input: GetOrdersSchema) {
 
         const advancedTable = input.flags.includes("advancedTable")
 
-        const advancedWhere =
+        const advancedWhere: SQLChunk[] =
           input.filters && input.filters.length > 0
-            ? filterColumns({
+            ? (filterColumns({
                 table: order,
                 filters: input.filters,
                 joinOperator: input.joinOperator,
-              })
+              }) as unknown as SQLChunk[]) || []
             : []
 
-        const whereConditions = advancedTable
+        const whereConditions: SQLChunk[] = advancedTable
           ? advancedWhere
           : [
               input.orderId
@@ -42,7 +42,10 @@ export async function getOrders(input: GetOrdersSchema) {
               toDate ? sql`o."orderDate" <= ${toDate.toISOString()}` : sql`1=1`,
             ].filter(Boolean)
 
-        const whereClause = sql`${sql.join(whereConditions as SQLChunk[], sql` AND `)}`
+        const whereClause =
+          whereConditions.length > 0
+            ? sql`${sql.join(whereConditions as SQLChunk[], sql` AND `)}`
+            : sql`WHERE 1=1`
 
         const orderBy = input.sort.map((item) => {
           const direction = item.desc ? "DESC" : "ASC"
