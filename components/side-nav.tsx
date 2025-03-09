@@ -25,7 +25,7 @@ const SideNav = () => {
         >
           <span className="hidden text-3xl font-bold md:flex ml-4">
             <Image
-              src="/logo.png"
+              src="/_logo.jpg"
               alt="failed to load logo : side-nav"
               height={100}
               width={100}

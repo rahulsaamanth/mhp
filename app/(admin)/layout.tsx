@@ -24,8 +24,6 @@ export default async function AdminRootLayout({
 }>) {
   const session = await auth()
 
-  if (!session) redirect("/admin/auth/signin")
-
   return (
     <SessionProvider session={session}>
       <html lang="en" className={MontSerrat.className}>

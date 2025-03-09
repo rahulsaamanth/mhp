@@ -1,14 +1,11 @@
-import { useQuery } from "@tanstack/react-query"
-import { Loader } from "lucide-react"
-import React from "react"
-import { getProduct } from "../_lib/actions"
-import { ProductsForm } from "../_components/product-form"
 import { notFound } from "next/navigation"
 import {
   getCategories,
   getManufacturers,
   getTags,
 } from "../../sku-options/_lib/queries"
+import { ProductsForm } from "../_components/product-form"
+import { getProduct } from "../_lib/actions"
 
 async function EditProductPage({
   params,
