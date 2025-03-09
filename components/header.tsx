@@ -31,7 +31,7 @@ const Header = () => {
         <div className="flex items-center space-x-4">
           <Link href="/dashboard" className="xl:hidden ml-4">
             <Image
-              src="/logo.png"
+              src="/_logo.jpg"
               alt="failed to load logo : header"
               width={100}
               height={100}

@@ -1,23 +1,29 @@
+"use client"
+
 import { db } from "@/db/db"
 import { order } from "@/db/schema"
 import { JsonViewer } from "@/utils/json-viewer"
+import { useQuery } from "@tanstack/react-query"
 import { eq } from "drizzle-orm"
+import React from "react"
+import { getOrder } from "../_lib/actions"
+import { notFound } from "next/navigation"
 
-export default async function EditOrderPage({
+export default function EditOrderPage({
   params,
 }: {
   params: Promise<{ id: string }>
 }) {
-  const { id } = await params
-  const _order = await db.query.order.findFirst({
-    where: eq(order.id, id),
-    with: {
-      user: true,
-      shippingAddres: true,
-      billingAddress: true,
-      orderDetails: true,
-    },
+  const { id } = React.use(params)
+
+  const { data, isPending, isError } = useQuery({
+    queryKey: ["orders", id],
+    queryFn: () => getOrder(id),
   })
 
-  return <JsonViewer data={_order} />
+  if (isError) notFound()
+
+  if (isPending) return <div>Loading...</div>
+
+  return <JsonViewer data={data} />
 }

@@ -10,7 +10,7 @@ import { formatDate } from "@/lib/utils"
 import { Badge } from "@/components/ui/badge"
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
-import { Copy, Edit } from "lucide-react"
+import { Copy, Delete, Edit, Square, Trash } from "lucide-react"
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -154,6 +154,7 @@ export function getColumns({
                 | "secondary"
                 | "outline"
             }
+            className="cursor-default"
           >
             {status as string}
           </Badge>
@@ -221,11 +222,15 @@ export function getColumns({
                 <Copy className="size-4 mr-2" /> Copy ID
               </DropdownMenuItem>
               <DropdownMenuSeparator />
-              <DropdownMenuItem>View Product</DropdownMenuItem>
+              <DropdownMenuItem>
+                <Square className="size-4 mr-2" />
+                View
+              </DropdownMenuItem>
               <DropdownMenuItem
                 onClick={() => setRowAction({ row, type: "delete" })}
               >
-                Delete Product
+                <Trash className="size-4 mr-2" />
+                Delete
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
