@@ -26,14 +26,14 @@ export const Social = () => {
       >
         <Icon icon="flat-color-icons:google" width="24" height="24" />
       </Button>
-      <Button
+      {/* <Button
         size={"lg"}
         className="w-full"
         variant={"outline"}
         onClick={() => onClick("github")}
       >
         <Icon icon="mdi:github" width="24" height="24" />
-      </Button>
+      </Button> */}
     </div>
   )
 }

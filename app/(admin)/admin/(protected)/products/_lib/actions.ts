@@ -42,6 +42,7 @@ export async function deleteProducts(input: { ids: string[] }) {
 export async function deleteProduct(input: { id: string }) {
   unstable_noStore()
   try {
+    // TODO: delete the prodcut media from s3 bucket before deleting the product from the db
     await db.delete(product).where(eq(product.id, input.id))
 
     revalidateTag("products")

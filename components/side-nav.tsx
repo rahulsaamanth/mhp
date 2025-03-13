@@ -20,7 +20,7 @@ const SideNav = () => {
     <div className="fixed hidden h-screen flex-1 border-r border-zinc-200 bg-white xl:flex lg:w-52 z-50">
       <div className="flex w-full flex-col gap-6">
         <Link
-          href="/dashboard"
+          href="/admin/dashboard"
           className="flex h-20 w-full flex-row items-center justify-center space-x-3 border-b border-zinc-200 md:justify-start md:px-6"
         >
           <span className="hidden text-3xl font-bold md:flex ml-4">

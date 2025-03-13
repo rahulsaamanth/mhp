@@ -29,7 +29,7 @@ const Header = () => {
     >
       <div className="flex h-full items-center justify-between px-10">
         <div className="flex items-center space-x-4">
-          <Link href="/dashboard" className="xl:hidden ml-4">
+          <Link href="/admin/dashboard" className="xl:hidden ml-4">
             <Image
               src="/_logo.jpg"
               alt="failed to load logo : header"
