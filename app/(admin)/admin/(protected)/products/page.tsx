@@ -1,21 +1,20 @@
-import { type SearchParams } from "@/types"
-import { searchParamsCache } from "./_lib/validations"
 import { getValidFilters } from "@/lib/data-table"
+import { type SearchParams } from "@/types"
 import {
   getCategoryCounts,
   getManufacturerCounts,
   getProducts,
   getStatusCounts,
 } from "./_lib/queries"
+import { searchParamsCache } from "./_lib/validations"
 
-import { FeatureFlagsProvider } from "./_components/feature-flags-provider"
-import * as React from "react"
-import { Skeleton } from "@/components/ui/skeleton"
-import { DateRangePicker } from "@/components/date-range-picker"
 import { DataTableSkeleton } from "@/components/data-table/data-table-skeleton"
-import { ProductsTable } from "./_components/products-table"
-import { getCategories, getManufacturers } from "../sku-options/_lib/queries"
+import { DateRangePicker } from "@/components/date-range-picker"
+import { Skeleton } from "@/components/ui/skeleton"
 import { db } from "@/db/db"
+import * as React from "react"
+import { FeatureFlagsProvider } from "./_components/feature-flags-provider"
+import { ProductsTable } from "./_components/products-table"
 
 interface ProductPageProps {
   searchParams: Promise<SearchParams>

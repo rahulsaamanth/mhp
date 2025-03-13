@@ -27,7 +27,7 @@ import { login } from "@/actions/auth/login"
 
 export const LoginForm = () => {
   const searchParams = useSearchParams()
-  const callbackUrl = searchParams?.get("callbackUrl") || "/dashboard"
+  const callbackUrl = searchParams?.get("callbackUrl") || "/admin/dashboard"
   const error = searchParams?.get("error")
 
   const urlError =

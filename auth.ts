@@ -1,13 +1,12 @@
 import NextAuth from "next-auth"
 
-import { DrizzleAdapter } from "@auth/drizzle-adapter"
-import { getUserById } from "./utils/user"
-import { getTwoFactorConfirmationByUserId } from "./utils/two-factor-confirmation"
 import { getAccountByUserId } from "./utils/account"
+import { getTwoFactorConfirmationByUserId } from "./utils/two-factor-confirmation"
+import { getUserById } from "./utils/user"
 
 import { db } from "@/db/db"
-import { user as User, twoFactorConfirmation, UserRole } from "./db/schema"
 import { eq } from "drizzle-orm"
+import { user as User, UserRole, twoFactorConfirmation } from "./db/schema"
 
 import authConfig from "./auth.config"
 
@@ -110,7 +109,7 @@ export const {
       return token
     },
   },
-  adapter: DrizzleAdapter(db) as any,
+  // adapter: DrizzleAdapter(db) as any,
   session: {
     strategy: "jwt",
     maxAge: 30 * 24 * 60 * 60, // 30 days

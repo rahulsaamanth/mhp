@@ -1,5 +1,5 @@
 import { useRef, useState } from "react"
-import { X, Search } from "lucide-react"
+import { X, Search, Plus } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { COMMON_TAGS } from "@/lib/constants"
 
@@ -8,6 +8,7 @@ type MultiSelectInputProps = {
   value?: string[]
   onChange?: (value: string[]) => void
   placeholder?: string
+  allowCustomTags?: boolean
 }
 
 export const MultiSelectInput = ({
@@ -15,29 +16,44 @@ export const MultiSelectInput = ({
   value = [],
   onChange,
   placeholder = "Search tags...",
+  allowCustomTags = true,
 }: MultiSelectInputProps) => {
+  // TODO: add funtionality to reset the fields, when product is added successfully
+
   const [selectedOptions, setSelectedOptions] = useState<string[]>(value)
   const [searchTerm, setSearchTerm] = useState("")
+  const [allOptions, setAllOptions] = useState<string[]>(options)
 
   const inputRef = useRef<HTMLInputElement>(null)
 
   const getFilteredOptions = () => {
     if (searchTerm) {
-      return options.filter((opt) =>
+      return allOptions.filter((opt) =>
         opt.toLowerCase().includes(searchTerm.toLowerCase())
       )
     }
-    const commonTags = options.filter((opt) => COMMON_TAGS.includes(opt))
+    const commonTags = allOptions.filter((opt) => COMMON_TAGS.includes(opt))
 
-    return commonTags.length > 0 ? commonTags : options.slice(0, 12)
+    return commonTags.length > 0 ? commonTags : allOptions.slice(0, 12)
   }
 
   const filteredOptions = getFilteredOptions()
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    // Prevent form submission
-    if (e.key === "Enter") {
+    if (e.key === "Enter" && searchTerm && allowCustomTags) {
       e.preventDefault()
+
+      if (!allOptions.includes(searchTerm)) {
+        setAllOptions((prev) => [...prev, searchTerm])
+      }
+
+      if (!selectedOptions.includes(searchTerm)) {
+        const newSelection = [...selectedOptions, searchTerm]
+        setSelectedOptions(newSelection)
+        onChange?.(newSelection)
+      }
+
+      setSearchTerm("")
       return
     }
 
@@ -58,9 +74,22 @@ export const MultiSelectInput = ({
     inputRef.current?.focus()
   }
 
+  const addCustomTag = () => {
+    if (!searchTerm || selectedOptions.includes(searchTerm)) return
+
+    if (!allOptions.includes(searchTerm)) {
+      setAllOptions((prev) => [...prev, searchTerm])
+    }
+
+    const newSelection = [...selectedOptions, searchTerm]
+    setSelectedOptions(newSelection)
+    onChange?.(newSelection)
+    setSearchTerm("")
+    inputRef.current?.focus()
+  }
+
   return (
     <div className="flex flex-col min-h-[240px] space-y-4">
-      {/* Selected Tags Display */}
       <div
         className="min-h-[42px] w-full border rounded-lg bg-background p-2 flex flex-wrap gap-2 cursor-text"
         onClick={() => inputRef.current?.focus()}
@@ -92,7 +121,7 @@ export const MultiSelectInput = ({
             ref={inputRef}
             type="text"
             className="w-full pl-8 pr-4 py-1 outline-none text-sm bg-transparent"
-            placeholder={searchTerm ? placeholder : "Search more tags.."}
+            placeholder={searchTerm ? placeholder : "Search or add new tags.."}
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
             onKeyDown={handleKeyDown}
@@ -100,8 +129,18 @@ export const MultiSelectInput = ({
         </div>
       </div>
 
-      {/* Options Grid */}
       <div className="flex-1 overflow-y-auto">
+        {allowCustomTags && searchTerm && !allOptions.includes(searchTerm) && (
+          <button
+            type="button"
+            onClick={addCustomTag}
+            className="w-full mb-2 px-3 py-2 text-sm rounded-md transition-colors flex items-center gap-2 bg-accent/50 hover:bg-accent"
+          >
+            <Plus size={16} />
+            Add "{searchTerm}" as a new tag
+          </button>
+        )}
+
         <div className="grid grid-cols-1 md:grid-cols-2 gap-1">
           {filteredOptions.map((option, idx) => (
             <button
@@ -119,7 +158,7 @@ export const MultiSelectInput = ({
               {option}
             </button>
           ))}
-          {filteredOptions.length === 0 && (
+          {filteredOptions.length === 0 && !searchTerm && (
             <p className="col-span-full text-center text-sm text-muted-foreground py-4">
               No matching tags found
             </p>
