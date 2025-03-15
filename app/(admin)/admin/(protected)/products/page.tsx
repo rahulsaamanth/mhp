@@ -64,7 +64,6 @@ export default async function ProductsPage(props: ProductPageProps) {
               columnCount={6}
               searchableColumnCount={1}
               filterableColumnCount={3}
-              cellWidths={["10rem", "40rem", "12rem", "12rem", "8rem", "8rem"]}
               shrinkZero
             />
           }

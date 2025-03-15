@@ -78,8 +78,8 @@ export const LoginForm = () => {
     <CardWrapper
       headerLabel="welcome back"
       backButtonLabel="Forgot Pasword?"
-      backButtonHref="/auth/reset"
-      // showSocial={!showTwoFactor}
+      backButtonHref="/admin/auth/reset"
+      showSocial={!showTwoFactor}
     >
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">

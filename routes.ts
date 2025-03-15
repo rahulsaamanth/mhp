@@ -6,7 +6,7 @@
 export const publicRoutes: string[] = [
   "/",
   "/admin",
-  "admin/auth/new-verification",
+  "/admin/auth/new-verification",
 ]
 
 /**

@@ -135,14 +135,6 @@ export default async function OrdersPage(props: OrderPageProps) {
                     columnCount={6}
                     searchableColumnCount={1}
                     filterableColumnCount={0}
-                    cellWidths={[
-                      "10rem",
-                      "40rem",
-                      "12rem",
-                      "12rem",
-                      "8rem",
-                      "8rem",
-                    ]}
                     shrinkZero
                   />
                 }
