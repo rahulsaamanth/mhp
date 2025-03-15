@@ -33,7 +33,7 @@ const ProtectedLayout = ({ children }: ProtectedLayoutProps) => {
             <Header />
             <HeaderMobile />
             <PageWrapper>
-              <CurrentPathAndDateTime />
+              {/* <CurrentPathAndDateTime /> */}
               <Providers>
                 <TooltipProvider>{children}</TooltipProvider>
               </Providers>

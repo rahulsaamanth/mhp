@@ -42,7 +42,7 @@ export const NewVerificationForm = () => {
     <CardWrapper
       headerLabel="confirming your verification"
       backButtonLabel="Back to login"
-      backButtonHref="/auth/login"
+      backButtonHref="/admin/auth/login"
     >
       <div className="flex w-full flex-col items-center justify-center">
         {!success && !error && <BeatLoader />}

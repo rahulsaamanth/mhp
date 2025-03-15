@@ -9,6 +9,7 @@ import { redirect } from "next/navigation"
 
 const MontSerrat = Montserrat({
   weight: ["100", "200", "300", "400", "500", "600", "700", "800", "900"],
+  variable: "--font-montserrat",
   subsets: ["latin"],
 })
 
@@ -26,7 +27,13 @@ export default async function AdminRootLayout({
 
   return (
     <SessionProvider session={session}>
-      <html lang="en" className={MontSerrat.className}>
+      <html lang="en" className={`${MontSerrat.variable} antialiased`}>
+        <head>
+          {/* <script
+            crossOrigin="anonymous"
+            src="//unpkg.com/react-scan/dist/auto.global.js"
+          ></script> */}
+        </head>
         <body>
           <Toaster richColors theme="light" toastOptions={{}} />
           <NuqsAdapter>{children}</NuqsAdapter>

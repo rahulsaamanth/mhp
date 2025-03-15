@@ -12,7 +12,7 @@ import { db } from "./db/db"
 import { account, user, verificationToken } from "./db/schema"
 
 export default {
-  // adapter: DrizzleAdapter(db) as any,
+  // adapter: DrizzleAdapter(db),
   providers: [
     // -------------------- Not for Admin --------------------
     // Google({

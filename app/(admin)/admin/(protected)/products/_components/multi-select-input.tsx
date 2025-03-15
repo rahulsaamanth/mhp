@@ -1,4 +1,4 @@
-import { useRef, useState } from "react"
+import { useEffect, useRef, useState } from "react"
 import { X, Search, Plus } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { COMMON_TAGS } from "@/lib/constants"
@@ -18,13 +18,15 @@ export const MultiSelectInput = ({
   placeholder = "Search tags...",
   allowCustomTags = true,
 }: MultiSelectInputProps) => {
-  // TODO: add funtionality to reset the fields, when product is added successfully
-
   const [selectedOptions, setSelectedOptions] = useState<string[]>(value)
   const [searchTerm, setSearchTerm] = useState("")
   const [allOptions, setAllOptions] = useState<string[]>(options)
 
   const inputRef = useRef<HTMLInputElement>(null)
+
+  useEffect(() => {
+    setSelectedOptions(value)
+  }, [value])
 
   const getFilteredOptions = () => {
     if (searchTerm) {
@@ -48,7 +50,7 @@ export const MultiSelectInput = ({
       }
 
       if (!selectedOptions.includes(searchTerm)) {
-        const newSelection = [...selectedOptions, searchTerm]
+        const newSelection = [...selectedOptions, searchTerm.toUpperCase()]
         setSelectedOptions(newSelection)
         onChange?.(newSelection)
       }

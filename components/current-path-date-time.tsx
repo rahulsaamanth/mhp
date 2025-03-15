@@ -34,7 +34,7 @@ export const CurrentPathAndDateTime = () => {
     <Card>
       <CardContent className="flex w-full items-center justify-between rounded-md border bg-white px-6 py-4 shadow-lg shadow-zinc-200">
         <span className="text-xl sm:text-2xl">
-          <span className="text-gray-400">admin&nbsp;/&nbsp;</span>
+          {/* <span className="text-gray-400">admin&nbsp;/&nbsp;</span> */}
           {path?.replace("/", "").replaceAll("/", " / ")}
         </span>
         {showDateTime && (

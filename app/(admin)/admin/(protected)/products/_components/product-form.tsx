@@ -162,6 +162,7 @@ export const ProductsForm = ({
     form.setValue("unit", defaultValues.unit)
     form.setValue("status", defaultValues.status)
     form.setValue("tax", defaultValues.tax)
+    form.setValue("tags", defaultValues.tags)
 
     form.setValue("variants", defaultValues.variants)
   }
