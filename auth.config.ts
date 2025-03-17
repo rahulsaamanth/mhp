@@ -12,13 +12,13 @@ import { db } from "./db/db"
 import { account, user, verificationToken } from "./db/schema"
 
 export default {
-  // adapter: DrizzleAdapter(db),
+  adapter: DrizzleAdapter(db),
   providers: [
     // -------------------- Not for Admin --------------------
-    // Google({
-    //   clientId: process.env.GOOGLE_CLIENT_ID!,
-    //   clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
-    // }),
+    Google({
+      clientId: process.env.GOOGLE_CLIENT_ID!,
+      clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
+    }),
     // Github({
     //   clientId: process.env.GITHUB_CLIENT_ID,
     //   clientSecret: process.env.GITHUB_CLIENT_SECRET,
