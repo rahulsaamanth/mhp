@@ -118,21 +118,22 @@ export const productVariantSchema = z
     potency: z.enum([...potency.enumValues]),
     packSize: z.number().min(1, "Pack size must be at least 1"),
     costPrice: z.number().min(0, "Price must be positive"),
-    basePrice: z.number().min(0, "Price must be positive"),
+    mrp: z.number().min(0, "Price must be positive"),
     sku: z.string(),
     variantName: z.string(),
     sellingPrice: z.number().min(0, "Price must be positive"),
     discount: z.number().min(0, "discount musn't be negative"),
 
     discountType: z.enum(["PERCENTAGE", "FIXED"]).default("PERCENTAGE"),
-    priceCalcMode: z.enum(["FORWARD", "BACKWARD"]).default("BACKWARD"),
+    priceAfterTax: z.number().min(0, "Price must be positive"),
+    // priceCalcMode: z.enum(["FORWARD", "BACKWARD"]).default("BACKWARD"),
     stock_MANG1: z.number().min(0, "Stock must not be negative").default(0),
     stock_MANG2: z.number().min(0, "Stock must not be negative").default(0),
     stock_KERALA1: z.number().min(0, "Stock must not be negative").default(0),
     variantImage: z.array(z.any()),
   })
   .superRefine((data, ctx) => {
-    if (data.basePrice <= data.sellingPrice) {
+    if (data.mrp <= data.sellingPrice) {
       ctx.addIssue({
         code: z.ZodIssueCode.custom,
         path: ["basePrice"],
@@ -147,7 +148,7 @@ export const productVariantSchema = z
       })
     }
 
-    if (data.discountType === "FIXED" && data.discount > data.basePrice) {
+    if (data.discountType === "FIXED" && data.discount > data.mrp) {
       ctx.addIssue({
         code: z.ZodIssueCode.custom,
         path: ["discount"],
@@ -189,6 +190,7 @@ export const createProductSchema = z.object({
     .min(0, "Tax musn't be negative")
     .max(28, "Tax musn't excee the tax slab 28")
     .default(0),
+  taxInclusive: z.boolean().default(false),
   variants: z
     .array(productVariantSchema)
     .min(1, "At least one variant is required"),

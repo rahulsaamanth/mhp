@@ -67,6 +67,8 @@ import {
 } from "../_lib/actions"
 import { MultiSelectInput } from "./multi-select-input"
 import { VariantImageUpload } from "./variant-image-upload"
+import { Switch } from "@/components/ui/switch"
+import { Label } from "@/components/ui/label"
 
 type FormattedCategory = {
   id: string
@@ -105,17 +107,19 @@ export const ProductsForm = ({
     unit: productData?.unit ?? ("NONE" as const),
     hsnCode: productData?.hsnCode ?? "30049014",
     tax: productData?.tax ?? 5,
+    taxInclusive: true,
     variants: productData?.variants.map((v) => ({
       potency: v.potency,
       packSize: v.packSize ?? 0,
       costPrice: v.costPrice ?? 0,
-      basePrice: v.basePrice,
+      mrp: v.mrp,
       sellingPrice: v.sellingPrice,
       sku: v.sku,
       variantName: v.variantName,
       discount: v.discount ?? 0,
       discountType: v.discountType ?? "PERCENTAGE",
-      priceCalcMode: v.priceCalcMode ?? "BACKWARD",
+      // priceCalcMode: v.priceCalcMode ?? "BACKWARD",
+      priceAfterTax: 0,
       stock_MANG1: v.stockByLocation[0]?.stock ?? 0,
       stock_MANG2: v.stockByLocation[1]?.stock ?? 0,
       stock_KERALA1: v.stockByLocation[2]?.stock ?? 0,
@@ -125,13 +129,14 @@ export const ProductsForm = ({
         potency: "NONE" as const,
         packSize: 0 as number,
         costPrice: 0,
-        basePrice: 0,
+        mrp: 0,
         sellingPrice: 0,
         sku: "",
         variantName: "",
         discount: 0,
         discountType: "PERCENTAGE",
-        priceCalcMode: "BACKWARD",
+        // priceCalcMode: "BACKWARD",
+        priceAfterTax: 0,
         stock_MANG1: 0,
         stock_MANG2: 0,
         stock_KERALA1: 0,
@@ -565,36 +570,58 @@ export const ProductsForm = ({
                           </FormItem>
                         )}
                       />
-                      <FormField
-                        control={form.control}
-                        name="tax"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel>Select tax slab</FormLabel>
-                            <FormControl>
-                              <Select
-                                onValueChange={(val) =>
-                                  form.setValue("tax", Number(val))
-                                }
-                                value={field.value.toString()}
-                                defaultValue="5"
-                              >
-                                <SelectTrigger>
-                                  <SelectValue placeholder="Select tax slab" />
-                                </SelectTrigger>
-                                <SelectContent>
-                                  <SelectItem value="0">0</SelectItem>
-                                  <SelectItem value="5">5</SelectItem>
-                                  <SelectItem value="12">12</SelectItem>
-                                  <SelectItem value="18">18</SelectItem>
-                                  <SelectItem value="28">28</SelectItem>
-                                </SelectContent>
-                              </Select>
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
+                      <div className="flex items-center gap-4">
+                        <FormField
+                          control={form.control}
+                          name="tax"
+                          render={({ field }) => (
+                            <FormItem className="flex-1">
+                              <FormLabel>Select tax slab</FormLabel>
+                              <FormControl>
+                                <Select
+                                  onValueChange={(val) =>
+                                    form.setValue("tax", Number(val))
+                                  }
+                                  value={field.value.toString()}
+                                  defaultValue="5"
+                                >
+                                  <SelectTrigger>
+                                    <SelectValue placeholder="Select tax slab" />
+                                  </SelectTrigger>
+                                  <SelectContent>
+                                    <SelectItem value="0">0</SelectItem>
+                                    <SelectItem value="5">5</SelectItem>
+                                    <SelectItem value="12">12</SelectItem>
+                                    <SelectItem value="18">18</SelectItem>
+                                    <SelectItem value="28">28</SelectItem>
+                                  </SelectContent>
+                                </Select>
+                              </FormControl>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+                        <FormField
+                          control={form.control}
+                          name="taxInclusive"
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormControl>
+                                <div className="flex items-center space-x-2 mt-8">
+                                  <Switch
+                                    checked={field.value}
+                                    onCheckedChange={field.onChange}
+                                  />
+                                  <Label htmlFor="tax-inclusive">
+                                    Tax Inclusive
+                                  </Label>
+                                </div>
+                              </FormControl>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+                      </div>
                     </div>
                   </CardContent>
                 </Card>
@@ -611,39 +638,28 @@ export const ProductsForm = ({
                 <div className="inline-block min-w-full align-middle">
                   <Table className="min-w-full">
                     <TableHeader>
-                      <TableRow>
+                      <TableRow className="space-x-4">
                         <TableHead className="w-[40px] whitespace-nowrap">
                           No.
                         </TableHead>
-                        <TableHead className="min-w-[100px]">
+                        <TableHead className="w-[60px]">
                           <span className="hidden md:inline">Potency</span>
                           <span className="md:hidden">Pot.</span>
                         </TableHead>
-                        <TableHead className="min-w-[80px]">Size</TableHead>
-                        <TableHead className="hidden md:table-cell min-w-[90px]">
-                          Stock@M1
-                        </TableHead>
-                        <TableHead className="hidden lg:table-cell min-w-[90px]">
-                          Stock@M2
-                        </TableHead>
-                        <TableHead className="hidden lg:table-cell min-w-[90px]">
-                          Stock@K1
-                        </TableHead>
-                        <TableHead className="hidden xl:table-cell min-w-[100px]">
-                          Cost
-                        </TableHead>
-                        <TableHead className="min-w-[120px]">
-                          <span className="hidden md:inline">Calc Mode</span>
-                          <span className="md:hidden">Mode</span>
-                        </TableHead>
-                        <TableHead className="min-w-[100px]">Base ₹</TableHead>
-                        <TableHead className="min-w-[90px]">Disc.</TableHead>
-                        <TableHead className="min-w-[90px]">
+                        <TableHead className="w-[60px]">Size</TableHead>
+                        <TableHead className=" w-[60px]">Stock@M1</TableHead>
+                        <TableHead className=" w-[60px]">Stock@M2</TableHead>
+                        <TableHead className=" w-[60px]">Stock@K1</TableHead>
+                        <TableHead className=" w-[60px]">Cost</TableHead>
+                        <TableHead className="w-[60px]">Base ₹</TableHead>
+                        <TableHead className="w-[60px]">₹ After Tax</TableHead>
+                        <TableHead className="w-[80px]">Disc.</TableHead>
+                        <TableHead className="w-[60px]">
                           <span className="hidden md:inline">Disc.Type</span>
                           <span className="md:hidden">Type</span>
                         </TableHead>
-                        <TableHead className="min-w-[100px]">Sell ₹</TableHead>
-                        <TableHead className="min-w-[160px]">Images</TableHead>
+                        <TableHead className="w-[60px]">Sell ₹</TableHead>
+                        <TableHead className="w-[120px] pl-4">Images</TableHead>
                       </TableRow>
                     </TableHeader>
                     <TableBody>
@@ -673,12 +689,13 @@ export const ProductsForm = ({
                     packSize: 0,
                     costPrice: 0,
                     sellingPrice: 0,
-                    basePrice: 0,
+                    mrp: 0,
                     sku: "",
                     variantName: "",
                     discount: 0,
                     discountType: "PERCENTAGE",
-                    priceCalcMode: "BACKWARD",
+                    // priceCalcMode: "BACKWARD",
+                    priceAfterTax: 0,
                     stock_MANG1: 0,
                     stock_MANG2: 0,
                     stock_KERALA1: 0,
@@ -732,75 +749,60 @@ const VariantFields = ({
   const fIndex = (index + 1).toString().padStart(2, "0")
 
   React.useEffect(() => {
-    const calculateForwardPrice = (
-      basePrice: number,
-      discount: number,
-      discountType: "PERCENTAGE" | "FIXED",
-      taxPercentage: number
-    ) => {
-      const discountAmount =
-        discountType === "PERCENTAGE" ? (basePrice * discount) / 100 : discount
+    const calculatePrice = () => {
+      const variant = form.getValues(`variants.${index}`)
+      const tax = form.getValues("tax")
+      const taxInclusive = form.getValues("taxInclusive")
 
-      const priceAfterDiscount = basePrice - discountAmount
-      const taxAmount = (priceAfterDiscount * taxPercentage) / 100
-      const finalPrice = priceAfterDiscount + taxAmount
+      if (!variant.mrp) return
 
-      return Number(finalPrice.toFixed(2))
-    }
+      let basePrice = variant.mrp
 
-    const calculateBackwardPrice = (
-      sellingPrice: number,
-      discount: number,
-      discountType: "PERCENTAGE" | "FIXED",
-      taxPercentage: number
-    ) => {
-      const priceBeforeTax = sellingPrice / (1 + taxPercentage / 100)
+      const priceAfterTax = taxInclusive
+        ? basePrice
+        : basePrice * (1 + tax / 100)
 
-      let basePrice
-      if (discountType === "PERCENTAGE") {
-        basePrice = priceBeforeTax / (1 - discount / 100)
-      } else {
-        basePrice = priceBeforeTax + discount
+      form.setValue(
+        `variants.${index}.priceAfterTax`,
+        Number(priceAfterTax.toFixed(2))
+      )
+      // Calculate price after applying discount
+      let calculatedPrice = basePrice
+      if (variant.discount) {
+        const discountAmount =
+          variant.discountType === "PERCENTAGE"
+            ? (calculatedPrice * variant.discount) / 100
+            : variant.discount
+        calculatedPrice -= discountAmount
       }
 
-      return Number(basePrice.toFixed(2))
+      // Set selling price
+      let sellingPrice = calculatedPrice
+
+      // Only apply tax if tax is not included (toggle is off)
+      if (!taxInclusive) {
+        sellingPrice = calculatedPrice * (1 + tax / 100)
+      }
+
+      // Update selling price if changed
+      const currentSellingPrice = form.getValues(
+        `variants.${index}.sellingPrice`
+      )
+      if (Math.abs(sellingPrice - currentSellingPrice) > 0.01) {
+        form.setValue(
+          `variants.${index}.sellingPrice`,
+          Number(sellingPrice.toFixed(2))
+        )
+      }
     }
 
-    const variant = form.getValues(`variants.${index}`)
-    const tax = form.getValues("tax")
-    const mode = variant.priceCalcMode
-
-    if (!variant.basePrice && !variant.sellingPrice) return
-
-    const currentSellingPrice = form.getValues(`variants.${index}.sellingPrice`)
-    const currentBasePrice = form.getValues(`variants.${index}.basePrice`)
-
-    if (mode === "FORWARD") {
-      const calculatedSellingPrice = calculateForwardPrice(
-        variant.basePrice,
-        variant.discount,
-        variant.discountType,
-        tax
-      )
-      if (Math.abs(calculatedSellingPrice - currentSellingPrice) > 0.01)
-        form.setValue(`variants.${index}.sellingPrice`, calculatedSellingPrice)
-    } else {
-      const calculatedBasePrice = calculateBackwardPrice(
-        variant.sellingPrice,
-        variant.discount,
-        variant.discountType,
-        tax
-      )
-      if (Math.abs(calculatedBasePrice - currentBasePrice) > 0.01)
-        form.setValue(`variants.${index}.basePrice`, calculatedBasePrice)
-    }
+    calculatePrice()
   }, [
-    form.watch(`variants.${index}.basePrice`),
-    form.watch(`variants.${index}.sellingPrice`),
+    form.watch(`variants.${index}.mrp`),
     form.watch(`variants.${index}.discount`),
     form.watch(`variants.${index}.discountType`),
-    form.watch(`variants.${index}.priceCalcMode`),
     form.watch("tax"),
+    form.watch("taxInclusive"),
     index,
     form,
   ])
@@ -816,7 +818,7 @@ const VariantFields = ({
             <FormItem>
               <FormControl>
                 <Select onValueChange={field.onChange} value={field.value}>
-                  <SelectTrigger>
+                  <SelectTrigger className="w-full">
                     <SelectValue placeholder="Select potency" />
                   </SelectTrigger>
                   <SelectContent>
@@ -849,7 +851,7 @@ const VariantFields = ({
                       e.target.value === "" ? 0 : e.target.valueAsNumber
                     field.onChange(value)
                   }}
-                  className="[appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none w-ful l min-w-[80px] px-2 text-sm"
+                  className="[appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none w-full min-w-[40px] px-2 text-sm"
                   placeholder="20"
                 />
               </FormControl>
@@ -858,7 +860,7 @@ const VariantFields = ({
           )}
         />
       </TableCell>
-      <TableCell className="hidden md:table-cell">
+      <TableCell>
         <FormField
           control={form.control}
           name={`variants.${index}.stock_MANG1`}
@@ -875,7 +877,7 @@ const VariantFields = ({
                     field.onChange(value)
                   }}
                   placeholder="20"
-                  className="[appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none w-ful  min-w-[80px] px-2 text-sm"
+                  className="[appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none w-full min-w-[40px] px-2 text-sm"
                 />
               </FormControl>
               <FormMessage />
@@ -900,7 +902,7 @@ const VariantFields = ({
                     field.onChange(value)
                   }}
                   placeholder="20"
-                  className="[appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none w-ful l min-w-[80px] px-2 text-sm"
+                  className="[appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none w-full min-w-[40px] px-2 text-sm"
                 />
               </FormControl>
               <FormMessage />
@@ -925,7 +927,7 @@ const VariantFields = ({
                     field.onChange(value)
                   }}
                   placeholder="20"
-                  className="[appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none w-ful l min-w-[80px] px-2 text-sm"
+                  className="[appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none w-full min-w-[40px] px-2 text-sm"
                 />
               </FormControl>
               <FormMessage />
@@ -949,7 +951,7 @@ const VariantFields = ({
                       e.target.value === "" ? 0 : e.target.valueAsNumber
                     field.onChange(value)
                   }}
-                  className="[appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none w-ful l min-w-[80px] px-2 text-sm"
+                  className="[appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none w-full min-w-[40px] px-2 text-sm"
                   placeholder="100"
                 />
               </FormControl>
@@ -959,7 +961,7 @@ const VariantFields = ({
         />
       </TableCell>
 
-      <TableCell>
+      {/* <TableCell>
         <FormField
           control={form.control}
           name={`variants.${index}.priceCalcMode`}
@@ -983,12 +985,12 @@ const VariantFields = ({
             </FormItem>
           )}
         />
-      </TableCell>
+      </TableCell> */}
 
       <TableCell>
         <FormField
           control={form.control}
-          name={`variants.${index}.basePrice`}
+          name={`variants.${index}.mrp`}
           render={({ field }) => (
             <FormItem>
               <FormControl>
@@ -1001,14 +1003,38 @@ const VariantFields = ({
                       e.target.value === "" ? 0 : e.target.valueAsNumber
                     field.onChange(value)
                   }}
-                  disabled={
-                    form.watch(`variants.${index}.priceCalcMode`) === "BACKWARD"
-                  }
                   className={cn(
                     "[appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none",
-                    "w-full min-w-[80px] px-2 text-sm",
-                    form.watch(`variants.${index}.priceCalcMode`) ===
-                      "BACKWARD" && "bg-muted"
+                    "w-full min-w-[40px] px-2 text-sm"
+                  )}
+                  placeholder="180"
+                />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+      </TableCell>
+      <TableCell>
+        <FormField
+          control={form.control}
+          name={`variants.${index}.priceAfterTax`}
+          render={({ field }) => (
+            <FormItem>
+              <FormControl>
+                <Input
+                  type="number"
+                  {...field}
+                  value={field.value === 0 ? "" : field.value}
+                  onChange={(e) => {
+                    const value =
+                      e.target.value === "" ? 0 : e.target.valueAsNumber
+                    field.onChange(value)
+                  }}
+                  disabled={true}
+                  className={cn(
+                    "[appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none",
+                    "w-full min-w-[40px] px-2 text-sm bg-muted"
                   )}
                   placeholder="180"
                 />
@@ -1035,7 +1061,7 @@ const VariantFields = ({
                       e.target.value === "" ? 0 : e.target.valueAsNumber
                     field.onChange(value)
                   }}
-                  className="[appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none w-ful l min-w-[80px] px-2 text-sm"
+                  className="[appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none w-full min-w-[20px] px-2 text-sm"
                   placeholder="10"
                 />
               </FormControl>
@@ -1086,14 +1112,9 @@ const VariantFields = ({
                       e.target.value === "" ? 0 : e.target.valueAsNumber
                     field.onChange(value)
                   }}
-                  disabled={
-                    form.watch(`variants.${index}.priceCalcMode`) === "FORWARD"
-                  }
                   className={cn(
                     "[appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none",
-                    "w-full min-w-[80px] px-2 text-sm",
-                    form.watch(`variants.${index}.priceCalcMode`) ===
-                      "FORWARD" && "bg-muted"
+                    "w-full min-w-[40px] px-2 text-sm"
                   )}
                   placeholder="150"
                 />

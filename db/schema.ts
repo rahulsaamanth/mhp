@@ -183,8 +183,6 @@ export const potency = pgEnum("potency", [
 
 export const discountType = pgEnum("discountType", ["PERCENTAGE", "FIXED"])
 
-export const priceCalcMode = pgEnum("priceCalcMode", ["FORWARD", "BACKWARD"])
-
 export type UserRole = (typeof userRole.enumValues)[number]
 
 export type User = typeof user.$inferSelect
@@ -452,11 +450,10 @@ export const productVariant = pgTable(
       .notNull()
       .default([]),
     costPrice: doublePrecision("costPrice"),
-    basePrice: doublePrecision("basePrice").notNull(),
+    mrp: doublePrecision("mrp").notNull(),
 
     discount: integer("discount").default(0),
     discountType: discountType("discountType").default("PERCENTAGE"),
-    priceCalcMode: priceCalcMode("priceCalcMode").default("BACKWARD"),
 
     sellingPrice: doublePrecision("sellingPrice").notNull(),
   },

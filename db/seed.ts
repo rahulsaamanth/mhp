@@ -460,7 +460,7 @@ async function seed() {
         packSize: 20,
         potency: "3X",
         costPrice: 120,
-        basePrice: 150, // Add base price before tax and discount
+        mrp: 150, // Add base price before tax and discount
         sellingPrice: 165,
         discount: 10,
         discountType: "PERCENTAGE",
@@ -480,7 +480,7 @@ async function seed() {
         packSize: 20,
         potency: "6X",
         costPrice: 120,
-        basePrice: 150, // Add base price before tax and discount
+        mrp: 150, // Add base price before tax and discount
         sellingPrice: 165,
         discount: 10,
         discountType: "PERCENTAGE",
@@ -500,7 +500,7 @@ async function seed() {
         packSize: 20,
         potency: "12X",
         costPrice: 120,
-        basePrice: 150, // Add base price before tax and discount
+        mrp: 150, // Add base price before tax and discount
         sellingPrice: 165,
         discount: 10,
         discountType: "PERCENTAGE",
@@ -520,7 +520,7 @@ async function seed() {
         packSize: 20,
         potency: "30X",
         costPrice: 150,
-        basePrice: 180, // Add base price before tax and discount
+        mrp: 180, // Add base price before tax and discount
         sellingPrice: 200,
         discount: 10,
         discountType: "PERCENTAGE",
@@ -540,7 +540,7 @@ async function seed() {
         packSize: 20,
         potency: "200X",
         costPrice: 200,
-        basePrice: 230, // Add base price before tax and discount
+        mrp: 230, // Add base price before tax and discount
         sellingPrice: 250,
         discount: 10,
         discountType: "PERCENTAGE",
@@ -560,7 +560,7 @@ async function seed() {
         packSize: 20,
         potency: "3X",
         costPrice: 120,
-        basePrice: 150, // Add base price before tax and discount
+        mrp: 150, // Add base price before tax and discount
         sellingPrice: 165,
         discount: 10,
         discountType: "PERCENTAGE",
@@ -580,7 +580,7 @@ async function seed() {
         packSize: 20,
         potency: "6X",
         costPrice: 120,
-        basePrice: 150, // Add base price before tax and discount
+        mrp: 150, // Add base price before tax and discount
         sellingPrice: 165,
         discount: 10,
         discountType: "PERCENTAGE",
@@ -600,7 +600,7 @@ async function seed() {
         packSize: 25,
         potency: "NONE",
         costPrice: 60,
-        basePrice: 80, // Add base price before tax and discount
+        mrp: 80, // Add base price before tax and discount
         sellingPrice: 90,
         discount: 10,
         discountType: "PERCENTAGE",
@@ -620,7 +620,7 @@ async function seed() {
         packSize: 450,
         potency: "6X",
         costPrice: 500,
-        basePrice: 600, // Add base price before tax and discount
+        mrp: 600, // Add base price before tax and discount
         sellingPrice: 650,
         discount: 10,
         discountType: "PERCENTAGE",
@@ -640,7 +640,7 @@ async function seed() {
         packSize: 25,
         potency: "6X",
         costPrice: 60,
-        basePrice: 80, // Add base price before tax and discount
+        mrp: 80, // Add base price before tax and discount
         sellingPrice: 90,
         discount: 10,
         discountType: "PERCENTAGE",
@@ -660,7 +660,7 @@ async function seed() {
         packSize: 450,
         potency: "6X",
         costPrice: 500,
-        basePrice: 600, // Add base price before tax and discount
+        mrp: 600, // Add base price before tax and discount
         sellingPrice: 650,
         discount: 10,
         discountType: "PERCENTAGE",
@@ -680,7 +680,7 @@ async function seed() {
         packSize: 25,
         potency: "200X",
         costPrice: 60,
-        basePrice: 80, // Add base price before tax and discount
+        mrp: 80, // Add base price before tax and discount
         sellingPrice: 90,
         discount: 10,
         discountType: "PERCENTAGE",
@@ -700,7 +700,7 @@ async function seed() {
         packSize: 450,
         potency: "200X",
         costPrice: 500,
-        basePrice: 600, // Add base price before tax and discount
+        mrp: 600, // Add base price before tax and discount
         sellingPrice: 650,
         discount: 10,
         discountType: "PERCENTAGE",
@@ -720,7 +720,7 @@ async function seed() {
         packSize: 25,
         potency: "10M",
         costPrice: 60,
-        basePrice: 80, // Add base price before tax and discount
+        mrp: 80, // Add base price before tax and discount
         sellingPrice: 90,
         discount: 10,
         discountType: "PERCENTAGE",
@@ -740,7 +740,7 @@ async function seed() {
         packSize: 450,
         costPrice: 500,
         potency: "NONE",
-        basePrice: 600, // Add base price before tax and discount
+        mrp: 600, // Add base price before tax and discount
         sellingPrice: 650,
         discount: 10,
         discountType: "PERCENTAGE",
@@ -760,7 +760,7 @@ async function seed() {
         packSize: 25,
         potency: "30C",
         costPrice: 60,
-        basePrice: 80, // Add base price before tax and discount
+        mrp: 80, // Add base price before tax and discount
         sellingPrice: 90,
         discount: 10,
         discountType: "PERCENTAGE",
@@ -780,7 +780,7 @@ async function seed() {
         packSize: 450,
         potency: "NONE",
         costPrice: 500,
-        basePrice: 600, // Add base price before tax and discount
+        mrp: 600, // Add base price before tax and discount
         sellingPrice: 650,
         discount: 10,
         discountType: "PERCENTAGE",
@@ -800,7 +800,7 @@ async function seed() {
         packSize: 25,
         potency: "NONE",
         costPrice: 60,
-        basePrice: 80, // Add base price before tax and discount
+        mrp: 80, // Add base price before tax and discount
         sellingPrice: 90,
         discount: 10,
         discountType: "PERCENTAGE",
@@ -820,7 +820,7 @@ async function seed() {
         packSize: 450,
         potency: "NONE",
         costPrice: 500,
-        basePrice: 600, // Add base price before tax and discount
+        mrp: 600, // Add base price before tax and discount
         sellingPrice: 650,
         discount: 10,
         discountType: "PERCENTAGE",
@@ -840,7 +840,7 @@ async function seed() {
         packSize: 20,
         potency: "30X",
         costPrice: 120,
-        basePrice: 150, // Add base price before tax and discount
+        mrp: 150, // Add base price before tax and discount
         sellingPrice: 165,
         discount: 10,
         discountType: "PERCENTAGE",
@@ -860,7 +860,7 @@ async function seed() {
         packSize: 20,
         potency: "12X",
         costPrice: 120,
-        basePrice: 150, // Add base price before tax and discount
+        mrp: 150, // Add base price before tax and discount
         sellingPrice: 165,
         discount: 10,
         discountType: "PERCENTAGE",
@@ -879,7 +879,7 @@ async function seed() {
         ],
         packSize: 20,
         costPrice: 120,
-        basePrice: 150, // Add base price before tax and discount
+        mrp: 150, // Add base price before tax and discount
         sellingPrice: 165,
         discount: 10,
         discountType: "PERCENTAGE",
@@ -898,7 +898,7 @@ async function seed() {
         ],
         packSize: 20,
         costPrice: 60,
-        basePrice: 80, // Add base price before tax and discount
+        mrp: 80, // Add base price before tax and discount
         sellingPrice: 85,
         discount: 10,
         discountType: "PERCENTAGE",
@@ -917,7 +917,7 @@ async function seed() {
         ],
         packSize: 550,
         costPrice: 600,
-        basePrice: 700, // Add base price before tax and discount
+        mrp: 700, // Add base price before tax and discount
         sellingPrice: 730,
         discount: 10,
         discountType: "PERCENTAGE",
@@ -936,7 +936,7 @@ async function seed() {
         ],
         packSize: 20,
         costPrice: 60,
-        basePrice: 80, // Add base price before tax and discount
+        mrp: 80, // Add base price before tax and discount
         sellingPrice: 85,
         discount: 10,
         discountType: "PERCENTAGE",
@@ -955,7 +955,7 @@ async function seed() {
         ],
         packSize: 550,
         costPrice: 600,
-        basePrice: 700, // Add base price before tax and discount
+        mrp: 700, // Add base price before tax and discount
         sellingPrice: 730,
         discount: 10,
         discountType: "PERCENTAGE",
@@ -975,7 +975,7 @@ async function seed() {
         packSize: 30,
         potency: "1M CH",
         costPrice: 100,
-        basePrice: 120, // Add base price before tax and discount
+        mrp: 120, // Add base price before tax and discount
         sellingPrice: 130,
         discount: 10,
         discountType: "PERCENTAGE",
@@ -995,7 +995,7 @@ async function seed() {
         packSize: 30,
         potency: "200CH",
         costPrice: 70,
-        basePrice: 90, // Add base price before tax and discount
+        mrp: 90, // Add base price before tax and discount
         sellingPrice: 90,
         discount: 10,
         discountType: "PERCENTAGE",
@@ -1015,7 +1015,7 @@ async function seed() {
         packSize: 30,
         potency: "30CH",
         costPrice: 60,
-        basePrice: 80, // Add base price before tax and discount
+        mrp: 80, // Add base price before tax and discount
         sellingPrice: 85,
         discount: 10,
         discountType: "PERCENTAGE",
@@ -1035,7 +1035,7 @@ async function seed() {
         packSize: 30,
         potency: "6CH",
         costPrice: 60,
-        basePrice: 80, // Add base price before tax and discount
+        mrp: 80, // Add base price before tax and discount
         sellingPrice: 85,
         discount: 10,
         discountType: "PERCENTAGE",
@@ -1055,7 +1055,7 @@ async function seed() {
         packSize: 30,
         potency: "1X",
         costPrice: 90,
-        basePrice: 110, // Add base price before tax and discount
+        mrp: 110, // Add base price before tax and discount
         sellingPrice: 115,
         discount: 10,
         discountType: "PERCENTAGE",
@@ -1074,7 +1074,7 @@ async function seed() {
         ],
         potency: "NONE",
         costPrice: 200,
-        basePrice: 250, // Add base price before tax and discount
+        mrp: 250, // Add base price before tax and discount
         sellingPrice: 290,
         discount: 10,
         discountType: "PERCENTAGE",
@@ -1093,7 +1093,7 @@ async function seed() {
         ],
         packSize: 100,
         costPrice: 100,
-        basePrice: 130, // Add base price before tax and discount
+        mrp: 130, // Add base price before tax and discount
         sellingPrice: 155,
         discount: 10,
         discountType: "PERCENTAGE",
@@ -1112,7 +1112,7 @@ async function seed() {
         ],
         packSize: 60,
         costPrice: 60,
-        basePrice: 80, // Add base price before tax and discount
+        mrp: 80, // Add base price before tax and discount
         sellingPrice: 95,
         discount: 10,
         discountType: "PERCENTAGE",
@@ -1131,7 +1131,7 @@ async function seed() {
         ],
         packSize: 25,
         costPrice: 50,
-        basePrice: 70, // Add base price before tax and discount
+        mrp: 70, // Add base price before tax and discount
         sellingPrice: 80,
         discount: 10,
         discountType: "PERCENTAGE",
@@ -1150,7 +1150,7 @@ async function seed() {
         ],
         packSize: 25,
         costPrice: 100,
-        basePrice: 130, // Add base price before tax and discount
+        mrp: 130, // Add base price before tax and discount
         sellingPrice: 155,
         discount: 10,
         discountType: "PERCENTAGE",
@@ -1169,7 +1169,7 @@ async function seed() {
         ],
         packSize: 30,
         costPrice: 250,
-        basePrice: 350, // Add base price before tax and discount
+        mrp: 350, // Add base price before tax and discount
         sellingPrice: 385,
         discount: 10,
         discountType: "PERCENTAGE",
@@ -1188,7 +1188,7 @@ async function seed() {
         ],
         packSize: 60,
         costPrice: 500,
-        basePrice: 700, // Add base price before tax and discount
+        mrp: 700, // Add base price before tax and discount
         sellingPrice: 775,
         discount: 10,
         discountType: "PERCENTAGE",
@@ -1207,7 +1207,7 @@ async function seed() {
         ],
         packSize: 30,
         costPrice: 60,
-        basePrice: 80, // Add base price before tax and discount
+        mrp: 80, // Add base price before tax and discount
         sellingPrice: 85,
         discount: 10,
         discountType: "PERCENTAGE",
