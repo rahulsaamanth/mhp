@@ -79,7 +79,7 @@ export const LoginForm = () => {
       headerLabel="welcome back"
       backButtonLabel="Forgot Pasword?"
       backButtonHref="/admin/auth/reset"
-      // showSocial={!showTwoFactor}
+      showSocial={!showTwoFactor}
     >
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">

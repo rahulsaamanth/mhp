@@ -9,10 +9,10 @@
     "start": "next start",
     "lint": "next lint",
     "format": "prettier --write \"**/*.{js,ts,jsx,tsx}\"",
-    "db:seed": "dotenv -e .env -- tsx db/seed.ts"
+    "db:seed": "dotenv -e .env -- tsx db/seed.ts",
+    "mail": "dotenv -e .env -- tsx lib/mail.ts"
   },
   "dependencies": {
-    "@auth/core": "^0.38.0",
     "@auth/drizzle-adapter": "^1.8.0",
     "@aws-sdk/client-s3": "^3.540.0",
     "@aws-sdk/s3-request-presigner": "^3.540.0",
@@ -109,8 +109,5 @@
       "@types/react": "19.0.1",
       "@types/react-dom": "19.0.2"
     }
-  },
-  "next": {
-    "runtime": "nodejs"
   }
 }

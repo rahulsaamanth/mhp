@@ -32,3 +32,19 @@ export const sendVerificationEmail = async (email: string, token: string) => {
     html: `<p>Click <a href="${confirmLink}">here</a> to confirm email.</p>`,
   })
 }
+
+// async function mail() {
+//   await resend.emails.send({
+//     from: "noreply@mail.rahulsaamanth.in",
+//     to: "rahulsaamanth@yahoo.com",
+//     subject: "message",
+//     html: `<p>just testing</p>`,
+//   })
+//   console.log("✅ mail sent.")
+// }
+
+// mail().catch((e) => {
+//   console.error("❌ error whie sending email:")
+//   console.error(e)
+//   process.exit(1)
+// })
