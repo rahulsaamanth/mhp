@@ -1,11 +1,10 @@
 import type { Metadata } from "next"
 import { Montserrat } from "next/font/google"
 import { SessionProvider } from "next-auth/react"
-import "./admin/styles/globals.css"
+import "./styles/globals.css"
 import { auth } from "@/auth"
 import { Toaster } from "@/components/ui/sonner"
 import { NuqsAdapter } from "nuqs/adapters/next/app"
-import { redirect } from "next/navigation"
 
 const MontSerrat = Montserrat({
   weight: ["100", "200", "300", "400", "500", "600", "700", "800", "900"],

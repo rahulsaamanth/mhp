@@ -226,6 +226,7 @@ export async function createProduct(data: z.infer<typeof createProductSchema>) {
       const variantsToInsert = variants.map((variant) => ({
         ...variant,
         productId: newProduct.id,
+        mrp: variant.priceAfterTax,
         stockByLocation: [
           {
             location: "MANGALORE-01" as const,

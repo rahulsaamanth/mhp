@@ -1,6 +1,6 @@
 {
-  "id": "bf3524c1-1e43-4c10-8679-b58cd2de7ba6",
-  "prevId": "00000000-0000-0000-0000-000000000000",
+  "id": "260fc2e8-92ba-4234-8796-c4fc88068958",
+  "prevId": "bf3524c1-1e43-4c10-8679-b58cd2de7ba6",
   "version": "7",
   "dialect": "postgresql",
   "tables": {
@@ -1403,8 +1403,8 @@
           "primaryKey": false,
           "notNull": false
         },
-        "basePrice": {
-          "name": "basePrice",
+        "mrp": {
+          "name": "mrp",
           "type": "double precision",
           "primaryKey": false,
           "notNull": true
