@@ -9,6 +9,7 @@ import { eq } from "drizzle-orm"
 import { user as User, UserRole, twoFactorConfirmation } from "./db/schema"
 
 import authConfig from "./auth.config"
+import { DrizzleAdapter } from "@auth/drizzle-adapter"
 
 declare module "next-auth" {
   interface User {
@@ -16,13 +17,7 @@ declare module "next-auth" {
   }
 }
 
-export const {
-  handlers: { GET, POST },
-  auth,
-  signIn,
-  signOut,
-  unstable_update,
-} = NextAuth({
+export const { handlers, auth, signIn, signOut, unstable_update } = NextAuth({
   pages: {
     signIn: "/admin/auth/login",
     error: "/admin/auth/error",
@@ -109,21 +104,11 @@ export const {
       return token
     },
   },
-  // adapter: DrizzleAdapter(db) as any,
+  adapter: DrizzleAdapter(db) as any,
   session: {
     strategy: "jwt",
     maxAge: 30 * 24 * 60 * 60, // 30 days
   },
-  // cookies: {
-  //   sessionToken: {
-  //     name: "next-auth.session-token",
-  //     options: {
-  //       httpOnly: true,
-  //       sameSite: "lax",
-  //       path: "/",
-  //       secure: process.env.NODE_ENV === "production",
-  //     },
-  //   },
-  // },
+
   ...authConfig,
 })
