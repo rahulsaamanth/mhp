@@ -12,7 +12,10 @@ import { generateVerificationToken, generateTwoFactorToken } from "@/lib/tokens"
 import { getTwoFactorTokenByEmail } from "@/utils/two-factor-token"
 import { db } from "@/db/db"
 import { getTwoFactorConfirmationByUserId } from "@/utils/two-factor-confirmation"
-import { twoFactorConfirmation, twoFactorToken } from "@/db/schema"
+import {
+  twoFactorConfirmation,
+  twoFactorToken,
+} from "@rahulsaamanth/mhp_shared-schema"
 import { eq } from "drizzle-orm"
 
 export const login = async (

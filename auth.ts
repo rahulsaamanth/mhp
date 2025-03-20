@@ -8,8 +8,8 @@ import { db } from "@/db/db"
 import { eq } from "drizzle-orm"
 import { user as User, UserRole, twoFactorConfirmation } from "./db/schema"
 
-import authConfig from "./auth.config"
 import { DrizzleAdapter } from "@auth/drizzle-adapter"
+import authConfig from "./auth.config"
 
 declare module "next-auth" {
   interface User {
@@ -22,17 +22,17 @@ export const { handlers, auth, signIn, signOut, unstable_update } = NextAuth({
     signIn: "/admin/auth/login",
     error: "/admin/auth/error",
   },
-  events: {
-    async linkAccount({ user }) {
-      await db
-        .update(User)
-        .set({
-          emailVerified: new Date(),
-        })
-        .where(eq(User.id, user.id!))
-        .execute()
-    },
-  },
+  // events: {
+  //   async linkAccount({ user }) {
+  //     await db
+  //       .update(User)
+  //       .set({
+  //         emailVerified: new Date(),
+  //       })
+  //       .where(eq(User.id, user.id!))
+  //       .execute()
+  //   },
+  // },
 
   callbacks: {
     async signIn({ user, account }) {

@@ -1,5 +1,5 @@
 import { db } from "@/db/db"
-import { verificationToken } from "@/db/schema"
+import { verificationToken } from "@rahulsaamanth/mhp_shared-schema"
 import { eq } from "drizzle-orm"
 
 export const getVerificationTokenByEmail = async (email: string) => {

@@ -1,5 +1,5 @@
 import { db } from "@/db/db"
-import { passwordResetToken } from "@/db/schema"
+import { passwordResetToken } from "@rahulsaamanth/mhp_shared-schema"
 import { eq } from "drizzle-orm"
 
 export const getPasswordResetTokenByToken = async (token: string) => {

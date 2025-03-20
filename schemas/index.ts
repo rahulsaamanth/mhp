@@ -1,4 +1,4 @@
-import { discountType, potency } from "@/db/schema"
+import { discountType, potency } from "@rahulsaamanth/mhp_shared-schema"
 import * as z from "zod"
 
 const ACCEPTED_IMAGE_MIME_TYPES = [
@@ -118,26 +118,25 @@ export const productVariantSchema = z
     potency: z.enum([...potency.enumValues]),
     packSize: z.number().min(1, "Pack size must be at least 1"),
     costPrice: z.number().min(0, "Price must be positive"),
-    mrp: z.number().min(0, "Price must be positive"),
+    mrp: z.number().min(0, "MRP must be positive"),
     sku: z.string(),
     variantName: z.string(),
     sellingPrice: z.number().min(0, "Price must be positive"),
     discount: z.number().min(0, "discount musn't be negative"),
-
     discountType: z.enum(["PERCENTAGE", "FIXED"]).default("PERCENTAGE"),
     priceAfterTax: z.number().min(0, "Price must be positive"),
-    // priceCalcMode: z.enum(["FORWARD", "BACKWARD"]).default("BACKWARD"),
     stock_MANG1: z.number().min(0, "Stock must not be negative").default(0),
     stock_MANG2: z.number().min(0, "Stock must not be negative").default(0),
     stock_KERALA1: z.number().min(0, "Stock must not be negative").default(0),
     variantImage: z.array(z.any()),
   })
   .superRefine((data, ctx) => {
-    if (data.mrp <= data.sellingPrice) {
+    if (data.mrp < data.sellingPrice) {
+      // Changed from <= to <
       ctx.addIssue({
         code: z.ZodIssueCode.custom,
-        path: ["basePrice"],
-        message: "Base price must be greater than selling price",
+        path: ["mrp"],
+        message: "MRP must be greater than or equal to selling price",
       })
     }
     if (data.discountType === "PERCENTAGE" && data.discount > 100) {
@@ -147,12 +146,11 @@ export const productVariantSchema = z
         message: "Percentage discount cannot be more than 100%",
       })
     }
-
     if (data.discountType === "FIXED" && data.discount > data.mrp) {
       ctx.addIssue({
         code: z.ZodIssueCode.custom,
         path: ["discount"],
-        message: "Fixed discount cannot be more than base price",
+        message: "Fixed discount cannot be more than MRP",
       })
     }
   })
@@ -190,8 +188,13 @@ export const createProductSchema = z.object({
     .min(0, "Tax musn't be negative")
     .max(28, "Tax musn't excee the tax slab 28")
     .default(0),
-  taxInclusive: z.boolean().default(false),
+  taxInclusive: z.boolean().optional(),
   variants: z
     .array(productVariantSchema)
     .min(1, "At least one variant is required"),
 })
+
+export type ProductCreateInput = Omit<
+  z.infer<typeof createProductSchema>,
+  "taxInclusive"
+>

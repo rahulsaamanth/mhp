@@ -31,7 +31,7 @@ import {
 } from "@/components/ui/table"
 
 import Tiptap from "@/components/editor"
-import { createProductSchema } from "@/schemas"
+import { ProductCreateInput, createProductSchema } from "@/schemas"
 import { useRouter } from "next/navigation"
 import { UseFormReturn, useFieldArray, useForm } from "react-hook-form"
 import * as z from "zod"
@@ -53,7 +53,7 @@ import {
   potency,
   productForm,
   unitOfMeasure,
-} from "@/db/schema"
+} from "@rahulsaamanth/mhp_shared-schema"
 import { cn, generateSKU, generateVariantName } from "@/lib/utils"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useMutation } from "@tanstack/react-query"
@@ -250,12 +250,23 @@ export const ProductsForm = ({
         })
       }
 
-      server_handleProduct({
-        ...data,
+      const _data: ProductCreateInput = {
+        name: data.name,
+        description: data.description,
+        categoryId: data.categoryId,
+        manufacturerId: data.manufacturerId,
+        tags: data.tags,
+        status: data.status,
+        form: data.form,
+        unit: data.unit,
+        hsnCode: data.hsnCode,
+        tax: data.tax,
         variants: _variants,
-      })
+      }
+
+      server_handleProduct(_data)
     } catch (error) {
-      console.error("form submission failed", error)
+      console.error(error)
       toast.error("Failed to submit form")
     }
   }

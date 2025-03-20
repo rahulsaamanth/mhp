@@ -1,6 +1,6 @@
 "use client"
 
-import { UserRole } from "@/db/schema"
+import { UserRole } from "@rahulsaamanth/mhp_shared-schema"
 
 import { useCurrentRole } from "@/hooks/use-current-role"
 import { FormError } from "@/components/form-error"

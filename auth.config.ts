@@ -1,15 +1,11 @@
+import bcrypt from "bcryptjs"
 import type { NextAuthConfig } from "next-auth"
 import Credentials from "next-auth/providers/credentials"
-import bcrypt from "bcryptjs"
 
-import { LoginSchema } from "./schemas"
 import { getUserByEmail } from "@/actions/auth/user"
+import { LoginSchema } from "./schemas"
 
 // import Github from "next-auth/providers/github"
-import Google from "next-auth/providers/google"
-import { DrizzleAdapter } from "@auth/drizzle-adapter"
-import { db } from "./db/db"
-import { account, user, verificationToken } from "./db/schema"
 
 export default {
   // --------------- Required for the Oauth ---------------------

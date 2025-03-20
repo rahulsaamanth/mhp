@@ -1,13 +1,13 @@
 "use client"
 
 import { useSearchParams } from "next/navigation"
-import { BeatLoader } from "react-spinners"
 import { useCallback, useEffect, useState } from "react"
 
 import { newVerification } from "@/actions/auth/new-verification"
 import { CardWrapper } from "./card-wrapper"
 import { FormError } from "../form-error"
 import { FormSuccess } from "../form-success"
+import { Loader } from "lucide-react"
 
 export const NewVerificationForm = () => {
   const [error, setError] = useState<string | undefined>()
@@ -45,7 +45,7 @@ export const NewVerificationForm = () => {
       backButtonHref="/admin/auth/login"
     >
       <div className="flex w-full flex-col items-center justify-center">
-        {!success && !error && <BeatLoader />}
+        {!success && !error && <Loader className="size-4 animate-spin" />}
         <FormSuccess message={success} />
         {!success && <FormError message={error} />}
       </div>

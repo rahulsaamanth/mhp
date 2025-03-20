@@ -1,7 +1,6 @@
 import { drizzle } from "drizzle-orm/postgres-js"
 import postgres from "postgres"
-import * as schema from "./schema"
-import * as relations from "./relations"
+import * as Database from "@rahulsaamanth/mhp_shared-schema"
 
 // Connection pool configuration
 const connectionPool = postgres(process.env.DATABASE_URL!, {
@@ -12,7 +11,7 @@ const connectionPool = postgres(process.env.DATABASE_URL!, {
 })
 
 export const db = drizzle(connectionPool, {
-  schema: { ...schema, ...relations },
+  schema: { Database },
   logger: true,
 })
 
