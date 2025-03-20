@@ -1,7 +1,7 @@
 "use server"
 
 import { db } from "@/db/db"
-import { category, manufacturer, tag } from "@/db/schema"
+import { category, manufacturer, tag } from "@rahulsaamanth/mhp_shared-schema"
 import { getErrorMessage } from "@/lib/handle-error"
 
 import { eq } from "drizzle-orm"

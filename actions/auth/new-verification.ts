@@ -1,7 +1,7 @@
 "use server"
 
 import { db } from "@/db/db"
-import { user, verificationToken } from "@/db/schema"
+import { user, verificationToken } from "@rahulsaamanth/mhp_shared-schema"
 import { getUserByEmail } from "@/utils/user"
 import { getVerificationTokenByToken } from "@/utils/verification-token"
 import { eq } from "drizzle-orm"

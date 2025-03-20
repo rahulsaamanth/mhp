@@ -1,4 +1,4 @@
-import { type Order } from "@/db/schema"
+import { type Order } from "@rahulsaamanth/mhp_shared-schema"
 import { getFiltersStateParser, getSortingStateParser } from "@/lib/parsers"
 import {
   createSearchParamsCache,

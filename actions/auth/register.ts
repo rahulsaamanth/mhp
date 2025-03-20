@@ -8,7 +8,7 @@ import { db } from "@/db/db"
 import { getUserByEmail } from "@/utils/user"
 import { generateVerificationToken } from "@/lib/tokens"
 import { sendVerificationEmail } from "@/lib/mail"
-import { user } from "@/db/schema"
+import { user } from "@rahulsaamanth/mhp_shared-schema"
 
 export const register = async (values: z.infer<typeof RegisterSchema>) => {
   const validatedFields = RegisterSchema.safeParse(values)

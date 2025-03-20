@@ -1,7 +1,7 @@
 "use server"
 
 import { db } from "@/db/db"
-import { Order, order, User, user } from "@/db/schema"
+import { Order, order, User, user } from "@rahulsaamanth/mhp_shared-schema"
 import { eq, InferSelectModel } from "drizzle-orm"
 
 export type UsersWithOrders = User & {

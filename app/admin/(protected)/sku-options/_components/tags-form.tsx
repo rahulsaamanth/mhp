@@ -3,7 +3,7 @@
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
-import { Tag } from "@/db/schema"
+import { Tag } from "@rahulsaamanth/mhp_shared-schema"
 import { useMutation } from "@tanstack/react-query"
 import { CircleX, Loader } from "lucide-react"
 import { parseAsString, useQueryState } from "nuqs"

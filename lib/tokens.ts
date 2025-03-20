@@ -9,7 +9,7 @@ import {
   passwordResetToken,
   twoFactorToken,
   verificationToken,
-} from "@/db/schema"
+} from "@rahulsaamanth/mhp_shared-schema"
 import { eq } from "drizzle-orm"
 
 export const generateTwoFactorToken = async (email: string) => {

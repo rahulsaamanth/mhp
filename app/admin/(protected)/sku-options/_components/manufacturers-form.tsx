@@ -3,7 +3,7 @@
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
-import { type Manufacturer } from "@/db/schema"
+import { type Manufacturer } from "@rahulsaamanth/mhp_shared-schema"
 import { useMutation } from "@tanstack/react-query"
 import { parseAsString, useQueryState } from "nuqs"
 import { addManufacturer, deleteManufacturer } from "../_lib/actions"

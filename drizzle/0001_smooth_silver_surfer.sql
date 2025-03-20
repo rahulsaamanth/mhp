@@ -1,1 +1,0 @@
-ALTER TABLE "ProductVariant" RENAME COLUMN "basePrice" TO "mrp";

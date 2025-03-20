@@ -14,7 +14,7 @@ import {
   product,
   productVariant,
   user,
-} from "@/db/schema"
+} from "@rahulsaamanth/mhp_shared-schema"
 import { getChartDateArray } from "@/lib/chart-date-array"
 import { getRangeOption, RANGE_OPTIONS } from "@/lib/rangeOptions"
 import { startOfDay } from "date-fns"

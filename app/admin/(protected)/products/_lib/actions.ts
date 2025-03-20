@@ -11,7 +11,7 @@ import {
   manufacturer,
   product,
   productVariant,
-} from "@/db/schema"
+} from "@rahulsaamanth/mhp_shared-schema"
 import { getErrorMessage } from "@/lib/handle-error"
 import { generateSKU, generateVariantName } from "@/lib/utils"
 import { createProductSchema } from "@/schemas"

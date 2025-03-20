@@ -19,7 +19,11 @@ import {
 import { DataTable } from "@/components/data-table/data-table"
 import { DataTableAdvancedToolbar } from "@/components/data-table/data-table-advanced-toolbar"
 import { DataTableToolbar } from "@/components/data-table/data-table-toolbar"
-import { Category, Manufacturer, productStatus } from "@/db/schema"
+import {
+  Category,
+  Manufacturer,
+  productStatus,
+} from "@rahulsaamanth/mhp_shared-schema"
 import { useDataTable } from "@/hooks/use-data-table"
 import { DeleteProductsDialog } from "./delete-products-dialog"
 import { useFeatureFlags } from "./feature-flags-provider"
