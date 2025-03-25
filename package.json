@@ -93,6 +93,7 @@
   },
   "devDependencies": {
     "@cloudflare/next-on-pages": "^1.13.10",
+    "@opennextjs/cloudflare": "^0.5.12",
     "@tanstack/eslint-plugin-query": "^5.28.11",
     "@types/node": "20.12.7",
     "@types/react": "19.0.1",
