@@ -16,13 +16,13 @@ export const env = createEnv({
     AWS_ACCESS_KEY: z.string().min(1),
     AWS_SECRET_ACCESS_KEY: z.string().min(1),
 
-    GOOGLE_CLIENT_ID: z.string().min(1),
-    GOOGLE_CLIENT_SECRET: z.string().min(1),
-
-    REDIS_URL: z.string().min(1),
-    REDIS_TOKEN: z.string().min(1),
     PUBLIC_APP_URL: z.string().url().min(1),
   },
-  experimental__runtimeEnv: process.env,
+  client: {
+    NEXT_PUBLIC_APP_URL: z.string().url(),
+  },
+  experimental__runtimeEnv: {
+    NEXT_PUBLIC_APP_URL: process.env.PUBLIC_APP_URL,
+  },
   emptyStringAsUndefined: true,
 })

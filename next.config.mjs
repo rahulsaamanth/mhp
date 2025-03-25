@@ -32,6 +32,9 @@ const nextConfig = {
     }
     return config
   },
+  env: {
+    PUBLIC_APP_URL: process.env.PUBLIC_APP_URL,
+  },
 }
 
 export default nextConfig
