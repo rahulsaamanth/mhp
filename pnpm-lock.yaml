@@ -280,6 +280,12 @@ importers:
       typescript:
         specifier: 5.4.5
         version: 5.4.5
+      vercel:
+        specifier: ^41.4.1
+        version: 41.4.1
+      wrangler:
+        specifier: ^4.4.0
+        version: 4.4.0
 
 packages:
 
