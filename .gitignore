@@ -51,5 +51,3 @@ drizzle/migrations/*.sql
 # Ignore Drizzle build files
 drizzle/*.db
 drizzle/*.lock
-
-.npmrc

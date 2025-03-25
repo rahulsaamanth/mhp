@@ -2,7 +2,7 @@ import { columns } from "./columns"
 
 // import { getChartDateArray } from "@/lib/chart-date-array"
 // import { startOfDay } from "date-fns"
-
+export const runtime = "edge"
 // import { and, count, gte, lte, sum } from "drizzle-orm"
 // import { order, user } from "@rahulsaamanth/mhp_shared-schema"
 // import { db } from "@/db/db"
