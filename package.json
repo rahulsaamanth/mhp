@@ -8,6 +8,8 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
+    "preinstall": "node scripts/create-npmrc.js",
+    "prebuild": "node scripts/create-npmrc.js",
     "format": "prettier --write \"**/*.{js,ts,jsx,tsx}\"",
     "db:seed": "dotenv -e .env -- tsx db/seed.ts",
     "db:truncate": "dotenv -e .env -- tsx db/truncate",
