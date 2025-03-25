@@ -16,7 +16,7 @@ export const env = createEnv({
     AWS_ACCESS_KEY: z.string().min(1),
     AWS_SECRET_ACCESS_KEY: z.string().min(1),
 
-    // PUBLIC_APP_URL: z.string().url().min(1),
+    PUBLIC_APP_URL: z.string().url().min(1),
   },
   // client: {
   //   NEXT_PUBLIC_APP_URL: z.string().url(),
