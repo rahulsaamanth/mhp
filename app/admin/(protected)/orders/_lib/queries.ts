@@ -7,7 +7,11 @@ import { order } from "@rahulsaamanth/mhp_shared-schema"
 import { SQLChunk, sql } from "drizzle-orm"
 import { db } from "@/db/db"
 import { OrderForTable } from "@/types"
+import { NeonHttpQueryResult } from "drizzle-orm/neon-http"
 
+interface CountResult {
+  count: number | number
+}
 export async function getOrders(input: GetOrdersSchema) {
   return unstable_cache(
     async () => {
@@ -64,7 +68,7 @@ export async function getOrders(input: GetOrdersSchema) {
         })
 
         const { data, total } = await db.transaction(async (tx) => {
-          const data = await tx.execute(sql`
+          const data = (await tx.execute(sql`
                             WITH OrderStats AS(
                                SELECT 
                                 o."id",
@@ -84,21 +88,21 @@ export async function getOrders(input: GetOrdersSchema) {
                             ${orderBy.length ? sql`ORDER BY ${sql.join(orderBy, sql`, `)}` : sql``}
                             LIMIT ${input.perPage}
                             OFFSET ${offset}
-                            `)
+                            `)) as unknown as NeonHttpQueryResult<OrderForTable>
 
-          const total = await tx
-            .execute(
-              sql`
+          const totalResult = (await tx.execute(
+            sql`
                                 SELECT COUNT(*) as count
                                 FROM "Order" o
                                 LEFT JOIN "User" u ON u."id" = o."userId"
                                 WHERE ${whereClause}
                                 `
-            )
-            .then((res) => Number(res[0]?.count) ?? 0)
+          )) as unknown as NeonHttpQueryResult<CountResult>
+
+          const total = Number(totalResult.rows[0]?.count) ?? 0
 
           return {
-            data: data as unknown as OrderForTable[],
+            data: data.rows as OrderForTable[],
             total,
           }
         })

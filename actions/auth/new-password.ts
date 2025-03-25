@@ -1,7 +1,6 @@
 "use server"
 
 import * as z from "zod"
-import bcrypt from "bcryptjs"
 
 import { NewPasswordSchema } from "@/schemas"
 import { getPasswordResetTokenByToken } from "@/utils/password-reset-token"
@@ -9,6 +8,7 @@ import { getUserByEmail } from "@/utils/user"
 import { db } from "@/db/db"
 import { passwordResetToken, user } from "@rahulsaamanth/mhp_shared-schema"
 import { eq } from "drizzle-orm"
+import { hashPassword } from "@/lib/passwords"
 
 export const newPassword = async (
   values: z.infer<typeof NewPasswordSchema>,
@@ -30,7 +30,7 @@ export const newPassword = async (
   const existingUser = await getUserByEmail(existingToken.email)
   if (!existingUser) return { error: "Email does not exist!" }
 
-  const hashedPassword = await bcrypt.hash(password, 10)
+  const hashedPassword = await hashPassword(password)
 
   // await db.user.update({
   //   where: { id: existingUser.id },

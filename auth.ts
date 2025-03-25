@@ -8,7 +8,7 @@ import { db } from "@/db/db"
 import { eq } from "drizzle-orm"
 import { user as User, UserRole, twoFactorConfirmation } from "./db/schema"
 
-import { DrizzleAdapter } from "@auth/drizzle-adapter"
+// import { DrizzleAdapter } from "@auth/drizzle-adapter"
 import authConfig from "./auth.config"
 
 declare module "next-auth" {
@@ -104,7 +104,7 @@ export const { handlers, auth, signIn, signOut, unstable_update } = NextAuth({
       return token
     },
   },
-  adapter: DrizzleAdapter(db) as any,
+  // adapter: DrizzleAdapter(db) as any,
   session: {
     strategy: "jwt",
     maxAge: 30 * 24 * 60 * 60, // 30 days

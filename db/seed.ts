@@ -1,11 +1,11 @@
+import { hashPassword } from "@/lib/passwords"
 import { db } from "./db"
-import * as schema from "./schema"
-import { hash } from "bcryptjs"
+import * as schema from "@rahulsaamanth/mhp_shared-schema"
 
 async function seed() {
   console.log("🌱 Seeding started...")
 
-  await db.delete(schema.review)
+  // await db.delete(schema.review)
   await db.delete(schema.orderDetails)
   await db.delete(schema.order)
   await db.delete(schema.product)
@@ -19,9 +19,9 @@ async function seed() {
   await db.delete(schema.productVariant)
   await db.delete(schema.paymentMethod)
 
-  const hashedPassword = await hash("password123", 10)
+  const hashedPassword = await hashPassword("password123")
 
-  const adminPassword = await hash("Awavauatsh", 10)
+  const adminPassword = await hashPassword("Awavauatsh")
 
   const users = await db
     .insert(schema.user)

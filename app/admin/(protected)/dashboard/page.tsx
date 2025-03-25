@@ -40,6 +40,7 @@ import {
   DashboardPopularProductsShortTable,
 } from "./_components/popular-and-recent-products"
 import { unstable_noStore } from "next/cache"
+export const runtime = "edge"
 
 async function getSalesData({
   createdAfter,

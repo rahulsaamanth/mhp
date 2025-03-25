@@ -3,6 +3,7 @@ import { CategoriesForm } from "./_components/categories-form"
 import { ManufacturersForm } from "./_components/manufacturers-form"
 import { getCategories, getManufacturers, getTags } from "./_lib/queries"
 import { TagsForm } from "./_components/tags-form"
+export const runtime = "edge"
 
 export default async function SkuOptionsPage() {
   const [categories, manufacturers, tags] = await Promise.all([

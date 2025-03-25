@@ -6,6 +6,7 @@ import { NextRequest, NextResponse } from "next/server"
 
 import { productVariant } from "@rahulsaamanth/mhp_shared-schema"
 import { auth } from "@/auth"
+export const runtime = "edge"
 
 export async function GET(request: NextRequest) {
   try {

@@ -1,4 +1,3 @@
-import crypto from "crypto"
 import { db } from "@/db/db"
 import { v4 as uuid } from "uuid"
 
@@ -12,8 +11,16 @@ import {
 } from "@rahulsaamanth/mhp_shared-schema"
 import { eq } from "drizzle-orm"
 
+const generateRandomNumber = (min: number, max: number): number => {
+  const range = max - min
+  const randomBuffer = new Uint32Array(1)
+  crypto.getRandomValues(randomBuffer)
+
+  return min + ((randomBuffer[0] ?? 0) % range)
+}
+
 export const generateTwoFactorToken = async (email: string) => {
-  const token = crypto.randomInt(100_000, 1_000_000).toString()
+  const token = generateRandomNumber(100_000, 1_000_000).toString()
   const expires = new Date(new Date().getTime() + 5 * 60 * 1000)
 
   const existingToken = await getTwoFactorTokenByEmail(email)

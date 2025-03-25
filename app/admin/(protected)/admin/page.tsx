@@ -9,6 +9,8 @@ import { Card, CardContent, CardHeader } from "@/components/ui/card"
 
 import { toast } from "sonner"
 
+export const runtime = "edge"
+
 const AdminPage = () => {
   const onServerActionClick = () => {
     admin().then((data) => {

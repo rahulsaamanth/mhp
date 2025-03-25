@@ -2,6 +2,7 @@ import { db } from "@/db/db"
 import { product } from "@rahulsaamanth/mhp_shared-schema"
 import { eq } from "drizzle-orm"
 import { NextRequest, NextResponse } from "next/server"
+export const runtime = "edge"
 
 export async function GET(
   request: NextRequest,

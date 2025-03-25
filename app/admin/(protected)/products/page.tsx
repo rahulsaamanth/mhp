@@ -19,6 +19,7 @@ import { ProductsTable } from "./_components/products-table"
 interface ProductPageProps {
   searchParams: Promise<SearchParams>
 }
+export const runtime = "edge"
 
 export default async function ProductsPage(props: ProductPageProps) {
   const searchParams = await props.searchParams

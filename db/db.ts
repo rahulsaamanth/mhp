@@ -1,18 +1,13 @@
-import { drizzle } from "drizzle-orm/postgres-js"
-import postgres from "postgres"
+import { neon, neonConfig } from "@neondatabase/serverless"
+import { drizzle } from "drizzle-orm/neon-serverless"
 import * as Database from "@rahulsaamanth/mhp_shared-schema"
+import { env } from "@/env/server"
 
-// Connection pool configuration
-const connectionPool = postgres(process.env.DATABASE_URL!, {
-  max: 10,
-  idle_timeout: 20,
-  connect_timeout: 10,
-  prepare: false,
-})
+const sql = neon(env.DATABASE_URL)
 
-export const db = drizzle(connectionPool, {
+export const db = drizzle(env.DATABASE_URL, {
   schema: Database,
   logger: true,
 })
 
-export const sql = connectionPool
+export { sql }

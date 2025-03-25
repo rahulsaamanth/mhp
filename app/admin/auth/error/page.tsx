@@ -1,4 +1,5 @@
 import { ErrorCard } from "@/components/auth/error-card"
+export const runtime = "edge"
 
 const AuthErrorPage = async ({
   searchParams,

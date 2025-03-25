@@ -14,6 +14,11 @@ import { filterColumns } from "@/lib/filter-columns"
 import { unstable_cache } from "@/lib/unstable-cache"
 import { ProductForTable } from "@/types"
 import { type GetProductsSchema } from "./validations"
+import { NeonHttpQueryResult } from "drizzle-orm/neon-http"
+
+interface CountResult {
+  count: string | number
+}
 
 export async function getProducts(input: GetProductsSchema) {
   return unstable_cache(
@@ -96,7 +101,7 @@ export async function getProducts(input: GetProductsSchema) {
             : sql`ORDER BY "createdAt" DESC`
 
         const { data, total } = await db.transaction(async (tx) => {
-          const data = await tx.execute(sql`
+          const data = (await tx.execute(sql`
             WITH 
             ProductStats AS (
               SELECT 
@@ -145,22 +150,22 @@ export async function getProducts(input: GetProductsSchema) {
             ${orderByClause}            
             LIMIT ${input.perPage}
             OFFSET ${offset}
-          `)
+          `)) as unknown as NeonHttpQueryResult<ProductForTable>
 
-          const total = await tx
-            .execute(
-              sql`
+          const totalResult = (await tx.execute(
+            sql`
               SELECT COUNT(*) as count
               FROM "Product" p
               LEFT JOIN "Category" c ON p."categoryId" = c."id"
               LEFT JOIN "Manufacturer" m ON p."manufacturerId" = m."id"
               WHERE ${whereClause}
             `
-            )
-            .then((res) => Number(res[0]?.count) ?? 0)
+          )) as unknown as NeonHttpQueryResult<CountResult>
+
+          const total = Number(totalResult.rows[0]?.count) ?? 0
 
           return {
-            data: data as unknown as ProductForTable[],
+            data: data.rows as ProductForTable[],
             total,
           }
         })

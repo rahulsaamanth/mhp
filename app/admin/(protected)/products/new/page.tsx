@@ -1,6 +1,7 @@
 import { db } from "@/db/db"
 
 import { ProductsForm } from "../_components/product-form"
+export const runtime = "edge"
 
 export default async function createProductPage() {
   const [categories, manufacturers, tags] = await Promise.all([

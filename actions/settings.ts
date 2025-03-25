@@ -15,6 +15,8 @@ import { getSignedUrl } from "@aws-sdk/s3-request-presigner"
 import { db } from "@/db/db"
 import { user } from "@rahulsaamanth/mhp_shared-schema"
 import { eq } from "drizzle-orm"
+import { env } from "@/env/server"
+import { comparePasswords, hashPassword } from "@/lib/passwords"
 
 export const updateUser = async (values: z.infer<typeof SettingsSchema>) => {
   const _user = await currentUser()
@@ -53,7 +55,7 @@ export const updateUser = async (values: z.infer<typeof SettingsSchema>) => {
   }
 
   if (values.password && values.newPassword && dbUser.password) {
-    const passwordsMatch = await bcrypt.compare(
+    const passwordsMatch = await comparePasswords(
       values.password,
       dbUser.password
     )
@@ -62,7 +64,7 @@ export const updateUser = async (values: z.infer<typeof SettingsSchema>) => {
       return { error: "Incorrect password!" }
     }
 
-    const hashedPassword = await bcrypt.hash(values.newPassword, 10)
+    const hashedPassword = await hashPassword(values.newPassword)
     values.password = hashedPassword
     values.newPassword = undefined
   }
@@ -112,10 +114,10 @@ type GetSignedURLParams = {
 }
 
 const s3Client = new S3Client({
-  region: process.env.AWS_BUCKET_REGION!,
+  region: env.AWS_BUCKET_REGION,
   credentials: {
-    accessKeyId: process.env.AWS_ACCESS_KEY!,
-    secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY!,
+    accessKeyId: env.AWS_ACCESS_KEY,
+    secretAccessKey: env.AWS_SECRET_ACCESS_KEY,
   },
 })
 
@@ -135,7 +137,7 @@ export const getSignedURL = async ({
   if (fileSize > MaxFileSize) return { error: "File size too large" }
 
   const putObjectCommand = new PutObjectCommand({
-    Bucket: process.env.AWS_BUCKET_NAME!,
+    Bucket: env.AWS_BUCKET_NAME,
     Key: fileName,
     ContentType: fileType,
     ContentLength: fileSize,

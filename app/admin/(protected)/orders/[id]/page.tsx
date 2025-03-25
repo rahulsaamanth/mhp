@@ -9,6 +9,8 @@ import React from "react"
 import { getOrder } from "../_lib/actions"
 import { notFound } from "next/navigation"
 
+export const runtime = "edge"
+
 export default function EditOrderPage({
   params,
 }: {

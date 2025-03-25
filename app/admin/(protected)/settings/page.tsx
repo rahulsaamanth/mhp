@@ -46,9 +46,10 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog"
 import { Loader } from "lucide-react"
+export const runtime = "edge"
 
 const SettingsPage = () => {
-  const user = useCurrentUser()
+  const { user } = useCurrentUser()
 
   const [image, setImage] = useState<File | null>(null)
   const [previewUrl, setPreviewUrl] = useState<string | undefined>(undefined)
