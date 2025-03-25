@@ -11,6 +11,7 @@ const nextConfig = {
     },
   },
   images: {
+    unoptimized: true,
     remotePatterns: [
       {
         protocol: "https",
@@ -22,15 +23,6 @@ const nextConfig = {
       },
     ],
     // domains: ["mhp-local.s3.ap-south-1.amazonaws.com", "healthyghar.com"],
-  },
-  webpack: (config, { isServer }) => {
-    if (!isServer) {
-      config.resolve.fallback = {
-        ...config.resolve.fallback,
-        crypto: false,
-      }
-    }
-    return config
   },
   env: {
     PUBLIC_APP_URL: process.env.PUBLIC_APP_URL,
