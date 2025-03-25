@@ -45,30 +45,28 @@ import {
   FormMessage,
 } from "@/components/ui/form"
 
+import { Label } from "@/components/ui/label"
+import { Switch } from "@/components/ui/switch"
+import { cn, generateSKU, generateVariantName } from "@/lib/utils"
+import { zodResolver } from "@hookform/resolvers/zod"
 import {
   Manufacturer,
-  Product,
   Tag,
-  Variant,
   potency,
   productForm,
   unitOfMeasure,
 } from "@rahulsaamanth/mhp_shared-schema"
-import { cn, generateSKU, generateVariantName } from "@/lib/utils"
-import { zodResolver } from "@hookform/resolvers/zod"
 import { useMutation } from "@tanstack/react-query"
 import React from "react"
 import { toast } from "sonner"
 import {
-  createProduct,
   FullProduct,
+  createProduct,
   updateProduct,
   uploadProductImage,
 } from "../_lib/actions"
 import { MultiSelectInput } from "./multi-select-input"
 import { VariantImageUpload } from "./variant-image-upload"
-import { Switch } from "@/components/ui/switch"
-import { Label } from "@/components/ui/label"
 
 type FormattedCategory = {
   id: string

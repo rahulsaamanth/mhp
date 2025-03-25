@@ -59,7 +59,7 @@ export function ChartCard({
   }
 
   return (
-    <Card>
+    <Card className="rounded-sm">
       <CardHeader>
         <div className="flex gap-4 justify-between items-center">
           <CardTitle>{title}</CardTitle>

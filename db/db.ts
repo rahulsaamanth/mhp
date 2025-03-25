@@ -11,7 +11,7 @@ const connectionPool = postgres(process.env.DATABASE_URL!, {
 })
 
 export const db = drizzle(connectionPool, {
-  schema: { Database },
+  schema: Database,
   logger: true,
 })
 

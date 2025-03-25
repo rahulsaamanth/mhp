@@ -17,7 +17,7 @@ export const DashboardCard = ({
   footerValue,
 }: DashboardCardProps) => {
   return (
-    <Card className="bg-white shadow-zinc-200 shadow-md">
+    <Card className="bg-white shadow-zinc-200 shadow-md rounded-sm">
       <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2 ">
         <CardTitle className="text-base font-medium">{title}</CardTitle>
         <Icon className="h-4 w-4 text-muted-foreground" />

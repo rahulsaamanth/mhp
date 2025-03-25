@@ -82,7 +82,7 @@ const MenuItem = ({
         <>
           <button
             onClick={() => handleToggleSubMenu(item.path)}
-            className={`flex w-full flex-row items-center justify-between rounded-lg p-2 hover:bg-zinc-200 ${
+            className={`flex w-full flex-row items-center justify-between rounded-sm p-2 hover:bg-zinc-200 ${
               pathname?.includes(item.path) && "bg-zinc-200"
             }`}
           >
@@ -105,7 +105,7 @@ const MenuItem = ({
                   <Link
                     key={idx}
                     href={subItem.path}
-                    className={`flex flex-row items-center space-x-4 rounded-lg p-2 hover:bg-zinc-200 ${
+                    className={`flex flex-row items-center space-x-4 rounded-sm p-2 hover:bg-zinc-200 ${
                       subItem.path === pathname && "font-semibold bg-zinc-200"
                     }`}
                   >
@@ -124,7 +124,7 @@ const MenuItem = ({
       ) : (
         <Link
           href={item.path}
-          className={`flex flex-row items-center space-x-4 rounded-lg p-2 hover:bg-zinc-200 ${
+          className={`flex flex-row items-center space-x-4 rounded-sm p-2 hover:bg-zinc-200 ${
             pathname?.includes(item.path) && "bg-zinc-200"
           }`}
           onClick={() => setOpenSubMenu(null)}

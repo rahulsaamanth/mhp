@@ -36,9 +36,9 @@ export const sendVerificationEmail = async (email: string, token: string) => {
 // async function mail() {
 //   await resend.emails.send({
 //     from: "noreply@mail.rahulsaamanth.in",
-//     to: "rahulsaamanth@yahoo.com",
+//     to: "shivakumarreddyg27@gmail.com",
 //     subject: "message",
-//     html: `<p>just testing</p>`,
+//     html: `<p>Errrifush</p>`,
 //   })
 //   console.log("✅ mail sent.")
 // }

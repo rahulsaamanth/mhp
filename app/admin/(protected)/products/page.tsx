@@ -64,6 +64,7 @@ export default async function ProductsPage(props: ProductPageProps) {
               columnCount={6}
               searchableColumnCount={1}
               filterableColumnCount={3}
+              rowCount={20}
               shrinkZero
             />
           }

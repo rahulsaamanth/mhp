@@ -15,7 +15,7 @@ export const DashboardRecentOrdersShortTable = ({
   data,
 }: DashboardRecentOrdersShortTableProps) => {
   return (
-    <Card>
+    <Card className="rounded-sm">
       <CardHeader>
         <CardTitle>Recent Sales</CardTitle>
       </CardHeader>

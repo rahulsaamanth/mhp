@@ -17,7 +17,7 @@ export const DashboardPopularProductsShortTable = ({
   data,
 }: DashboardPopularProductsShortTableProps) => {
   return (
-    <Card>
+    <Card className="rounded-sm">
       <CardHeader>
         <CardTitle>Popular Products</CardTitle>
       </CardHeader>
@@ -68,7 +68,7 @@ export const DashboardLatestProductsShortTable = ({
   data,
 }: DashboardLatestProductsShortTableProps) => {
   return (
-    <Card>
+    <Card className="rounded-sm">
       <CardHeader className="flex-row justify-between w-full">
         <CardTitle>Latest Products</CardTitle>
         <Link href="/products/new">
