@@ -3,10 +3,6 @@
   "version": "0.1.0",
   "private": true,
   "description": "Mangalore Homeopathic Pharmacy",
-  "engines": {
-    "node": "^22.14.0",
-    "pnpm": ">=10.6.5"
-  },
   "scripts": {
     "dev": "next dev",
     "build": "next build",
