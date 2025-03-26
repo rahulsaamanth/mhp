@@ -6,7 +6,6 @@ import {
 } from "../../sku-options/_lib/queries"
 import { ProductsForm } from "../_components/product-form"
 import { getProduct } from "../_lib/actions"
-export const runtime = "edge"
 
 async function EditProductPage({
   params,

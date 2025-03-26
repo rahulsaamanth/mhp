@@ -46,7 +46,6 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog"
 import { Loader } from "lucide-react"
-export const runtime = "edge"
 
 const SettingsPage = () => {
   const { user } = useCurrentUser()

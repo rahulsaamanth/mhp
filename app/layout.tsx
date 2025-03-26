@@ -17,8 +17,6 @@ export const metadata: Metadata = {
   description: "Mangalore Homeopathic Pharmacy - Admin Panel",
 }
 
-export const runtime = "edge"
-
 export default async function AdminRootLayout({
   children,
 }: Readonly<{

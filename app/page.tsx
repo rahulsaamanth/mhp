@@ -3,8 +3,6 @@ import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
 import { LoginButton } from "@/components/auth/login-button"
 
-export const runtime = "edge"
-
 export default async function Home() {
   return (
     <main

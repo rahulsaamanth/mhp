@@ -14,7 +14,6 @@ import { getSignedUrl } from "@aws-sdk/s3-request-presigner"
 import { db } from "@/db/db"
 import { user } from "@rahulsaamanth/mhp_shared-schema"
 import { eq } from "drizzle-orm"
-import { env } from "@/env/server"
 import { comparePasswords, hashPassword } from "@/lib/passwords"
 
 export const updateUser = async (values: z.infer<typeof SettingsSchema>) => {
@@ -113,10 +112,10 @@ type GetSignedURLParams = {
 }
 
 const s3Client = new S3Client({
-  region: env.AWS_BUCKET_REGION,
+  region: process.env.AWS_BUCKET_REGION!,
   credentials: {
-    accessKeyId: env.AWS_ACCESS_KEY,
-    secretAccessKey: env.AWS_SECRET_ACCESS_KEY,
+    accessKeyId: process.env.AWS_ACCESS_KEY!,
+    secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY!,
   },
 })
 
@@ -136,7 +135,7 @@ export const getSignedURL = async ({
   if (fileSize > MaxFileSize) return { error: "File size too large" }
 
   const putObjectCommand = new PutObjectCommand({
-    Bucket: env.AWS_BUCKET_NAME,
+    Bucket: process.env.AWS_BUCKET_NAME!,
     Key: fileName,
     ContentType: fileType,
     ContentLength: fileSize,

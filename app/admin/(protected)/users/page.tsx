@@ -1,13 +1,13 @@
-import { columns } from "./columns"
+// import { columns } from "./columns"
 
 // import { getChartDateArray } from "@/lib/chart-date-array"
 // import { startOfDay } from "date-fns"
-export const runtime = "edge"
+
 // import { and, count, gte, lte, sum } from "drizzle-orm"
 // import { order, user } from "@rahulsaamanth/mhp_shared-schema"
 // import { db } from "@/db/db"
 // import { ClientDataTable } from "@/components/tables/client-data-table"
-import { getUsers } from "@/actions/users"
+// import { getUsers } from "@/actions/users"
 
 // async function getUserData({
 //   createdAfter,
@@ -69,7 +69,7 @@ const UsersPage = async ({
     newCustomersRangeTo?: string
   }>
 }) => {
-  const columnData = await getUsers()
+  // const columnData = await getUsers()
 
   // const { newCustomersRange, newCustomersRangeFrom, newCustomersRangeTo } =
   //   await searchParams

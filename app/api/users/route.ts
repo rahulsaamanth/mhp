@@ -1,6 +1,5 @@
 import { db } from "@/db/db"
 import { NextResponse } from "next/server"
-export const runtime = "edge"
 
 export async function GET() {
   const users = await db.query.user.findMany()

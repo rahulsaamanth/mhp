@@ -11,28 +11,36 @@ import { useCurrentUser } from "@/hooks/use-current-user"
 import { Icon } from "@iconify/react"
 import { User } from "lucide-react"
 import { LogoutButton } from "./logout-button"
-import { Skeleton } from "@/components/ui/skeleton"
+import React from "react"
+import { useSession } from "next-auth/react"
 
 export const UserButton = () => {
-  const { user, isLoading } = useCurrentUser()
+  const { data: session, status } = useSession()
+  const user = session?.user
 
-  if (isLoading) {
-    return <Skeleton className="h-8 w-8 rounded-full" />
+  if (status === "loading") {
+    return (
+      <Avatar>
+        <AvatarFallback>
+          <span className="animate-pulse">...</span>
+        </AvatarFallback>
+      </Avatar>
+    )
   }
 
   return (
     <DropdownMenu>
       <DropdownMenuTrigger className="rounded-full border-2 focus-visible:outline-none">
         <Avatar>
-          {user?.image ? (
+          {user ? (
             <AvatarImage
-              src={user.image}
+              src={user?.image || ""}
               alt={user?.name || "Profile"}
               className="object-cover"
             />
           ) : (
-            <AvatarFallback className="bg-sky-500">
-              <User className="text-white h-5 w-5" />
+            <AvatarFallback>
+              <User className="text-black size-4" />
             </AvatarFallback>
           )}
         </Avatar>
@@ -40,16 +48,14 @@ export const UserButton = () => {
       <DropdownMenuContent className="w-40" align="end">
         <DropdownMenuItem className="flex items-center justify-center gap-3 pb-2">
           <Avatar className="size-8">
-            {user?.image ? (
-              <AvatarImage src={user.image} alt={user?.name || "Profile"} />
+            {user ? (
+              <AvatarImage
+                src={user?.image || ""}
+                alt={user?.name || "Profile"}
+              />
             ) : (
-              <AvatarFallback className="size-8 bg-sky-500">
-                <Icon
-                  icon="fa:user"
-                  width="16"
-                  height="16"
-                  className="text-white"
-                />
+              <AvatarFallback className="size-8">
+                <User className="size-4 text-black" />
               </AvatarFallback>
             )}
           </Avatar>

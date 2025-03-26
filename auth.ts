@@ -5,7 +5,7 @@ import { getTwoFactorConfirmationByUserId } from "./utils/two-factor-confirmatio
 import { getUserById } from "./utils/user"
 
 import { db } from "@/db/db"
-import { eq } from "drizzle-orm"
+import { eq, is } from "drizzle-orm"
 import { user as User, UserRole, twoFactorConfirmation } from "./db/schema"
 
 // import { DrizzleAdapter } from "@auth/drizzle-adapter"
@@ -14,6 +14,7 @@ import authConfig from "./auth.config"
 declare module "next-auth" {
   interface User {
     role: string
+    isTwoFactorEnabled: boolean
   }
 }
 
@@ -51,9 +52,6 @@ export const { handlers, auth, signIn, signOut, unstable_update } = NextAuth({
 
         if (!_twoFactorConfirmation) return false
 
-        // await db.twoFactorConfirmation.delete({
-        //   where: { id: twoFactorConfirmation.id },
-        // })
         await db
           .delete(twoFactorConfirmation)
           .where(eq(twoFactorConfirmation.id, _twoFactorConfirmation.id))
@@ -67,40 +65,44 @@ export const { handlers, auth, signIn, signOut, unstable_update } = NextAuth({
       return true
     },
     async session({ token, session }) {
-      if (token.sub && session.user) {
-        session.user.id = token.sub
-      }
-
-      if (token.role && session.user) {
+      if (session.user) {
+        session.user.id = token.sub!
         session.user.role = token.role as UserRole
-      }
-
-      if (session.user) {
         session.user.isTwoFactorEnabled = token.isTwoFactorEnabled as boolean
-      }
-
-      if (session.user) {
-        session.user.name = token.name
-        session.user.email = token.email as string
         session.user.isOAuth = token.isOAuth as boolean
+        session.user.name = token.name as string
+        session.user.email = token.email as string
+        session.user.image = token.image as string | null
       }
 
       return session
     },
 
-    async jwt({ token }) {
-      if (!token.sub) return token
-
-      const existingUser = await getUserById(token.sub)
-      if (!existingUser) return token
-
-      const existingAccount = await getAccountByUserId(existingUser.id)
-
-      token.isOAuth = !!existingAccount
-      token.name = existingUser.name
-      token.email = existingUser.email
-      token.role = existingUser.role
-      token.isTwoFactorEnabled = existingUser.isTwoFactorEnabled
+    async jwt({ token, user, account, trigger }) {
+      if (trigger === "update") {
+        const existingUser = await getUserById(token.sub!)
+        if (existingUser) {
+          return {
+            ...token,
+            name: existingUser.name,
+            email: existingUser.email,
+            role: existingUser.role,
+            isTwoFactorEnabled: existingUser.isTwoFactorEnabled,
+            isOAuth: token.isOAuth,
+            image: existingUser.image,
+          }
+        }
+      }
+      if (user) {
+        return {
+          ...token,
+          id: user.id,
+          role: user.role,
+          isTwoFactorEnabled: user.isTwoFactorEnabled,
+          isOAuth: account?.provider !== "credentials",
+          image: user.image,
+        }
+      }
       return token
     },
   },
@@ -108,6 +110,7 @@ export const { handlers, auth, signIn, signOut, unstable_update } = NextAuth({
   session: {
     strategy: "jwt",
     maxAge: 30 * 24 * 60 * 60, // 30 days
+    updateAge: 24 * 60 * 60, // 24 hours
   },
 
   ...authConfig,

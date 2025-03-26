@@ -1,13 +1,12 @@
 import { Resend } from "resend"
-import { env } from "@/env/server"
 
 export const sendVerificationEmail = async (email: string, token: string) => {
-  const resetLink = `${env.PUBLIC_APP_URL}/admin/auth/new-verification?token=${token}`
+  const resetLink = `${process.env.PUBLIC_APP_URL!}/admin/auth/new-verification?token=${token}`
 
   const response = await fetch("https://api.resend.com/emails", {
     method: "POST",
     headers: {
-      Authorization: `Bearer ${env.RESEND_API_KEY}`,
+      Authorization: `Bearer ${process.env.RESEND_API_KEY!}`,
       "Content-Type": "application/json",
     },
     body: JSON.stringify({
@@ -30,12 +29,12 @@ export const sendVerificationEmail = async (email: string, token: string) => {
 }
 
 export const sendPasswordResetEmail = async (email: string, token: string) => {
-  const resetLink = `${env.PUBLIC_APP_URL}/admin/auth/new-password?token=${token}`
+  const resetLink = `${process.env.PUBLIC_APP_URL!}/admin/auth/new-password?token=${token}`
 
   const response = await fetch("https://api.resend.com/emails", {
     method: "POST",
     headers: {
-      Authorization: `Bearer ${env.RESEND_API_KEY}`,
+      Authorization: `Bearer ${process.env.RESEND_API_KEY!}`,
       "Content-Type": "application/json",
     },
     body: JSON.stringify({
@@ -61,7 +60,7 @@ export const sendTwoFactorTokenEmail = async (email: string, token: string) => {
   const response = await fetch("https://api.resend.com/emails", {
     method: "POST",
     headers: {
-      Authorization: `Bearer ${env.RESEND_API_KEY}`,
+      Authorization: `Bearer ${process.env.RESEND_API_KEY!}`,
       "Content-Type": "application/json",
     },
     body: JSON.stringify({
