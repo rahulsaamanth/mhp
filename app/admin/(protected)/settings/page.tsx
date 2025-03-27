@@ -17,7 +17,7 @@ import {
 import { SettingsSchema } from "@/schemas"
 import { Card, CardHeader, CardContent } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
-import { updateUser } from "@/actions/settings"
+import { updateUser, uploadToS3 } from "@/actions/settings"
 import {
   Form,
   FormField,
@@ -30,7 +30,7 @@ import {
 import { Input } from "@/components/ui/input"
 import { useCurrentUser } from "@/hooks/use-current-user"
 
-import { getSignedURL } from "@/actions/settings"
+// import { getSignedURL } from "@/actions/settings"
 import { toast } from "sonner"
 import { Icon } from "@iconify/react"
 
@@ -91,56 +91,59 @@ const SettingsPage = () => {
     } else setPreviewUrl(undefined)
   }
 
-  const computeSHA256 = async (file: File) => {
-    const buffer = await file.arrayBuffer()
+  // const computeSHA256 = async (file: File) => {
+  //   const buffer = await file.arrayBuffer()
 
-    // Use WebCrypto API for consistent behavior
-    const cryptoProvider =
-      typeof window === "undefined"
-        ? (await import("node:crypto")).webcrypto
-        : window.crypto
+  //   // Use WebCrypto API for consistent behavior
+  //   const cryptoProvider =
+  //     typeof window === "undefined"
+  //       ? (await import("node:crypto")).webcrypto
+  //       : window.crypto
 
-    // Ensure we have access to the subtle crypto API
-    if (!cryptoProvider?.subtle) {
-      throw new Error("Crypto subtle API is not available")
-    }
+  //   // Ensure we have access to the subtle crypto API
+  //   if (!cryptoProvider?.subtle) {
+  //     throw new Error("Crypto subtle API is not available")
+  //   }
 
-    const hashBuffer = await cryptoProvider.subtle.digest("SHA-256", buffer)
-    const hashArray = Array.from(new Uint8Array(hashBuffer))
-    const hashHex = hashArray
-      .map((b) => b.toString(16).padStart(2, "0"))
-      .join("")
+  //   const hashBuffer = await cryptoProvider.subtle.digest("SHA-256", buffer)
+  //   const hashArray = Array.from(new Uint8Array(hashBuffer))
+  //   const hashHex = hashArray
+  //     .map((b) => b.toString(16).padStart(2, "0"))
+  //     .join("")
 
-    return hashHex
-  }
+  //   return hashHex
+  // }
 
-  const generateFileName = (bytes = 32) => {
-    const array = new Uint8Array(bytes)
-    crypto.getRandomValues(array)
-    return Array.from(array, (byte) => byte.toString(16).padStart(2, "0")).join(
-      ""
-    )
-  }
+  // const generateFileName = (bytes = 32) => {
+  //   const array = new Uint8Array(bytes)
+  //   crypto.getRandomValues(array)
+  //   return Array.from(array, (byte) => byte.toString(16).padStart(2, "0")).join(
+  //     ""
+  //   )
+  // }
 
   const handleImageUpload = async (file: File) => {
-    const signedURLResult = await getSignedURL({
-      fileSize: file.size,
-      fileType: file.type,
-      checksum: await computeSHA256(file),
-      fileName: generateFileName(),
-    })
-    if (signedURLResult.error !== undefined)
-      throw new Error(signedURLResult.error)
-    const url = signedURLResult.success.url
-    await fetch(url, {
-      method: "PUT",
-      headers: {
-        "Content-Type": file.type,
-      },
-      body: file,
-    })
-    const fileUrl = url.split("?")[0]
-    return fileUrl as string
+    try {
+      const base64String = await new Promise<string>((resolve, reject) => {
+        const reader = new FileReader()
+        reader.onload = () => {
+          const base64 = reader.result as string
+          // Remove the data URL prefix (e.g., "data:image/jpeg;base64,")
+          const base64Data = base64.split(",")[1] || ""
+          resolve(base64Data)
+        }
+        reader.onerror = reject
+        reader.readAsDataURL(file)
+      })
+      const fileName = `${Date.now()}-${file.name}`
+
+      const fileUrl = await uploadToS3(base64String, fileName, file.type)
+      return fileUrl
+    } catch (error) {
+      console.error("Error uploading image:", error)
+      toast.error("Failed to upload image")
+      return null
+    }
   }
 
   const onSubmit = async (values: z.infer<typeof SettingsSchema>) => {
@@ -151,37 +154,46 @@ const SettingsPage = () => {
     }
 
     startTransition(async () => {
-      let imageUrl: string | null = null
+      try {
+        let imageUrl: string | null = null
 
-      if (image) imageUrl = await handleImageUpload(image as File)
-      const updatedUserParams = imageUrl
-        ? { ...values, image: imageUrl }
-        : { ...values }
-      updateUser(updatedUserParams)
-        .then((data) => {
-          if (data.error) {
-            toast.error(data.error)
-            setIsConfirmationDialogOpen(false)
-          }
-          if (data.success) {
-            update({
-              user: {
-                ...user,
-                name: values.name,
-                email: values.email,
-                role: values.role,
-                isTwoFactorEnabled: values.isTwoFactorEnabled,
-                image: imageUrl || user?.image,
-              },
-            })
-            toast.success(data.success)
-            setImage(null)
-            setPreviewUrl(undefined)
-            setIsConfirmationDialogOpen(false)
-          }
-          setIsDirty(false)
-        })
-        .catch(() => toast.error("Something went wrong!"))
+        if (image) {
+          imageUrl = await handleImageUpload(image)
+          if (!imageUrl) return // Handle upload failure
+        }
+
+        const updatedUserParams = imageUrl
+          ? { ...values, image: imageUrl }
+          : { ...values }
+
+        updateUser(updatedUserParams)
+          .then((data) => {
+            if (data.error) {
+              toast.error(data.error)
+              setIsConfirmationDialogOpen(false)
+            }
+            if (data.success) {
+              update({
+                user: {
+                  ...user,
+                  name: values.name,
+                  email: values.email,
+                  role: values.role,
+                  isTwoFactorEnabled: values.isTwoFactorEnabled,
+                  image: imageUrl || user?.image,
+                },
+              })
+              toast.success(data.success)
+              setImage(null)
+              setPreviewUrl(undefined)
+              setIsConfirmationDialogOpen(false)
+            }
+            setIsDirty(false)
+          })
+          .catch(() => toast.error("Something went wrong!"))
+      } catch (error) {
+        toast.error("Something went wrong!")
+      }
     })
   }
 

@@ -233,9 +233,29 @@ export const ProductsForm = ({
         const generateFileName = (index: number) => `${sku}-${index + 1}`
 
         const uploadedUrls = await Promise.all(
-          variant.variantImage.map((file: File, idx: number) =>
-            uploadProductImage({ file, fileName: generateFileName(idx) })
-          )
+          variant.variantImage.map(async (file: File, idx: number) => {
+            const fileName = generateFileName(idx)
+            const base64String = await new Promise<string>(
+              (resolve, reject) => {
+                const reader = new FileReader()
+                reader.onload = () => {
+                  const base64 = reader.result as string
+                  // Remove the data URL prefix (e.g., "data:image/jpeg;base64,")
+                  const base64Data = base64.split(",")[1] || ""
+                  resolve(base64Data)
+                }
+                reader.onerror = reject
+                reader.readAsDataURL(file)
+              }
+            )
+
+            const fileUrl = await uploadProductImage(
+              base64String,
+              fileName,
+              file.type
+            )
+            return fileUrl
+          })
         )
 
         _variants.push({

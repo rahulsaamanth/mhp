@@ -10,7 +10,6 @@ import { currentUser } from "@/lib/auth"
 import { generateVerificationToken } from "@/lib/tokens"
 import { sendVerificationEmail } from "@/lib/mail"
 import { PutObjectCommand, S3Client } from "@aws-sdk/client-s3"
-import { getSignedUrl } from "@aws-sdk/s3-request-presigner"
 import { db } from "@/db/db"
 import { user } from "@rahulsaamanth/mhp_shared-schema"
 import { eq } from "drizzle-orm"
@@ -99,17 +98,17 @@ const allowedFileTypes = [
 
 const MaxFileSize = 1024 * 1024 * 5
 
-type SignedURLResponse = Promise<
-  | { error: string; success?: undefined }
-  | { success: { url: string }; error?: undefined }
->
+// type SignedURLResponse = Promise<
+//   | { error: string; success?: undefined }
+//   | { success: { url: string }; error?: undefined }
+// >
 
-type GetSignedURLParams = {
-  fileType: string
-  fileSize: number
-  checksum: string
-  fileName: string
-}
+// type GetSignedURLParams = {
+//   fileType: string
+//   fileSize: number
+//   checksum: string
+//   fileName: string
+// }
 
 const s3Client = new S3Client({
   region: process.env.AWS_BUCKET_REGION!,
@@ -119,32 +118,35 @@ const s3Client = new S3Client({
   },
 })
 
-export const getSignedURL = async ({
-  fileType,
-  fileSize,
-  checksum,
-  fileName,
-}: GetSignedURLParams): SignedURLResponse => {
-  const user = currentUser()
+export async function uploadToS3(
+  base64File: string,
+  fileName: string,
+  fileType: string
+) {
+  try {
+    const user = await currentUser()
+    if (!user) throw new Error("Unauthorized")
+    const fileBuffer = Buffer.from(base64File, "base64")
 
-  if (!user) return { error: "Unauthorized!" }
+    if (fileBuffer.length > MaxFileSize) {
+      throw new Error("File size too large")
+    }
 
-  if (!allowedFileTypes.includes(fileType))
-    return { error: "File type not allowed" }
+    if (!allowedFileTypes.includes(fileType)) {
+      throw new Error("File type not allowed")
+    }
 
-  if (fileSize > MaxFileSize) return { error: "File size too large" }
+    const command = new PutObjectCommand({
+      Bucket: process.env.AWS_BUCKET_NAME!,
+      Key: fileName,
+      Body: fileBuffer,
+      ContentType: fileType,
+    })
 
-  const putObjectCommand = new PutObjectCommand({
-    Bucket: process.env.AWS_BUCKET_NAME!,
-    Key: fileName,
-    ContentType: fileType,
-    ContentLength: fileSize,
-    ChecksumSHA256: checksum,
-  })
-
-  const signedUrl = await getSignedUrl(s3Client, putObjectCommand, {
-    expiresIn: 60, //3600
-  })
-
-  return { success: { url: signedUrl } }
+    await s3Client.send(command)
+    return `https://${process.env.AWS_BUCKET_NAME}.s3.${process.env.AWS_BUCKET_REGION}.amazonaws.com/${fileName}`
+  } catch (error) {
+    console.error("Error uploading to S3:", error)
+    throw new Error("Failed to upload file")
+  }
 }

@@ -1,9 +1,11 @@
 "use server"
 
-import { getSignedURL } from "@/actions/settings"
+// import { getSignedURL } from "@/actions/settings"
 import { db } from "@/db/db"
+import { currentUser } from "@/lib/auth"
 import { getErrorMessage } from "@/lib/handle-error"
 import { createProductSchema } from "@/schemas"
+import { PutObjectCommand, S3Client } from "@aws-sdk/client-s3"
 import {
   Category,
   Manufacturer,
@@ -274,52 +276,53 @@ export async function createProduct(data: z.infer<typeof createProductSchema>) {
   }
 }
 
-const computeSHA256 = async (file: File) => {
-  const buffer = await file.arrayBuffer()
+const s3Client = new S3Client({
+  region: process.env.AWS_BUCKET_REGION!,
+  credentials: {
+    accessKeyId: process.env.AWS_ACCESS_KEY!,
+    secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY!,
+  },
+})
 
-  // Use WebCrypto API for consistent behavior
-  const cryptoProvider =
-    typeof window === "undefined"
-      ? (await import("node:crypto")).webcrypto
-      : window.crypto
+const allowedFileTypes = [
+  "image/jpeg",
+  "image/png",
+  "image/jpg",
+  "image/webp",
+  "image/svg+xml",
+]
 
-  if (!cryptoProvider?.subtle) throw new Error("WebCrypto API not available")
+const MaxFileSize = 1024 * 1024 * 5 // 5MB
 
-  const hashBuffer = await cryptoProvider.subtle.digest("SHA-256", buffer)
-  const hashArray = Array.from(new Uint8Array(hashBuffer))
-  const hashHex = hashArray.map((b) => b.toString(16).padStart(2, "0")).join("")
-
-  return hashHex
-}
-
-export const uploadProductImage = async ({
-  file,
-  fileName,
-}: {
-  file: File
-  fileName: string
-}): Promise<string> => {
+export async function uploadProductImage(
+  base64File: string,
+  fileName: string,
+  fileType: string
+) {
   try {
-    const signedURLResult = await getSignedURL({
-      fileSize: file.size,
-      fileType: file.type,
-      checksum: await computeSHA256(file),
-      fileName: fileName,
+    const user = await currentUser()
+    if (!user) throw new Error("Unauthorized")
+    const fileBuffer = Buffer.from(base64File, "base64")
+
+    if (fileBuffer.length > MaxFileSize) {
+      throw new Error("File size too large")
+    }
+
+    if (!allowedFileTypes.includes(fileType)) {
+      throw new Error("File type not allowed")
+    }
+
+    const command = new PutObjectCommand({
+      Bucket: process.env.AWS_BUCKET_NAME!,
+      Key: fileName,
+      Body: fileBuffer,
+      ContentType: fileType,
     })
-    if (signedURLResult.error !== undefined)
-      throw new Error(signedURLResult.error)
-    const url = signedURLResult.success.url
-    await fetch(url, {
-      method: "PUT",
-      headers: {
-        "Content-Type": file.type,
-      },
-      body: file,
-    })
-    const fileUrl = url.split("?")[0]
-    return fileUrl as string
+
+    await s3Client.send(command)
+    return `https://${process.env.AWS_BUCKET_NAME}.s3.${process.env.AWS_BUCKET_REGION}.amazonaws.com/${fileName}`
   } catch (error) {
-    console.error("Error uploading image:", error)
-    throw new Error("Failed to upload image")
+    console.error("Error uploading to S3:", error)
+    throw new Error("Failed to upload file")
   }
 }
