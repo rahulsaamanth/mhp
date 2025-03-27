@@ -1,7 +1,13 @@
 export async function hashPassword(password: string): Promise<string> {
   const encoder = new TextEncoder()
   const data = encoder.encode(password)
-  const hash = await crypto.subtle.digest("SHA-256", data)
+
+  const cryptoProvider =
+    typeof window === "undefined"
+      ? (await import("node:crypto")).webcrypto
+      : window.crypto
+
+  const hash = await cryptoProvider.subtle.digest("SHA-256", data)
   return Buffer.from(hash).toString("base64")
 }
 
