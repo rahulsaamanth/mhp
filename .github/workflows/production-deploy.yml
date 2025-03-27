@@ -67,6 +67,13 @@ jobs:
             # Navigate to project directory
             cd /var/www/nextjs/mhp || { echo "Directory not found"; exit 1; }
 
+
+            # Ensure the repository is up-to-date with the main branch
+            echo "Rebasing to main branch..."
+            git fetch origin main || { echo "Failed to fetch main branch"; exit 1; }
+            git rebase --hard origin/main || { echo "Git rebase failed"; exit 1; }
+
+
             # Verify binary existence and versions
             echo "Node version:"
             $NODE_PATH --version || echo "Node command failed"
@@ -89,11 +96,8 @@ jobs:
                 exit 1
               }
             }
-              
-            # Ensure the repository is up-to-date with the main branch
-            echo "Rebasing to main branch..."
-            git fetch origin main || { echo "Failed to fetch main branch"; exit 1; }
-            git rebase origin/main || { echo "Git rebase failed"; exit 1; }
+
+
 
             # Similar approach for build
             $PNPM_PATH run build || {
