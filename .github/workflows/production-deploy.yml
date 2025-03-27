@@ -34,71 +34,78 @@ jobs:
           username: ${{ secrets.EC2_USER }}
           key: ${{ secrets.EC2_SSH_PRIVATE_KEY }}
           script: |
-            # Find the actual paths of the commands
-            NODE_PATH=$(which node)
-            NPM_PATH=$(which npm)
-            PNPM_PATH=$(which pnpm)
-            PM2_PATH=$(which pm2)
+            # Set up debug logging
+            set -x
 
-            # Print out the paths for debugging
+            # Explicitly set home directory and source profile
+            export HOME=/home/$USER
+            source $HOME/.bashrc
+            source $HOME/.profile
+
+            # Find the actual paths of the commands with more robust method
+            NODE_PATH=$(command -v node)
+            NPM_PATH=$(command -v npm)
+            PNPM_PATH=$(command -v pnpm)
+            PM2_PATH=$(command -v pm2)
+
+            # Print out detailed environment information
+            echo "Current USER: $USER"
+            echo "HOME directory: $HOME"
+            echo "Current PATH: $PATH"
             echo "Node path: $NODE_PATH"
             echo "NPM path: $NPM_PATH"
             echo "PNPM path: $PNPM_PATH"
             echo "PM2 path: $PM2_PATH"
 
-            # Explicitly set PATH to include the directory containing these binaries
-            export PATH=$PATH:$(dirname $NODE_PATH)
+            # Check if NVM is installed and source it if available
+            if [ -f "$HOME/.nvm/nvm.sh" ]; then
+              echo "Sourcing NVM..."
+              source "$HOME/.nvm/nvm.sh"
+              nvm use default
+            fi
 
             # Navigate to project directory
             cd /var/www/nextjs/mhp || { echo "Directory not found"; exit 1; }
 
-            # Use full paths for all commands
-            $NODE_PATH --version
-            $NPM_PATH --version
-            $PNPM_PATH --version
-            $PM2_PATH --version
+            # Verify binary existence and versions
+            echo "Node version:"
+            $NODE_PATH --version || echo "Node command failed"
 
-            # Pull latest code
-            git fetch origin main
-            git reset --hard origin/main
+            echo "NPM version:"
+            $NPM_PATH --version || echo "NPM command failed"
 
-            # Create .env file with individual secrets
-            cat > .env << EOL
-            DATABASE_URL="${{ secrets.DATABASE_URL }}"
-            AUTH_SECRET="${{ secrets.AUTH_SECRET }}"
-            RESEND_API_KEY="${{ secrets.RESEND_API_KEY }}"
-            AWS_BUCKET_NAME="${{ secrets.AWS_BUCKET_NAME }}"
-            AWS_BUCKET_REGION="${{ secrets.AWS_BUCKET_REGION }}"
-            AWS_ACCESS_KEY="${{ secrets.AWS_ACCESS_KEY }}"
-            AWS_SECRET_ACCESS_KEY="${{ secrets.AWS_SECRET_ACCESS_KEY }}"
-            PUBLIC_APP_URL="${{ secrets.PUBLIC_APP_URL }}"
-            EOL
+            echo "PNPM version:"
+            $PNPM_PATH --version || echo "PNPM command failed"
 
-            # Create .npmrc file
-            cat > .npmrc << EOL
-            @rahulsaamanth:registry=https://npm.pkg.github.com
-            //npm.pkg.github.com/:_authToken=${{ secrets.GH_TOKEN }}
-            EOL
+            echo "PM2 version:"
+            $PM2_PATH --version || echo "PM2 command failed"
 
-            # Set correct permissions
-            chmod 600 .env .npmrc
+            # Alternate method of running commands with full path
+            echo "Attempting to run pnpm with full path..."
+            $PNPM_PATH install || { 
+              echo "PNPM install failed with full path. Trying alternative..."
+              pnpm install || {
+                echo "PNPM install failed completely"
+                exit 1
+              }
+            }
 
-            # Clear previous installations
-            rm -rf node_modules
+            # Similar approach for build
+            $PNPM_PATH run build || {
+              echo "PNPM build failed with full path. Trying alternative..."
+              pnpm run build || {
+                echo "PNPM build failed completely"
+                exit 1
+              }
+            }
 
-            # Install dependencies using full path
-            $PNPM_PATH install
-
-            # Build the project
-            $PNPM_PATH run build
-
-            # Restart or start the application
-            if $PM2_PATH describe mhp > /dev/null 2>&1; then
+            # PM2 process management
+            if $PM2_PATH list | grep -q mhp; then
               echo "Restarting existing PM2 process..."
-              $PM2_PATH restart mhp
+              $PM2_PATH restart mhp || pm2 restart mhp
             else
               echo "Starting new PM2 process..."
-              $PM2_PATH start $PNPM_PATH --name "mhp" -- start
+              $PM2_PATH start $PNPM_PATH --name "mhp" -- start || pm2 start $PNPM_PATH --name "mhp" -- start
             fi
 
             echo "Deployment completed"
