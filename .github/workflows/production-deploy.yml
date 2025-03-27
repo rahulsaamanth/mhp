@@ -25,6 +25,17 @@ jobs:
           cache: "pnpm"
 
       # Deploy to EC2 using SSH
+      - name: Test SSH connection
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.EC2_HOST }}
+          username: ${{ secrets.EC2_USER }}
+          key: ${{ secrets.EC2_SSH_PRIVATE_KEY }}
+          script: |
+            echo "SSH connection established"
+            exit 0
+
+      # Deploy to EC2 using SSH
       - name: Deploy to EC2
         uses: appleboy/ssh-action@master
         with:
@@ -33,8 +44,9 @@ jobs:
           key: ${{ secrets.EC2_SSH_PRIVATE_KEY }}
           script: |
             set -x 
+            echo "Starting deployment"
             # Navigate to project directory
-            cd /var/www/nextjs/mhp
+            cd /var/www/nextjs/mhp || {echo "Directory not found"; exit 1}
 
             # Pull latest code
             git fetch origin main
@@ -71,3 +83,5 @@ jobs:
             # Restart application
             pm2 describe mhp > /dev/null || pm2 start pnpm --name "mhp" -- start
             pm2 restart mhp
+
+            echo "Deployment completed"
