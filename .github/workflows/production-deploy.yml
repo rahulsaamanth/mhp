@@ -17,11 +17,25 @@ jobs:
         with:
           version: latest
 
+      - name: Get pnpm store directory
+        id: pnpm-cache
+        shell: bash
+        run: |
+          echo "STORE_PATH=$(pnpm store path)" >> $GITHUB_OUTPUT
+
+      - name: Setup pnpm cache
+        uses: actions/cache@v3
+        with:
+          path: ${{ steps.pnpm-cache.outputs.STORE_PATH }}
+          key: ${{ runner.os }}-pnpm-store-${{ hashFiles('**/pnpm-lock.yaml') }}
+          restore-keys: |
+            ${{ runner.os }}-pnpm-store-
+
       # Setup Node.js
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: "22.14.0"
+          node-version: "20.11.0"
           cache: "pnpm"
 
       # Test connection to EC2 using SSH
@@ -44,7 +58,7 @@ jobs:
           key: ${{ secrets.EC2_SSH_PRIVATE_KEY }}
           script: |
             set -x 
-            echo "Starting deployment"
+            echo "Starting deployment with Node ${node -v}"
             # Navigate to project directory
             cd /var/www/nextjs/mhp || { echo "Directory not found"; exit 1; }
 
@@ -71,8 +85,11 @@ jobs:
             EOL
 
             # Set correct permissions
-            chmod 600 .env
-            chmod 600 .npmrc
+            chmod 600 .env .npmrc
+
+            # Clear pnpm store and node_modules
+            rm -rf node_modules
+            pnpm store prune
 
             # Install dependencies using pnpm
             pnpm install 
@@ -81,7 +98,13 @@ jobs:
             pnpm run build
 
             # Restart application
-            pm2 describe mhp > /dev/null || pm2 start pnpm --name "mhp" -- start
-            pm2 restart mhp
+            if pm2 describe mhp > /dev/null; then
+             echo "Restarting existing PM2 process..."
+             pm2 restart mhp
+            else
+              echo "Starting new PM2 process..."
+              pm2 start npm --name "mhp" -- start
+              fi
+
 
             echo "Deployment completed"
