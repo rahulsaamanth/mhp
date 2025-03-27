@@ -22,22 +22,18 @@ export default async function AdminRootLayout({
 }: Readonly<{
   children: React.ReactNode
 }>) {
-  const session = await auth()
-
   return (
-    <SessionProvider session={session}>
-      <html lang="en" className={`${MontSerrat.variable} antialiased`}>
-        <head>
-          {/* <script
+    <html lang="en" className={`${MontSerrat.variable} antialiased`}>
+      <head>
+        {/* <script
             crossOrigin="anonymous"
             src="//unpkg.com/react-scan/dist/auto.global.js"
           ></script> */}
-        </head>
-        <body>
-          <Toaster richColors theme="light" toastOptions={{}} />
-          <NuqsAdapter>{children}</NuqsAdapter>
-        </body>
-      </html>
-    </SessionProvider>
+      </head>
+      <body>
+        <Toaster richColors theme="light" toastOptions={{}} />
+        <NuqsAdapter>{children}</NuqsAdapter>
+      </body>
+    </html>
   )
 }

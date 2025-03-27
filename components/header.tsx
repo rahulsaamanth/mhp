@@ -4,6 +4,7 @@ import React from "react"
 
 import Link from "next/link"
 import { useSelectedLayoutSegment } from "next/navigation"
+import { useSession } from "next-auth/react"
 
 import useScroll from "@/hooks/use-scroll"
 import { cn } from "@/lib/utils"
@@ -12,10 +13,10 @@ import { UserButton } from "./auth/user-button"
 import Image from "next/image"
 
 const Header = () => {
+  const { status } = useSession()
   const scrolled = useScroll(5)
   const selectedLayout = useSelectedLayoutSegment()
 
-  // sticky top-0 z-50 w-full border-b border-border/40 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60
   return (
     <div
       className={cn(
@@ -40,7 +41,11 @@ const Header = () => {
         </div>
 
         <div className="hidden xl:block">
-          <UserButton />
+          {status === "loading" ? (
+            <div className="animate-pulse h-10 w-10 rounded-full bg-gray-200" />
+          ) : (
+            <UserButton />
+          )}
         </div>
       </div>
     </div>

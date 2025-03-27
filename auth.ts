@@ -36,6 +36,10 @@ export const { handlers, auth, signIn, signOut, unstable_update } = NextAuth({
   // },
 
   callbacks: {
+    async redirect({ url, baseUrl }) {
+      return url.startsWith(baseUrl) ? url : baseUrl
+    },
+
     async signIn({ user, account }) {
       if (account?.provider !== "credentials") return true
 

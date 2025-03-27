@@ -18,11 +18,23 @@ export const UserButton = () => {
   const { data: session, status } = useSession()
   const user = session?.user
 
+  // Show loading state
   if (status === "loading") {
+    return (
+      <Avatar className="animate-pulse">
+        <AvatarFallback className="bg-gray-200">
+          <User className="text-gray-400 size-4" />
+        </AvatarFallback>
+      </Avatar>
+    )
+  }
+
+  // Show guest state if no user
+  if (!user) {
     return (
       <Avatar>
         <AvatarFallback>
-          <span className="animate-pulse">...</span>
+          <User className="text-black size-4" />
         </AvatarFallback>
       </Avatar>
     )
@@ -32,17 +44,14 @@ export const UserButton = () => {
     <DropdownMenu>
       <DropdownMenuTrigger className="rounded-full border-2 focus-visible:outline-none">
         <Avatar>
-          {user ? (
-            <AvatarImage
-              src={user?.image || ""}
-              alt={user?.name || "Profile"}
-              className="object-cover"
-            />
-          ) : (
-            <AvatarFallback>
-              <User className="text-black size-4" />
-            </AvatarFallback>
-          )}
+          <AvatarImage
+            src={user.image || ""}
+            alt={user.name || "Profile"}
+            className="object-cover"
+          />
+          <AvatarFallback>
+            {user.name?.[0] || <User className="text-black size-4" />}
+          </AvatarFallback>
         </Avatar>
       </DropdownMenuTrigger>
       <DropdownMenuContent className="w-40" align="end">

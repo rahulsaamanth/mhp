@@ -10,7 +10,7 @@ export const sendVerificationEmail = async (email: string, token: string) => {
       "Content-Type": "application/json",
     },
     body: JSON.stringify({
-      from: "noreply@yourdomain.com",
+      from: "noreply@mail.rahulsaamanth.in",
       to: email,
       subject: "Verify your email",
       html: `
@@ -38,7 +38,7 @@ export const sendPasswordResetEmail = async (email: string, token: string) => {
       "Content-Type": "application/json",
     },
     body: JSON.stringify({
-      from: "noreply@yourdomain.com",
+      from: "noreply@mail.rahulsaamanth.in",
       to: email,
       subject: "Reset your password",
       html: `
@@ -64,7 +64,7 @@ export const sendTwoFactorTokenEmail = async (email: string, token: string) => {
       "Content-Type": "application/json",
     },
     body: JSON.stringify({
-      from: "noreply@yourdomain.com",
+      from: "noreply@mail.rahulsaamanth.in",
       to: email,
       subject: "2FA Code",
       html: `
