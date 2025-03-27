@@ -34,9 +34,6 @@ jobs:
           username: ${{ secrets.EC2_USER }}
           key: ${{ secrets.EC2_SSH_PRIVATE_KEY }}
           script: |
-            # Set up debug logging
-            set -x
-
             # Explicitly set home directory and source profile
             export HOME=/home/$USER
             source $HOME/.bashrc
