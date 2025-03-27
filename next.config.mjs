@@ -25,7 +25,7 @@ const nextConfig = {
     // domains: ["mhp-local.s3.ap-south-1.amazonaws.com", "healthyghar.com"],
   },
   webpack: (config, { isServer }) => {
-    if (!server) {
+    if (!isServer) {
       config.resolve.fallback = {
         ...config.resolve.fallback,
         crypto: require.resolve("crypto-browserify"),
