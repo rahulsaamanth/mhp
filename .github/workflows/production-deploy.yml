@@ -24,7 +24,7 @@ jobs:
           node-version: "22.14.0"
           cache: "pnpm"
 
-      # Deploy to EC2 using SSH
+      # Test connection to EC2 using SSH
       - name: Test SSH connection
         uses: appleboy/ssh-action@master
         with:
@@ -46,7 +46,7 @@ jobs:
             set -x 
             echo "Starting deployment"
             # Navigate to project directory
-            cd /var/www/nextjs/mhp || {echo "Directory not found"; exit 1}
+            cd /var/www/nextjs/mhp || { echo "Directory not found"; exit 1; }
 
             # Pull latest code
             git fetch origin main
