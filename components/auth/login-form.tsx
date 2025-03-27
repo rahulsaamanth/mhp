@@ -1,6 +1,6 @@
 "use client"
 
-import React, { useState } from "react"
+import React, { Suspense, useState } from "react"
 import { useSearchParams } from "next/navigation"
 import * as z from "zod"
 
@@ -23,9 +23,10 @@ import { Button } from "../ui/button"
 import { FormError } from "../form-error"
 import { FormSuccess } from "../form-success"
 import { login } from "@/actions/auth/login"
+import { Skeleton } from "../ui/skeleton"
 // import Link from "next/link"
 
-export const LoginForm = () => {
+export const LoginFormContent = () => {
   const searchParams = useSearchParams()
   const callbackUrl = searchParams?.get("callbackUrl") || "/admin/dashboard"
   const error = searchParams?.get("error")
@@ -150,5 +151,28 @@ export const LoginForm = () => {
         </form>
       </Form>
     </CardWrapper>
+  )
+}
+
+const LoginFormLoading = () => {
+  return (
+    <CardWrapper
+      headerLabel="Reset Password"
+      backButtonLabel="Back to Login"
+      backButtonHref="/admin/auth/login"
+    >
+      <div className="space-y-4">
+        <Skeleton className="h-10 w-full" />
+        <Skeleton className="h-10 w-full" />
+      </div>
+    </CardWrapper>
+  )
+}
+
+export const LoginForm = () => {
+  return (
+    <Suspense fallback={<LoginFormLoading />}>
+      <LoginFormContent />
+    </Suspense>
   )
 }

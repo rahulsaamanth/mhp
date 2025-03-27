@@ -1,6 +1,6 @@
 "use client"
 
-import React, { useState } from "react"
+import React, { Suspense, useState } from "react"
 import * as z from "zod"
 
 import { useForm } from "react-hook-form"
@@ -22,8 +22,9 @@ import { Button } from "../ui/button"
 import { FormError } from "../form-error"
 import { FormSuccess } from "../form-success"
 import { reset } from "@/actions/auth/reset"
+import { Skeleton } from "../ui/skeleton"
 
-export const ResetForm = () => {
+export const ResetFormContent = () => {
   const [error, setError] = useState<string | undefined>("")
   const [success, setSuccess] = useState<string | undefined>("")
   const [isPending, startTransition] = React.useTransition()
@@ -83,5 +84,28 @@ export const ResetForm = () => {
         </form>
       </Form>
     </CardWrapper>
+  )
+}
+
+const ResetFormLoading = () => {
+  return (
+    <CardWrapper
+      headerLabel="Reset Password"
+      backButtonLabel="Back to Login"
+      backButtonHref="/admin/auth/login"
+    >
+      <div className="space-y-4">
+        <Skeleton className="h-10 w-full" />
+        <Skeleton className="h-10 w-full" />
+      </div>
+    </CardWrapper>
+  )
+}
+
+export const ResetForm = () => {
+  return (
+    <Suspense fallback={<ResetFormLoading />}>
+      <ResetFormContent />
+    </Suspense>
   )
 }

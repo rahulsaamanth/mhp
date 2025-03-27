@@ -1,6 +1,6 @@
 "use client"
 
-import React, { useState } from "react"
+import React, { Suspense, useState } from "react"
 import * as z from "zod"
 
 import { useForm } from "react-hook-form"
@@ -23,8 +23,9 @@ import { FormError } from "../form-error"
 import { FormSuccess } from "../form-success"
 import { newPassword } from "@/actions/auth/new-password"
 import { useSearchParams } from "next/navigation"
+import { Skeleton } from "../ui/skeleton"
 
-export const NewPasswordForm = () => {
+const NewPasswordFormContent = () => {
   const searchParams = useSearchParams()
   const token = searchParams?.get("token")
 
@@ -87,5 +88,28 @@ export const NewPasswordForm = () => {
         </form>
       </Form>
     </CardWrapper>
+  )
+}
+
+const NewPasswordFormLoading = () => {
+  return (
+    <CardWrapper
+      headerLabel="Reset Password"
+      backButtonLabel="Back to Login"
+      backButtonHref="/admin/auth/login"
+    >
+      <div className="space-y-4">
+        <Skeleton className="h-10 w-full" />
+        <Skeleton className="h-10 w-full" />
+      </div>
+    </CardWrapper>
+  )
+}
+
+export const NewPasswordForm = () => {
+  return (
+    <Suspense fallback={<NewPasswordFormLoading />}>
+      <NewPasswordFormContent />
+    </Suspense>
   )
 }

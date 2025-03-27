@@ -1,7 +1,7 @@
 "use client"
 
 import { useSearchParams } from "next/navigation"
-import { useCallback, useEffect, useState } from "react"
+import { Suspense, useCallback, useEffect, useState } from "react"
 
 import { newVerification } from "@/actions/auth/new-verification"
 import { CardWrapper } from "./card-wrapper"
@@ -9,7 +9,7 @@ import { FormError } from "../form-error"
 import { FormSuccess } from "../form-success"
 import { Loader } from "lucide-react"
 
-export const NewVerificationForm = () => {
+export const NewVerificationFormContent = () => {
   const [error, setError] = useState<string | undefined>()
   const [success, setSuccess] = useState<string | undefined>()
 
@@ -50,5 +50,27 @@ export const NewVerificationForm = () => {
         {!success && <FormError message={error} />}
       </div>
     </CardWrapper>
+  )
+}
+
+const NewVerificationFormLoading = () => {
+  return (
+    <CardWrapper
+      headerLabel="Reset Password"
+      backButtonLabel="Back to Login"
+      backButtonHref="/admin/auth/login"
+    >
+      <div className="space-y-4">
+        <Loader className="size-4 animate-spin" />
+      </div>
+    </CardWrapper>
+  )
+}
+
+export const NewVerificationForm = () => {
+  return (
+    <Suspense fallback={<NewVerificationFormLoading />}>
+      <NewVerificationFormContent />
+    </Suspense>
   )
 }

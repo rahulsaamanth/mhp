@@ -20,15 +20,15 @@ import { type SelectResultFields } from "drizzle-orm/query-builders/select.types
 
 import { databasePrefix } from "@/lib/constants"
 import { asc, desc, ilike, or, SQLWrapper } from "drizzle-orm"
-import { product } from "./schema"
+import { product } from "@rahulsaamanth/mhp_shared-schema"
 
 export const buildSearchCondition = (search: string) => {
   if (!search) return []
 
   return [
     or(
-    ilike(product.name, `%${search}%`),
-    ilike(product.description, `%${search}%`)
+      ilike(product.name, `%${search}%`),
+      ilike(product.description, `%${search}%`)
     ),
   ]
 }

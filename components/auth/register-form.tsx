@@ -1,6 +1,6 @@
 "use client"
 
-import React, { useState } from "react"
+import React, { Suspense, useState } from "react"
 import * as z from "zod"
 
 import { useForm } from "react-hook-form"
@@ -22,8 +22,9 @@ import { Button } from "../ui/button"
 import { FormError } from "../form-error"
 import { FormSuccess } from "../form-success"
 import { register } from "@/actions/auth/register"
+import { Skeleton } from "../ui/skeleton"
 
-export const RegisterForm = () => {
+export const RegisterFormContent = () => {
   const [error, setError] = useState<string | undefined>("")
   const [success, setSuccess] = useState<string | undefined>("")
 
@@ -121,5 +122,29 @@ export const RegisterForm = () => {
         </form>
       </Form>
     </CardWrapper>
+  )
+}
+
+const RegisterFormLoading = () => {
+  return (
+    <CardWrapper
+      headerLabel="Reset Password"
+      backButtonLabel="Back to Login"
+      backButtonHref="/admin/auth/login"
+    >
+      <div className="space-y-4">
+        <Skeleton className="h-10 w-full" />
+        <Skeleton className="h-10 w-full" />
+        <Skeleton className="h-10 w-full" />
+      </div>
+    </CardWrapper>
+  )
+}
+
+export const RegisterForm = () => {
+  return (
+    <Suspense fallback={<RegisterFormLoading />}>
+      <RegisterFormContent />
+    </Suspense>
   )
 }
