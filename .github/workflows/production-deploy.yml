@@ -21,9 +21,12 @@ jobs:
         id: pnpm-cache
         shell: bash
         run: |
-          echo "STORE_PATH=$(pnpm store path)" >> $GITHUB_OUTPUT
+          STORE_PATH=$(pnpm store path)
+          echo "PNPM Store Path: $STORE_PATH"
+          echo "STORE_PATH=$STORE_PATH" >> $GITHUB_OUTPUT
 
       - name: Setup pnpm cache
+        if: steps.pnpm-cache.outputs.STORE_PATH != ''
         uses: actions/cache@v3
         with:
           path: ${{ steps.pnpm-cache.outputs.STORE_PATH }}
@@ -103,7 +106,7 @@ jobs:
              pm2 restart mhp
             else
               echo "Starting new PM2 process..."
-              pm2 start npm --name "mhp" -- start
+              pm2 start pnpm --name "mhp" -- start
               fi
 
 
