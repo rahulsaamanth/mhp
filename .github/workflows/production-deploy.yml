@@ -70,6 +70,29 @@ jobs:
             git fetch origin main || { echo "Failed to fetch main branch"; exit 1; }
             git reset --hard origin/main || { echo "Git rebase failed"; exit 1; }
 
+            # Now create configuration files
+            echo "Creating configuration files..."
+
+            # Create .env file
+            cat > .env << EOL || { echo "Failed to create .env file"; exit 1; }
+            DATABASE_URL="${{ secrets.DATABASE_URL }}"
+            AUTH_SECRET="${{ secrets.AUTH_SECRET }}"
+            RESEND_API_KEY="${{ secrets.RESEND_API_KEY }}"
+            AWS_BUCKET_NAME="${{ secrets.AWS_BUCKET_NAME }}"
+            AWS_BUCKET_REGION="${{ secrets.AWS_BUCKET_REGION }}"
+            AWS_ACCESS_KEY="${{ secrets.AWS_ACCESS_KEY }}"
+            AWS_SECRET_ACCESS_KEY="${{ secrets.AWS_SECRET_ACCESS_KEY }}"
+            PUBLIC_APP_URL="${{ secrets.PUBLIC_APP_URL }}"
+            EOL
+
+            # Create .npmrc file
+            cat > .npmrc << EOL || { echo "Failed to create .npmrc file"; exit 1; }
+            @rahulsaamanth:registry=https://npm.pkg.github.com
+            //npm.pkg.github.com/:_authToken=${{ secrets.GITHUB_TOKEN }}
+            EOL
+
+            # Set proper permissions
+            chmod 600 .env .npmrc || { echo "Failed to set file permissions"; exit 1; }            
 
             # Verify binary existence and versions
             echo "Node version:"
