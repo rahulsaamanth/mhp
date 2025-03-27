@@ -107,19 +107,24 @@ jobs:
             echo "PM2 version:"
             $PM2_PATH --version || echo "PM2 command failed"
 
-            # Alternate method of running commands with full path
-            echo "Attempting to run pnpm with full path..."
-            $PNPM_PATH install || { 
+            # Clean up existing build and dependencies
+            echo "Cleaning up previous build..."
+            rm -rf .next || { echo "Failed to remove .next directory"; exit 1; }
+            rm -rf node_modules || { echo "Failed to remove node_modules"; exit 1; }
+
+            # Install dependencies with full path fallback
+            echo "Installing dependencies..."
+            $PNPM_PATH store prune && $PNPM install || {
               echo "PNPM install failed with full path. Trying alternative..."
-              pnpm install || {
+              pnpm store prune && pnpm install || {
                 echo "PNPM install failed completely"
                 exit 1
               }
-            }
+            }            
 
 
-
-            # Similar approach for build
+            # Build the project with full path fallback
+            echo "Building the project..."
             $PNPM_PATH run build || {
               echo "PNPM build failed with full path. Trying alternative..."
               pnpm run build || {
@@ -129,6 +134,7 @@ jobs:
             }
 
             # PM2 process management
+            echo "Checking PM2 process..."
             if $PM2_PATH list | grep -q mhp; then
               echo "Restarting existing PM2 process..."
               $PM2_PATH restart mhp || pm2 restart mhp
