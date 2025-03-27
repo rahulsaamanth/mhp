@@ -28,7 +28,7 @@ const nextConfig = {
     if (!isServer) {
       config.resolve.fallback = {
         ...config.resolve.fallback,
-        crypto: "crypto-browserify",
+        crypto: false,
       }
     }
     return config

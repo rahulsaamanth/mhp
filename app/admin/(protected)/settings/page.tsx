@@ -46,7 +46,7 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog"
 import { Loader } from "lucide-react"
-import * as crypto from "crypto"
+import { webcrypto } from "crypto"
 
 const SettingsPage = () => {
   const { user } = useCurrentUser()
@@ -94,12 +94,17 @@ const SettingsPage = () => {
   const computeSHA256 = async (file: File) => {
     const buffer = await file.arrayBuffer()
 
-    const hash = crypto.createHash("SHA-256")
+    // Use WebCrypto API for consistent behavior
+    const cryptoProvider =
+      typeof window === "undefined" ? webcrypto : window.crypto
 
-    const nodeBuffer = Buffer.from(buffer)
-    hash.update(nodeBuffer)
+    const hashBuffer = await cryptoProvider.subtle.digest("SHA-256", buffer)
+    const hashArray = Array.from(new Uint8Array(hashBuffer))
+    const hashHex = hashArray
+      .map((b) => b.toString(16).padStart(2, "0"))
+      .join("")
 
-    return hash.digest("hex")
+    return hashHex
   }
 
   const generateFileName = (bytes = 32) => {
