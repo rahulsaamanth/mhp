@@ -6,7 +6,7 @@ import {
   orderType,
   paymentStatus,
   Product as ProductFromSchema,
-} from "./db/schema"
+} from "@rahulsaamanth/mhp_shared-schema"
 
 export type SideNavItem = {
   title: string

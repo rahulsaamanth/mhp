@@ -1,0 +1,69 @@
+name: Deploy Next.js to EC2
+on:
+  push:
+    branches: ["main"] # Trigger on pushes to main branch
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      # Checkout the repository
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      # Setup pnpm
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v3
+        with:
+          version: latest
+
+      # Setup Node.js
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22.14.0"
+          cache: "pnpm"
+
+      # Deploy to EC2 using SSH
+      - name: Deploy to EC2
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.EC2_HOST }}
+          username: ${{ secrets.EC2_USER }}
+          key: ${{ secrets.EC2_SSH_PRIVATE_KEY }}
+          script: |
+            # Navigate to project directory
+            cd /var/www/nextjs/mhp
+
+            # Pull latest code
+            git fetch origin main
+            git reset --hard origin/main
+
+            # Create .env file with individual secrets
+            cat > .env << EOL
+
+
+            cat > .env << EOL
+            DATABASE_URL="${{ secrets.DATABASE_URL }}"
+            AUTH_SECRET="${{ secrets.AUTH_SECRET }}"
+            RESEND_API_KEY="${{ secrets.RESEND_API_KEY }}"
+            AWS_BUCKET_NAME="${{ secrets.AWS_BUCKET_NAME }}"
+            AWS_BUCKET_REGION="${{ secrets.AWS_BUCKET_REGION }}"
+            AWS_ACCESS_KEY="${{ secrets.AWS_ACCESS_KEY }}"
+            AWS_SECRET_ACCESS_KEY="${{ secrets.AWS_SECRET_ACCESS_KEY }}"
+            PUBLIC_APP_URL="${{ secrets.PUBLIC_APP_URL }}"
+            EOL
+
+
+            # Set correct permissions
+            chmod 600 .env
+
+            # Install dependencies using pnpm
+            pnpm install --frozen-lockfile
+
+            # Build the project
+            pnpm run build
+
+            # Restart application
+            pm2 describe mhp > /dev/null || pm2 start pnpm --name "mhp" -- start
+            pm2 restart mhp

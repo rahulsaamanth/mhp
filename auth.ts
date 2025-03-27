@@ -6,7 +6,11 @@ import { getUserById } from "./utils/user"
 
 import { db } from "@/db/db"
 import { eq, is } from "drizzle-orm"
-import { user as User, UserRole, twoFactorConfirmation } from "./db/schema"
+import {
+  user as User,
+  UserRole,
+  twoFactorConfirmation,
+} from "@rahulsaamanth/mhp_shared-schema"
 
 // import { DrizzleAdapter } from "@auth/drizzle-adapter"
 import authConfig from "./auth.config"
