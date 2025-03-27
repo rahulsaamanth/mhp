@@ -1,14 +1,12 @@
+import * as crypto from "crypto"
+
 export async function hashPassword(password: string): Promise<string> {
   const encoder = new TextEncoder()
   const data = encoder.encode(password)
 
-  const cryptoProvider =
-    typeof window === "undefined"
-      ? (await import("node:crypto")).webcrypto
-      : window.crypto
-
-  const hash = await cryptoProvider.subtle.digest("SHA-256", data)
-  return Buffer.from(hash).toString("base64")
+  const hash = crypto.createHash("SHA-256")
+  hash.update(password)
+  return hash.digest("base64")
 }
 
 export async function comparePasswords(

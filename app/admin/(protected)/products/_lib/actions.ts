@@ -2,6 +2,8 @@
 
 import { getSignedURL } from "@/actions/settings"
 import { db } from "@/db/db"
+import { getErrorMessage } from "@/lib/handle-error"
+import { createProductSchema } from "@/schemas"
 import {
   Category,
   Manufacturer,
@@ -12,13 +14,10 @@ import {
   product,
   productVariant,
 } from "@rahulsaamanth/mhp_shared-schema"
-import { getErrorMessage } from "@/lib/handle-error"
-import { generateSKU, generateVariantName } from "@/lib/utils"
-import { createProductSchema } from "@/schemas"
-import { pause } from "@/utils/pause"
 
-import { InferSelectModel, eq, inArray, sql } from "drizzle-orm"
-import { revalidatePath, revalidateTag, unstable_noStore } from "next/cache"
+import * as crypto from "crypto"
+import { eq, inArray } from "drizzle-orm"
+import { revalidateTag, unstable_noStore } from "next/cache"
 import * as z from "zod"
 
 export async function deleteProducts(input: { ids: string[] }) {
@@ -275,18 +274,15 @@ export async function createProduct(data: z.infer<typeof createProductSchema>) {
   }
 }
 
-export const computeSHA256 = async (file: File) => {
+const computeSHA256 = async (file: File) => {
   const buffer = await file.arrayBuffer()
 
-  const cryptoProvider =
-    typeof window === "undefined"
-      ? (await import("node:crypto")).webcrypto
-      : window.crypto
+  const hash = crypto.createHash("SHA-256")
 
-  const hashBuffer = await cryptoProvider.subtle.digest("SHA-256", buffer)
-  const hashArray = Array.from(new Uint8Array(hashBuffer))
-  const hashHex = hashArray.map((b) => b.toString(16).padStart(2, "0")).join("")
-  return hashHex
+  const nodeBuffer = Buffer.from(buffer)
+  hash.update(nodeBuffer)
+
+  return hash.digest("hex")
 }
 
 export const uploadProductImage = async ({
