@@ -16,21 +16,6 @@ jobs:
         with:
           node-version: "20.11.0"
 
-      # Install pnpm globally
-      - name: Install pnpm
-        run: |
-          npm install -g pnpm
-          npm install -g pm2
-
-      # Optional: Caching pnpm dependencies
-      - name: Cache pnpm dependencies
-        uses: actions/cache@v3
-        with:
-          path: ~/.pnpm-store
-          key: ${{ runner.os }}-pnpm-${{ hashFiles('**/pnpm-lock.yaml') }}
-          restore-keys: |
-            ${{ runner.os }}-pnpm-
-
       # Test connection to EC2 using SSH
       - name: Test SSH connection
         uses: appleboy/ssh-action@master
@@ -42,7 +27,6 @@ jobs:
             echo "SSH connection established"
             exit 0
 
-      # Deploy to EC2 using SSH
       - name: Deploy to EC2
         uses: appleboy/ssh-action@master
         with:
@@ -50,17 +34,29 @@ jobs:
           username: ${{ secrets.EC2_USER }}
           key: ${{ secrets.EC2_SSH_PRIVATE_KEY }}
           script: |
-            # Ensure node, pnpm, and pm2 are available
-            export PATH=$PATH:/usr/local/bin
+            # Find the actual paths of the commands
+            NODE_PATH=$(which node)
+            NPM_PATH=$(which npm)
+            PNPM_PATH=$(which pnpm)
+            PM2_PATH=$(which pm2)
 
-            # Verify installations
-            node --version
-            npm --version
-            pnpm --version
-            pm2 --version
+            # Print out the paths for debugging
+            echo "Node path: $NODE_PATH"
+            echo "NPM path: $NPM_PATH"
+            echo "PNPM path: $PNPM_PATH"
+            echo "PM2 path: $PM2_PATH"
+
+            # Explicitly set PATH to include the directory containing these binaries
+            export PATH=$PATH:$(dirname $NODE_PATH)
 
             # Navigate to project directory
             cd /var/www/nextjs/mhp || { echo "Directory not found"; exit 1; }
+
+            # Use full paths for all commands
+            $NODE_PATH --version
+            $NPM_PATH --version
+            $PNPM_PATH --version
+            $PM2_PATH --version
 
             # Pull latest code
             git fetch origin main
@@ -78,6 +74,7 @@ jobs:
             PUBLIC_APP_URL="${{ secrets.PUBLIC_APP_URL }}"
             EOL
 
+            # Create .npmrc file
             cat > .npmrc << EOL
             @rahulsaamanth:registry=https://npm.pkg.github.com
             //npm.pkg.github.com/:_authToken=${{ secrets.GH_TOKEN }}
@@ -89,19 +86,19 @@ jobs:
             # Clear previous installations
             rm -rf node_modules
 
-            # Install dependencies
-            pnpm install
+            # Install dependencies using full path
+            $PNPM_PATH install
 
             # Build the project
-            pnpm run build
+            $PNPM_PATH run build
 
-            # Restart application
-            if pm2 describe mhp > /dev/null 2>&1; then
+            # Restart or start the application
+            if $PM2_PATH describe mhp > /dev/null 2>&1; then
               echo "Restarting existing PM2 process..."
-              pm2 restart mhp
+              $PM2_PATH restart mhp
             else
               echo "Starting new PM2 process..."
-              pm2 start pnpm --name "mhp" -- start
+              $PM2_PATH start $PNPM_PATH --name "mhp" -- start
             fi
 
             echo "Deployment completed"
