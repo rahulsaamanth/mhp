@@ -96,7 +96,14 @@ const SettingsPage = () => {
 
     // Use WebCrypto API for consistent behavior
     const cryptoProvider =
-      typeof window === "undefined" ? webcrypto : window.crypto
+      typeof window === "undefined"
+        ? (await import("node:crypto")).webcrypto
+        : window.crypto
+
+    // Ensure we have access to the subtle crypto API
+    if (!cryptoProvider?.subtle) {
+      throw new Error("Crypto subtle API is not available")
+    }
 
     const hashBuffer = await cryptoProvider.subtle.digest("SHA-256", buffer)
     const hashArray = Array.from(new Uint8Array(hashBuffer))

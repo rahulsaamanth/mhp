@@ -279,7 +279,11 @@ const computeSHA256 = async (file: File) => {
 
   // Use WebCrypto API for consistent behavior
   const cryptoProvider =
-    typeof window === "undefined" ? webcrypto : window.crypto
+    typeof window === "undefined"
+      ? (await import("node:crypto")).webcrypto
+      : window.crypto
+
+  if (!cryptoProvider?.subtle) throw new Error("WebCrypto API not available")
 
   const hashBuffer = await cryptoProvider.subtle.digest("SHA-256", buffer)
   const hashArray = Array.from(new Uint8Array(hashBuffer))
