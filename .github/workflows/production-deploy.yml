@@ -139,10 +139,10 @@ jobs:
             echo "Checking PM2 process..."
             if $PM2_PATH list | grep -q mhp; then
               echo "Restarting existing PM2 process..."
-              $PM2_PATH restart mhp || pm2 restart mhp
+              pm2 restart mhp
             else
               echo "Starting new PM2 process..."
-              pm2 start "node .next/standalone/server.js" --name "mhp" || pm2 start pnpm --name "mhp" -- start
+              pm2 start pnpm --name "mhp" -- start
             fi
 
             echo "Deployment completed"
