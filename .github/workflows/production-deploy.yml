@@ -142,7 +142,7 @@ jobs:
               $PM2_PATH restart mhp || pm2 restart mhp
             else
               echo "Starting new PM2 process..."
-              pm2 start .next/standalone/server.js --name "mhp" || pm2 start pnpm --name "mhp" -- start
+              pm2 start "node .next/standalone/server.js" --name "mhp" || pm2 start pnpm --name "mhp" -- start
             fi
 
             echo "Deployment completed"
