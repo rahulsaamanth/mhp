@@ -11,7 +11,7 @@ import { generateVerificationToken } from "@/lib/tokens"
 import { sendVerificationEmail } from "@/lib/mail"
 import { PutObjectCommand, S3Client } from "@aws-sdk/client-s3"
 import { db } from "@/db/db"
-import { user } from "@rahulsaamanth/mhp_shared-schema"
+import { user } from "@rahulsaamanth/mhp-schema"
 import { eq } from "drizzle-orm"
 import { comparePasswords, hashPassword } from "@/lib/passwords"
 

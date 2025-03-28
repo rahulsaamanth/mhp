@@ -7,7 +7,7 @@ import { db } from "@/db/db"
 import { getUserByEmail } from "@/utils/user"
 import { generateVerificationToken } from "@/lib/tokens"
 import { sendVerificationEmail } from "@/lib/mail"
-import { user } from "@rahulsaamanth/mhp_shared-schema"
+import { user } from "@rahulsaamanth/mhp-schema"
 import { hashPassword } from "@/lib/passwords"
 
 export const register = async (values: z.infer<typeof RegisterSchema>) => {

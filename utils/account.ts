@@ -1,6 +1,6 @@
 import { db } from "@/db/db"
 import { eq } from "drizzle-orm"
-import { account } from "@rahulsaamanth/mhp_shared-schema"
+import { account } from "@rahulsaamanth/mhp-schema"
 
 export const getAccountByUserId = async (userId: string) => {
   try {

@@ -20,7 +20,7 @@ import { type SelectResultFields } from "drizzle-orm/query-builders/select.types
 
 import { databasePrefix } from "@/lib/constants"
 import { asc, desc, ilike, or, SQLWrapper } from "drizzle-orm"
-import { product } from "@rahulsaamanth/mhp_shared-schema"
+import { product } from "@rahulsaamanth/mhp-schema"
 
 export const buildSearchCondition = (search: string) => {
   if (!search) return []

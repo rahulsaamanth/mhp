@@ -1,4 +1,4 @@
-import { discountType, potency } from "@rahulsaamanth/mhp_shared-schema"
+import { discountType, potency } from "@rahulsaamanth/mhp-schema"
 import * as z from "zod"
 
 const ACCEPTED_IMAGE_MIME_TYPES = [

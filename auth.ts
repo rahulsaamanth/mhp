@@ -10,7 +10,7 @@ import {
   user as User,
   UserRole,
   twoFactorConfirmation,
-} from "@rahulsaamanth/mhp_shared-schema"
+} from "@rahulsaamanth/mhp-schema"
 
 // import { DrizzleAdapter } from "@auth/drizzle-adapter"
 import authConfig from "./auth.config"

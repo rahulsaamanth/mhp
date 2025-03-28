@@ -4,7 +4,7 @@
 // import { startOfDay } from "date-fns"
 
 // import { and, count, gte, lte, sum } from "drizzle-orm"
-// import { order, user } from "@rahulsaamanth/mhp_shared-schema"
+// import { order, user } from "@rahulsaamanth/mhp-schema"
 // import { db } from "@/db/db"
 // import { ClientDataTable } from "@/components/tables/client-data-table"
 // import { getUsers } from "@/actions/users"

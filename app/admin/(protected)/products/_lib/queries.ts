@@ -6,7 +6,7 @@ import {
   category,
   manufacturer,
   product,
-} from "@rahulsaamanth/mhp_shared-schema"
+} from "@rahulsaamanth/mhp-schema"
 import { SQLChunk, count, eq, gt, sql } from "drizzle-orm"
 
 import { db } from "@/db/db"

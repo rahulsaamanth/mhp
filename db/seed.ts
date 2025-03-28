@@ -1,6 +1,6 @@
 import { hashPassword } from "@/lib/passwords"
 import { db } from "./db"
-import * as schema from "@rahulsaamanth/mhp_shared-schema"
+import * as schema from "@rahulsaamanth/mhp-schema"
 
 async function seed() {
   console.log("🌱 Seeding started...")

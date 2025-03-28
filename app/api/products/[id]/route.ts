@@ -1,5 +1,5 @@
 import { db } from "@/db/db"
-import { product } from "@rahulsaamanth/mhp_shared-schema"
+import { product } from "@rahulsaamanth/mhp-schema"
 import { eq } from "drizzle-orm"
 import { NextRequest, NextResponse } from "next/server"
 

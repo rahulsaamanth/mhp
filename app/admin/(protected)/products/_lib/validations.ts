@@ -1,4 +1,4 @@
-import { product, type Product } from "@rahulsaamanth/mhp_shared-schema"
+import { product, type Product } from "@rahulsaamanth/mhp-schema"
 import {
   createSearchParamsCache,
   parseAsArrayOf,

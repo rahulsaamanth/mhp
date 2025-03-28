@@ -7,6 +7,7 @@ import Image from "next/image"
 import { useState } from "react"
 import { ControllerRenderProps } from "react-hook-form"
 import * as z from "zod"
+import { compressImage } from "@/lib/compress-image"
 
 type VariantImageUploadProps = {
   field: ControllerRenderProps<
@@ -41,10 +42,22 @@ export const VariantImageUpload = ({
 
     const files = Array.from(e.target.files)
 
-    const newPreviewUrls = files.map((file) => URL.createObjectURL(file))
-    setPreviewUrls((prev) => [...prev, ...newPreviewUrls])
+    try {
+      const compressedFiles = await Promise.all(
+        files.map(async (file) => {
+          const compressed = await compressImage(file)
+          return compressed
+        })
+      )
 
-    field.onChange([...(field.value || []), ...files])
+      const newPreviewUrls = compressedFiles.map((file) =>
+        URL.createObjectURL(file)
+      )
+      setPreviewUrls((prev) => [...prev, ...newPreviewUrls])
+      field.onChange([...(field.value || []), ...compressedFiles])
+    } catch (error) {
+      console.error("Error compressing images:", error)
+    }
   }
 
   const handleRemoveImage = (imageIndex: number) => {
@@ -165,26 +178,74 @@ export const VariantImageUpload = ({
       </div>
     )
 
+  const renderImageGrid = () => (
+    <div className="flex flex-wrap gap-2 items-center">
+      {previewUrls.map((url, imgIndex) => (
+        <div
+          key={imgIndex}
+          className="relative group rounded-md overflow-hidden border bg-background"
+        >
+          <div
+            onMouseEnter={(e) => {
+              const rect = e.currentTarget.getBoundingClientRect()
+              setPreviewImage({
+                url,
+                alt: `Variant ${index + 1} image ${imgIndex + 1}`,
+                position: calculatePreviewPosition(rect),
+              })
+              setShowPreview(true)
+            }}
+            onMouseLeave={() => setShowPreview(false)}
+            className="size-10 relative"
+          >
+            <Image
+              src={url}
+              alt={`Variant ${index + 1} image ${imgIndex + 1}`}
+              fill
+              className="object-cover"
+              onError={(e) => {
+                const target = e.target as HTMLImageElement
+                target.src = "/placeholder-image.jpg"
+              }}
+            />
+          </div>
+          <Button
+            onClick={() => handleRemoveImage(imgIndex)}
+            type="button"
+            variant="destructive"
+            size="icon"
+            className="absolute right-0 top-0 size-4 opacity-0 group-hover:opacity-100 transition-opacity"
+          >
+            <X className="size-3" />
+          </Button>
+        </div>
+      ))}
+      <Button
+        type="button"
+        variant="outline"
+        size="icon"
+        className="size-8"
+        asChild
+      >
+        <label htmlFor={`variant-${index}-images`} className="cursor-pointer">
+          <input
+            type="file"
+            accept="image/*"
+            multiple
+            className="hidden"
+            id={`variant-${index}-images`}
+            onChange={handleFileChange}
+          />
+          <Upload className="size-4" />
+        </label>
+      </Button>
+    </div>
+  )
+
   return (
     <FormItem>
       <FormControl>
-        <div className="flex items-center gap-2">
-          {previewUrls.length > 0 ? (
-            <div className="flex gap-2 items-center">
-              <div className="flex space-x-2">
-                {previewUrls.map((url, index) =>
-                  renderImagePreview(url, index)
-                )}
-              </div>
-              {renderUploadButton()}
-            </div>
-          ) : (
-            <div className="flex items-center gap-2">
-              {renderUploadButton()}
-              <span className="text-sm text-muted-foreground">No images</span>
-            </div>
-          )}
-        </div>
+        <div className="space-y-2">{renderImageGrid()}</div>
       </FormControl>
       <FormMessage />
       {renderHoverPreview()}

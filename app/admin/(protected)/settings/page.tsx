@@ -1,12 +1,24 @@
 "use client"
 
-import * as z from "zod"
-import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
-import React, { useTransition, useState } from "react"
 import { useSession } from "next-auth/react"
+import React, { useState, useTransition } from "react"
+import { useForm } from "react-hook-form"
+import * as z from "zod"
 
-import { Switch } from "@/components/ui/switch"
+import { updateUser, uploadToS3 } from "@/actions/settings"
+import { Button } from "@/components/ui/button"
+import { Card, CardContent } from "@/components/ui/card"
+import {
+  Form,
+  FormControl,
+  FormDescription,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form"
+import { Input } from "@/components/ui/input"
 import {
   Select,
   SelectContent,
@@ -14,25 +26,13 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
-import { SettingsSchema } from "@/schemas"
-import { Card, CardHeader, CardContent } from "@/components/ui/card"
-import { Button } from "@/components/ui/button"
-import { updateUser, uploadToS3 } from "@/actions/settings"
-import {
-  Form,
-  FormField,
-  FormControl,
-  FormItem,
-  FormLabel,
-  FormDescription,
-  FormMessage,
-} from "@/components/ui/form"
-import { Input } from "@/components/ui/input"
+import { Switch } from "@/components/ui/switch"
 import { useCurrentUser } from "@/hooks/use-current-user"
+import { SettingsSchema } from "@/schemas"
 
 // import { getSignedURL } from "@/actions/settings"
-import { toast } from "sonner"
 import { Icon } from "@iconify/react"
+import { toast } from "sonner"
 
 import {
   AlertDialog,
@@ -45,8 +45,8 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog"
+import { compressImage } from "@/lib/compress-image"
 import { Loader } from "lucide-react"
-import { webcrypto } from "crypto"
 
 const SettingsPage = () => {
   const { user } = useCurrentUser()
@@ -80,15 +80,18 @@ const SettingsPage = () => {
     setIsDirty(true)
   }
 
-  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleImageChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]
-    setImage(file || null)
-    if (previewUrl) URL.revokeObjectURL(previewUrl)
-
     if (file) {
-      const url = URL.createObjectURL(file)
+      const compressedFile = await compressImage(file)
+      setImage(compressedFile)
+      if (previewUrl) URL.revokeObjectURL(previewUrl)
+      const url = URL.createObjectURL(compressedFile)
       setPreviewUrl(url)
-    } else setPreviewUrl(undefined)
+    } else {
+      setImage(null)
+      setPreviewUrl(undefined)
+    }
   }
 
   // const computeSHA256 = async (file: File) => {

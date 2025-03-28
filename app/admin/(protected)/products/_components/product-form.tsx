@@ -55,7 +55,7 @@ import {
   potency,
   productForm,
   unitOfMeasure,
-} from "@rahulsaamanth/mhp_shared-schema"
+} from "@rahulsaamanth/mhp-schema"
 import { useMutation } from "@tanstack/react-query"
 import React from "react"
 import { toast } from "sonner"

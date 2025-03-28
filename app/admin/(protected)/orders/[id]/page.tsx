@@ -1,7 +1,7 @@
 "use client"
 
 import { db } from "@/db/db"
-import { order } from "@rahulsaamanth/mhp_shared-schema"
+import { order } from "@rahulsaamanth/mhp-schema"
 import { JsonViewer } from "@/utils/json-viewer"
 import { useQuery } from "@tanstack/react-query"
 import { eq } from "drizzle-orm"

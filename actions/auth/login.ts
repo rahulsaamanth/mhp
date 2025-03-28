@@ -15,7 +15,7 @@ import { getTwoFactorConfirmationByUserId } from "@/utils/two-factor-confirmatio
 import {
   twoFactorConfirmation,
   twoFactorToken,
-} from "@rahulsaamanth/mhp_shared-schema"
+} from "@rahulsaamanth/mhp-schema"
 import { eq } from "drizzle-orm"
 
 export const login = async (

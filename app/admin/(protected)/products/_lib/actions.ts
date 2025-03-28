@@ -15,9 +15,8 @@ import {
   manufacturer,
   product,
   productVariant,
-} from "@rahulsaamanth/mhp_shared-schema"
+} from "@rahulsaamanth/mhp-schema"
 
-import { webcrypto } from "crypto"
 import { eq, inArray } from "drizzle-orm"
 import { revalidateTag, unstable_noStore } from "next/cache"
 import * as z from "zod"

@@ -1,7 +1,7 @@
 "use server"
 
 import { db } from "@/db/db"
-import { user } from "@rahulsaamanth/mhp_shared-schema"
+import { user } from "@rahulsaamanth/mhp-schema"
 import { eq } from "drizzle-orm"
 
 export const getUserByEmail = async (email: string) => {

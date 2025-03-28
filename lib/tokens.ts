@@ -8,7 +8,7 @@ import {
   passwordResetToken,
   twoFactorToken,
   verificationToken,
-} from "@rahulsaamanth/mhp_shared-schema"
+} from "@rahulsaamanth/mhp-schema"
 import { eq } from "drizzle-orm"
 
 const generateRandomNumber = (min: number, max: number): number => {

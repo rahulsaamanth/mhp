@@ -86,13 +86,13 @@ jobs:
             EOL
 
             # Create .npmrc file
-            cat > .npmrc << EOL || { echo "Failed to create .npmrc file"; exit 1; }
-            @rahulsaamanth:registry=https://npm.pkg.github.com
-            //npm.pkg.github.com/:_authToken=${{ secrets.GH_TOKEN }}
-            EOL
+            # cat > .npmrc << EOL || { echo "Failed to create .npmrc file"; exit 1; }
+            # @rahulsaamanth:registry=https://npm.pkg.github.com
+            # //npm.pkg.github.com/:_authToken=${{ secrets.GH_TOKEN }}
+            # EOL
 
             # Set proper permissions
-            chmod 600 .env .npmrc || { echo "Failed to set file permissions"; exit 1; }            
+            chmod 600 .env || { echo "Failed to set file permissions"; exit 1; }            
 
             # Verify binary existence and versions
             echo "Node version:"

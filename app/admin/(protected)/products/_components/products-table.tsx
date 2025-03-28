@@ -23,7 +23,7 @@ import {
   Category,
   Manufacturer,
   productStatus,
-} from "@rahulsaamanth/mhp_shared-schema"
+} from "@rahulsaamanth/mhp-schema"
 import { useDataTable } from "@/hooks/use-data-table"
 import { DeleteProductsDialog } from "./delete-products-dialog"
 import { useFeatureFlags } from "./feature-flags-provider"

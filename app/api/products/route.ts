@@ -1,10 +1,10 @@
 import { db } from "@/db/db"
-import { product } from "@rahulsaamanth/mhp_shared-schema"
+import { product } from "@rahulsaamanth/mhp-schema"
 import { buildSearchCondition, buildSortCondition } from "@/db/utils"
 import { and, sql } from "drizzle-orm"
 import { NextRequest, NextResponse } from "next/server"
 
-import { productVariant } from "@rahulsaamanth/mhp_shared-schema"
+import { productVariant } from "@rahulsaamanth/mhp-schema"
 import { auth } from "@/auth"
 
 export async function GET(request: NextRequest) {

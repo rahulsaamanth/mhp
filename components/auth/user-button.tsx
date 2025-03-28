@@ -50,23 +50,25 @@ export const UserButton = () => {
             className="object-cover"
           />
           <AvatarFallback>
-            {user.name?.[0] || <User className="text-black size-4" />}
+            {user.name?.[0]?.toUpperCase() || (
+              <User className="text-black size-4" />
+            )}
           </AvatarFallback>
         </Avatar>
       </DropdownMenuTrigger>
       <DropdownMenuContent className="w-40" align="end">
         <DropdownMenuItem className="flex items-center justify-center gap-3 pb-2">
           <Avatar className="size-8">
-            {user ? (
-              <AvatarImage
-                src={user?.image || ""}
-                alt={user?.name || "Profile"}
-              />
-            ) : (
-              <AvatarFallback className="size-8">
-                <User className="size-4 text-black" />
-              </AvatarFallback>
-            )}
+            <AvatarImage
+              src={user?.image || ""}
+              alt={user?.name || "Profile"}
+            />
+
+            <AvatarFallback>
+              {user.name?.[0]?.toUpperCase() || (
+                <User className="text-black size-4" />
+              )}
+            </AvatarFallback>
           </Avatar>
           <span>{user?.name || "User"}</span>
         </DropdownMenuItem>

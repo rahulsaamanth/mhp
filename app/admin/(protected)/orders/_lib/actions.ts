@@ -1,7 +1,7 @@
 "use server"
 
 import { db } from "@/db/db"
-import { order } from "@rahulsaamanth/mhp_shared-schema"
+import { order } from "@rahulsaamanth/mhp-schema"
 import { eq } from "drizzle-orm"
 
 export async function getOrder(id: string) {

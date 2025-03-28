@@ -1,5 +1,5 @@
 import { db } from "@/db/db"
-import { twoFactorToken } from "@rahulsaamanth/mhp_shared-schema"
+import { twoFactorToken } from "@rahulsaamanth/mhp-schema"
 import { eq } from "drizzle-orm"
 
 export const getTwoFactorTokenByToken = async (token: string) => {
