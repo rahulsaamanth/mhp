@@ -133,13 +133,7 @@ jobs:
               }
             }
 
-            #verify standalone build exists
-            if[ ! -f ".next/standalone/server.js" ]; then
-              echo "standalone server.js not found!"
-              exit 1
-            fi
 
-            chmod +x .next/standalone/server.js
 
             # PM2 process management
             echo "Checking PM2 process..."
