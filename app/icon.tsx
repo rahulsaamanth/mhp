@@ -22,7 +22,7 @@ export default function Icon() {
           color: "white",
         }}
       >
-        M
+        HS
       </div>
     ),
     {

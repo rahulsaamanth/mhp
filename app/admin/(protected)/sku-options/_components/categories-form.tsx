@@ -8,17 +8,18 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card"
-import {
-  HoverCard,
-  HoverCardContent,
-  HoverCardTrigger,
-} from "@/components/ui/hover-card"
+
 import { Input } from "@/components/ui/input"
 import { useMutation } from "@tanstack/react-query"
 import { CircleX, Loader } from "lucide-react"
 import { parseAsString, useQueryState } from "nuqs"
 import { toast } from "sonner"
 import { addCategory, addSubCategory, deleteCategory } from "../_lib/actions"
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover"
 
 type Category = {
   id: string
@@ -106,15 +107,15 @@ export const CategoriesForm = ({
     <Card>
       <CardHeader>
         <CardTitle>Categories</CardTitle>
-        <CardDescription>Hover to add subcategories</CardDescription>
+        <CardDescription>Click to add subcategories</CardDescription>
       </CardHeader>
       <CardContent className="w-full flex flex-col justify-start items-start md:flex-row">
         {categories.map((cat) => (
-          <HoverCard key={cat.id}>
-            <HoverCardTrigger asChild>
+          <Popover key={cat.id}>
+            <PopoverTrigger asChild>
               <Button variant="link">@{cat.name}</Button>
-            </HoverCardTrigger>
-            <HoverCardContent className="w-fit p-4">
+            </PopoverTrigger>
+            <PopoverContent className="w-fit p-4">
               {cat.subCategories.length > 0 ? (
                 <ul className="list-none space-y-2">
                   {cat.subCategories.map((subCat, idx) => (
@@ -171,8 +172,8 @@ export const CategoriesForm = ({
                   Add
                 </Button>
               </div>
-            </HoverCardContent>
-          </HoverCard>
+            </PopoverContent>
+          </Popover>
         ))}
         <div className="flex gap-4">
           <Input

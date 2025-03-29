@@ -116,6 +116,7 @@ export const LoginFormContent = () => {
                           placeholder="john.reese@example.com"
                           type="email"
                           disabled={isPending}
+                          autoFocus={true}
                         />
                       </FormControl>
                       <FormMessage />
