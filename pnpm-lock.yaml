@@ -100,8 +100,8 @@ importers:
         specifier: ^1.1.3
         version: 1.1.8(@types/react-dom@19.0.2(@types/react@19.0.1))(@types/react@19.0.1)(react-dom@18.2.0(react@18.2.0))(react@18.2.0)
       '@rahulsaamanth/mhp-schema':
-        specifier: ^1.0.4
-        version: 1.0.4(@neondatabase/serverless@1.0.0)(@types/pg@8.11.11)(gel@2.0.1)
+        specifier: ^1.0.10
+        version: 1.0.10(@types/pg@8.11.11)(gel@2.0.1)(next@15.2.3(react-dom@18.2.0(react@18.2.0))(react@18.2.0))(react@18.2.0)
       '@tanstack/match-sorter-utils':
         specifier: ^8.15.1
         version: 8.19.4
@@ -1756,8 +1756,8 @@ packages:
   '@radix-ui/rect@1.1.0':
     resolution: {integrity: sha512-A9+lCBZoaMJlVKcRBz2YByCG+Cp2t6nAnMnNba+XiWxnj6r4JUFqfsgwocMBZU9LPtdxC6wB56ySYpc7LQIoJg==}
 
-  '@rahulsaamanth/mhp-schema@1.0.4':
-    resolution: {integrity: sha512-xxKMtu44eU1GpuB7JDLtrsIpuncTP/VhkWLyWGyo6oP8YJ0Y8IlvVFzEIcQqPoUKVBDkIUwNPhjcxzBtOtCBag==}
+  '@rahulsaamanth/mhp-schema@1.0.10':
+    resolution: {integrity: sha512-ANCKWJvulnJe2Wq8u/clrCgVpNQDlo6waO2DsznHONpsvAymYGBwjhZPRd4yyI3xS0hXlJa5F2MFgXfdLIDPyw==}
 
   '@react-email/render@0.0.16':
     resolution: {integrity: sha512-wDaMy27xAq1cJHtSFptp0DTKPuV2GYhloqia95ub/DH9Dea1aWYsbdM918MOc/b/HvVS3w1z8DWzfAk13bGStQ==}
@@ -6073,10 +6073,12 @@ snapshots:
 
   '@radix-ui/rect@1.1.0': {}
 
-  '@rahulsaamanth/mhp-schema@1.0.4(@neondatabase/serverless@1.0.0)(@types/pg@8.11.11)(gel@2.0.1)':
+  '@rahulsaamanth/mhp-schema@1.0.10(@types/pg@8.11.11)(gel@2.0.1)(next@15.2.3(react-dom@18.2.0(react@18.2.0))(react@18.2.0))(react@18.2.0)':
     dependencies:
+      '@neondatabase/serverless': 1.0.0
       dotenv: 16.4.7
       drizzle-orm: 0.41.0(@neondatabase/serverless@1.0.0)(@types/pg@8.11.11)(gel@2.0.1)(postgres@3.4.5)
+      next-auth: 5.0.0-beta.25(next@15.2.3(react-dom@18.2.0(react@18.2.0))(react@18.2.0))(react@18.2.0)
       postgres: 3.4.5
     transitivePeerDependencies:
       - '@aws-sdk/client-rds-data'
@@ -6084,11 +6086,12 @@ snapshots:
       - '@electric-sql/pglite'
       - '@libsql/client'
       - '@libsql/client-wasm'
-      - '@neondatabase/serverless'
       - '@op-engineering/op-sqlite'
       - '@opentelemetry/api'
       - '@planetscale/database'
       - '@prisma/client'
+      - '@simplewebauthn/browser'
+      - '@simplewebauthn/server'
       - '@tidbcloud/serverless'
       - '@types/better-sqlite3'
       - '@types/pg'
@@ -6102,8 +6105,11 @@ snapshots:
       - knex
       - kysely
       - mysql2
+      - next
+      - nodemailer
       - pg
       - prisma
+      - react
       - sql.js
       - sqlite3
 

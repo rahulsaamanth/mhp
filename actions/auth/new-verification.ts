@@ -15,7 +15,7 @@ export const newVerification = async (token: string) => {
 
   if (hasExpired) return { error: "Token has expired!" }
 
-  const existingUser = await getUserByEmail(existingToken.email)
+  const existingUser = await getUserByEmail(existingToken.identifier)
 
   if (!existingUser) return { error: "Email does not exist!" }
 
@@ -30,7 +30,7 @@ export const newVerification = async (token: string) => {
     .update(user)
     .set({
       emailVerified: new Date(),
-      email: existingToken.email,
+      email: existingToken.identifier,
     })
     .where(eq(user.id, existingUser.id))
     .execute()
@@ -40,7 +40,7 @@ export const newVerification = async (token: string) => {
   // })
   await db
     .delete(verificationToken)
-    .where(eq(verificationToken.id, existingToken.id))
+    .where(eq(verificationToken.identifier, existingToken.identifier))
     .execute()
 
   return { success: "Email verified!" }

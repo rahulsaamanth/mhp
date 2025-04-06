@@ -39,6 +39,7 @@ import * as z from "zod"
 import {
   Form,
   FormControl,
+  FormDescription,
   FormField,
   FormItem,
   FormLabel,
@@ -104,6 +105,7 @@ export const ProductsForm = ({
     form: productData?.form ?? ("NONE" as const),
     unit: productData?.unit ?? ("NONE" as const),
     hsnCode: productData?.hsnCode ?? "30049014",
+    isFeatrured: productData?.isFeatured ?? false,
     tax: productData?.tax ?? 5,
     taxInclusive: true,
     variants: productData?.variants.map((v) => ({
@@ -116,7 +118,6 @@ export const ProductsForm = ({
       variantName: v.variantName,
       discount: v.discount ?? 0,
       discountType: v.discountType ?? "PERCENTAGE",
-      // priceCalcMode: v.priceCalcMode ?? "BACKWARD",
       priceAfterTax: 0,
       stock_MANG1: v.stockByLocation[0]?.stock ?? 0,
       stock_MANG2: v.stockByLocation[1]?.stock ?? 0,
@@ -133,7 +134,6 @@ export const ProductsForm = ({
         variantName: "",
         discount: 0,
         discountType: "PERCENTAGE",
-        // priceCalcMode: "BACKWARD",
         priceAfterTax: 0,
         stock_MANG1: 0,
         stock_MANG2: 0,
@@ -275,6 +275,7 @@ export const ProductsForm = ({
         manufacturerId: data.manufacturerId,
         tags: data.tags,
         status: data.status,
+        isFeatured: data.isFeatured,
         form: data.form,
         unit: data.unit,
         hsnCode: data.hsnCode,
@@ -542,6 +543,26 @@ export const ProductsForm = ({
                               </Select>
                             </FormControl>
                             <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                      <FormField
+                        control={form.control}
+                        name="isFeatured"
+                        render={({ field }) => (
+                          <FormItem className="flex flex-row items-center justify-between rounded-lg border p-3 shadow-sm">
+                            <div className="space-y-0.5">
+                              <FormLabel>Featured Product</FormLabel>
+                              <FormDescription className="text-xs">
+                                Display this product on the featured section
+                              </FormDescription>
+                            </div>
+                            <FormControl>
+                              <Switch
+                                checked={field.value}
+                                onCheckedChange={field.onChange}
+                              />
+                            </FormControl>
                           </FormItem>
                         )}
                       />

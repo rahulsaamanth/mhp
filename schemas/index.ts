@@ -161,6 +161,7 @@ export const createProductSchema = z.object({
   status: z.enum(["ACTIVE", "DRAFT", "ARCHIVED"]).default("ACTIVE"),
   categoryId: z.string().min(1, "Category is required"),
   manufacturerId: z.string().min(1, "Manufacturer is required"),
+  isFeatured: z.boolean().default(false),
   tags: z.array(z.string()).optional().default([]),
   form: z.enum([
     "NONE",

@@ -71,22 +71,22 @@ export const generatePasswordResetToken = async (email: string) => {
   return _passwordResetToken!
 }
 
-export const generateVerificationToken = async (email: string) => {
+export const generateVerificationToken = async (identifier: string) => {
   const token = uuid()
   const expires = new Date(new Date().getTime() + 3600 * 1000)
 
-  const existingToken = await getVerificationTokenByEmail(email)
+  const existingToken = await getVerificationTokenByEmail(identifier)
   if (existingToken) {
     await db
       .delete(verificationToken)
-      .where(eq(verificationToken.id, existingToken.id))
+      .where(eq(verificationToken.identifier, existingToken.identifier))
       .execute()
   }
 
   const [_verificationToken] = await db
     .insert(verificationToken)
     .values({
-      email,
+      identifier,
       token,
       expires,
     })
