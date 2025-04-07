@@ -97,6 +97,7 @@ export async function updateProduct(
           description: data.description,
           categoryId: data.categoryId,
           manufacturerId: data.manufacturerId,
+          isFeatured: data.isFeatured,
           form: data.form,
           unit: data.unit,
           status: data.status,
