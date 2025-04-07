@@ -105,7 +105,7 @@ export const ProductsForm = ({
     form: productData?.form ?? ("NONE" as const),
     unit: productData?.unit ?? ("NONE" as const),
     hsnCode: productData?.hsnCode ?? "30049014",
-    isFeatrured: productData?.isFeatured ?? false,
+    isFeatured: productData?.isFeatured ?? false,
     tax: productData?.tax ?? 5,
     taxInclusive: true,
     variants: productData?.variants.map((v) => ({
