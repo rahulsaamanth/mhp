@@ -17,7 +17,7 @@ import {
   productVariant,
 } from "@rahulsaamanth/mhp-schema"
 
-import { eq, inArray } from "drizzle-orm"
+import { SQL, eq, inArray, sql } from "drizzle-orm"
 import { revalidateTag, unstable_noStore } from "next/cache"
 import * as z from "zod"
 
@@ -108,14 +108,16 @@ export async function updateProduct(
         .where(eq(product.id, productId))
         .returning()
 
-      await tx
-        .delete(productVariant)
-        .where(eq(productVariant.productId, productId))
+      const existingVariants = await tx.query.productVariant.findMany({
+        where: eq(productVariant.productId, productId),
+      })
 
-      const variantsToInsert = data.variants.map((variant) => ({
-        ...variant,
-        productId,
-        stockByLocation: [
+      const existingVariantMap = new Map(
+        existingVariants.map((variant) => [variant.sku, variant.id])
+      )
+
+      for (const variant of data.variants) {
+        const stockByLocation = [
           {
             location: "MANGALORE-01" as const,
             stock: variant.stock_MANG1 || 0,
@@ -128,20 +130,85 @@ export async function updateProduct(
             location: "KERALA-01" as const,
             stock: variant.stock_KERALA1 || 0,
           },
-        ],
-        stock_MANG1: undefined,
-        stock_MANG2: undefined,
-        stock_KERALA1: undefined,
-      }))
+        ]
 
-      const newVariants = await tx
-        .insert(productVariant)
-        .values(variantsToInsert)
-        .returning()
+        if (variant.sku && existingVariantMap.has(variant.sku)) {
+          const variantId = existingVariantMap.get(variant.sku)
+          await tx
+            .update(productVariant)
+            .set({
+              variantName: variant.variantName,
+              potency: variant.potency,
+              packSize: variant.packSize,
+              costPrice: variant.costPrice,
+              mrp: variant.mrp,
+              sellingPrice: variant.sellingPrice,
+              discount: variant.discount,
+              discountType: variant.discountType,
+              stockByLocation,
+              variantImage: variant.variantImage,
+            })
+            .where(eq(productVariant.id, variantId!))
+
+          existingVariantMap.delete(variant.sku)
+        } else {
+          const {
+            stock_MANG1,
+            stock_MANG2,
+            stock_KERALA1,
+            ...variantWithoutStockProps
+          } = variant
+          await tx.insert(productVariant).values({
+            ...variantWithoutStockProps,
+            productId,
+            stockByLocation,
+          })
+        }
+      }
+
+      if (existingVariantMap.size > 0) {
+        const variantIdsToDelete = Array.from(existingVariantMap.values())
+
+        for (const variantId of variantIdsToDelete) {
+          const hasOrders = await tx.execute(
+            sql`SELECT 1 FROM "OrderDetails" WHERE "productVariantId" = ${variantId} LIMIT 1`
+          )
+
+          if (hasOrders.rowCount === 0)
+            await tx
+              .delete(productVariant)
+              .where(eq(productVariant.id, variantId))
+          else {
+            await tx
+              .update(productVariant)
+              .set({
+                discontinued: true,
+                stockByLocation: [
+                  {
+                    location: "MANGALORE-01" as const,
+                    stock: 0,
+                  },
+                  {
+                    location: "MANGALORE-02" as const,
+                    stock: 0,
+                  },
+                  {
+                    location: "KERALA-01" as const,
+                    stock: 0,
+                  },
+                ],
+              })
+              .where(eq(productVariant.id, variantId))
+          }
+        }
+      }
+      const updatedVariants = await tx.query.productVariant.findMany({
+        where: eq(productVariant.productId, productId),
+      })
 
       return {
         ...updatedProduct,
-        variants: newVariants,
+        variants: updatedVariants,
       }
     })
     revalidateTag("products")
