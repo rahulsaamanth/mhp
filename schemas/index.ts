@@ -115,6 +115,7 @@ export const RegisterSchema = z.object({
 
 export const productVariantSchema = z
   .object({
+    id: z.string().optional(),
     potency: z.enum([...potency.enumValues]),
     packSize: z.number().min(1, "Pack size must be at least 1"),
     costPrice: z.number().min(0, "Price must be positive"),

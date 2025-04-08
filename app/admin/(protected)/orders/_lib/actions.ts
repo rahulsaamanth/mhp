@@ -8,6 +8,14 @@ export async function getOrder(id: string) {
   try {
     const data = db.query.order.findMany({
       where: eq(order.id, id),
+      with: {
+        orderDetails: {
+          with: {
+            order: true,
+            product: true,
+          },
+        },
+      },
     })
     if (!data) return { error: "Order not found" }
 

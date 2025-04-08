@@ -1,4 +1,9 @@
 export const compressImage = async (file: File): Promise<File> => {
+  // Return early if already WebP format
+  if (file.type === "image/webp") {
+    return file
+  }
+
   // Limit max width/height while maintaining aspect ratio
   const maxDimension = 1200
 
@@ -13,7 +18,6 @@ export const compressImage = async (file: File): Promise<File> => {
         let width = img.width
         let height = img.height
 
-        // Calculate new dimensions
         if (width > height) {
           if (width > maxDimension) {
             height = Math.round((height * maxDimension) / width)
@@ -34,16 +38,21 @@ export const compressImage = async (file: File): Promise<File> => {
         canvas.toBlob(
           (blob) => {
             if (blob) {
-              const compressedFile = new File([blob], file.name, {
-                type: "image/jpeg",
+              const fileName =
+                file.name.substring(0, file.name.lastIndexOf(".")) + ".webp"
+
+              const convertedFile = new File([blob], fileName, {
+                type: "image/webp",
                 lastModified: Date.now(),
               })
-              resolve(compressedFile)
+              resolve(convertedFile)
+            } else {
+              resolve(file)
             }
           },
-          "image/jpeg",
-          0.8
-        ) // Adjust quality (0-1)
+          "image/webp",
+          1.0 // change this value to adjust quality (0.0 - 1.0)
+        )
       }
     }
   })

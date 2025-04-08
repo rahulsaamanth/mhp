@@ -79,17 +79,13 @@ export const getProductsWithFullDetials = async (): Promise<FullProduct[]> => {
   }
 }
 
-// export type ProductFormValues = z.infer<typeof productFormSchema>
-
 export async function updateProduct(
   productId: string,
   data: z.infer<typeof createProductSchema>
 ) {
   unstable_noStore()
-  console.log("update called")
   try {
     const result = await db.transaction(async (tx) => {
-      // Update main product
       const [updatedProduct] = await tx
         .update(product)
         .set({
@@ -112,11 +108,24 @@ export async function updateProduct(
         where: eq(productVariant.productId, productId),
       })
 
-      const existingVariantMap = new Map(
-        existingVariants.map((variant) => [variant.sku, variant.id])
+      const existingVariantMapBySKU = new Map(
+        existingVariants.map((variant) => [
+          variant.sku?.trim().toUpperCase(),
+          variant.id,
+        ])
+      )
+      const existingVariantMapByID = new Map(
+        existingVariants.map((variant) => [variant.id, variant])
       )
 
+      const processedVariantIds = new Set<string>()
+
       for (const variant of data.variants) {
+        let existingId =
+          variant.id && existingVariantMapByID.has(variant.id)
+            ? variant.id
+            : null
+
         const stockByLocation = [
           {
             location: "MANGALORE-01" as const,
@@ -132,76 +141,100 @@ export async function updateProduct(
           },
         ]
 
-        if (variant.sku && existingVariantMap.has(variant.sku)) {
-          const variantId = existingVariantMap.get(variant.sku)
+        if (existingId) {
+          console.log(`Updating existing variant with ID: ${existingId}`)
+
+          const updateData: any = {
+            variantName: variant.variantName,
+            potency: variant.potency,
+            packSize: variant.packSize,
+            costPrice: variant.costPrice,
+            mrp: variant.mrp,
+            sellingPrice: variant.sellingPrice,
+            discount: variant.discount,
+            discountType: variant.discountType,
+            stockByLocation,
+            ...(variant.variantImage !== undefined && {
+              variantImage: variant.variantImage,
+            }),
+          }
+
           await tx
             .update(productVariant)
-            .set({
-              variantName: variant.variantName,
-              potency: variant.potency,
-              packSize: variant.packSize,
-              costPrice: variant.costPrice,
-              mrp: variant.mrp,
-              sellingPrice: variant.sellingPrice,
-              discount: variant.discount,
-              discountType: variant.discountType,
-              stockByLocation,
-              variantImage: variant.variantImage,
-            })
-            .where(eq(productVariant.id, variantId!))
+            .set(updateData)
+            .where(eq(productVariant.id, existingId))
 
-          existingVariantMap.delete(variant.sku)
+          processedVariantIds.add(existingId)
         } else {
+          console.log(`Creating new variant with SKU: ${variant.sku}`)
           const {
             stock_MANG1,
             stock_MANG2,
             stock_KERALA1,
             ...variantWithoutStockProps
           } = variant
-          await tx.insert(productVariant).values({
-            ...variantWithoutStockProps,
-            productId,
-            stockByLocation,
-          })
+
+          const [newVariant] = await tx
+            .insert(productVariant)
+            .values({
+              ...variantWithoutStockProps,
+              productId,
+              stockByLocation,
+            })
+            .returning()
+
+          if (newVariant?.id) {
+            processedVariantIds.add(newVariant.id)
+          }
         }
       }
 
-      if (existingVariantMap.size > 0) {
-        const variantIdsToDelete = Array.from(existingVariantMap.values())
+      const allExistingIds = existingVariants.map((v) => v.id)
 
-        for (const variantId of variantIdsToDelete) {
-          const hasOrders = await tx.execute(
-            sql`SELECT 1 FROM "OrderDetails" WHERE "productVariantId" = ${variantId} LIMIT 1`
-          )
+      const variantsToRemove = allExistingIds.filter(
+        (id) => !processedVariantIds.has(id)
+      )
 
-          if (hasOrders.rowCount === 0)
-            await tx
-              .delete(productVariant)
-              .where(eq(productVariant.id, variantId))
-          else {
+      for (const variantId of variantsToRemove) {
+        const hasOrders = await tx.execute(
+          sql`SELECT 1 FROM "OrderDetails" WHERE "productVariantId" = ${variantId} LIMIT 1`
+        )
+
+        if (hasOrders.rowCount === 0) {
+          console.log(`Deleting variant with ID: ${variantId}`)
+          await tx
+            .delete(productVariant)
+            .where(eq(productVariant.id, variantId))
+        } else {
+          console.log(`Marking variant as discontinued: ${variantId}`)
+          try {
             await tx
               .update(productVariant)
               .set({
                 discontinued: true,
                 stockByLocation: [
-                  {
-                    location: "MANGALORE-01" as const,
-                    stock: 0,
-                  },
-                  {
-                    location: "MANGALORE-02" as const,
-                    stock: 0,
-                  },
-                  {
-                    location: "KERALA-01" as const,
-                    stock: 0,
-                  },
+                  { location: "MANGALORE-01", stock: 0 },
+                  { location: "MANGALORE-02", stock: 0 },
+                  { location: "KERALA-01", stock: 0 },
+                ],
+              })
+              .where(eq(productVariant.id, variantId))
+          } catch (e) {
+            console.error("Error marking variant as discontinued:", e)
+            await tx
+              .update(productVariant)
+              .set({
+                stockByLocation: [
+                  { location: "MANGALORE-01", stock: 0 },
+                  { location: "MANGALORE-02", stock: 0 },
+                  { location: "KERALA-01", stock: 0 },
                 ],
               })
               .where(eq(productVariant.id, variantId))
           }
         }
       }
+
       const updatedVariants = await tx.query.productVariant.findMany({
         where: eq(productVariant.productId, productId),
       })
@@ -211,8 +244,8 @@ export async function updateProduct(
         variants: updatedVariants,
       }
     })
-    revalidateTag("products")
 
+    revalidateTag("products")
     return { success: true, product: result }
   } catch (error) {
     console.error("Error updating product:", error)

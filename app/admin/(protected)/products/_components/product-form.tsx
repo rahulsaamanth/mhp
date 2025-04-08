@@ -109,6 +109,7 @@ export const ProductsForm = ({
     tax: productData?.tax ?? 5,
     taxInclusive: true,
     variants: productData?.variants.map((v) => ({
+      id: v.id,
       potency: v.potency,
       packSize: v.packSize ?? 0,
       costPrice: v.costPrice ?? 0,
@@ -122,7 +123,7 @@ export const ProductsForm = ({
       stock_MANG1: v.stockByLocation[0]?.stock ?? 0,
       stock_MANG2: v.stockByLocation[1]?.stock ?? 0,
       stock_KERALA1: v.stockByLocation[2]?.stock ?? 0,
-      variantImage: v.variantImage,
+      variantImage: v.variantImage ?? [],
     })) ?? [
       {
         potency: "NONE" as const,
@@ -208,12 +209,12 @@ export const ProductsForm = ({
 
       for (const variant of data.variants) {
         if (mode === "edit" && typeof variant.variantImage[0] === "string") {
-          _variants.push(variant)
+          _variants.push({ ...variant, id: variant.id })
           continue
         }
 
         if (!variant.variantImage?.length) {
-          _variants.push(variant)
+          _variants.push({ ...variant, id: variant.id })
           continue
         }
 
@@ -260,6 +261,7 @@ export const ProductsForm = ({
 
         _variants.push({
           ...variant,
+          id: variant.id,
           sku,
           variantName,
           variantImage: uploadedUrls.filter(

@@ -6,8 +6,6 @@ type DashboardPopularProductsShortTableProps = {
   data: {
     productId: string
     productName: string | null
-    productPotency: string | null
-    productPackSize: number | null
     variantImage: string[]
     totalOrders: number
   }[]
@@ -23,23 +21,16 @@ export const DashboardPopularProductsShortTable = ({
       </CardHeader>
       <CardContent className="grid gap-8 pt-4">
         {data.map((product) => (
-          <div
-            className="flex items-center gap-4"
-            key={`${product.productId} - ${product.productPackSize}`}
-          >
+          <div className="flex items-center gap-4" key={`${product.productId}`}>
             <img
               src={product.variantImage[0]}
-              alt="Avatar"
+              alt="failed to load"
               className="size-12"
             />
 
             <div className="grid gap-1">
               <p className="text-sm font-medium leading-none">
                 {product.productName}
-              </p>
-              <p className="text-sm text-muted-foreground">
-                {product.productPotency && product.productPotency} .{" "}
-                {product.productPackSize && product.productPackSize}
               </p>
             </div>
             <div className="ml-auto font-medium">

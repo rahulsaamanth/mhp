@@ -48,6 +48,7 @@ async function getSalesData({
   createdAfter: Date | null
   createdBefore: Date | null
 }) {
+  unstable_noStore()
   const whereClause = []
   if (createdAfter) whereClause.push(gte(order.orderDate, createdAfter))
   if (createdBefore) whereClause.push(lte(order.orderDate, createdBefore))
@@ -104,6 +105,7 @@ async function getUserData({
   createdAfter: Date | null
   createdBefore: Date | null
 }) {
+  unstable_noStore()
   const whereClause = []
   if (createdAfter) whereClause.push(gte(user.createdAt, createdAfter))
   if (createdBefore) whereClause.push(lte(user.createdAt, createdBefore))
@@ -151,6 +153,7 @@ async function getUserData({
 }
 
 async function getProdcutsData() {
+  unstable_noStore()
   const [data] = await db
     .select({
       totalProducts: count(),
@@ -171,6 +174,7 @@ async function getProductsSoldByCategory({
   createdAfter: Date | null
   createdBefore: Date | null
 }) {
+  unstable_noStore()
   const whereClause = []
   if (createdAfter) whereClause.push(gte(order.orderDate, createdAfter))
   if (createdBefore) whereClause.push(lte(order.orderDate, createdBefore))
@@ -223,6 +227,7 @@ async function getProductsSoldByCategory({
 }
 
 async function getLatestOrders() {
+  unstable_noStore()
   const data = await db
     .select({
       order_id: order.id,
@@ -239,13 +244,14 @@ async function getLatestOrders() {
 }
 
 async function getPopularProducts() {
+  unstable_noStore()
   const data = await db
     .select({
       productId: product.id,
       productName: product.name,
-      productPotency: productVariant.potency,
-      productPackSize: productVariant.packSize,
-      variantImage: productVariant.variantImage,
+      variantImage: sql<string[]>`MIN(${productVariant.variantImage})`.as(
+        "variantImage"
+      ),
       totalOrders: sql<number>`sum(${orderDetails.quantity})`.as(
         "total_orders"
       ),
@@ -256,17 +262,7 @@ async function getPopularProducts() {
       orderDetails,
       eq(orderDetails.productVariantId, productVariant.id)
     )
-    .groupBy(
-      product.id,
-      product.name,
-      product.description,
-      productVariant.variantName,
-      productVariant.variantImage,
-      productVariant.potency,
-      productVariant.packSize,
-      productVariant.sellingPrice
-      // productVariant.stock
-    )
+    .groupBy(product.id, product.name)
     .orderBy(sql`total_orders DESC`)
     .limit(5)
 
@@ -274,6 +270,7 @@ async function getPopularProducts() {
 }
 
 async function getRecentProducts() {
+  unstable_noStore()
   const data = await db
     .select({
       productVariantId: productVariant.id,
@@ -309,8 +306,6 @@ export default async function DashboardPage({
     productsSoldByCategoryRangeTo?: string
   }>
 }) {
-  unstable_noStore()
-
   const {
     newCustomersRange,
     newCustomersRangeFrom,
@@ -371,6 +366,8 @@ export default async function DashboardPage({
     getRecentProducts(),
   ])
 
+  console.log(popularProducts)
+
   return (
     <div className="w-full py-2 sm:px-6 space-y-8">
       <section className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -429,7 +426,12 @@ export default async function DashboardPage({
         <DashboardRecentOrdersShortTable data={recentOrders} />
       </section>
       <section className="grid grid-cols-1 lg:grid-cols-2  gap-4 gap-y-8">
-        <DashboardPopularProductsShortTable data={popularProducts} />
+        <DashboardPopularProductsShortTable
+          data={popularProducts.map((product) => ({
+            ...product,
+            variantImage: product.variantImage || [],
+          }))}
+        />
         <DashboardLatestProductsShortTable data={recentProducts} />
       </section>
     </div>

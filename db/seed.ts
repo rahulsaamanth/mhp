@@ -454,9 +454,6 @@ async function seed() {
         productId: products[0]?.id!,
         sku: "DR-SIL-3X-20T",
         variantName: "Silicea - 3X - 20gms",
-        variantImage: [
-          "https://healthyghar.com/wp-content/uploads/2022/04/Silicea-3X-20g-1.jpg",
-        ],
         packSize: 20,
         potency: "3X",
         costPrice: 120,
@@ -474,9 +471,6 @@ async function seed() {
         productId: products[0]?.id!,
         sku: "DR-SIL-6X-20T",
         variantName: "Silicea - 6X - 20gms",
-        variantImage: [
-          "https://healthyghar.com/wp-content/uploads/2022/04/Silicea-6X-20g-1.jpg",
-        ],
         packSize: 20,
         potency: "6X",
         costPrice: 120,
@@ -494,9 +488,6 @@ async function seed() {
         productId: products[0]?.id!,
         sku: "DR-SIL-12X-20T",
         variantName: "Silicea - 12X - 20gms",
-        variantImage: [
-          "https://healthyghar.com/wp-content/uploads/2022/04/Silicea-12X-20g-1.jpg",
-        ],
         packSize: 20,
         potency: "12X",
         costPrice: 120,
@@ -514,9 +505,6 @@ async function seed() {
         productId: products[0]?.id!,
         sku: "DR-SIL-30X-20T",
         variantName: "Silicea - 30X - 20gms",
-        variantImage: [
-          "https://onemg.gumlet.io/l_watermark_346,w_120,h_120/a_ignore,w_120,h_120,c_fit,q_auto,f_auto/e8123be319b64d649d996dc8bc4478cf.jpg",
-        ],
         packSize: 20,
         potency: "30X",
         costPrice: 150,
@@ -534,9 +522,6 @@ async function seed() {
         productId: products[0]?.id!,
         sku: "DR-SIL-200X-20T",
         variantName: "Silicea - 200X - 20gms",
-        variantImage: [
-          "https://healthyghar.com/wp-content/uploads/2022/04/Silicea-200X-20g-1.jpg",
-        ],
         packSize: 20,
         potency: "200X",
         costPrice: 200,
@@ -554,9 +539,6 @@ async function seed() {
         productId: products[1]?.id!,
         sku: "DR-NAT-SUL-3X-20T",
         variantName: "Natrum Sulphuricum - 3X - 20gms",
-        variantImage: [
-          "https://healthyghar.com/wp-content/uploads/2022/04/Natrum-Sulphuricum-3X-20g-2.jpg",
-        ],
         packSize: 20,
         potency: "3X",
         costPrice: 120,
@@ -574,9 +556,6 @@ async function seed() {
         productId: products[2]?.id!,
         sku: "DR-MAG-PHOS-6X-20T",
         variantName: "Magnesia Phosphoricum - 6X - 20gms",
-        variantImage: [
-          "https://healthyghar.com/wp-content/uploads/2022/04/Magnesia-Phosphoricum-6X-20g-1.jpg",
-        ],
         packSize: 20,
         potency: "6X",
         costPrice: 120,
@@ -594,9 +573,6 @@ async function seed() {
         productId: products[3]?.id!,
         sku: "SBL-SIL-6X-25T",
         variantName: "Silicea 6X - 25gms",
-        variantImage: [
-          "https://healthyghar.com/wp-content/uploads/2022/04/Untitled-design-2023-01-10T171125.911-600x600.jpg",
-        ],
         packSize: 25,
         potency: "NONE",
         costPrice: 60,
@@ -614,9 +590,6 @@ async function seed() {
         productId: products[3]?.id!,
         sku: "SBL-SIL-6X-450T",
         variantName: "Silicea 6X - 450gms",
-        variantImage: [
-          "https://healthyghar.com/wp-content/uploads/2022/04/Untitled-design-2023-01-10T171009.897.jpg",
-        ],
         packSize: 450,
         potency: "6X",
         costPrice: 500,
@@ -634,9 +607,6 @@ async function seed() {
         productId: products[4]?.id!,
         sku: "SBL-NAT-SUL-6X-25T",
         variantName: "Natrum Sulphuricum 6X - 25gms",
-        variantImage: [
-          "https://healthyghar.com/wp-content/uploads/2022/04/Untitled-design-2023-01-23T125320.248-600x600.jpg",
-        ],
         packSize: 25,
         potency: "6X",
         costPrice: 60,
@@ -654,9 +624,6 @@ async function seed() {
         productId: products[4]?.id!,
         sku: "SBL-NAT-SUL-6X-450T",
         variantName: "Natrum Sulphuricum 6X - 450gms",
-        variantImage: [
-          "https://healthyghar.com/wp-content/uploads/2022/04/Untitled-design-2023-01-23T125237.527.jpg",
-        ],
         packSize: 450,
         potency: "6X",
         costPrice: 500,
@@ -674,9 +641,6 @@ async function seed() {
         productId: products[5]?.id!,
         sku: "SBL-NAT-MUR-200X-25T",
         variantName: "Natrum Muriaticum 200X",
-        variantImage: [
-          "https://healthyghar.com/wp-content/uploads/2022/04/Untitled-design-2022-11-28T175811.277-600x600.jpg",
-        ],
         packSize: 25,
         potency: "200X",
         costPrice: 60,
@@ -694,9 +658,6 @@ async function seed() {
         productId: products[5]?.id!,
         sku: "SBL-NAT-MUR-200X-450T",
         variantName: "Natrum Muriaticum 200X",
-        variantImage: [
-          "https://healthyghar.com/wp-content/uploads/2022/04/Untitled-design-2022-11-28T175915.259.jpg",
-        ],
         packSize: 450,
         potency: "200X",
         costPrice: 500,
@@ -714,9 +675,6 @@ async function seed() {
         productId: products[6]?.id!,
         sku: "SBL-BC10-25T",
         variantName: "Bio Combination 10",
-        variantImage: [
-          "https://healthyghar.com/wp-content/uploads/2022/04/Bio-Combination-10-25g.jpg",
-        ],
         packSize: 25,
         potency: "10M",
         costPrice: 60,
@@ -734,9 +692,6 @@ async function seed() {
         productId: products[6]?.id!,
         sku: "SBL-BC10-450T",
         variantName: "Bio Combination 10",
-        variantImage: [
-          "https://healthyghar.com/wp-content/uploads/2022/04/Bio-Combination-10-450g.jpg",
-        ],
         packSize: 450,
         costPrice: 500,
         potency: "NONE",
@@ -754,9 +709,6 @@ async function seed() {
         productId: products[7]?.id!,
         sku: "SBL-BC11-25T",
         variantName: "Bio Combination 11",
-        variantImage: [
-          "https://healthyghar.com/wp-content/uploads/2022/04/Bio-Combination-11-25g.jpg",
-        ],
         packSize: 25,
         potency: "30C",
         costPrice: 60,
@@ -774,9 +726,6 @@ async function seed() {
         productId: products[7]?.id!,
         sku: "SBL-BC11-450T",
         variantName: "Bio Combination 11",
-        variantImage: [
-          "https://healthyghar.com/wp-content/uploads/2022/04/Bio-Combination-11-450g.jpg",
-        ],
         packSize: 450,
         potency: "NONE",
         costPrice: 500,
@@ -794,9 +743,6 @@ async function seed() {
         productId: products[8]?.id!,
         sku: "SBL-BC12-25T",
         variantName: "Bio Combination 12",
-        variantImage: [
-          "https://healthyghar.com/wp-content/uploads/2022/04/Bio-Combination-12-25g.jpg",
-        ],
         packSize: 25,
         potency: "NONE",
         costPrice: 60,
@@ -814,9 +760,6 @@ async function seed() {
         productId: products[8]?.id!,
         sku: "SBL-BC12-450T",
         variantName: "Bio Combination 12",
-        variantImage: [
-          "https://healthyghar.com/wp-content/uploads/2022/04/Bio-Combination-12-450g.jpg",
-        ],
         packSize: 450,
         potency: "NONE",
         costPrice: 500,
@@ -834,9 +777,6 @@ async function seed() {
         productId: products[9]?.id!,
         sku: "DR-BC1-20T",
         variantName: "Bio Combination 1 - (20g)",
-        variantImage: [
-          "https://healthyghar.com/wp-content/uploads/2022/04/Bio-Combination-1-20g-1.jpg",
-        ],
         packSize: 20,
         potency: "30X",
         costPrice: 120,
@@ -854,9 +794,6 @@ async function seed() {
         productId: products[10]?.id!,
         sku: "DR-BC2-20T",
         variantName: "Bio Combination 2 (20g)",
-        variantImage: [
-          "https://healthyghar.com/wp-content/uploads/2022/04/Bio-Combination-2-20g-1.jpg",
-        ],
         packSize: 20,
         potency: "12X",
         costPrice: 120,
@@ -874,9 +811,6 @@ async function seed() {
         productId: products[11]?.id!,
         sku: "DR-BC3-20T",
         variantName: "Bio Combination 3 (20g)",
-        variantImage: [
-          "https://healthyghar.com/wp-content/uploads/2022/04/Bio-Combination-3-20g-1.jpg",
-        ],
         packSize: 20,
         costPrice: 120,
         mrp: 150, // Add base price before tax and discount
@@ -893,9 +827,6 @@ async function seed() {
         productId: products[12]?.id!,
         sku: "WS-BC20-20T",
         variantName: "Bio Combination 20 - 20gms",
-        variantImage: [
-          "https://healthyghar.com/wp-content/uploads/2022/04/Untitled-design-2022-09-17T130234.631-600x600.jpg",
-        ],
         packSize: 20,
         costPrice: 60,
         mrp: 80, // Add base price before tax and discount
@@ -912,9 +843,6 @@ async function seed() {
         productId: products[12]?.id!,
         sku: "WS-BC20-550T",
         variantName: "Bio Combination 20 - 550gms",
-        variantImage: [
-          "https://healthyghar.com/wp-content/uploads/2022/04/Untitled-design-2022-09-17T130335.154.jpg",
-        ],
         packSize: 550,
         costPrice: 600,
         mrp: 700, // Add base price before tax and discount
@@ -931,9 +859,6 @@ async function seed() {
         productId: products[13]?.id!,
         sku: "WS-BC21-20T",
         variantName: "Bio Combination 21 - 20gms",
-        variantImage: [
-          "https://healthyghar.com/wp-content/uploads/2022/04/Untitled-design-2022-09-17T125304.548-150x171.jpg",
-        ],
         packSize: 20,
         costPrice: 60,
         mrp: 80, // Add base price before tax and discount
@@ -950,9 +875,6 @@ async function seed() {
         productId: products[13]?.id!,
         sku: "WS-BC21-550T",
         variantName: "Bio Combination 21 - 550gms",
-        variantImage: [
-          "https://healthyghar.com/wp-content/uploads/2022/04/Untitled-design-2022-09-17T125340.481.jpg",
-        ],
         packSize: 550,
         costPrice: 600,
         mrp: 700, // Add base price before tax and discount
@@ -969,9 +891,6 @@ async function seed() {
         productId: products[14]?.id!,
         sku: "SBL-ABEL-MOS-1000CH-30ML",
         variantName: "Abel Moschus - (30ml)",
-        variantImage: [
-          "https://healthyghar.com/wp-content/uploads/2022/05/SBL-Abel-Moschus-1M-1000-CH-30ml.png",
-        ],
         packSize: 30,
         potency: "1M CH",
         costPrice: 100,
@@ -989,9 +908,6 @@ async function seed() {
         productId: products[14]?.id!,
         sku: "SBL-ABEL-MOS-200CH-30ML",
         variantName: "Abel Moschus - (30ml)",
-        variantImage: [
-          "https://healthyghar.com/wp-content/uploads/2022/05/SBL-Abel-Moschus-200-CH-30ml.png",
-        ],
         packSize: 30,
         potency: "200CH",
         costPrice: 70,
@@ -1009,9 +925,6 @@ async function seed() {
         productId: products[14]?.id!,
         sku: "SBL-ABEL-MOS-30CH-30ML",
         variantName: "Abel Moschus - (30ml)",
-        variantImage: [
-          "https://healthyghar.com/wp-content/uploads/2022/05/SBL-Abel-Moschus-30-CH-30ml.png",
-        ],
         packSize: 30,
         potency: "30CH",
         costPrice: 60,
@@ -1029,9 +942,6 @@ async function seed() {
         productId: products[14]?.id!,
         sku: "SBL-ABEL-MOS-6CH-30ML",
         variantName: "Abel Moschus - (30ml)",
-        variantImage: [
-          "https://healthyghar.com/wp-content/uploads/2022/05/SBL-Abel-Moschus-6-CH-30ml.png",
-        ],
         packSize: 30,
         potency: "6CH",
         costPrice: 60,
@@ -1049,9 +959,6 @@ async function seed() {
         productId: products[15]?.id!,
         sku: "SBL-MOS-1X-30ML",
         variantName: "Moschus 1X (Q) - (30ml)",
-        variantImage: [
-          "https://healthyghar.com/wp-content/uploads/2022/05/ABEL-MOSCHUS-30-ML-150x150.png",
-        ],
         packSize: 30,
         potency: "1X",
         costPrice: 90,
@@ -1069,9 +976,6 @@ async function seed() {
         productId: products[16]?.id!,
         sku: "BAK-ACNE-AID-TWIN",
         variantName: "Acne Aid (Twin Pack)",
-        variantImage: [
-          "https://healthyghar.com/wp-content/uploads/2023/03/Untitled-design-2023-03-11T193215.898-600x600.jpg",
-        ],
         potency: "NONE",
         costPrice: 200,
         mrp: 250, // Add base price before tax and discount
@@ -1088,9 +992,6 @@ async function seed() {
         productId: products[17]?.id!,
         sku: "BAK-SUN-HRC-100G",
         variantName: "sunny hair removal cream - 100gms",
-        variantImage: [
-          "https://healthyghar.com/wp-content/uploads/2022/04/bakson-hair-removel-100.jpg",
-        ],
         packSize: 100,
         costPrice: 100,
         mrp: 130, // Add base price before tax and discount
@@ -1107,9 +1008,6 @@ async function seed() {
         productId: products[17]?.id!,
         sku: "BAK-SUN-HRC-60G",
         variantName: "sunny hair removal cream - 60gms",
-        variantImage: [
-          "https://healthyghar.com/wp-content/uploads/2022/04/bakson-hair-removel-60-1.jpg",
-        ],
         packSize: 60,
         costPrice: 60,
         mrp: 80, // Add base price before tax and discount
@@ -1126,9 +1024,6 @@ async function seed() {
         productId: products[18]?.id!,
         sku: "HAP-NOK-CRM-25G",
         variantName: "Nokrack Cream - (25g)",
-        variantImage: [
-          "https://healthyghar.com/wp-content/uploads/2022/04/hapdco-nocrack-cream-150x171.jpg",
-        ],
         packSize: 25,
         costPrice: 50,
         mrp: 70, // Add base price before tax and discount
@@ -1145,9 +1040,6 @@ async function seed() {
         productId: products[19]?.id!,
         sku: "ALL-IMM-BOOST-25T",
         variantName: "Immunity Booster Tablet (25)",
-        variantImage: [
-          "https://healthyghar.com/wp-content/uploads/2022/08/Allen-Immunity-Booster-Tablet-25gms-600x600.jpg",
-        ],
         packSize: 25,
         costPrice: 100,
         mrp: 130, // Add base price before tax and discount
@@ -1164,9 +1056,6 @@ async function seed() {
         productId: products[20]?.id!,
         sku: "ALL-MULTI-VIT-30T",
         variantName: "Multi Vitamins - 30 Tablets",
-        variantImage: [
-          "https://healthyghar.com/wp-content/uploads/2022/09/Allen-Multi-Vitamins-30tab.jpg",
-        ],
         packSize: 30,
         costPrice: 250,
         mrp: 350, // Add base price before tax and discount
@@ -1183,9 +1072,6 @@ async function seed() {
         productId: products[20]?.id!,
         sku: "ALL-MULTI-VIT-60T",
         variantName: "Multi Vitamins - 60 Tablets",
-        variantImage: [
-          "https://healthyghar.com/wp-content/uploads/2022/09/Allen-Multi-Vitamins-60tab-1.jpg",
-        ],
         packSize: 60,
         costPrice: 500,
         mrp: 700, // Add base price before tax and discount
@@ -1202,9 +1088,6 @@ async function seed() {
         productId: products[21]?.id!,
         sku: "ADV-BABY-DROP-30ML",
         variantName: "Babyson Drops - (30ml)",
-        variantImage: [
-          "https://healthyghar.com/wp-content/uploads/2022/05/BABYSON-DROP-600x600.jpg",
-        ],
         packSize: 30,
         costPrice: 60,
         mrp: 80, // Add base price before tax and discount
