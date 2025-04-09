@@ -5,7 +5,7 @@ import {
 } from "@/components/charts/OrdersByCategoryChart"
 import { OrdersByDayChart } from "@/components/charts/OrdersbyDayChart"
 import { UsersByDayChart } from "@/components/charts/UsersByDayChart"
-import { db } from "@/db/db"
+import { db, sql as d_sql } from "@/db/db"
 import {
   category,
   manufacturer,
@@ -38,6 +38,7 @@ import { DashboardCard } from "./_components/dashboard-card"
 import {
   DashboardLatestProductsShortTable,
   DashboardPopularProductsShortTable,
+  DashboardPopularProductsShortTableProps,
 } from "./_components/popular-and-recent-products"
 import { unstable_noStore } from "next/cache"
 
@@ -245,28 +246,30 @@ async function getLatestOrders() {
 
 async function getPopularProducts() {
   unstable_noStore()
-  const data = await db
-    .select({
-      productId: product.id,
-      productName: product.name,
-      variantImage: sql<string[]>`MIN(${productVariant.variantImage})`.as(
-        "variantImage"
-      ),
-      totalOrders: sql<number>`sum(${orderDetails.quantity})`.as(
-        "total_orders"
-      ),
-    })
-    .from(product)
-    .innerJoin(productVariant, eq(productVariant.productId, product.id))
-    .innerJoin(
-      orderDetails,
-      eq(orderDetails.productVariantId, productVariant.id)
-    )
-    .groupBy(product.id, product.name)
-    .orderBy(sql`total_orders DESC`)
-    .limit(5)
 
-  return data
+  const popularProductsData = (await d_sql`
+  WITH SalesRanking AS (
+    SELECT 
+      p."id",
+      COUNT(DISTINCT od."orderId") as "sales"
+    FROM "Product" p
+    JOIN "ProductVariant" pv ON pv."productId" = p."id"
+    LEFT JOIN "OrderDetails" od ON od."productVariantId" = pv."id"
+    GROUP BY p."id"
+    ORDER BY "sales" DESC
+    LIMIT 5
+  )
+  SELECT 
+    p."id",
+    p."name",
+    sr."sales",
+    (SELECT pv."variantImage" FROM "ProductVariant" pv WHERE pv."productId" = p."id" LIMIT 1) as "image"
+  FROM "Product" p
+  JOIN SalesRanking sr ON p."id" = sr."id"
+  ORDER BY sr."sales" DESC
+`) as DashboardPopularProductsShortTableProps["data"]
+
+  return popularProductsData
 }
 
 async function getRecentProducts() {
@@ -366,8 +369,6 @@ export default async function DashboardPage({
     getRecentProducts(),
   ])
 
-  console.log(popularProducts)
-
   return (
     <div className="w-full py-2 sm:px-6 space-y-8">
       <section className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -426,12 +427,7 @@ export default async function DashboardPage({
         <DashboardRecentOrdersShortTable data={recentOrders} />
       </section>
       <section className="grid grid-cols-1 lg:grid-cols-2  gap-4 gap-y-8">
-        <DashboardPopularProductsShortTable
-          data={popularProducts.map((product) => ({
-            ...product,
-            variantImage: product.variantImage || [],
-          }))}
-        />
+        <DashboardPopularProductsShortTable data={popularProducts} />
         <DashboardLatestProductsShortTable data={recentProducts} />
       </section>
     </div>

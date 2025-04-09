@@ -200,7 +200,6 @@ export const ProductsForm = ({
   })
 
   const onSubmit = async (data: z.infer<typeof createProductSchema>) => {
-    console.log(data)
     try {
       const _variants = []
       const manufacturerName = manufacturers.find(

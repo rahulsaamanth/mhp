@@ -13,10 +13,9 @@ async function EditProductPage({
   params: Promise<{ id: string }>
 }) {
   const { id } = await params
-  console.log(id)
+
   const product = await getProduct(id)
 
-  console.log(product)
   if (!product || "error" in product) notFound()
 
   const [categories, manufacturers, tags = []] = await Promise.all([

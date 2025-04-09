@@ -108,12 +108,6 @@ export async function updateProduct(
         where: eq(productVariant.productId, productId),
       })
 
-      const existingVariantMapBySKU = new Map(
-        existingVariants.map((variant) => [
-          variant.sku?.trim().toUpperCase(),
-          variant.id,
-        ])
-      )
       const existingVariantMapByID = new Map(
         existingVariants.map((variant) => [variant.id, variant])
       )
@@ -237,6 +231,7 @@ export async function updateProduct(
 
       const updatedVariants = await tx.query.productVariant.findMany({
         where: eq(productVariant.productId, productId),
+        orderBy: [productVariant.createdAt],
       })
 
       return {
@@ -314,7 +309,6 @@ export async function createProduct(data: z.infer<typeof createProductSchema>) {
     const { variants, ...productData } = validatedData
 
     const result = await db.transaction(async (tx) => {
-      console.log("Inserting Product:", productData)
       const [newProduct] = await tx
         .insert(product)
         .values({
@@ -346,8 +340,6 @@ export async function createProduct(data: z.infer<typeof createProductSchema>) {
         stock_MANG2: undefined,
         stock_KERALA1: undefined,
       }))
-
-      console.log("Inserting variants:", variantsToInsert)
 
       const newVariants = await tx
         .insert(productVariant)

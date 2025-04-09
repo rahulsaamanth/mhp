@@ -2,12 +2,12 @@ import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import Link from "next/link"
 
-type DashboardPopularProductsShortTableProps = {
+export interface DashboardPopularProductsShortTableProps {
   data: {
-    productId: string
-    productName: string | null
-    variantImage: string[]
-    totalOrders: number
+    id: string
+    name: string
+    sales: string
+    image: string[]
   }[]
 }
 
@@ -21,21 +21,17 @@ export const DashboardPopularProductsShortTable = ({
       </CardHeader>
       <CardContent className="grid gap-8 pt-4">
         {data.map((product) => (
-          <div className="flex items-center gap-4" key={`${product.productId}`}>
+          <div className="flex items-center gap-4" key={`${product.id}`}>
             <img
-              src={product.variantImage[0]}
+              src={product.image[0] || "/_logo.jpg"}
               alt="failed to load"
               className="size-12"
             />
 
             <div className="grid gap-1">
-              <p className="text-sm font-medium leading-none">
-                {product.productName}
-              </p>
+              <p className="text-sm font-medium leading-none">{product.name}</p>
             </div>
-            <div className="ml-auto font-medium">
-              + {product.totalOrders} orders
-            </div>
+            <div className="ml-auto font-medium">+ {product.sales} orders</div>
           </div>
         ))}
       </CardContent>
