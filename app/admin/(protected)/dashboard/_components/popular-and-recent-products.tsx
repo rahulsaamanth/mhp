@@ -22,11 +22,11 @@ export const DashboardPopularProductsShortTable = ({
       <CardContent className="grid gap-8 pt-4">
         {data.map((product) => (
           <div className="flex items-center gap-4" key={`${product.id}`}>
-            <img
+            {/* <img
               src={product.image[0] || "/_logo.jpg"}
               alt="failed to load"
               className="size-12"
-            />
+            /> */}
 
             <div className="grid gap-1">
               <p className="text-sm font-medium leading-none">{product.name}</p>

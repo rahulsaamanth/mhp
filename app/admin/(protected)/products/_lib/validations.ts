@@ -1,4 +1,4 @@
-import { product, type Product } from "@rahulsaamanth/mhp-schema"
+import { category, product, type Product } from "@rahulsaamanth/mhp-schema"
 import {
   createSearchParamsCache,
   parseAsArrayOf,
@@ -21,6 +21,7 @@ export const searchParamsCache = createSearchParamsCache({
   ]),
   name: parseAsString.withDefault(""),
   categoryName: parseAsArrayOf(z.string()).withDefault([]),
+  categoryPath: parseAsString.withDefault(""),
   manufacturerName: parseAsArrayOf(z.string()).withDefault([]),
   status: parseAsArrayOf(z.enum(product.status.enumValues)).withDefault([]),
   // priority: parseAsArrayOf(z.enum(tasks.priority.enumValues)).withDefault([]),
@@ -37,6 +38,7 @@ export const getProductsSchema = z.object({
   sort: z.array(z.object({ id: z.string(), desc: z.boolean() })).default([]),
   name: z.string().optional(),
   categoryName: z.union([z.string(), z.array(z.string())]).default([]),
+  categoryPath: z.string(),
   manufacturerName: z.union([z.string(), z.array(z.string())]).default([]),
   status: z.union([z.string(), z.array(z.string())]).default([]),
   from: z.string().nullable(),

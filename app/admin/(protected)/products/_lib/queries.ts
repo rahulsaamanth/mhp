@@ -7,7 +7,7 @@ import {
   manufacturer,
   product,
 } from "@rahulsaamanth/mhp-schema"
-import { SQLChunk, count, eq, gt, sql } from "drizzle-orm"
+import { SQLChunk, count, eq, gt, like, sql } from "drizzle-orm"
 
 import { db } from "@/db/db"
 import { filterColumns } from "@/lib/filter-columns"
@@ -44,8 +44,21 @@ export async function getProducts(input: GetProductsSchema) {
               input.name ? sql`p."name" ILIKE ${`%${input.name}%`}` : sql`1=1`,
               input.categoryName && input.categoryName.length > 0
                 ? Array.isArray(input.categoryName)
-                  ? sql`c."name" IN ${input.categoryName}`
-                  : sql`c."name" ILIKE ${`%${input.categoryName}%`}`
+                  ? sql`(${sql.join(
+                      input.categoryName.map((name) => {
+                        return sql`(
+                          c."path" ILIKE ${`%/${name}/%`} OR
+                          c."path" ILIKE ${`%/${name}`} OR
+                          c."name" ILIKE ${`%${name}%`}
+                        )`
+                      }),
+                      sql` OR `
+                    )})`
+                  : sql`(
+                      c."path" ILIKE ${`%/${input.categoryName}/%`} OR
+                      c."path" ILIKE ${`%/${input.categoryName}`} OR
+                      c."name" ILIKE ${`%${input.categoryName}%`}
+                    )`
                 : sql`1=1`,
               input.manufacturerName && input.manufacturerName.length > 0
                 ? Array.isArray(input.manufacturerName)
@@ -189,30 +202,71 @@ export async function getProducts(input: GetProductsSchema) {
   )()
 }
 
+// export async function getCategoryCounts() {
+//   return unstable_cache(
+//     async () => {
+//       try {
+//         return await db
+//           .select({
+//             category: category.name,
+//             count: count(product.id),
+//           })
+//           .from(category)
+//           .leftJoin(product, eq(category.id, product.categoryId))
+//           .groupBy(category.name)
+//           .having(gt(count(product.id), 0))
+//           .then((res) =>
+//             res.reduce(
+//               (acc, { category, count }) => {
+//                 acc[category] = count
+//                 return acc
+//               },
+//               {} as Record<Category["name"], number>
+//             )
+//           )
+//       } catch (_err) {
+//         return {} as Record<Category["name"], number>
+//       }
+//     },
+//     ["category-product-counts"],
+//     {
+//       revalidate: 3600,
+//     }
+//   )()
+// }
+
 export async function getCategoryCounts() {
   return unstable_cache(
     async () => {
       try {
-        return await db
+        const categories = await db
           .select({
-            category: category.name,
-            count: count(product.id),
+            id: category.id,
+            name: category.name,
+            path: category.path,
           })
           .from(category)
-          .leftJoin(product, eq(category.id, product.categoryId))
-          .groupBy(category.name)
-          .having(gt(count(product.id), 0))
-          .then((res) =>
-            res.reduce(
-              (acc, { category, count }) => {
-                acc[category] = count
-                return acc
-              },
-              {} as Record<Category["name"], number>
-            )
-          )
+
+        const result: Record<string, number> = {}
+
+        for (const cat of categories) {
+          const productCount = await db
+            .select({
+              count: count(product.id),
+            })
+            .from(product)
+            .innerJoin(category, eq(product.categoryId, category.id))
+            .where(like(category.path, `${cat.path}%`))
+            .then((res) => res[0]?.count || 0)
+
+          if (productCount > 0) {
+            result[cat.name] = productCount
+          }
+        }
+
+        return result
       } catch (_err) {
-        return {} as Record<Category["name"], number>
+        return {} as Record<string, number>
       }
     },
     ["category-product-counts"],

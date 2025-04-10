@@ -1,6 +1,7 @@
 import { hashPassword } from "@/lib/passwords"
 import { db } from "./db"
 import * as schema from "@rahulsaamanth/mhp-schema"
+import { eq } from "drizzle-orm"
 
 async function seed() {
   console.log("🌱 Seeding started...")
@@ -141,24 +142,98 @@ async function seed() {
     ])
     .returning()
 
+  // const mainCategories = await db
+  //   .insert(schema.category)
+  //   .values([
+  //     { name: "Homeopathy" },
+  //     { name: "Nutrition-Supplements" },
+  //     { name: "Babycare" },
+  //   ])
+  //   .returning()
+
+  // const subCategories = await db
+  //   .insert(schema.category)
+  //   .values([
+  //     { name: "Biochemics", parentId: mainCategories[0]?.id },
+  //     { name: "Biocombinations", parentId: mainCategories[0]?.id },
+  //     { name: "Dilutions", parentId: mainCategories[0]?.id },
+  //     { name: "Mothertinctures", parentId: mainCategories[0]?.id },
+  //   ])
+  //   .returning()
+
   const mainCategories = await db
     .insert(schema.category)
     .values([
-      { name: "Homeopathy" },
-      { name: "Nutrition-Supplements" },
-      { name: "Babycare" },
+      {
+        name: "Homeopathy",
+        path: "/homeopathy",
+        pathIds: [],
+        depth: 0,
+      },
+      {
+        name: "Nutrition-Supplements",
+        path: "/nutrition_supplements",
+        pathIds: [],
+        depth: 0,
+      },
+      {
+        name: "Personal-Care",
+        path: "/personal-care",
+        pathIds: [],
+        depth: 0,
+      },
     ])
     .returning()
+
+  for (const category of mainCategories) {
+    await db
+      .update(schema.category)
+      .set({ pathIds: [category.id] })
+      .where(eq(schema.category.id, category.id))
+  }
 
   const subCategories = await db
     .insert(schema.category)
     .values([
-      { name: "Biochemics", parentId: mainCategories[0]?.id },
-      { name: "Biocombinations", parentId: mainCategories[0]?.id },
-      { name: "Dilutions", parentId: mainCategories[0]?.id },
-      { name: "Mothertinctures", parentId: mainCategories[0]?.id },
+      {
+        name: "Biochemics",
+        parentId: mainCategories[0]?.id!,
+        path: "/homeopathy/biochemics/",
+        pathIds: [mainCategories[0]?.id!],
+        depth: 1,
+      },
+      {
+        name: "Biocombinations",
+        parentId: mainCategories[0]?.id!,
+        path: "/homeopathy/biocombinations/",
+        pathIds: [mainCategories[0]?.id!],
+        depth: 1,
+      },
+      {
+        name: "Dilutions",
+        parentId: mainCategories[0]?.id!,
+        path: "/homeopathy/dilutions/",
+        pathIds: [mainCategories[0]?.id!],
+        depth: 1,
+      },
+      {
+        name: "Mothertinctures",
+        parentId: mainCategories[0]?.id!,
+        path: "/homeopathy/mothertinctures/",
+        pathIds: [mainCategories[0]?.id!],
+        depth: 1,
+      },
     ])
     .returning()
+
+  for (const category of subCategories) {
+    await db
+      .update(schema.category)
+      .set({
+        pathIds: [...(category.pathIds || []), category.id],
+      })
+      .where(eq(schema.category.id, category.id))
+  }
 
   const manufacturers = await db
     .insert(schema.manufacturer)
