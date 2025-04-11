@@ -3,13 +3,12 @@ import {
   ChevronRight,
   Copy,
   CreditCard,
-  File,
-  ListFilter,
   MoreVertical,
   Truck,
 } from "lucide-react"
 
-import { Badge } from "@/components/ui/badge"
+import { DataTableSkeleton } from "@/components/data-table/data-table-skeleton"
+import { DateRangePicker } from "@/components/date-range-picker"
 import { Button } from "@/components/ui/button"
 import {
   Card,
@@ -21,10 +20,8 @@ import {
 } from "@/components/ui/card"
 import {
   DropdownMenu,
-  DropdownMenuCheckboxItem,
   DropdownMenuContent,
   DropdownMenuItem,
-  DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
@@ -35,25 +32,15 @@ import {
 } from "@/components/ui/pagination"
 import { Progress } from "@/components/ui/progress"
 import { Separator } from "@/components/ui/separator"
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { FeatureFlagsProvider } from "./_components/feature-flags-provider"
-import React from "react"
-import { DateRangePicker } from "@/components/date-range-picker"
 import { Skeleton } from "@/components/ui/skeleton"
-import { DataTableSkeleton } from "@/components/data-table/data-table-skeleton"
-import { OrdersTable } from "./_components/orders-table"
-import { SearchParams } from "@/types"
-import { searchParamsCache } from "./_lib/validations"
 import { getValidFilters } from "@/lib/data-table"
+import { SearchParams } from "@/types"
+import { FeatureFlagsProvider } from "./_components/feature-flags-provider"
+import { OrdersTable } from "./_components/orders-table"
 import { getOrders } from "./_lib/queries"
+import { searchParamsCache } from "./_lib/validations"
+import React from "react"
+
 const description =
   "An orders dashboard with a sidebar navigation. The sidebar has icon navigation. The content area has a breadcrumb and search in the header. The main area has a list of recent orders with a filter and export button. The main area also has a detailed view of a single order with order details, shipping information, billing information, customer information, and payment information."
 

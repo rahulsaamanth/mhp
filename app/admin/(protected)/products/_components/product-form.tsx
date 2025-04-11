@@ -207,16 +207,6 @@ export const ProductsForm = ({
       )?.name
 
       for (const variant of data.variants) {
-        if (mode === "edit" && typeof variant.variantImage[0] === "string") {
-          _variants.push({ ...variant, id: variant.id })
-          continue
-        }
-
-        if (!variant.variantImage?.length) {
-          _variants.push({ ...variant, id: variant.id })
-          continue
-        }
-
         const sku = generateSKU({
           productManufacturer: manufacturerName ?? "",
           productName: data.name,
@@ -229,6 +219,16 @@ export const ProductsForm = ({
           packSize: variant.packSize.toString(),
           potency: variant.potency.toString(),
         })
+
+        if (mode === "edit" && typeof variant.variantImage[0] === "string") {
+          _variants.push({ ...variant, id: variant.id, sku, variantName })
+          continue
+        }
+
+        if (!variant.variantImage?.length) {
+          _variants.push({ ...variant, id: variant.id, sku, variantName })
+          continue
+        }
 
         const generateFileName = (index: number) => `${sku}-${index + 1}`
 
