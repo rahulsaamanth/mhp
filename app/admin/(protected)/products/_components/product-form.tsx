@@ -201,73 +201,90 @@ export const ProductsForm = ({
 
   const onSubmit = async (data: z.infer<typeof createProductSchema>) => {
     try {
-      const _variants = []
+      let _variants = []
       const manufacturerName = manufacturers.find(
         (man) => man.id === data.manufacturerId
       )?.name
 
-      for (const variant of data.variants) {
-        const sku = generateSKU({
-          productManufacturer: manufacturerName ?? "",
-          productName: data.name,
-          packSize: variant.packSize.toString(),
-          potency: variant.potency.toString(),
-        })
-
-        const variantName = generateVariantName({
-          productName: data.name,
-          packSize: variant.packSize.toString(),
-          potency: variant.potency.toString(),
-        })
-
-        if (mode === "edit" && typeof variant.variantImage[0] === "string") {
-          _variants.push({ ...variant, id: variant.id, sku, variantName })
-          continue
-        }
-
-        if (!variant.variantImage?.length) {
-          _variants.push({ ...variant, id: variant.id, sku, variantName })
-          continue
-        }
-
-        const generateFileName = (index: number) => `${sku}-${index + 1}`
-
-        const uploadedUrls = await Promise.all(
-          variant.variantImage.map(async (file: File, idx: number) => {
-            const fileName = generateFileName(idx)
-            const base64String = await new Promise<string>(
-              (resolve, reject) => {
-                const reader = new FileReader()
-                reader.onload = () => {
-                  const base64 = reader.result as string
-                  // Remove the data URL prefix (e.g., "data:image/jpeg;base64,")
-                  const base64Data = base64.split(",")[1] || ""
-                  resolve(base64Data)
-                }
-                reader.onerror = reject
-                reader.readAsDataURL(file)
-              }
-            )
-
-            const fileUrl = await uploadProductImage(
-              base64String,
-              fileName,
-              file.type
-            )
-            return fileUrl
+      const variantsWithMetadata = await Promise.all(
+        data.variants.map(async (variant, originalIndex) => {
+          const sku = generateSKU({
+            productManufacturer: manufacturerName ?? "",
+            productName: data.name,
+            packSize: variant.packSize.toString(),
+            potency: variant.potency.toString(),
           })
-        )
 
-        _variants.push({
-          ...variant,
-          id: variant.id,
-          sku,
-          variantName,
-          variantImage: uploadedUrls.filter(
-            (url): url is string => url !== null
-          ),
+          const variantName = generateVariantName({
+            productName: data.name,
+            packSize: variant.packSize.toString(),
+            potency: variant.potency.toString(),
+          })
+
+          if (mode === "edit" && typeof variant.variantImage[0] === "string") {
+            return {
+              ...variant,
+              id: variant.id,
+              sku,
+              variantName,
+              originalIndex,
+            }
+          }
+
+          if (!variant.variantImage?.length) {
+            return {
+              ...variant,
+              id: variant.id,
+              sku,
+              variantName,
+              originalIndex,
+            }
+          }
+
+          const generateFileName = (index: number) => `${sku}-${index + 1}`
+
+          const uploadedUrls = await Promise.all(
+            variant.variantImage.map(async (file: File, idx: number) => {
+              const fileName = generateFileName(idx)
+              const base64String = await new Promise<string>(
+                (resolve, reject) => {
+                  const reader = new FileReader()
+                  reader.onload = () => {
+                    const base64 = reader.result as string
+
+                    const base64Data = base64.split(",")[1] || ""
+                    resolve(base64Data)
+                  }
+                  reader.onerror = reject
+                  reader.readAsDataURL(file)
+                }
+              )
+
+              const fileUrl = await uploadProductImage(
+                base64String,
+                fileName,
+                file.type
+              )
+              return fileUrl
+            })
+          )
+
+          return {
+            ...variant,
+            id: variant.id,
+            sku,
+            variantName,
+            variantImage: uploadedUrls.filter(
+              (url): url is string => url !== null
+            ),
+            originalIndex,
+          }
         })
-      }
+      )
+
+      _variants = variantsWithMetadata
+        .sort((a, b) => a.originalIndex - b.originalIndex)
+        .map(({ originalIndex, ...variant }) => variant)
 
       const _data: ProductCreateInput = {
         name: data.name,
