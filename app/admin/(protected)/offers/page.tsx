@@ -1,3 +1,3 @@
 export default function OffersPage() {
-  return <div>Offers</div>
+  return <div>Chathuranan</div>
 }

@@ -100,8 +100,8 @@ importers:
         specifier: ^1.1.3
         version: 1.1.8(@types/react-dom@19.0.2(@types/react@19.0.1))(@types/react@19.0.1)(react-dom@18.2.0(react@18.2.0))(react@18.2.0)
       '@rahulsaamanth/mhp-schema':
-        specifier: ^1.1.1
-        version: 1.1.1(@types/pg@8.11.11)(gel@2.0.1)(next@15.2.3(react-dom@18.2.0(react@18.2.0))(react@18.2.0))(react@18.2.0)
+        specifier: ^1.1.2
+        version: 1.1.2(@types/pg@8.11.11)(gel@2.0.1)(next@15.2.3(react-dom@18.2.0(react@18.2.0))(react@18.2.0))(react@18.2.0)
       '@tanstack/match-sorter-utils':
         specifier: ^8.15.1
         version: 8.19.4
@@ -1756,8 +1756,8 @@ packages:
   '@radix-ui/rect@1.1.0':
     resolution: {integrity: sha512-A9+lCBZoaMJlVKcRBz2YByCG+Cp2t6nAnMnNba+XiWxnj6r4JUFqfsgwocMBZU9LPtdxC6wB56ySYpc7LQIoJg==}
 
-  '@rahulsaamanth/mhp-schema@1.1.1':
-    resolution: {integrity: sha512-ANYNd+lrEAfakom1GsFKws/O8pa2WUudsMo+Yo5MzJic9+L1xyEPYXrjtxEZ3sX3M1seQGApw+5EOaqrT+3tiw==}
+  '@rahulsaamanth/mhp-schema@1.1.2':
+    resolution: {integrity: sha512-EuRva1TFnWHxNeI6Wkt6v3pPBqMaa9C2BST68nx8Q3BNwGZUskqKZQtb60MljYjwd9HwpApFVQBU53TAZ0oUJQ==}
 
   '@react-email/render@0.0.16':
     resolution: {integrity: sha512-wDaMy27xAq1cJHtSFptp0DTKPuV2GYhloqia95ub/DH9Dea1aWYsbdM918MOc/b/HvVS3w1z8DWzfAk13bGStQ==}
@@ -6073,7 +6073,7 @@ snapshots:
 
   '@radix-ui/rect@1.1.0': {}
 
-  '@rahulsaamanth/mhp-schema@1.1.1(@types/pg@8.11.11)(gel@2.0.1)(next@15.2.3(react-dom@18.2.0(react@18.2.0))(react@18.2.0))(react@18.2.0)':
+  '@rahulsaamanth/mhp-schema@1.1.2(@types/pg@8.11.11)(gel@2.0.1)(next@15.2.3(react-dom@18.2.0(react@18.2.0))(react@18.2.0))(react@18.2.0)':
     dependencies:
       '@neondatabase/serverless': 1.0.0
       dotenv: 16.4.7
