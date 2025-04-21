@@ -95,6 +95,18 @@ export function getColumns({
       enableHiding: true,
     },
     {
+      accessorKey: "orderDate",
+      header: ({ column }) => (
+        <DataTableColumnHeader column={column} title="Order Date" />
+      ),
+      cell: ({ row }) => {
+        const date = new Date(row.original.orderDate)
+        return <span>{date.toLocaleDateString()}</span>
+      },
+      enableSorting: true,
+      enableHiding: false,
+    },
+    {
       accessorKey: "paymentStatus",
       header: ({ column }) => (
         <DataTableColumnHeader column={column} title="Payment Status" />

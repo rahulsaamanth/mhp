@@ -15,7 +15,7 @@ export const searchParamsCache = createSearchParamsCache({
     []
   ),
   page: parseAsInteger.withDefault(1),
-  perPage: parseAsInteger.withDefault(50),
+  perPage: parseAsInteger.withDefault(10),
   sort: getSortingStateParser<Product>().withDefault([
     { id: "createdAt", desc: true },
   ]),
