@@ -9,9 +9,11 @@ async function seed() {
   // await db.delete(schema.review)
   await db.delete(schema.orderDetails)
   await db.delete(schema.order)
+  await db.delete(schema.productInventory)
   await db.delete(schema.product)
   await db.delete(schema.category)
   await db.delete(schema.manufacturer)
+  await db.delete(schema.store)
   await db.delete(schema.tag)
   await db.delete(schema.twoFactorConfirmation)
   await db.delete(schema.account)
@@ -245,6 +247,30 @@ async function seed() {
       { name: "Hapdco" },
       { name: "Allen" },
       { name: "Adven" },
+    ])
+    .returning()
+
+  const stores = await db
+    .insert(schema.store)
+    .values([
+      {
+        name: "Mangalore Store 1",
+        code: "MANGALORE-01",
+        location: "Mangalore, Karnataka",
+        isActive: true,
+      },
+      {
+        name: "Mangalore Store 2",
+        code: "MANGALORE-02",
+        location: "Mangalore, Karnataka",
+        isActive: true,
+      },
+      {
+        name: "Kerala Store 1",
+        code: "KERALA-01",
+        location: "Kochi, Kerala",
+        isActive: true,
+      },
     ])
     .returning()
 
@@ -532,15 +558,10 @@ async function seed() {
         packSize: 20,
         potency: "3X",
         costPrice: 120,
-        mrp: 150, // Add base price before tax and discount
+        mrp: 150,
         sellingPrice: 165,
         discount: 10,
         discountType: "PERCENTAGE",
-        stockByLocation: [
-          { location: "MANGALORE-01", stock: 15 },
-          { location: "MANGALORE-02", stock: 0 },
-          { location: "KERALA-01", stock: 0 },
-        ],
       },
       {
         productId: products[0]?.id!,
@@ -549,15 +570,10 @@ async function seed() {
         packSize: 20,
         potency: "6X",
         costPrice: 120,
-        mrp: 150, // Add base price before tax and discount
+        mrp: 150,
         sellingPrice: 165,
         discount: 10,
         discountType: "PERCENTAGE",
-        stockByLocation: [
-          { location: "MANGALORE-01", stock: 12 },
-          { location: "MANGALORE-02", stock: 0 },
-          { location: "KERALA-01", stock: 0 },
-        ],
       },
       {
         productId: products[0]?.id!,
@@ -570,11 +586,6 @@ async function seed() {
         sellingPrice: 165,
         discount: 10,
         discountType: "PERCENTAGE",
-        stockByLocation: [
-          { location: "MANGALORE-01", stock: 9 },
-          { location: "MANGALORE-02", stock: 0 },
-          { location: "KERALA-01", stock: 0 },
-        ],
       },
       {
         productId: products[0]?.id!,
@@ -587,11 +598,6 @@ async function seed() {
         sellingPrice: 200,
         discount: 10,
         discountType: "PERCENTAGE",
-        stockByLocation: [
-          { location: "MANGALORE-01", stock: 9 },
-          { location: "MANGALORE-02", stock: 0 },
-          { location: "KERALA-01", stock: 0 },
-        ],
       },
       {
         productId: products[0]?.id!,
@@ -604,11 +610,6 @@ async function seed() {
         sellingPrice: 250,
         discount: 10,
         discountType: "PERCENTAGE",
-        stockByLocation: [
-          { location: "MANGALORE-01", stock: 11 },
-          { location: "MANGALORE-02", stock: 0 },
-          { location: "KERALA-01", stock: 0 },
-        ],
       },
       {
         productId: products[1]?.id!,
@@ -621,11 +622,6 @@ async function seed() {
         sellingPrice: 165,
         discount: 10,
         discountType: "PERCENTAGE",
-        stockByLocation: [
-          { location: "MANGALORE-01", stock: 13 },
-          { location: "MANGALORE-02", stock: 0 },
-          { location: "KERALA-01", stock: 0 },
-        ],
       },
       {
         productId: products[2]?.id!,
@@ -638,11 +634,6 @@ async function seed() {
         sellingPrice: 165,
         discount: 10,
         discountType: "PERCENTAGE",
-        stockByLocation: [
-          { location: "MANGALORE-01", stock: 10 },
-          { location: "MANGALORE-02", stock: 0 },
-          { location: "KERALA-01", stock: 0 },
-        ],
       },
       {
         productId: products[3]?.id!,
@@ -655,11 +646,6 @@ async function seed() {
         sellingPrice: 90,
         discount: 10,
         discountType: "PERCENTAGE",
-        stockByLocation: [
-          { location: "MANGALORE-01", stock: 15 },
-          { location: "MANGALORE-02", stock: 0 },
-          { location: "KERALA-01", stock: 0 },
-        ],
       },
       {
         productId: products[3]?.id!,
@@ -672,11 +658,6 @@ async function seed() {
         sellingPrice: 650,
         discount: 10,
         discountType: "PERCENTAGE",
-        stockByLocation: [
-          { location: "MANGALORE-01", stock: 10 },
-          { location: "MANGALORE-02", stock: 0 },
-          { location: "KERALA-01", stock: 0 },
-        ],
       },
       {
         productId: products[4]?.id!,
@@ -689,11 +670,6 @@ async function seed() {
         sellingPrice: 90,
         discount: 10,
         discountType: "PERCENTAGE",
-        stockByLocation: [
-          { location: "MANGALORE-01", stock: 12 },
-          { location: "MANGALORE-02", stock: 0 },
-          { location: "KERALA-01", stock: 0 },
-        ],
       },
       {
         productId: products[4]?.id!,
@@ -706,11 +682,6 @@ async function seed() {
         sellingPrice: 650,
         discount: 10,
         discountType: "PERCENTAGE",
-        stockByLocation: [
-          { location: "MANGALORE-01", stock: 8 },
-          { location: "MANGALORE-02", stock: 0 },
-          { location: "KERALA-01", stock: 0 },
-        ],
       },
       {
         productId: products[5]?.id!,
@@ -723,11 +694,6 @@ async function seed() {
         sellingPrice: 90,
         discount: 10,
         discountType: "PERCENTAGE",
-        stockByLocation: [
-          { location: "MANGALORE-01", stock: 10 },
-          { location: "MANGALORE-02", stock: 0 },
-          { location: "KERALA-01", stock: 0 },
-        ],
       },
       {
         productId: products[5]?.id!,
@@ -740,11 +706,6 @@ async function seed() {
         sellingPrice: 650,
         discount: 10,
         discountType: "PERCENTAGE",
-        stockByLocation: [
-          { location: "MANGALORE-01", stock: 5 },
-          { location: "MANGALORE-02", stock: 0 },
-          { location: "KERALA-01", stock: 0 },
-        ],
       },
       {
         productId: products[6]?.id!,
@@ -757,11 +718,6 @@ async function seed() {
         sellingPrice: 90,
         discount: 10,
         discountType: "PERCENTAGE",
-        stockByLocation: [
-          { location: "MANGALORE-01", stock: 15 },
-          { location: "MANGALORE-02", stock: 0 },
-          { location: "KERALA-01", stock: 0 },
-        ],
       },
       {
         productId: products[6]?.id!,
@@ -774,11 +730,6 @@ async function seed() {
         sellingPrice: 650,
         discount: 10,
         discountType: "PERCENTAGE",
-        stockByLocation: [
-          { location: "MANGALORE-01", stock: 10 },
-          { location: "MANGALORE-02", stock: 0 },
-          { location: "KERALA-01", stock: 0 },
-        ],
       },
       {
         productId: products[7]?.id!,
@@ -791,11 +742,6 @@ async function seed() {
         sellingPrice: 90,
         discount: 10,
         discountType: "PERCENTAGE",
-        stockByLocation: [
-          { location: "MANGALORE-01", stock: 12 },
-          { location: "MANGALORE-02", stock: 0 },
-          { location: "KERALA-01", stock: 0 },
-        ],
       },
       {
         productId: products[7]?.id!,
@@ -808,11 +754,6 @@ async function seed() {
         sellingPrice: 650,
         discount: 10,
         discountType: "PERCENTAGE",
-        stockByLocation: [
-          { location: "MANGALORE-01", stock: 8 },
-          { location: "MANGALORE-02", stock: 0 },
-          { location: "KERALA-01", stock: 0 },
-        ],
       },
       {
         productId: products[8]?.id!,
@@ -825,11 +766,6 @@ async function seed() {
         sellingPrice: 90,
         discount: 10,
         discountType: "PERCENTAGE",
-        stockByLocation: [
-          { location: "MANGALORE-01", stock: 10 },
-          { location: "MANGALORE-02", stock: 0 },
-          { location: "KERALA-01", stock: 0 },
-        ],
       },
       {
         productId: products[8]?.id!,
@@ -842,11 +778,6 @@ async function seed() {
         sellingPrice: 650,
         discount: 10,
         discountType: "PERCENTAGE",
-        stockByLocation: [
-          { location: "MANGALORE-01", stock: 5 },
-          { location: "MANGALORE-02", stock: 0 },
-          { location: "KERALA-01", stock: 0 },
-        ],
       },
       {
         productId: products[9]?.id!,
@@ -859,11 +790,6 @@ async function seed() {
         sellingPrice: 165,
         discount: 10,
         discountType: "PERCENTAGE",
-        stockByLocation: [
-          { location: "MANGALORE-01", stock: 15 },
-          { location: "MANGALORE-02", stock: 0 },
-          { location: "KERALA-01", stock: 0 },
-        ],
       },
       {
         productId: products[10]?.id!,
@@ -876,11 +802,6 @@ async function seed() {
         sellingPrice: 165,
         discount: 10,
         discountType: "PERCENTAGE",
-        stockByLocation: [
-          { location: "MANGALORE-01", stock: 12 },
-          { location: "MANGALORE-02", stock: 0 },
-          { location: "KERALA-01", stock: 0 },
-        ],
       },
       {
         productId: products[11]?.id!,
@@ -892,11 +813,6 @@ async function seed() {
         sellingPrice: 165,
         discount: 10,
         discountType: "PERCENTAGE",
-        stockByLocation: [
-          { location: "MANGALORE-01", stock: 8 },
-          { location: "MANGALORE-02", stock: 0 },
-          { location: "KERALA-01", stock: 0 },
-        ],
       },
       {
         productId: products[12]?.id!,
@@ -908,11 +824,6 @@ async function seed() {
         sellingPrice: 85,
         discount: 10,
         discountType: "PERCENTAGE",
-        stockByLocation: [
-          { location: "MANGALORE-01", stock: 10 },
-          { location: "MANGALORE-02", stock: 0 },
-          { location: "KERALA-01", stock: 0 },
-        ],
       },
       {
         productId: products[12]?.id!,
@@ -924,11 +835,6 @@ async function seed() {
         sellingPrice: 730,
         discount: 10,
         discountType: "PERCENTAGE",
-        stockByLocation: [
-          { location: "MANGALORE-01", stock: 5 },
-          { location: "MANGALORE-02", stock: 0 },
-          { location: "KERALA-01", stock: 0 },
-        ],
       },
       {
         productId: products[13]?.id!,
@@ -940,11 +846,6 @@ async function seed() {
         sellingPrice: 85,
         discount: 10,
         discountType: "PERCENTAGE",
-        stockByLocation: [
-          { location: "MANGALORE-01", stock: 13 },
-          { location: "MANGALORE-02", stock: 0 },
-          { location: "KERALA-01", stock: 0 },
-        ],
       },
       {
         productId: products[13]?.id!,
@@ -956,11 +857,6 @@ async function seed() {
         sellingPrice: 730,
         discount: 10,
         discountType: "PERCENTAGE",
-        stockByLocation: [
-          { location: "MANGALORE-01", stock: 8 },
-          { location: "MANGALORE-02", stock: 0 },
-          { location: "KERALA-01", stock: 0 },
-        ],
       },
       {
         productId: products[14]?.id!,
@@ -973,11 +869,6 @@ async function seed() {
         sellingPrice: 130,
         discount: 10,
         discountType: "PERCENTAGE",
-        stockByLocation: [
-          { location: "MANGALORE-01", stock: 15 },
-          { location: "MANGALORE-02", stock: 0 },
-          { location: "KERALA-01", stock: 0 },
-        ],
       },
       {
         productId: products[14]?.id!,
@@ -990,11 +881,6 @@ async function seed() {
         sellingPrice: 90,
         discount: 10,
         discountType: "PERCENTAGE",
-        stockByLocation: [
-          { location: "MANGALORE-01", stock: 12 },
-          { location: "MANGALORE-02", stock: 0 },
-          { location: "KERALA-01", stock: 0 },
-        ],
       },
       {
         productId: products[14]?.id!,
@@ -1007,11 +893,6 @@ async function seed() {
         sellingPrice: 85,
         discount: 10,
         discountType: "PERCENTAGE",
-        stockByLocation: [
-          { location: "MANGALORE-01", stock: 8 },
-          { location: "MANGALORE-02", stock: 0 },
-          { location: "KERALA-01", stock: 0 },
-        ],
       },
       {
         productId: products[14]?.id!,
@@ -1024,11 +905,6 @@ async function seed() {
         sellingPrice: 85,
         discount: 10,
         discountType: "PERCENTAGE",
-        stockByLocation: [
-          { location: "MANGALORE-01", stock: 10 },
-          { location: "MANGALORE-02", stock: 0 },
-          { location: "KERALA-01", stock: 0 },
-        ],
       },
       {
         productId: products[15]?.id!,
@@ -1041,11 +917,6 @@ async function seed() {
         sellingPrice: 115,
         discount: 10,
         discountType: "PERCENTAGE",
-        stockByLocation: [
-          { location: "MANGALORE-01", stock: 15 },
-          { location: "MANGALORE-02", stock: 0 },
-          { location: "KERALA-01", stock: 0 },
-        ],
       },
       {
         productId: products[16]?.id!,
@@ -1057,11 +928,6 @@ async function seed() {
         sellingPrice: 290,
         discount: 10,
         discountType: "PERCENTAGE",
-        stockByLocation: [
-          { location: "MANGALORE-01", stock: 12 },
-          { location: "MANGALORE-02", stock: 0 },
-          { location: "KERALA-01", stock: 0 },
-        ],
       },
       {
         productId: products[17]?.id!,
@@ -1073,11 +939,6 @@ async function seed() {
         sellingPrice: 155,
         discount: 10,
         discountType: "PERCENTAGE",
-        stockByLocation: [
-          { location: "MANGALORE-01", stock: 10 },
-          { location: "MANGALORE-02", stock: 0 },
-          { location: "KERALA-01", stock: 0 },
-        ],
       },
       {
         productId: products[17]?.id!,
@@ -1089,11 +950,6 @@ async function seed() {
         sellingPrice: 95,
         discount: 10,
         discountType: "PERCENTAGE",
-        stockByLocation: [
-          { location: "MANGALORE-01", stock: 13 },
-          { location: "MANGALORE-02", stock: 0 },
-          { location: "KERALA-01", stock: 0 },
-        ],
       },
       {
         productId: products[18]?.id!,
@@ -1105,11 +961,6 @@ async function seed() {
         sellingPrice: 80,
         discount: 10,
         discountType: "PERCENTAGE",
-        stockByLocation: [
-          { location: "MANGALORE-01", stock: 14 },
-          { location: "MANGALORE-02", stock: 0 },
-          { location: "KERALA-01", stock: 0 },
-        ],
       },
       {
         productId: products[19]?.id!,
@@ -1121,11 +972,6 @@ async function seed() {
         sellingPrice: 155,
         discount: 10,
         discountType: "PERCENTAGE",
-        stockByLocation: [
-          { location: "MANGALORE-01", stock: 11 },
-          { location: "MANGALORE-02", stock: 0 },
-          { location: "KERALA-01", stock: 0 },
-        ],
       },
       {
         productId: products[20]?.id!,
@@ -1137,11 +983,6 @@ async function seed() {
         sellingPrice: 385,
         discount: 10,
         discountType: "PERCENTAGE",
-        stockByLocation: [
-          { location: "MANGALORE-01", stock: 12 },
-          { location: "MANGALORE-02", stock: 0 },
-          { location: "KERALA-01", stock: 0 },
-        ],
       },
       {
         productId: products[20]?.id!,
@@ -1153,11 +994,6 @@ async function seed() {
         sellingPrice: 775,
         discount: 10,
         discountType: "PERCENTAGE",
-        stockByLocation: [
-          { location: "MANGALORE-01", stock: 10 },
-          { location: "MANGALORE-02", stock: 0 },
-          { location: "KERALA-01", stock: 0 },
-        ],
       },
       {
         productId: products[21]?.id!,
@@ -1169,13 +1005,83 @@ async function seed() {
         sellingPrice: 85,
         discount: 10,
         discountType: "PERCENTAGE",
-        stockByLocation: [
-          { location: "MANGALORE-01", stock: 13 },
-          { location: "MANGALORE-02", stock: 0 },
-          { location: "KERALA-01", stock: 0 },
-        ],
       },
     ])
+    .returning()
+
+  // Create inventory records for each store and product variant
+  const inventoryEntries = []
+
+  // Generate inventory entries for all product variants across all stores
+  for (const variant of productVariants) {
+    for (const store of stores) {
+      // Default all entries to 0 stock
+      let stock = 0
+
+      // If this is the Mangalore-01 store, set the actual stock values
+      // that were previously in the stockByLocation array
+      if (store.code === "MANGALORE-01") {
+        // Map of SKUs to their previous stock values for MANGALORE-01
+        const stockMapping: Record<string, number> = {
+          "DR-SIL-3X-20T": 15,
+          "DR-SIL-6X-20T": 12,
+          "DR-SIL-12X-20T": 9,
+          "DR-SIL-30X-20T": 9,
+          "DR-SIL-200X-20T": 11,
+          "DR-NAT-SUL-3X-20T": 13,
+          "DR-MAG-PHOS-6X-20T": 10,
+          "SBL-SIL-6X-25T": 15,
+          "SBL-SIL-6X-450T": 10,
+          "SBL-NAT-SUL-6X-25T": 12,
+          "SBL-NAT-SUL-6X-450T": 8,
+          "SBL-NAT-MUR-200X-25T": 10,
+          "SBL-NAT-MUR-200X-450T": 5,
+          "SBL-BC10-25T": 15,
+          "SBL-BC10-450T": 10,
+          "SBL-BC11-25T": 12,
+          "SBL-BC11-450T": 8,
+          "SBL-BC12-25T": 10,
+          "SBL-BC12-450T": 5,
+          "DR-BC1-20T": 15,
+          "DR-BC2-20T": 12,
+          "DR-BC3-20T": 8,
+          "WS-BC20-20T": 10,
+          "WS-BC20-550T": 5,
+          "WS-BC21-20T": 13,
+          "WS-BC21-550T": 8,
+          "SBL-ABEL-MOS-1000CH-30ML": 15,
+          "SBL-ABEL-MOS-200CH-30ML": 12,
+          "SBL-ABEL-MOS-30CH-30ML": 8,
+          "SBL-ABEL-MOS-6CH-30ML": 10,
+          "SBL-MOS-1X-30ML": 15,
+          "BAK-ACNE-AID-TWIN": 12,
+          "BAK-SUN-HRC-100G": 10,
+          "BAK-SUN-HRC-60G": 13,
+          "HAP-NOK-CRM-25G": 14,
+          "ALL-IMM-BOOST-25T": 11,
+          "ALL-MULTI-VIT-30T": 12,
+          "ALL-MULTI-VIT-60T": 10,
+          "ADV-BABY-DROP-30ML": 13,
+        }
+
+        if (variant.sku in stockMapping) {
+          stock = stockMapping[variant.sku] || 0
+        }
+      }
+
+      inventoryEntries.push({
+        productVariantId: variant.id,
+        storeId: store.id,
+        stock: stock,
+        lowStockThreshold: 5,
+        reservedStock: 0,
+      })
+    }
+  }
+
+  const productInventory = await db
+    .insert(schema.productInventory)
+    .values(inventoryEntries)
     .returning()
 
   const orders = await db
@@ -1269,7 +1175,7 @@ async function seed() {
       taxAmount: 0,
       unitPrice: 650,
       itemStatus: "OUT_FOR_DELIVERY",
-      fulfilledFromLocation: "MANGALORE-01",
+      fulfilledFromStoreId: stores[0]?.id!,
     },
     {
       orderId: orders[0]?.id!,
@@ -1280,7 +1186,7 @@ async function seed() {
       taxAmount: 0,
       unitPrice: 385,
       itemStatus: "OUT_FOR_DELIVERY",
-      fulfilledFromLocation: "MANGALORE-01",
+      fulfilledFromStoreId: stores[0]?.id!,
     },
     {
       orderId: orders[1]?.id!,
@@ -1291,7 +1197,7 @@ async function seed() {
       taxAmount: 0,
       unitPrice: 85,
       itemStatus: "DELIVERED",
-      fulfilledFromLocation: "MANGALORE-01",
+      fulfilledFromStoreId: stores[0]?.id!,
     },
     {
       orderId: orders[2]?.id!,
@@ -1302,7 +1208,7 @@ async function seed() {
       taxAmount: 0,
       unitPrice: 775,
       itemStatus: "PROCESSING",
-      fulfilledFromLocation: "MANGALORE-01",
+      fulfilledFromStoreId: stores[0]?.id!,
     },
     {
       orderId: orders[3]?.id!,
@@ -1313,7 +1219,7 @@ async function seed() {
       taxAmount: 0,
       unitPrice: 290,
       itemStatus: "SHIPPED",
-      fulfilledFromLocation: "MANGALORE-01",
+      fulfilledFromStoreId: stores[0]?.id!,
     },
     {
       orderId: orders[4]?.id!,
@@ -1324,7 +1230,7 @@ async function seed() {
       taxAmount: 0,
       unitPrice: 155,
       itemStatus: "DELIVERED",
-      fulfilledFromLocation: "MANGALORE-01",
+      fulfilledFromStoreId: stores[0]?.id!,
     },
   ])
 
