@@ -183,19 +183,19 @@ export function OrderDetailsCard({
                 <li className="flex items-center justify-between">
                   <span className="text-muted-foreground">Subtotal</span>
                   <span>
-                    ${currentOrderDetails.subtotal?.toFixed(2) || "0.00"}
+                    ₹{currentOrderDetails.subtotal?.toFixed(2) || "0.00"}
                   </span>
                 </li>
                 <li className="flex items-center justify-between">
                   <span className="text-muted-foreground">Shipping</span>
                   <span>
-                    ${currentOrderDetails.shippingCost?.toFixed(2) || "0.00"}
+                    ₹{currentOrderDetails.shippingCost?.toFixed(2) || "0.00"}
                   </span>
                 </li>
                 <li className="flex items-center justify-between font-medium">
                   <span className="text-muted-foreground">Total Amount</span>
                   <span>
-                    ${currentOrderDetails.totalAmountPaid?.toFixed(2) || "0.00"}
+                    ₹{currentOrderDetails.totalAmountPaid?.toFixed(2) || "0.00"}
                   </span>
                 </li>
               </ul>
@@ -301,10 +301,10 @@ export function OrderDetailsCard({
                         </span>
                         <div className="flex justify-between mt-1">
                           <span className="text-xs">
-                            ${product.unitPrice.toFixed(2)} × {product.quantity}
+                            ₹{product.unitPrice.toFixed(2)} × {product.quantity}
                           </span>
                           <span className="font-medium">
-                            ${product.totalPrice.toFixed(2)}
+                            ₹{product.totalPrice.toFixed(2)}
                           </span>
                         </div>
                       </div>

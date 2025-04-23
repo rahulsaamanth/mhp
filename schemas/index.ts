@@ -1,4 +1,11 @@
-import { discountType, potency } from "@rahulsaamanth/mhp-schema"
+import {
+  deliveryStatus,
+  discountType,
+  orderType,
+  paymentStatus,
+  paymentType,
+  potency,
+} from "@rahulsaamanth/mhp-schema"
 import * as z from "zod"
 
 const ACCEPTED_IMAGE_MIME_TYPES = [
@@ -200,3 +207,77 @@ export type ProductCreateInput = Omit<
   z.infer<typeof createProductSchema>,
   "taxInclusive"
 >
+
+// Schema for order item/product
+const orderItemSchema = z.object({
+  productVariantId: z.string().min(1, "Product variant is required"),
+  quantity: z.number().min(1, "Quantity must be at least 1"),
+  unitPrice: z.number().min(0, "Unit price must be positive"),
+  originalPrice: z.number().min(0, "Original price must be positive"),
+  discountAmount: z.number().min(0, "Discount must not be negative").default(0),
+  taxAmount: z.number().min(0, "Tax amount must not be negative").default(0),
+  productName: z.string().optional(),
+  variantName: z.string().optional(),
+  potency: z.string().optional(),
+  packSize: z.number().optional(),
+  imageUrl: z.string().optional(),
+})
+
+// Address schema
+const addressSchema = z.object({
+  street: z.string().min(1, "Street is required"),
+  city: z.string().min(1, "City is required"),
+  state: z.string().min(1, "State is required"),
+  postalCode: z.string().min(1, "Postal code is required"),
+  country: z.string().default("India"),
+})
+
+// Main order schema
+export const createOrderSchema = z.object({
+  // Customer information
+  userId: z.string().optional(),
+  customerName: z.string().min(1, "Customer name is required"),
+  customerPhone: z.string().min(10, "Valid phone number is required"),
+  customerEmail: z.string().email("Valid email is required").optional(),
+  isGuestOrder: z.boolean().default(false),
+
+  // Store information
+  storeId: z.string().min(1, "Store is required"),
+
+  // Order details
+  orderType: z.enum(orderType.enumValues).default("OFFLINE"),
+  orderItems: z.array(orderItemSchema).min(1, "At least one item is required"),
+
+  // Financial details
+  subtotal: z.number().min(0, "Subtotal must be positive"),
+  shippingCost: z
+    .number()
+    .min(0, "Shipping cost must not be negative")
+    .default(0),
+  discount: z.number().min(0, "Discount must not be negative").default(0),
+  tax: z.number().min(0, "Tax must not be negative").default(0),
+  totalAmountPaid: z.number().min(0, "Total amount must be positive"),
+
+  // Status
+  deliveryStatus: z.enum(deliveryStatus.enumValues).default("PROCESSING"),
+  paymentStatus: z.enum(paymentStatus.enumValues).default("PENDING"),
+
+  // Payment information
+  paymentMethodId: z.string().optional(),
+  paymentType: z.enum(paymentType.enumValues).optional(),
+  paymentIntentId: z.string().optional(),
+
+  // Address information
+  shippingAddress: addressSchema,
+  billingAddress: addressSchema,
+  sameAsBilling: z.boolean().default(true),
+
+  // Notes
+  customerNotes: z.string().optional(),
+  adminNotes: z.string().optional(),
+
+  // Dates
+  estimatedDeliveryDate: z.date().optional(),
+})
+
+export type OrderCreateInput = z.infer<typeof createOrderSchema>

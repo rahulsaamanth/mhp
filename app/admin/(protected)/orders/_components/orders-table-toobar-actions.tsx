@@ -27,6 +27,11 @@ export function OrdersTableToolbarActions({
           onSuccess={() => table.toggleAllRowsSelected(false)}
         />
       ) : null} */}
+      <Link href="/admin/orders/new">
+        <Button variant="default" className="sm:mr-4">
+          Add New Order
+        </Button>
+      </Link>
       <Button
         variant="outline"
         size="sm"

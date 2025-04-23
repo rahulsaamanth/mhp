@@ -193,3 +193,17 @@ export interface OrderWithComputedFields extends Order {
 }
 
 export type OrderForTable = OrderWithComputedFields
+
+// Add these to your types.ts file
+
+export interface InvoiceForTable {
+  id: string
+  invoiceNumber: string
+  userName: string
+  userEmail: string
+  userPhone: string
+  orderDate: string
+  totalAmountPaid: number
+  paymentStatus: string
+  invoiceDetails: any[]
+}
