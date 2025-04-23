@@ -14,9 +14,9 @@ export default async function Home() {
       <div className="space-y-6 text-center">
         <h1 className="text-6xl font-semibold drop-shadow-md">🔐 Admin</h1>
         <p className="text-2xl font-bold">Magalore Homeopathic Pharmacy</p>
-        <div className="">
+        <div>
           <LoginButton>
-            <Button variant="default" size={"lg"}>
+            <Button variant="default" size={"lg"} className="rounded-none">
               Sign In
             </Button>
           </LoginButton>
