@@ -14,7 +14,9 @@ import {
   category,
   manufacturer,
   product,
+  productInventory,
   productVariant,
+  store,
 } from "@rahulsaamanth/mhp-schema"
 
 import { SQL, eq, inArray, sql } from "drizzle-orm"
@@ -114,31 +116,24 @@ export async function updateProduct(
 
       const processedVariantIds = new Set<string>()
 
+      // Get store IDs for inventory management
+      const stores = await tx.query.store.findMany()
+      const storeMap = {
+        MANG1: stores.find((s) => s.code === "MANGALORE-01")?.id,
+        MANG2: stores.find((s) => s.code === "MANGALORE-02")?.id,
+        KERALA1: stores.find((s) => s.code === "KERALA-01")?.id,
+      }
+
       for (const variant of data.variants) {
         let existingId =
           variant.id && existingVariantMapByID.has(variant.id)
             ? variant.id
             : null
 
-        const stockByLocation = [
-          {
-            location: "MANGALORE-01" as const,
-            stock: variant.stock_MANG1 || 0,
-          },
-          {
-            location: "MANGALORE-02" as const,
-            stock: variant.stock_MANG2 || 0,
-          },
-          {
-            location: "KERALA-01" as const,
-            stock: variant.stock_KERALA1 || 0,
-          },
-        ]
-
         if (existingId) {
           console.log(`Updating existing variant with ID: ${existingId}`)
 
-          const updateData: any = {
+          const updateData = {
             variantName: variant.variantName,
             potency: variant.potency,
             packSize: variant.packSize,
@@ -147,16 +142,44 @@ export async function updateProduct(
             sellingPrice: variant.sellingPrice,
             discount: variant.discount,
             discountType: variant.discountType,
-            stockByLocation,
             ...(variant.variantImage !== undefined && {
               variantImage: variant.variantImage,
             }),
           }
 
+          // Update the product variant
           await tx
             .update(productVariant)
             .set(updateData)
             .where(eq(productVariant.id, existingId))
+
+          // Update inventory for each store
+          if (storeMap.MANG1) {
+            await upsertInventory(
+              tx,
+              existingId,
+              storeMap.MANG1,
+              variant.stock_MANG1 || 0
+            )
+          }
+
+          if (storeMap.MANG2) {
+            await upsertInventory(
+              tx,
+              existingId,
+              storeMap.MANG2,
+              variant.stock_MANG2 || 0
+            )
+          }
+
+          if (storeMap.KERALA1) {
+            await upsertInventory(
+              tx,
+              existingId,
+              storeMap.KERALA1,
+              variant.stock_KERALA1 || 0
+            )
+          }
 
           processedVariantIds.add(existingId)
         } else {
@@ -168,16 +191,41 @@ export async function updateProduct(
             ...variantWithoutStockProps
           } = variant
 
+          // Create the product variant
           const [newVariant] = await tx
             .insert(productVariant)
             .values({
               ...variantWithoutStockProps,
               productId,
-              stockByLocation,
             })
             .returning()
 
           if (newVariant?.id) {
+            // Create inventory entries for each store
+            if (storeMap.MANG1) {
+              await tx.insert(productInventory).values({
+                productVariantId: newVariant.id,
+                storeId: storeMap.MANG1,
+                stock: stock_MANG1 || 0,
+              })
+            }
+
+            if (storeMap.MANG2) {
+              await tx.insert(productInventory).values({
+                productVariantId: newVariant.id,
+                storeId: storeMap.MANG2,
+                stock: stock_MANG2 || 0,
+              })
+            }
+
+            if (storeMap.KERALA1) {
+              await tx.insert(productInventory).values({
+                productVariantId: newVariant.id,
+                storeId: storeMap.KERALA1,
+                stock: stock_KERALA1 || 0,
+              })
+            }
+
             processedVariantIds.add(newVariant.id)
           }
         }
@@ -196,35 +244,35 @@ export async function updateProduct(
 
         if (hasOrders.rowCount === 0) {
           console.log(`Deleting variant with ID: ${variantId}`)
+          // Delete all inventory records for this variant
+          await tx
+            .delete(productInventory)
+            .where(eq(productInventory.productVariantId, variantId))
+
+          // Delete the variant
           await tx
             .delete(productVariant)
             .where(eq(productVariant.id, variantId))
         } else {
           console.log(`Marking variant as discontinued: ${variantId}`)
           try {
+            // Mark as discontinued
             await tx
               .update(productVariant)
               .set({
                 discontinued: true,
-                stockByLocation: [
-                  { location: "MANGALORE-01", stock: 0 },
-                  { location: "MANGALORE-02", stock: 0 },
-                  { location: "KERALA-01", stock: 0 },
-                ],
               })
               .where(eq(productVariant.id, variantId))
+
+            // Update inventory to zero
+            await tx
+              .update(productInventory)
+              .set({
+                stock: 0,
+              })
+              .where(eq(productInventory.productVariantId, variantId))
           } catch (e) {
             console.error("Error marking variant as discontinued:", e)
-            await tx
-              .update(productVariant)
-              .set({
-                stockByLocation: [
-                  { location: "MANGALORE-01", stock: 0 },
-                  { location: "MANGALORE-02", stock: 0 },
-                  { location: "KERALA-01", stock: 0 },
-                ],
-              })
-              .where(eq(productVariant.id, variantId))
           }
         }
       }
@@ -245,6 +293,36 @@ export async function updateProduct(
   } catch (error) {
     console.error("Error updating product:", error)
     return { success: false, error: getErrorMessage(error) }
+  }
+}
+
+// Helper function to upsert inventory records
+async function upsertInventory(
+  tx: any,
+  variantId: string,
+  storeId: string,
+  stock: number
+) {
+  // Check if inventory record exists
+  const existingInventory = await tx.query.productInventory.findFirst({
+    where: sql`${productInventory.productVariantId} = ${variantId} AND ${productInventory.storeId} = ${storeId}`,
+  })
+
+  if (existingInventory) {
+    // Update existing inventory
+    await tx
+      .update(productInventory)
+      .set({ stock })
+      .where(
+        sql`${productInventory.productVariantId} = ${variantId} AND ${productInventory.storeId} = ${storeId}`
+      )
+  } else {
+    // Create new inventory record
+    await tx.insert(productInventory).values({
+      productVariantId: variantId,
+      storeId,
+      stock,
+    })
   }
 }
 
@@ -318,33 +396,65 @@ export async function createProduct(data: z.infer<typeof createProductSchema>) {
 
       if (!newProduct) throw new Error("Failed to create product")
 
-      const variantsToInsert = variants.map((variant) => ({
-        ...variant,
-        productId: newProduct.id,
-        mrp: variant.priceAfterTax,
-        stockByLocation: [
-          {
-            location: "MANGALORE-01" as const,
-            stock: variant.stock_MANG1 || 0,
-          },
-          {
-            location: "MANGALORE-02" as const,
-            stock: variant.stock_MANG2 || 0,
-          },
-          {
-            location: "KERALA-01" as const,
-            stock: variant.stock_KERALA1 || 0,
-          },
-        ],
-        stock_MANG1: undefined,
-        stock_MANG2: undefined,
-        stock_KERALA1: undefined,
-      }))
+      // Get store IDs for inventory management
+      const stores = await tx.query.store.findMany()
+      const storeMap = {
+        MANG1: stores.find((s) => s.code === "MANGALORE-01")?.id,
+        MANG2: stores.find((s) => s.code === "MANGALORE-02")?.id,
+        KERALA1: stores.find((s) => s.code === "KERALA-01")?.id,
+      }
+
+      const variantsToInsert = variants.map((variant) => {
+        const {
+          stock_MANG1,
+          stock_MANG2,
+          stock_KERALA1,
+          ...variantWithoutStockProps
+        } = variant
+        return {
+          ...variantWithoutStockProps,
+          productId: newProduct.id,
+        }
+      })
 
       const newVariants = await tx
         .insert(productVariant)
         .values(variantsToInsert)
         .returning()
+
+      // Create inventory records for each variant
+      for (let i = 0; i < newVariants.length; i++) {
+        const variant = newVariants[i]
+        const originalVariant = variants[i]
+
+        // Skip if either variant is undefined
+        if (!variant || !originalVariant) continue
+
+        // Create inventory entries for each store
+        if (storeMap.MANG1) {
+          await tx.insert(productInventory).values({
+            productVariantId: variant.id,
+            storeId: storeMap.MANG1,
+            stock: originalVariant.stock_MANG1 || 0,
+          })
+        }
+
+        if (storeMap.MANG2) {
+          await tx.insert(productInventory).values({
+            productVariantId: variant.id,
+            storeId: storeMap.MANG2,
+            stock: originalVariant.stock_MANG2 || 0,
+          })
+        }
+
+        if (storeMap.KERALA1) {
+          await tx.insert(productInventory).values({
+            productVariantId: variant.id,
+            storeId: storeMap.KERALA1,
+            stock: originalVariant.stock_KERALA1 || 0,
+          })
+        }
+      }
 
       return {
         ...newProduct,

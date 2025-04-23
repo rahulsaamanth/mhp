@@ -147,11 +147,10 @@ export async function getProducts(input: GetProductsSchema) {
                   WHERE pv."productId" = p.id
                 ) as "maxPrice",
                 (
-                SELECT COALESCE(
-                SUM((stockItem->>'stock')::integer),0)
-                FROM "ProductVariant" pv,
-                jsonb_array_elements(pv."stockByLocation") as stockItem
-                WHERE pv."productId" = p.id
+                  SELECT COALESCE(SUM(pi."stock"), 0)
+                  FROM "ProductVariant" pv
+                  LEFT JOIN "ProductInventory" pi ON pi."productVariantId" = pv.id
+                  WHERE pv."productId" = p.id
                 ) as "stock"
               FROM "Product" p
               LEFT JOIN "Category" c ON p."categoryId" = c."id"

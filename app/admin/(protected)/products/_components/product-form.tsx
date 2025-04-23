@@ -108,26 +108,44 @@ export const ProductsForm = ({
     isFeatured: productData?.isFeatured ?? false,
     tax: productData?.tax ?? 5,
     taxInclusive: true,
-    variants: productData?.variants.map((v) => ({
-      id: v.id,
-      potency: v.potency,
-      packSize: v.packSize ?? 0,
-      costPrice: v.costPrice ?? 0,
-      mrp: v.mrp,
-      sellingPrice: v.sellingPrice,
-      sku: v.sku,
-      variantName: v.variantName,
-      discount: v.discount ?? 0,
-      discountType: v.discountType ?? "PERCENTAGE",
-      priceAfterTax: 0,
-      stock_MANG1: v.stockByLocation[0]?.stock ?? 0,
-      stock_MANG2: v.stockByLocation[1]?.stock ?? 0,
-      stock_KERALA1: v.stockByLocation[2]?.stock ?? 0,
-      variantImage: v.variantImage ?? [],
-    })) ?? [
+    variants: productData?.variants.map((v) => {
+      // Find inventory for this variant from related stores
+      const inventory = (v as any).inventory || []
+      // Map inventory to stock fields
+      const stock_MANG1 =
+        inventory.find(
+          (i: { store: { code: string } }) => i.store?.code === "MANGALORE-01"
+        )?.stock ?? 0
+      const stock_MANG2 =
+        inventory.find(
+          (i: { store: { code: string } }) => i.store?.code === "MANGALORE-02"
+        )?.stock ?? 0
+      const stock_KERALA1 =
+        inventory.find(
+          (i: { store: { code: string } }) => i.store?.code === "KERALA-01"
+        )?.stock ?? 0
+
+      return {
+        id: v.id,
+        potency: v.potency,
+        packSize: v.packSize ?? 0,
+        costPrice: v.costPrice ?? 0,
+        mrp: v.mrp,
+        sellingPrice: v.sellingPrice,
+        sku: v.sku,
+        variantName: v.variantName,
+        discount: v.discount ?? 0,
+        discountType: v.discountType ?? "PERCENTAGE",
+        priceAfterTax: 0,
+        stock_MANG1,
+        stock_MANG2,
+        stock_KERALA1,
+        variantImage: v.variantImage ?? [],
+      }
+    }) ?? [
       {
         potency: "NONE" as const,
-        packSize: 0 as number,
+        packSize: 1 as number,
         costPrice: 0,
         mrp: 0,
         sellingPrice: 0,
@@ -754,7 +772,7 @@ export const ProductsForm = ({
                 onClick={() =>
                   append({
                     potency: "NONE",
-                    packSize: 0,
+                    packSize: 1, // Changed from 0 to 1 to match schema requirement
                     costPrice: 0,
                     sellingPrice: 0,
                     mrp: 0,
@@ -762,7 +780,6 @@ export const ProductsForm = ({
                     variantName: "",
                     discount: 0,
                     discountType: "PERCENTAGE",
-                    // priceCalcMode: "BACKWARD",
                     priceAfterTax: 0,
                     stock_MANG1: 0,
                     stock_MANG2: 0,
@@ -824,32 +841,37 @@ const VariantFields = ({
 
       if (!variant.mrp) return
 
-      let basePrice = variant.mrp
-
+      // Calculate price after tax
       const priceAfterTax = taxInclusive
-        ? basePrice
-        : basePrice * (1 + tax / 100)
+        ? variant.mrp
+        : variant.mrp * (1 + tax / 100)
 
       form.setValue(
         `variants.${index}.priceAfterTax`,
         Number(priceAfterTax.toFixed(2))
       )
-      // Calculate price after applying discount
-      let calculatedPrice = basePrice
+
+      // Calculate selling price based on discount
+      let sellingPrice = variant.mrp
       if (variant.discount) {
-        const discountAmount =
-          variant.discountType === "PERCENTAGE"
-            ? (calculatedPrice * variant.discount) / 100
-            : variant.discount
-        calculatedPrice -= discountAmount
+        // Apply discount validation logic from schema
+        let discountAmount = 0
+        if (variant.discountType === "PERCENTAGE") {
+          // Ensure percentage discount is not more than 100%
+          const validDiscount = Math.min(variant.discount, 100)
+          discountAmount = (sellingPrice * validDiscount) / 100
+        } else {
+          // Ensure fixed discount is not more than MRP
+          const validDiscount = Math.min(variant.discount, variant.mrp)
+          discountAmount = validDiscount
+        }
+
+        sellingPrice -= discountAmount
       }
 
-      // Set selling price
-      let sellingPrice = calculatedPrice
-
-      // Only apply tax if tax is not included (toggle is off)
+      // Add tax to selling price if not tax inclusive
       if (!taxInclusive) {
-        sellingPrice = calculatedPrice * (1 + tax / 100)
+        sellingPrice = sellingPrice * (1 + tax / 100)
       }
 
       // Update selling price if changed
