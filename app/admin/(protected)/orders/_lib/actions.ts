@@ -4,17 +4,17 @@ import { db } from "@/db/db"
 import { currentUser } from "@/lib/auth"
 import { getErrorMessage } from "@/lib/handle-error"
 import { createOrderSchema } from "@/schemas"
-import {
-  address,
-  order,
-  orderDetails,
-  productVariant,
-  productInventory,
-  inventoryManagement,
-} from "@rahulsaamanth/mhp-schema"
+
 import { revalidateTag } from "next/cache"
 import * as z from "zod"
 import { eq, and } from "drizzle-orm"
+import {
+  address,
+  inventoryManagement,
+  order,
+  orderDetails,
+  productInventory,
+} from "@rahulsaamanth/mhp-schema"
 
 export async function getOrder(id: string) {
   try {
@@ -105,8 +105,8 @@ export async function createOrder(data: z.infer<typeof createOrderSchema>) {
           totalAmountPaid: data.totalAmountPaid,
           orderType: data.orderType,
           deliveryStatus: data.deliveryStatus,
-          shippingAddressId,
-          billingAddressId,
+          shippingAddressId: String(shippingAddressId),
+          billingAddressId: String(billingAddressId),
           paymentStatus: data.paymentStatus,
           paymentIntentId: data.paymentIntentId || null,
           customerNotes: data.customerNotes || null,

@@ -53,6 +53,7 @@ import {
 } from "@rahulsaamanth/mhp-schema"
 import { useMutation } from "@tanstack/react-query"
 import React, { useEffect } from "react"
+// import { ProductSearch, SelectedProduct } from "./product-search"
 import { toast } from "sonner"
 import { createOrderSchema } from "@/schemas"
 import { Checkbox } from "@/components/ui/checkbox"
@@ -63,23 +64,8 @@ import { Textarea } from "@/components/ui/textarea"
 import { createOrder, updateOrder } from "../_lib/actions"
 import { DatePicker } from "@/components/date-picker"
 
-// Define the props for the product search component
-type ProductSearchProps = {
-  onProductSelect: (product: any) => void
-}
-
-// Simple product search component (you'll need to implement this)
-const ProductSearch = ({ onProductSelect }: ProductSearchProps) => {
-  // Implement product search functionality
-  return (
-    <div className="flex gap-2">
-      <Input placeholder="Search products..." className="flex-1" />
-      <Button variant="outline" type="button">
-        Search
-      </Button>
-    </div>
-  )
-}
+// Import the ProductSearch component from its dedicated file
+import { ProductSearch } from "./product-search"
 
 type OrderFormProps = {
   props: {
@@ -123,10 +109,10 @@ export const OrderForm = ({
     discount: orderData?.discount ?? 0,
     tax: orderData?.tax ?? 0,
     totalAmountPaid: orderData?.totalAmountPaid ?? 0,
-    deliveryStatus: orderData?.deliveryStatus ?? "PROCESSING",
-    paymentStatus: orderData?.paymentStatus ?? "PENDING",
+    deliveryStatus: orderData?.deliveryStatus ?? "COMPLETED", // Default to COMPLETED for offline orders
+    paymentStatus: orderData?.paymentStatus ?? "PAID", // Default to PAID for offline orders
     paymentMethodId: orderData?.paymentMethodId ?? "",
-    paymentType: orderData?.paymentType ?? "CREDIT_CARD",
+    paymentType: orderData?.paymentType ?? "CASH", // Default to CASH for offline orders
     paymentIntentId: orderData?.paymentIntentId ?? "",
     shippingAddress: orderData?.shippingAddress ?? {
       street: "",
@@ -210,7 +196,10 @@ export const OrderForm = ({
       const tax = items.reduce((sum, item) => sum + (item.taxAmount || 0), 0)
 
       // Get shipping and discount
-      const shippingCost = form.getValues("shippingCost") || 0
+      const shippingCost =
+        form.watch("orderType") === "ONLINE"
+          ? form.getValues("shippingCost") || 0
+          : 0
       const discount = form.getValues("discount") || 0
 
       // Calculate total
@@ -220,6 +209,14 @@ export const OrderForm = ({
       form.setValue("subtotal", Number(subtotal.toFixed(2)))
       form.setValue("tax", Number(tax.toFixed(2)))
       form.setValue("totalAmountPaid", Number(total.toFixed(2)))
+
+      // Set default values based on order type
+      if (form.watch("orderType") === "OFFLINE") {
+        // For offline orders, set sensible defaults
+        form.setValue("deliveryStatus", "IN_STORE_PICKUP")
+        form.setValue("shippingCost", 0)
+        form.setValue("paymentType", "IN_STORE")
+      }
     }
 
     calculateTotals()
@@ -227,6 +224,7 @@ export const OrderForm = ({
     form.watch("orderItems"),
     form.watch("shippingCost"),
     form.watch("discount"),
+    form.watch("orderType"),
     form,
   ])
 
@@ -534,130 +532,18 @@ export const OrderForm = ({
                   </CardContent>
                 </Card>
 
-                {/* Shipping Address */}
-                <Card className="py-3">
-                  <CardHeader>
-                    <CardTitle>Shipping Address</CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <div className="grid gap-6">
-                      <div className="grid gap-3">
-                        <FormField
-                          control={form.control}
-                          name="shippingAddress.street"
-                          render={({ field }) => (
-                            <FormItem>
-                              <FormLabel>Street Address</FormLabel>
-                              <FormControl>
-                                <Input
-                                  {...field}
-                                  placeholder="Enter street address"
-                                />
-                              </FormControl>
-                              <FormMessage />
-                            </FormItem>
-                          )}
-                        />
-                      </div>
-
-                      <div className="grid gap-3 sm:grid-cols-2">
-                        <FormField
-                          control={form.control}
-                          name="shippingAddress.city"
-                          render={({ field }) => (
-                            <FormItem>
-                              <FormLabel>City</FormLabel>
-                              <FormControl>
-                                <Input {...field} placeholder="Enter city" />
-                              </FormControl>
-                              <FormMessage />
-                            </FormItem>
-                          )}
-                        />
-
-                        <FormField
-                          control={form.control}
-                          name="shippingAddress.state"
-                          render={({ field }) => (
-                            <FormItem>
-                              <FormLabel>State</FormLabel>
-                              <FormControl>
-                                <Input {...field} placeholder="Enter state" />
-                              </FormControl>
-                              <FormMessage />
-                            </FormItem>
-                          )}
-                        />
-                      </div>
-
-                      <div className="grid gap-3 sm:grid-cols-2">
-                        <FormField
-                          control={form.control}
-                          name="shippingAddress.postalCode"
-                          render={({ field }) => (
-                            <FormItem>
-                              <FormLabel>Postal Code</FormLabel>
-                              <FormControl>
-                                <Input
-                                  {...field}
-                                  placeholder="Enter postal code"
-                                />
-                              </FormControl>
-                              <FormMessage />
-                            </FormItem>
-                          )}
-                        />
-
-                        <FormField
-                          control={form.control}
-                          name="shippingAddress.country"
-                          render={({ field }) => (
-                            <FormItem>
-                              <FormLabel>Country</FormLabel>
-                              <FormControl>
-                                <Input {...field} placeholder="Enter country" />
-                              </FormControl>
-                              <FormMessage />
-                            </FormItem>
-                          )}
-                        />
-                      </div>
-
-                      <FormField
-                        control={form.control}
-                        name="sameAsBilling"
-                        render={({ field }) => (
-                          <FormItem className="flex flex-row items-center space-x-3 space-y-0 rounded-md border p-4">
-                            <FormControl>
-                              <Checkbox
-                                checked={field.value}
-                                onCheckedChange={field.onChange}
-                              />
-                            </FormControl>
-                            <div className="space-y-1 leading-none">
-                              <FormLabel>
-                                Use same address for billing
-                              </FormLabel>
-                            </div>
-                          </FormItem>
-                        )}
-                      />
-                    </div>
-                  </CardContent>
-                </Card>
-
-                {/* Billing Address - Only show if sameAsBilling is false */}
-                {!form.watch("sameAsBilling") && (
+                {/* Shipping Address - Only show for online orders */}
+                {form.watch("orderType") === "ONLINE" && (
                   <Card className="py-3">
                     <CardHeader>
-                      <CardTitle>Billing Address</CardTitle>
+                      <CardTitle>Shipping Address</CardTitle>
                     </CardHeader>
                     <CardContent>
                       <div className="grid gap-6">
                         <div className="grid gap-3">
                           <FormField
                             control={form.control}
-                            name="billingAddress.street"
+                            name="shippingAddress.street"
                             render={({ field }) => (
                               <FormItem>
                                 <FormLabel>Street Address</FormLabel>
@@ -676,7 +562,7 @@ export const OrderForm = ({
                         <div className="grid gap-3 sm:grid-cols-2">
                           <FormField
                             control={form.control}
-                            name="billingAddress.city"
+                            name="shippingAddress.city"
                             render={({ field }) => (
                               <FormItem>
                                 <FormLabel>City</FormLabel>
@@ -690,7 +576,7 @@ export const OrderForm = ({
 
                           <FormField
                             control={form.control}
-                            name="billingAddress.state"
+                            name="shippingAddress.state"
                             render={({ field }) => (
                               <FormItem>
                                 <FormLabel>State</FormLabel>
@@ -706,7 +592,7 @@ export const OrderForm = ({
                         <div className="grid gap-3 sm:grid-cols-2">
                           <FormField
                             control={form.control}
-                            name="billingAddress.postalCode"
+                            name="shippingAddress.postalCode"
                             render={({ field }) => (
                               <FormItem>
                                 <FormLabel>Postal Code</FormLabel>
@@ -723,7 +609,7 @@ export const OrderForm = ({
 
                           <FormField
                             control={form.control}
-                            name="billingAddress.country"
+                            name="shippingAddress.country"
                             render={({ field }) => (
                               <FormItem>
                                 <FormLabel>Country</FormLabel>
@@ -738,10 +624,134 @@ export const OrderForm = ({
                             )}
                           />
                         </div>
+
+                        <FormField
+                          control={form.control}
+                          name="sameAsBilling"
+                          render={({ field }) => (
+                            <FormItem className="flex flex-row items-center space-x-3 space-y-0 rounded-md border p-4">
+                              <FormControl>
+                                <Checkbox
+                                  checked={field.value}
+                                  onCheckedChange={field.onChange}
+                                />
+                              </FormControl>
+                              <div className="space-y-1 leading-none">
+                                <FormLabel>
+                                  Use same address for billing
+                                </FormLabel>
+                              </div>
+                            </FormItem>
+                          )}
+                        />
                       </div>
                     </CardContent>
                   </Card>
                 )}
+
+                {/* Billing Address - Only show if sameAsBilling is false and orderType is ONLINE */}
+                {!form.watch("sameAsBilling") &&
+                  form.watch("orderType") === "ONLINE" && (
+                    <Card className="py-3">
+                      <CardHeader>
+                        <CardTitle>Billing Address</CardTitle>
+                      </CardHeader>
+                      <CardContent>
+                        <div className="grid gap-6">
+                          <div className="grid gap-3">
+                            <FormField
+                              control={form.control}
+                              name="billingAddress.street"
+                              render={({ field }) => (
+                                <FormItem>
+                                  <FormLabel>Street Address</FormLabel>
+                                  <FormControl>
+                                    <Input
+                                      {...field}
+                                      placeholder="Enter street address"
+                                    />
+                                  </FormControl>
+                                  <FormMessage />
+                                </FormItem>
+                              )}
+                            />
+                          </div>
+
+                          <div className="grid gap-3 sm:grid-cols-2">
+                            <FormField
+                              control={form.control}
+                              name="billingAddress.city"
+                              render={({ field }) => (
+                                <FormItem>
+                                  <FormLabel>City</FormLabel>
+                                  <FormControl>
+                                    <Input
+                                      {...field}
+                                      placeholder="Enter city"
+                                    />
+                                  </FormControl>
+                                  <FormMessage />
+                                </FormItem>
+                              )}
+                            />
+
+                            <FormField
+                              control={form.control}
+                              name="billingAddress.state"
+                              render={({ field }) => (
+                                <FormItem>
+                                  <FormLabel>State</FormLabel>
+                                  <FormControl>
+                                    <Input
+                                      {...field}
+                                      placeholder="Enter state"
+                                    />
+                                  </FormControl>
+                                  <FormMessage />
+                                </FormItem>
+                              )}
+                            />
+                          </div>
+
+                          <div className="grid gap-3 sm:grid-cols-2">
+                            <FormField
+                              control={form.control}
+                              name="billingAddress.postalCode"
+                              render={({ field }) => (
+                                <FormItem>
+                                  <FormLabel>Postal Code</FormLabel>
+                                  <FormControl>
+                                    <Input
+                                      {...field}
+                                      placeholder="Enter postal code"
+                                    />
+                                  </FormControl>
+                                  <FormMessage />
+                                </FormItem>
+                              )}
+                            />
+
+                            <FormField
+                              control={form.control}
+                              name="billingAddress.country"
+                              render={({ field }) => (
+                                <FormItem>
+                                  <FormLabel>Country</FormLabel>
+                                  <FormControl>
+                                    <Input
+                                      {...field}
+                                      placeholder="Enter country"
+                                    />
+                                  </FormControl>
+                                  <FormMessage />
+                                </FormItem>
+                              )}
+                            />
+                          </div>
+                        </div>
+                      </CardContent>
+                    </Card>
+                  )}
 
                 {/* Order Items */}
                 <Card className="my-4">
@@ -829,33 +839,35 @@ export const OrderForm = ({
                   </CardHeader>
                   <CardContent>
                     <div className="grid gap-3">
-                      <FormField
-                        control={form.control}
-                        name="deliveryStatus"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel>Delivery Status</FormLabel>
-                            <FormControl>
-                              <Select
-                                onValueChange={field.onChange}
-                                value={field.value}
-                              >
-                                <SelectTrigger>
-                                  <SelectValue placeholder="Select status" />
-                                </SelectTrigger>
-                                <SelectContent>
-                                  {deliveryStatus.enumValues.map((status) => (
-                                    <SelectItem key={status} value={status}>
-                                      {status.replace(/_/g, " ")}
-                                    </SelectItem>
-                                  ))}
-                                </SelectContent>
-                              </Select>
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
+                      {form.watch("orderType") === "ONLINE" && (
+                        <FormField
+                          control={form.control}
+                          name="deliveryStatus"
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel>Delivery Status</FormLabel>
+                              <FormControl>
+                                <Select
+                                  onValueChange={field.onChange}
+                                  value={field.value}
+                                >
+                                  <SelectTrigger>
+                                    <SelectValue placeholder="Select status" />
+                                  </SelectTrigger>
+                                  <SelectContent>
+                                    {deliveryStatus.enumValues.map((status) => (
+                                      <SelectItem key={status} value={status}>
+                                        {status.replace(/_/g, " ")}
+                                      </SelectItem>
+                                    ))}
+                                  </SelectContent>
+                                </Select>
+                              </FormControl>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+                      )}
 
                       <FormField
                         control={form.control}
@@ -885,20 +897,22 @@ export const OrderForm = ({
                         )}
                       />
 
-                      <FormField
-                        control={form.control}
-                        name="estimatedDeliveryDate"
-                        render={({ field }) => (
-                          <FormItem className="flex flex-col">
-                            <FormLabel>Estimated Delivery Date</FormLabel>
-                            <DatePicker
-                              date={field.value}
-                              setDateAction={field.onChange}
-                            />
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
+                      {form.watch("orderType") === "ONLINE" && (
+                        <FormField
+                          control={form.control}
+                          name="estimatedDeliveryDate"
+                          render={({ field }) => (
+                            <FormItem className="flex flex-col">
+                              <FormLabel>Estimated Delivery Date</FormLabel>
+                              <DatePicker
+                                date={field.value}
+                                setDateAction={field.onChange}
+                              />
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+                      )}
                     </div>
                   </CardContent>
                 </Card>
@@ -920,6 +934,7 @@ export const OrderForm = ({
                               <Select
                                 onValueChange={field.onChange}
                                 value={field.value}
+                                defaultValue="IN_STORE"
                               >
                                 <SelectTrigger>
                                   <SelectValue placeholder="Select payment method" />
@@ -953,35 +968,37 @@ export const OrderForm = ({
                         <span>₹{form.watch("subtotal").toFixed(2)}</span>
                       </div>
 
-                      <FormField
-                        control={form.control}
-                        name="shippingCost"
-                        render={({ field }) => (
-                          <FormItem>
-                            <div className="flex items-center justify-between">
-                              <FormLabel className="text-sm">
-                                Shipping:
-                              </FormLabel>
-                              <FormControl>
-                                <Input
-                                  type="number"
-                                  {...field}
-                                  value={field.value === 0 ? "" : field.value}
-                                  onChange={(e) => {
-                                    const value =
-                                      e.target.value === ""
-                                        ? 0
-                                        : parseFloat(e.target.value)
-                                    field.onChange(value)
-                                  }}
-                                  className="w-24 text-right"
-                                />
-                              </FormControl>
-                            </div>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
+                      {form.watch("orderType") === "ONLINE" && (
+                        <FormField
+                          control={form.control}
+                          name="shippingCost"
+                          render={({ field }) => (
+                            <FormItem>
+                              <div className="flex items-center justify-between">
+                                <FormLabel className="text-sm">
+                                  Shipping:
+                                </FormLabel>
+                                <FormControl>
+                                  <Input
+                                    type="number"
+                                    {...field}
+                                    value={field.value === 0 ? "" : field.value}
+                                    onChange={(e) => {
+                                      const value =
+                                        e.target.value === ""
+                                          ? 0
+                                          : parseFloat(e.target.value)
+                                      field.onChange(value)
+                                    }}
+                                    className="w-24 text-right"
+                                  />
+                                </FormControl>
+                              </div>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+                      )}
 
                       <FormField
                         control={form.control}
@@ -1116,97 +1133,6 @@ const OrderItemFields = ({
   onProductSelect,
   products,
 }: OrderItemFieldsProps) => {
-  const [isSearchOpen, setIsSearchOpen] = React.useState(false)
-  const [searchQuery, setSearchQuery] = React.useState("")
-  const [filteredProducts, setFilteredProducts] = React.useState<any[]>([])
-  const searchRef = React.useRef<HTMLDivElement>(null)
-
-  // Get the currently selected product details to display
-  const selectedVariantId = form.watch(`orderItems.${index}.productVariantId`)
-  const selectedProductName = form.watch(`orderItems.${index}.productName`)
-  const selectedVariantName = form.watch(`orderItems.${index}.variantName`)
-  const selectedPotency = form.watch(`orderItems.${index}.potency`)
-  const selectedPackSize = form.watch(`orderItems.${index}.packSize`)
-
-  // Handle outside click to close dropdown
-  React.useEffect(() => {
-    function handleClickOutside(event: MouseEvent) {
-      if (
-        searchRef.current &&
-        !searchRef.current.contains(event.target as Node)
-      ) {
-        setIsSearchOpen(false)
-      }
-    }
-
-    document.addEventListener("mousedown", handleClickOutside)
-    return () => {
-      document.removeEventListener("mousedown", handleClickOutside)
-    }
-  }, [])
-
-  const handleSearch = (query: string) => {
-    setSearchQuery(query)
-    setIsSearchOpen(true)
-
-    if (query.length >= 2) {
-      const results = products.filter(
-        (p) =>
-          p.name.toLowerCase().includes(query.toLowerCase()) ||
-          p.variants.some(
-            (v: any) =>
-              v.sku?.toLowerCase().includes(query.toLowerCase()) ||
-              v.variantName?.toLowerCase().includes(query.toLowerCase())
-          )
-      )
-      setFilteredProducts(results)
-    } else {
-      setFilteredProducts([])
-    }
-  }
-
-  const selectProduct = (product: any, variant: any) => {
-    const selectedProduct = {
-      id: variant.id,
-      name: product.name,
-      variantName: variant.variantName,
-      potency: variant.potency,
-      packSize: variant.packSize,
-      sellingPrice: variant.sellingPrice || 0,
-      mrp: variant.mrp || 0,
-      discountAmount: (variant.mrp || 0) - (variant.sellingPrice || 0),
-      taxAmount: variant.taxAmount || 0,
-      variantImage: variant.variantImage?.[0] || null,
-    }
-
-    // Update all form fields with selected product data
-    form.setValue(`orderItems.${index}.productVariantId`, variant.id)
-    form.setValue(`orderItems.${index}.productName`, product.name)
-    form.setValue(
-      `orderItems.${index}.variantName`,
-      variant.variantName || "Default"
-    )
-    form.setValue(`orderItems.${index}.potency`, variant.potency || "")
-    form.setValue(`orderItems.${index}.packSize`, variant.packSize || 0)
-    form.setValue(`orderItems.${index}.unitPrice`, variant.sellingPrice || 0)
-    form.setValue(`orderItems.${index}.originalPrice`, variant.mrp || 0)
-    form.setValue(
-      `orderItems.${index}.discountAmount`,
-      (variant.mrp || 0) - (variant.sellingPrice || 0)
-    )
-    form.setValue(`orderItems.${index}.taxAmount`, variant.taxAmount || 0)
-
-    // Set quantity to 1 if it's currently 0
-    const currentQuantity = form.getValues(`orderItems.${index}.quantity`)
-    if (!currentQuantity) {
-      form.setValue(`orderItems.${index}.quantity`, 1)
-    }
-
-    onProductSelect(selectedProduct)
-    setIsSearchOpen(false)
-    setSearchQuery("")
-  }
-
   const itemTotal =
     form.watch(`orderItems.${index}.unitPrice`) *
     form.watch(`orderItems.${index}.quantity`)
@@ -1215,136 +1141,12 @@ const OrderItemFields = ({
     <TableRow>
       <TableCell className="font-medium">{index + 1}</TableCell>
       <TableCell>
-        <div className="relative" ref={searchRef}>
-          <FormField
-            control={form.control}
-            name={`orderItems.${index}.productVariantId`}
-            render={({ field }) => (
-              <FormItem>
-                <FormControl>
-                  <div className="flex flex-col gap-1">
-                    {selectedVariantId ? (
-                      <div className="flex flex-col">
-                        <div className="flex items-center justify-between">
-                          <div className="font-medium">
-                            {selectedProductName}
-                          </div>
-                          <Button
-                            variant="ghost"
-                            size="sm"
-                            onClick={() => {
-                              form.setValue(
-                                `orderItems.${index}.productVariantId`,
-                                ""
-                              )
-                              form.setValue(
-                                `orderItems.${index}.productName`,
-                                ""
-                              )
-                              form.setValue(
-                                `orderItems.${index}.variantName`,
-                                ""
-                              )
-                              form.setValue(`orderItems.${index}.potency`, "")
-                              form.setValue(`orderItems.${index}.packSize`, 0)
-                              form.setValue(`orderItems.${index}.unitPrice`, 0)
-                              form.setValue(
-                                `orderItems.${index}.originalPrice`,
-                                0
-                              )
-                              form.setValue(
-                                `orderItems.${index}.discountAmount`,
-                                0
-                              )
-                              form.setValue(`orderItems.${index}.taxAmount`, 0)
-                              setSearchQuery("")
-                            }}
-                            className="h-6 w-6 p-0"
-                          >
-                            <X className="h-3 w-3" />
-                          </Button>
-                        </div>
-                        <div className="text-xs text-muted-foreground">
-                          {selectedVariantName}
-                          {selectedPotency && selectedPotency !== "NONE"
-                            ? ` - ${selectedPotency}`
-                            : ""}
-                          {selectedPackSize ? ` - ${selectedPackSize}` : ""}
-                        </div>
-                      </div>
-                    ) : (
-                      <Input
-                        placeholder="Search product by name, potency or packsize..."
-                        value={searchQuery}
-                        onChange={(e) => handleSearch(e.target.value)}
-                        onFocus={() => {
-                          if (searchQuery.length >= 2) {
-                            setIsSearchOpen(true)
-                          }
-                        }}
-                      />
-                    )}
-
-                    {isSearchOpen && filteredProducts.length > 0 && (
-                      <div className="absolute z-10 top-full left-0 mt-1 w-full max-h-60 overflow-y-auto rounded-md bg-white py-1 shadow-lg ring-1 ring-black ring-opacity-5">
-                        {filteredProducts.map((product) => (
-                          <div key={product.id} className="px-2 py-1">
-                            <div className="font-medium text-sm border-b">
-                              {product.name}
-                            </div>
-                            <div className="py-1">
-                              {product.variants &&
-                              product.variants.length > 0 ? (
-                                product.variants.map((variant: any) => (
-                                  <div
-                                    key={variant.id}
-                                    className="cursor-pointer text-sm py-1.5 px-2 rounded hover:bg-gray-100"
-                                    onClick={() =>
-                                      selectProduct(product, variant)
-                                    }
-                                  >
-                                    <div className="flex justify-between">
-                                      <span>
-                                        {variant.variantName || "Default"}
-                                        {variant.potency &&
-                                        variant.potency !== "NONE"
-                                          ? ` - ${variant.potency}`
-                                          : ""}
-                                        {variant.packSize
-                                          ? ` - Pack: ${variant.packSize}`
-                                          : ""}
-                                      </span>
-                                      <span className="font-medium">
-                                        ₹{variant.sellingPrice || 0}
-                                      </span>
-                                    </div>
-                                  </div>
-                                ))
-                              ) : (
-                                <div className="text-xs text-muted-foreground p-1">
-                                  No variants available
-                                </div>
-                              )}
-                            </div>
-                          </div>
-                        ))}
-                      </div>
-                    )}
-
-                    {isSearchOpen &&
-                      searchQuery.length >= 2 &&
-                      filteredProducts.length === 0 && (
-                        <div className="absolute z-10 top-full left-0 mt-1 w-full rounded-md bg-white py-2 px-3 shadow-lg ring-1 ring-black ring-opacity-5">
-                          <p className="text-sm text-muted-foreground">
-                            No products found. Try a different search term.
-                          </p>
-                        </div>
-                      )}
-                  </div>
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
+        <div className="relative">
+          <ProductSearch
+            form={form}
+            fieldName="orderItems"
+            index={index}
+            onProductSelectAction={onProductSelect}
           />
         </div>
       </TableCell>
