@@ -67,19 +67,19 @@ export type FullProduct = Product & {
   variants: Variant[]
 }
 
-export const getProductsWithFullDetials = async (): Promise<FullProduct[]> => {
-  try {
-    return await db.query.product.findMany({
-      with: {
-        category: true,
-        manufacturer: true,
-        variants: true,
-      },
-    })
-  } catch (error) {
-    throw new Error(`Failed to get prodcuts: ${(error as Error).message}`)
-  }
-}
+// export const getProductsWithFullDetials = async (): Promise<FullProduct[]> => {
+//   try {
+//     return await db.query.product.findMany({
+//       with: {
+//         category: true,
+//         manufacturer: true,
+//         variants: true,
+//       },
+//     })
+//   } catch (error) {
+//     throw new Error(`Failed to get prodcuts: ${(error as Error).message}`)
+//   }
+// }
 
 export async function updateProduct(
   productId: string,

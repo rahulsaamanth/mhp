@@ -1,5 +1,10 @@
 import { clsx, type ClassValue } from "clsx"
 import { twMerge } from "tailwind-merge"
+import OpenAI from "openai"
+
+// const openai = new OpenAI({
+//   apiKey: process.env.OPENAI_API_KEY,
+// })
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))
@@ -55,7 +60,7 @@ export function toSentenceCase(str: string) {
  * - SBL-BC10-25T (SBL Bio Combination 10 25 tablets)
  * - BAK-SUN-HRC-100G (Bakson Sunny Hair Removal Cream 100g)
  */
-export function generateSKU({
+export async function generateSKU({
   productManufacturer,
   productName,
   packSize,
@@ -65,43 +70,79 @@ export function generateSKU({
   productName: string
   packSize: string
   potency?: string
-}) {
-  // Extract brand code (first 3 letters of manufacturer)
+}): Promise<string> {
   const brandCode = productManufacturer.slice(0, 3).toUpperCase()
 
-  // Get product code (improved method for more uniqueness)
-  const productCode = getEnhancedProductCode(productName)
+  const productCode = await getEnhancedProductCode(productName)
 
-  // Get variant code (form/potency)
-  // If potency is missing, use a placeholder to maintain SKU structure
   const variantCode = potency || "STD"
 
-  // Process size code to ensure uniqueness
   const sizeCode = normalizeSizeCode(packSize)
+
+  if (productCode.startsWith("BC") && !isNaN(Number(productCode.slice(2)))) {
+    return `${brandCode}-${productCode}-${sizeCode}`.toUpperCase()
+  }
 
   return `${brandCode}-${productCode}-${variantCode}-${sizeCode}`.toUpperCase()
 }
 
 /**
- * Creates a more unique product code by:
- * 1. Using first character of each word for products with 3+ words
- * 2. Using first 3 chars of each word for 1-2 word products
- * 3. Adding numeric identifiers for common words
+ * Uses OpenAI API to generate intelligent product codes
  */
+// async function getAIGeneratedProductCode(productName: string): Promise<string> {
+//   try {
+//     if (productName.toLowerCase().includes("combination")) {
+//       const match = productName.match(/combination\s*(\d+)/i)
+//       if (match && match[1]) {
+//         return `BC${match[1]}`
+//       }
+//     }
+
+//     const response = await openai.chat.completions.create({
+//       model: "gpt-3.5-turbo",
+//       messages: [
+//         {
+//           role: "system",
+//           content:
+//             "You are a product SKU generator. Generate a short, meaningful product code (3-6 characters) " +
+//             "based on the product name. For homeopathic remedies, use standard abbreviations. " +
+//             "For example: 'Silicea' should be 'SIL', 'Natrum Sulphuricum' should be 'NAT-SUL'. " +
+//             "Product code should be concise, recognizable, and consistent with industry standards. " +
+//             "Return ONLY the code, no explanation.",
+//         },
+//         {
+//           role: "user",
+//           content: `Generate product code for: ${productName}`,
+//         },
+//       ],
+//       max_tokens: 10,
+//       temperature: 0.3,
+//     })
+
+//     const suggestedCode = response.choices[0]?.message?.content?.trim() || ""
+
+//     if (suggestedCode && suggestedCode.length <= 10) {
+//       return suggestedCode.replace(/[^A-Z0-9-]/gi, "")
+//     }
+
+//     return getEnhancedProductCode(productName)
+//   } catch (error) {
+//     console.error("Error generating AI product code:", error)
+//     return getEnhancedProductCode(productName)
+//   }
+// }
+
 function getEnhancedProductCode(productName: string): string {
   const words = productName.split(/\s+/).filter((word) => word.length > 0)
 
-  // For longer product names, use initials
   if (words.length >= 3) {
     return words.map((word) => word.charAt(0)).join("")
   }
 
-  // For shorter names, use first 3 chars of each word (or whole word if shorter)
   const baseCode = words
     .map((word) => (word.length > 3 ? word.slice(0, 3) : word))
     .join("")
 
-  // Add numeric suffix for common words to increase uniqueness
   if (productName.toLowerCase().includes("combination")) {
     const match = productName.match(/combination\s*(\d+)/i)
     if (match && match[1]) {
@@ -116,13 +157,11 @@ function getEnhancedProductCode(productName: string): string {
  * Normalizes size codes for consistency and uniqueness
  */
 function normalizeSizeCode(packSize: string): string {
-  // Extract numbers and unit from size
   const match = packSize.match(/(\d+)\s*([a-zA-Z]+)?/)
   if (!match) return packSize
 
   const [, quantity = "", unit = ""] = match
 
-  // Normalize units
   const normalizedUnit = unit.toLowerCase()
   if (normalizedUnit.includes("tab") || normalizedUnit.includes("pill")) {
     return `${quantity}T`
@@ -134,11 +173,9 @@ function normalizeSizeCode(packSize: string): string {
   ) {
     return `${quantity}ML`
   } else if (normalizedUnit.startsWith("c")) {
-    // For "capsules"
     return `${quantity}C`
   }
 
-  // If no specific unit identified, use first letter or return as is
   return unit ? `${quantity}${unit.charAt(0).toUpperCase()}` : quantity
 }
 
@@ -164,12 +201,3 @@ export function generateVariantName({
 
   return `${productName} - ${packSize}`
 }
-
-// function getProductCode(productName: string): string {
-//   // Extract meaningful part of product name
-//   const name = productName.split(" ").slice(-2).join(" ")
-//   return name
-//     .split(" ")
-//     .map((word) => word.slice(0, 3))
-//     .join("")
-// }
