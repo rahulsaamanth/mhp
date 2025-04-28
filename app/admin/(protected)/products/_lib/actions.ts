@@ -335,7 +335,15 @@ export async function getProduct(
       with: {
         category: true,
         manufacturer: true,
-        variants: true,
+        variants: {
+          with: {
+            inventory: {
+              with: {
+                store: true,
+              },
+            },
+          },
+        },
       },
     })
 

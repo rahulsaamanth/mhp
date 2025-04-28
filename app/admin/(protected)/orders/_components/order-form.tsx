@@ -64,14 +64,16 @@ import { Textarea } from "@/components/ui/textarea"
 import { createOrder, updateOrder } from "../_lib/actions"
 import { DatePicker } from "@/components/date-picker"
 
-// Import the ProductSearch component from its dedicated file
-import { ProductSearch } from "./product-search"
+// Import the enhanced product search component
+import { EnhancedProductSearch } from "./enhanced-product-search-new"
 
 type OrderFormProps = {
   props: {
     stores: Store[]
     users?: any[] // Replace with your user type
     products?: any[] // Replace with your product type
+    categories?: any[] // Replace with your category type
+    manufacturers?: any[] // Replace with your manufacturer type
   }
   mode?: "create" | "edit"
   orderData?: any // Replace with your order type
@@ -83,7 +85,13 @@ export const OrderForm = ({
   orderData,
 }: OrderFormProps) => {
   const router = useRouter()
-  const { stores, users = [], products = [] } = props
+  const {
+    stores,
+    users = [],
+    products = [],
+    manufacturers = [],
+    categories = [],
+  } = props
 
   // Default values for the form
   const defaultValues = {
@@ -213,7 +221,7 @@ export const OrderForm = ({
       // Set default values based on order type
       if (form.watch("orderType") === "OFFLINE") {
         // For offline orders, set sensible defaults
-        form.setValue("deliveryStatus", "IN_STORE_PICKUP")
+        form.setValue("deliveryStatus", "DELIVERED")
         form.setValue("shippingCost", 0)
         form.setValue("paymentType", "IN_STORE")
       }
@@ -238,11 +246,42 @@ export const OrderForm = ({
   }, [form.watch("sameAsBilling"), form.watch("shippingAddress"), form])
 
   const onSubmit = async (data: z.infer<typeof createOrderSchema>) => {
+    console.log("onSubmit function called with data:", data)
     try {
-      // Process the data if needed
+      // Validate that at least one order item is present with a valid product
+      if (
+        !data.orderItems ||
+        data.orderItems.length === 0 ||
+        !data.orderItems[0]?.productVariantId
+      ) {
+        console.log("Validation failed: Missing product items")
+        toast.error("Please add at least one product to the order")
+        return
+      }
+
+      // Validate that a store is selected
+      if (!data.storeId) {
+        console.log("Validation failed: No store selected")
+        toast.error("Please select a store")
+        return
+      }
+
+      // For guest orders, ensure customer name and phone are provided
+      if (data.isGuestOrder) {
+        if (!data.customerName || !data.customerPhone) {
+          console.log(
+            "Validation failed: Missing customer info for guest order"
+          )
+          toast.error("Please provide customer name and phone for guest orders")
+          return
+        }
+      }
+
+      // Process the data and submit the form
+      console.log("All validations passed, submitting order data:", data)
       server_handleOrder(data)
     } catch (error) {
-      console.error(error)
+      console.error("Error submitting form:", error)
       toast.error("Failed to submit form")
     }
   }
@@ -269,7 +308,46 @@ export const OrderForm = ({
 
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)}>
+      <form
+        onSubmit={(e) => {
+          e.preventDefault() // Prevent default form submission
+          console.log("Form submit event triggered")
+
+          // Debug validation errors
+          const validationErrors = form.formState.errors
+          console.log("Form validation errors:", validationErrors)
+
+          // Get current form values
+          const formValues = form.getValues()
+
+          // For OFFLINE orders, fill in dummy address data if not provided
+          if (formValues.orderType === "OFFLINE") {
+            // Set default addresses for offline orders if they're empty
+            if (!formValues.shippingAddress.street) {
+              form.setValue("shippingAddress", {
+                street: "In-Store Purchase",
+                city: "Local",
+                state: "Local",
+                postalCode: "000000",
+                country: "India",
+              })
+            }
+
+            form.setValue("billingAddress", {
+              street: "In-Store Purchase",
+              city: "Local",
+              state: "Local",
+              postalCode: "000000",
+              country: "India",
+            })
+          }
+
+          // Manually call onSubmit to bypass potential validation issues
+          const updatedValues = form.getValues()
+          console.log("Submitting with values:", updatedValues)
+          onSubmit(updatedValues)
+        }}
+      >
         <div className="grid gap-4">
           <div className="grid flex-1 auto-rows-max gap-4">
             <div className="flex items-center gap-4">
@@ -760,7 +838,30 @@ export const OrderForm = ({
                     <CardDescription>Add products to the order</CardDescription>
                   </CardHeader>
                   <CardContent>
-                    <div className="overflow-x-auto mx-4 sm:mx-0">
+                    <EnhancedProductSearch
+                      form={form}
+                      products={products}
+                      categories={props.categories || []}
+                      manufacturers={manufacturers || []}
+                      onProductSelectAction={(product) => {
+                        // Add the selected product to the order items array
+                        append({
+                          productVariantId: product.id,
+                          quantity: 1,
+                          unitPrice: product.sellingPrice || 0,
+                          originalPrice: product.mrp || 0,
+                          discountAmount: product.discountAmount || 0,
+                          taxAmount: product.taxAmount || 0,
+                          productName: product.name || "",
+                          variantName: product.variantName || "",
+                          potency: product.potency || "",
+                          packSize: product.packSize || 0,
+                          imageUrl: product.variantImage?.[0] || "",
+                        })
+                      }}
+                    />
+
+                    <div className="overflow-x-auto mx-4 sm:mx-0 mt-6">
                       <div className="inline-block min-w-full align-middle">
                         <Table className="min-w-full">
                           <TableHeader>
@@ -791,10 +892,6 @@ export const OrderForm = ({
                                 index={index}
                                 onRemove={() => remove(index)}
                                 isOnly={fields.length === 1}
-                                onProductSelect={(product) =>
-                                  handleProductSelect(product, index)
-                                }
-                                products={products}
                               />
                             ))}
                           </TableBody>
@@ -1121,8 +1218,6 @@ type OrderItemFieldsProps = {
   index: number
   onRemove: () => void
   isOnly: boolean
-  onProductSelect: (product: any) => void
-  products: any[]
 }
 
 const OrderItemFields = ({
@@ -1130,24 +1225,44 @@ const OrderItemFields = ({
   index,
   onRemove,
   isOnly,
-  onProductSelect,
-  products,
 }: OrderItemFieldsProps) => {
   const itemTotal =
     form.watch(`orderItems.${index}.unitPrice`) *
     form.watch(`orderItems.${index}.quantity`)
 
+  // Get product information from form values to display
+  const productName = form.watch(`orderItems.${index}.productName`)
+  const variantName = form.watch(`orderItems.${index}.variantName`)
+  const potency = form.watch(`orderItems.${index}.potency`)
+  const packSize = form.watch(`orderItems.${index}.packSize`)
+  const imageUrl = form.watch(`orderItems.${index}.imageUrl`)
+
   return (
     <TableRow>
       <TableCell className="font-medium">{index + 1}</TableCell>
       <TableCell>
-        <div className="relative">
-          <ProductSearch
-            form={form}
-            fieldName="orderItems"
-            index={index}
-            onProductSelectAction={onProductSelect}
-          />
+        <div className="flex items-center gap-2">
+          {imageUrl && (
+            <div className="h-8 w-8 overflow-hidden rounded-md">
+              <img
+                src={imageUrl}
+                alt={productName}
+                className="h-full w-full object-cover"
+                onError={(e) => {
+                  ;(e.target as HTMLImageElement).src =
+                    "https://placehold.co/40x40/gray/white?text=MHP"
+                }}
+              />
+            </div>
+          )}
+          <div className="flex flex-col">
+            <span className="font-medium">{productName}</span>
+            <div className="flex gap-1 text-xs text-muted-foreground">
+              {variantName && <span>{variantName}</span>}
+              {potency && potency !== "NONE" && <span>({potency})</span>}
+              {packSize && packSize > 0 && <span>{packSize}</span>}
+            </div>
+          </div>
         </div>
       </TableCell>
       <TableCell>

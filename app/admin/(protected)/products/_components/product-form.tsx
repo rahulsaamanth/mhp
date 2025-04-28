@@ -109,19 +109,19 @@ export const ProductsForm = ({
     tax: productData?.tax ?? 5,
     taxInclusive: true,
     variants: productData?.variants.map((v) => {
-      // Find inventory for this variant from related stores
-      const inventory = (v as any).inventory || []
-      // Map inventory to stock fields
+      // Map inventory to stock fields for each store location
       const stock_MANG1 =
-        inventory.find(
+        (v as any).inventory?.find(
           (i: { store: { code: string } }) => i.store?.code === "MANGALORE-01"
         )?.stock ?? 0
+
       const stock_MANG2 =
-        inventory.find(
+        (v as any).inventory?.find(
           (i: { store: { code: string } }) => i.store?.code === "MANGALORE-02"
         )?.stock ?? 0
+
       const stock_KERALA1 =
-        inventory.find(
+        (v as any).inventory?.find(
           (i: { store: { code: string } }) => i.store?.code === "KERALA-01"
         )?.stock ?? 0
 
@@ -226,14 +226,14 @@ export const ProductsForm = ({
 
       const variantsWithMetadata = await Promise.all(
         data.variants.map(async (variant, originalIndex) => {
-          const sku = generateSKU({
+          const sku = await generateSKU({
             productManufacturer: manufacturerName ?? "",
             productName: data.name,
             packSize: variant.packSize.toString(),
             potency: variant.potency.toString(),
           })
 
-          const variantName = generateVariantName({
+          const variantName = await generateVariantName({
             productName: data.name,
             packSize: variant.packSize.toString(),
             potency: variant.potency.toString(),
@@ -960,13 +960,13 @@ const VariantFields = ({
                 <Input
                   type="number"
                   {...field}
-                  value={field.value === 0 ? "" : field.value}
+                  value={field.value.toString()} // Always display value, even if it's 0
                   onChange={(e) => {
                     const value =
                       e.target.value === "" ? 0 : e.target.valueAsNumber
                     field.onChange(value)
                   }}
-                  placeholder="20"
+                  placeholder="0"
                   className="[appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none w-full min-w-[40px] px-2 text-sm"
                 />
               </FormControl>
@@ -985,13 +985,13 @@ const VariantFields = ({
                 <Input
                   type="number"
                   {...field}
-                  value={field.value === 0 ? "" : field.value}
+                  value={field.value.toString()} // Always display value, even if it's 0
                   onChange={(e) => {
                     const value =
                       e.target.value === "" ? 0 : e.target.valueAsNumber
                     field.onChange(value)
                   }}
-                  placeholder="20"
+                  placeholder="0"
                   className="[appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none w-full min-w-[40px] px-2 text-sm"
                 />
               </FormControl>
@@ -1010,13 +1010,13 @@ const VariantFields = ({
                 <Input
                   type="number"
                   {...field}
-                  value={field.value === 0 ? "" : field.value}
+                  value={field.value.toString()} // Always display value, even if it's 0
                   onChange={(e) => {
                     const value =
                       e.target.value === "" ? 0 : e.target.valueAsNumber
                     field.onChange(value)
                   }}
-                  placeholder="20"
+                  placeholder="0"
                   className="[appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none w-full min-w-[40px] px-2 text-sm"
                 />
               </FormControl>

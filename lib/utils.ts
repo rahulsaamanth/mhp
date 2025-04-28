@@ -73,7 +73,7 @@ export async function generateSKU({
 }): Promise<string> {
   const brandCode = productManufacturer.slice(0, 3).toUpperCase()
 
-  const productCode = await getEnhancedProductCode(productName)
+  const productCode = getEnhancedProductCode(productName)
 
   const variantCode = potency || "STD"
 
@@ -186,7 +186,7 @@ function normalizeSizeCode(packSize: string): string {
  * - Bio Combination 10 - 25gms
  * - Sunny Hair Removal Cream - 100gms
  */
-export function generateVariantName({
+export async function generateVariantName({
   productName,
   packSize,
   potency,

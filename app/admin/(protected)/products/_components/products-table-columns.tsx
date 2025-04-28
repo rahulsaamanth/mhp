@@ -21,8 +21,6 @@ import {
 } from "@/components/ui/dropdown-menu"
 import { Icon } from "@iconify/react/dist/iconify.js"
 
-import { useRouter } from "next/navigation"
-
 interface GetColumnProps {
   setRowAction: React.Dispatch<
     React.SetStateAction<DataTableRowAction<ProductForTable> | null>
@@ -101,7 +99,7 @@ export function getColumns({
       cell: ({ row }) => (
         <span className="text-nowrap px-2">{row.getValue("categoryName")}</span>
       ),
-      enableSorting: true,
+      enableSorting: false,
       enableHiding: true,
     },
     {
@@ -114,7 +112,7 @@ export function getColumns({
           {row.getValue("manufacturerName")}
         </span>
       ),
-      enableSorting: true,
+      enableSorting: false,
       enableHiding: true,
     },
 
