@@ -227,24 +227,21 @@ export function EnhancedProductSearch({
       console.error("Error saving recent products:", e)
     }
 
-    // Call the passed action handler
+    // Call the passed action handler to add product to the order items table
     onProductSelectAction(selectedProduct)
+
+    // Close search, reset search state, and clear the selected product display
     setIsSearchOpen(false)
     setSearchQuery("")
     setExpandedProductIds(new Set())
   }
 
   const clearSelection = () => {
-    form.setValue(`${fieldName}.${index}.productVariantId`, "")
-    form.setValue(`${fieldName}.${index}.productName`, "")
-    form.setValue(`${fieldName}.${index}.variantName`, "")
-    form.setValue(`${fieldName}.${index}.potency`, "")
-    form.setValue(`${fieldName}.${index}.packSize`, 0)
-    form.setValue(`${fieldName}.${index}.unitPrice`, 0)
-    form.setValue(`${fieldName}.${index}.originalPrice`, 0)
-    form.setValue(`${fieldName}.${index}.discountAmount`, 0)
-    form.setValue(`${fieldName}.${index}.taxAmount`, 0)
+    // Reset the search query and close the dropdown
     setSearchQuery("")
+    setIsSearchOpen(false)
+
+    // Don't remove the item row - just clear the component for a new selection
   }
 
   // Get the currently selected product details to display

@@ -102,16 +102,7 @@ export const OrderForm = ({
     isGuestOrder: orderData?.isGuestOrder ?? false,
     storeId: orderData?.storeId ?? "",
     orderType: orderData?.orderType ?? "OFFLINE",
-    orderItems: orderData?.orderItems ?? [
-      {
-        productVariantId: "",
-        quantity: 1,
-        unitPrice: 0,
-        originalPrice: 0,
-        discountAmount: 0,
-        taxAmount: 0,
-      },
-    ],
+    orderItems: orderData?.orderItems ?? [],
     subtotal: orderData?.subtotal ?? 0,
     shippingCost: orderData?.shippingCost ?? 0,
     discount: orderData?.discount ?? 0,
@@ -244,6 +235,21 @@ export const OrderForm = ({
       form.setValue("billingAddress", shippingAddress)
     }
   }, [form.watch("sameAsBilling"), form.watch("shippingAddress"), form])
+
+  // Remove any existing or empty rows when component mounts
+  useEffect(() => {
+    const orderItems = form.getValues("orderItems")
+
+    // If there are empty items, remove them
+    if (orderItems && orderItems.length > 0) {
+      const nonEmptyItems = orderItems.filter((item) => item.productVariantId)
+
+      // If we filtered out any items, update the form
+      if (nonEmptyItems.length !== orderItems.length) {
+        form.setValue("orderItems", nonEmptyItems)
+      }
+    }
+  }, [form])
 
   const onSubmit = async (data: z.infer<typeof createOrderSchema>) => {
     console.log("onSubmit function called with data:", data)
@@ -844,7 +850,7 @@ export const OrderForm = ({
                       categories={props.categories || []}
                       manufacturers={manufacturers || []}
                       onProductSelectAction={(product) => {
-                        // Add the selected product to the order items array
+                        // Always append a new item when a product is selected
                         append({
                           productVariantId: product.id,
                           quantity: 1,
@@ -856,7 +862,7 @@ export const OrderForm = ({
                           variantName: product.variantName || "",
                           potency: product.potency || "",
                           packSize: product.packSize || 0,
-                          imageUrl: product.variantImage?.[0] || "",
+                          imageUrl: product.variantImage || "",
                         })
                       }}
                     />
@@ -885,45 +891,28 @@ export const OrderForm = ({
                             </TableRow>
                           </TableHeader>
                           <TableBody>
-                            {fields.map((field, index) => (
-                              <OrderItemFields
-                                key={field.id}
-                                form={form}
-                                index={index}
-                                onRemove={() => remove(index)}
-                                isOnly={fields.length === 1}
-                              />
-                            ))}
+                            {fields.length > 0 ? (
+                              fields.map((field, index) => (
+                                <OrderItemFields
+                                  key={field.id}
+                                  form={form}
+                                  index={index}
+                                  onRemove={() => remove(index)}
+                                  isOnly={fields.length === 1}
+                                />
+                              ))
+                            ) : (
+                              <TableRow>
+                                <TableCell colSpan={8} className="text-center py-8 text-muted-foreground">
+                                  No products added. Use the search above to add products to order items.
+                                </TableCell>
+                              </TableRow>
+                            )}
                           </TableBody>
                         </Table>
                       </div>
                     </div>
                   </CardContent>
-                  <CardFooter className="justify-center border-t p-4">
-                    <Button
-                      size="sm"
-                      variant="ghost"
-                      className="gap-1"
-                      type="button"
-                      onClick={() =>
-                        append({
-                          productVariantId: "",
-                          quantity: 1,
-                          unitPrice: 0,
-                          originalPrice: 0,
-                          discountAmount: 0,
-                          taxAmount: 0,
-                          productName: "",
-                          variantName: "",
-                          potency: "",
-                          packSize: 0,
-                        })
-                      }
-                    >
-                      <PlusCircle className="h-3.5 w-3.5" />
-                      Add Item
-                    </Button>
-                  </CardFooter>
                 </Card>
               </div>
 
@@ -1241,27 +1230,12 @@ const OrderItemFields = ({
     <TableRow>
       <TableCell className="font-medium">{index + 1}</TableCell>
       <TableCell>
-        <div className="flex items-center gap-2">
-          {imageUrl && (
-            <div className="h-8 w-8 overflow-hidden rounded-md">
-              <img
-                src={imageUrl}
-                alt={productName}
-                className="h-full w-full object-cover"
-                onError={(e) => {
-                  ;(e.target as HTMLImageElement).src =
-                    "https://placehold.co/40x40/gray/white?text=MHP"
-                }}
-              />
-            </div>
-          )}
-          <div className="flex flex-col">
-            <span className="font-medium">{productName}</span>
-            <div className="flex gap-1 text-xs text-muted-foreground">
-              {variantName && <span>{variantName}</span>}
-              {potency && potency !== "NONE" && <span>({potency})</span>}
-              {packSize && packSize > 0 && <span>{packSize}</span>}
-            </div>
+        <div className="flex flex-col">
+          <span className="font-medium">{productName}</span>
+          <div className="flex gap-1 text-xs text-muted-foreground">
+            {variantName && <span>{variantName}</span>}
+            {potency && potency !== "NONE" && <span>({potency})</span>}
+            {packSize && packSize > 0 && <span>{packSize}</span>}
           </div>
         </div>
       </TableCell>

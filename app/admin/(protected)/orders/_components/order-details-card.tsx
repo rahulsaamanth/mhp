@@ -84,7 +84,7 @@ export function OrderDetailsCard({
       }
     }
   }
-  console.log(orderDetails)
+
   // Format date for display
   const formattedDate = selectedOrder
     ? new Date(selectedOrder.orderDate).toLocaleDateString()

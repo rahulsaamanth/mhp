@@ -5,9 +5,9 @@ import { currentUser } from "@/lib/auth"
 import { getErrorMessage } from "@/lib/handle-error"
 import { createOrderSchema } from "@/schemas"
 
-import { revalidateTag } from "next/cache"
+import { revalidateTag, unstable_noStore } from "next/cache"
 import * as z from "zod"
-import { eq, and } from "drizzle-orm"
+import { eq, and, sql } from "drizzle-orm"
 import {
   address,
   inventoryManagement,
@@ -39,6 +39,7 @@ export async function getOrder(id: string) {
 }
 
 export async function createOrder(data: z.infer<typeof createOrderSchema>) {
+  unstable_noStore()
   try {
     const user = await currentUser()
 
@@ -223,6 +224,48 @@ export async function updateOrder(
     }
   } catch (error) {
     console.error("Error updating order:", error)
+    return {
+      success: false,
+      error: getErrorMessage(error),
+    }
+  }
+}
+
+export async function deleteOrders({ ids }: { ids: string[] }) {
+  unstable_noStore()
+  try {
+    const user = await currentUser()
+
+    if (!user) {
+      return {
+        success: false,
+        error: "Unauthorized",
+      }
+    }
+
+    // Delete orders in a transaction to ensure all related data is properly deleted
+    await db.transaction(async (tx) => {
+      // First delete related order details to maintain referential integrity
+      for (const id of ids) {
+        await tx.delete(orderDetails).where(eq(orderDetails.orderId, id))
+      }
+
+      // Then delete the orders
+      await tx.delete(order).where(
+        sql`${order.id} IN (${sql.join(
+          ids.map((id) => sql`${id}`),
+          sql`, `
+        )})`
+      )
+    })
+
+    revalidateTag("orders")
+
+    return {
+      success: true,
+    }
+  } catch (error) {
+    console.error("Error deleting orders:", error)
     return {
       success: false,
       error: getErrorMessage(error),

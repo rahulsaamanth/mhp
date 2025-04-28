@@ -6,7 +6,7 @@ import { Download } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { exportTableToCSV } from "@/lib/export"
 
-// import { DeleteProductsDialog } from "./delete-products-dialog"
+import { DeleteOrdersDialog } from "./delete-orders-dialog"
 import { OrderForTable } from "@/types"
 import Link from "next/link"
 
@@ -18,15 +18,15 @@ export function OrdersTableToolbarActions({
   table,
 }: TasksTableToolbarActionsProps) {
   return (
-    <div className="flex items-center gap-2">
-      {/* {table.getFilteredSelectedRowModel().rows.length > 0 ? (
-        <DeleteProductsDialog
-          products={table
+    <div className="flex items-center gap-1 sm:gap-2">
+      {table.getFilteredSelectedRowModel().rows.length > 0 ? (
+        <DeleteOrdersDialog
+          orders={table
             .getFilteredSelectedRowModel()
             .rows.map((row) => row.original)}
           onSuccess={() => table.toggleAllRowsSelected(false)}
         />
-      ) : null} */}
+      ) : null}
       <Link href="/admin/orders/new">
         <Button variant="default" className="sm:mr-4">
           Add New Order
@@ -37,7 +37,7 @@ export function OrdersTableToolbarActions({
         size="sm"
         onClick={() =>
           exportTableToCSV(table, {
-            filename: "products",
+            filename: "orders",
             excludeColumns: ["select", "actions"],
           })
         }
