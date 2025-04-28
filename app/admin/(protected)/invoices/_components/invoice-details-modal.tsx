@@ -16,6 +16,7 @@ import { Download, Send, Printer, Copy } from "lucide-react"
 import { Badge } from "@/components/ui/badge"
 import { formatCurrency } from "@/lib/formatters"
 import { Skeleton } from "@/components/ui/skeleton"
+import { paymentStatus } from "@rahulsaamanth/mhp-schema"
 
 interface InvoiceDetailsModalProps {
   isOpen: boolean
@@ -91,14 +92,16 @@ export function InvoiceDetailsModal({
             </div>
             <Badge
               variant={
-                invoiceDetails.paymentStatus === "PAID"
+                String(invoiceDetails.paymentStatus) === "PAID"
                   ? "secondary"
-                  : invoiceDetails.paymentStatus === "FAILED"
+                  : String(invoiceDetails.paymentStatus) === "FAILED"
                     ? "destructive"
                     : "outline"
               }
             >
-              {invoiceDetails.paymentStatus.toLowerCase().replace("_", " ")}
+              {String(invoiceDetails.paymentStatus)
+                .toLowerCase()
+                .replace("_", " ")}
             </Badge>
           </DialogTitle>
         </DialogHeader>
