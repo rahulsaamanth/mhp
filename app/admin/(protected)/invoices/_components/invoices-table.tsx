@@ -26,6 +26,8 @@ import {
 import { flexRender } from "@tanstack/react-table"
 import { DataTablePagination } from "@/components/data-table/data-table-pagination"
 import { InvoiceDetailsModal } from "./invoice-details-modal"
+import { toast } from "sonner"
+import { downloadInvoice, sendInvoiceToCustomer } from "../_lib/invoice-utils"
 
 interface InvoiceTableProps {
   promise: Promise<Awaited<ReturnType<typeof getInvoices>>>
@@ -47,6 +49,7 @@ export function InvoicesTable({ promise }: InvoiceTableProps) {
     Record<string, InvoiceDetailedInfo | null>
   >({})
   const [isModalOpen, setIsModalOpen] = useState(false)
+  const [isProcessing, setIsProcessing] = useState(false)
 
   const columns = React.useMemo(
     () =>
@@ -72,6 +75,69 @@ export function InvoicesTable({ promise }: InvoiceTableProps) {
       }
     }
   }, [selectedInvoiceId, data])
+
+  // Handle row actions (download, send)
+  useEffect(() => {
+    if (!rowAction || isProcessing) return
+
+    const handleRowAction = async () => {
+      try {
+        setIsProcessing(true)
+        const invoiceId = rowAction.row.original.id
+
+        // Make sure we have the invoice details
+        if (!invoiceDetails[invoiceId]) {
+          const invoice = data.find((invoice) => invoice.id === invoiceId)
+          if (invoice) {
+            setInvoiceDetails((prevDetails) => ({
+              ...prevDetails,
+              [invoiceId]: invoice as unknown as InvoiceDetailedInfo,
+            }))
+          } else {
+            throw new Error("Invoice details not found")
+          }
+        }
+
+        const invoice =
+          invoiceDetails[invoiceId] ||
+          (data.find(
+            (inv) => inv.id === invoiceId
+          ) as unknown as InvoiceDetailedInfo)
+
+        if (!invoice) {
+          toast.error("Invoice details not found")
+          return
+        }
+
+        if (rowAction.type === "download") {
+          console.log("Downloading invoice:", invoice.invoiceNumber)
+          const result = await downloadInvoice(invoice)
+          if (result.success) {
+            toast.success(result.message || "Invoice downloaded successfully")
+          } else {
+            toast.error(result.message || "Failed to download invoice")
+            console.error("Download error:", result.message)
+          }
+        } else if (rowAction.type === "send") {
+          console.log("Sending invoice to:", invoice.userEmail)
+          const result = await sendInvoiceToCustomer(invoice)
+          if (result.success) {
+            toast.success(result.message || "Invoice sent successfully")
+          } else {
+            toast.error(result.message || "Failed to send invoice")
+          }
+        }
+      } catch (error) {
+        console.error("Error processing row action:", error)
+        toast.error("An unexpected error occurred")
+      } finally {
+        setIsProcessing(false)
+        setRowAction(null)
+      }
+    }
+
+    handleRowAction()
+  }, [rowAction, data, invoiceDetails, isProcessing])
 
   const filterFields: DataTableFilterField<InvoiceForTable>[] = [
     {

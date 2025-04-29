@@ -61,6 +61,10 @@ export interface InvoiceDetailedInfo
   userPhone: string
   invoiceNumber?: string
   orderDate: Date
+  isGuestOrder: boolean
+  customerName: string
+  customerEmail: string | null
+  customerPhone: string | null
 }
 
 export async function getInvoices(input: GetInvoicesSchema) {
@@ -140,6 +144,10 @@ export async function getInvoices(input: GetInvoicesSchema) {
                                 o."shippingCost",
                                 o."shippingAddressId", 
                                 o."billingAddressId",
+                                o."isGuestOrder",
+                                o."customerName",
+                                o."customerEmail",
+                                o."customerPhone",
                                 u."name" as "userName",
                                 u."email" as "userEmail",
                                 u."phone" as "userPhone"

@@ -3,9 +3,9 @@
 
 import { ColumnDef } from "@tanstack/react-table"
 import { Badge } from "@/components/ui/badge"
+import { Button } from "@/components/ui/button"
 import { Checkbox } from "@/components/ui/checkbox"
 import { DataTableColumnHeader } from "@/components/data-table/data-table-column-header"
-// import { DataTableRowActions } from "@/components/data-table/data-table-row-actions"
 import { DataTableRowAction, InvoiceForTable } from "@/types"
 import { Eye, Download, Send } from "lucide-react"
 import { formatCurrency } from "@/lib/formatters"
@@ -78,9 +78,15 @@ export function getColumns({ setRowAction, onViewInvoice }: GetColumnsOptions) {
       cell: ({ row }) => {
         return (
           <div className="flex flex-col">
-            <span className="font-medium">{row.original.userName}</span>
+            <span className="font-medium">
+              {row.original.isGuestOrder
+                ? row.original.customerName
+                : row.original.userName}
+            </span>
             <span className="text-xs text-muted-foreground">
-              {row.original.userEmail}
+              {row.original.isGuestOrder
+                ? row.original.customerEmail
+                : row.original.userEmail}
             </span>
           </div>
         )
@@ -141,45 +147,53 @@ export function getColumns({ setRowAction, onViewInvoice }: GetColumnsOptions) {
       enableSorting: true,
       enableHiding: true,
     },
-    // {
-    //   id: "actions",
-    //   cell: ({ row }) => {
-    //     const invoice = row.original
+    {
+      id: "actions",
+      cell: ({ row }) => {
+        const invoice = row.original
 
-    //     return (
-    //       <DataTableRowActions
-    //         row={row}
-    //         actions={[
-    //           {
-    //             label: "View Invoice",
-    //             icon: Eye,
-    //             onClick: () => onViewInvoice(invoice.id),
-    //           },
-    //           {
-    //             label: "Download Invoice",
-    //             icon: Download,
-    //             onClick: () => {
-    //               setRowAction({
-    //                 type: "download",
-    //                 data: invoice,
-    //               })
-    //             },
-    //           },
-    //           {
-    //             label: "Send to Customer",
-    //             icon: Send,
-    //             onClick: () => {
-    //               setRowAction({
-    //                 type: "send",
-    //                 data: invoice,
-    //               })
-    //             },
-    //           },
-    //         ]}
-    //       />
-    //     )
-    //   },
-    // },
+        return (
+          <div className="flex items-center justify-end gap-2">
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={() => onViewInvoice(invoice.id)}
+              title="View Invoice"
+            >
+              <Eye className="h-4 w-4" />
+            </Button>
+
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={() => {
+                setRowAction({
+                  row,
+                  type: "download",
+                })
+              }}
+              title="Download Invoice"
+            >
+              <Download className="h-4 w-4" />
+            </Button>
+
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={() => {
+                setRowAction({
+                  row,
+                  type: "send",
+                })
+              }}
+              title="Send to Customer"
+            >
+              <Send className="h-4 w-4" />
+            </Button>
+          </div>
+        )
+      },
+    },
   ]
 
   return columns

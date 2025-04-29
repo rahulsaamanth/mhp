@@ -60,7 +60,13 @@ export function getColumns({
       header: ({ column }) => (
         <DataTableColumnHeader column={column} title="Customer Name" />
       ),
-      cell: ({ row }) => <span>{row.original.userName}</span>,
+      cell: ({ row }) => (
+        <span>
+          {row.original.isGuestOrder
+            ? row.original.customerName
+            : row.original.userName}
+        </span>
+      ),
       enableSorting: true,
       enableHiding: false,
     },

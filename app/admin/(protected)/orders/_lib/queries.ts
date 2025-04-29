@@ -128,11 +128,19 @@ export async function getOrders(input: GetOrdersSchema) {
                                 o."shippingCost",
                                 o."shippingAddressId", 
                                 o."billingAddressId",
+                                o."isGuestOrder",
+                                o."customerName",
+                                o."customerPhone",
+                                o."customerEmail",
+                                o."storeId",
+                                o."discount",
+                                o."tax",
                                 u."name" as "userName",
                                 u."email" as "userEmail",
                                 u."phone" as "userPhone"
                             FROM "Order" o
                             LEFT JOIN "User" u ON u."id" = o."userId"
+                          
                             WHERE ${whereClause}                                     
                             )
                             SELECT *

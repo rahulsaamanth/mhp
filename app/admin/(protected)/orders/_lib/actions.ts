@@ -88,6 +88,13 @@ export async function createOrder(data: z.infer<typeof createOrderSchema>) {
         billingAddressId = billingAddressResult?.id
       }
 
+      const invoiceNumber = `INV-${new Date().getFullYear()}-${String(
+        new Date().getMonth() + 1
+      ).padStart(
+        2,
+        "0"
+      )}-${String(Math.floor(Math.random() * 100000)).padStart(5, "0")}`
+
       // Create order
       const [orderResult] = await tx
         .insert(order)
@@ -99,6 +106,7 @@ export async function createOrder(data: z.infer<typeof createOrderSchema>) {
           isGuestOrder: data.isGuestOrder,
           storeId: data.storeId,
           orderDate: new Date(),
+          invoiceNumber: invoiceNumber,
           subtotal: data.subtotal,
           shippingCost: data.shippingCost,
           discount: data.discount,

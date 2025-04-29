@@ -161,7 +161,7 @@ export type Filter<TData> = Prettify<
 
 export interface DataTableRowAction<TData> {
   row: Row<TData>
-  type: "update" | "delete"
+  type: "update" | "delete" | "download" | "send"
 }
 
 export interface QueryBuilderOpts {
@@ -190,6 +190,14 @@ export interface OrderWithComputedFields extends Order {
   deliveryStatus: typeof deliveryStatus
   orderType: typeof orderType
   userName: string
+  // Add new columns that were added to getOrders query
+  isGuestOrder: boolean
+  customerName: string | null
+  customerPhone: string | null
+  customerEmail: string | null
+  storeId: string
+  discount: number
+  tax: number
 }
 
 export type OrderForTable = OrderWithComputedFields
@@ -206,4 +214,9 @@ export interface InvoiceForTable {
   totalAmountPaid: number
   paymentStatus: string
   invoiceDetails: any[]
+  isGuestOrder: boolean
+  customerName: string
+  customerEmail: string
+  customerPhone: string
+  storeId: string
 }

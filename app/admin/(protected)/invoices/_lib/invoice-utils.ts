@@ -1,195 +1,138 @@
-// /home/rahulsaamanth/Code0/mhp/app/admin/(protected)/invoices/_lib/invoice-utils.ts
+"use client"
+
 import { InvoiceDetailedInfo } from "./queries"
-import { jsPDF } from "jspdf"
-import "jspdf-autotable"
 import { formatCurrency } from "@/lib/formatters"
 
-// Function to generate and download a PDF invoice
-export async function generateInvoicePDF(
-  invoice: InvoiceDetailedInfo
-): Promise<Blob> {
-  // Create a new PDF document
-  const doc = new jsPDF()
+// Dynamic import for html2pdf to avoid SSR issues
+let html2pdf: any = null
 
-  // Set document properties
-  doc.setProperties({
-    title: `Invoice #${invoice.invoiceNumber}`,
-    subject: "Invoice",
-    author: "MHP System",
-    creator: "MHP System",
-  })
-
-  // Add company logo and header
-  doc.setFontSize(20)
-  doc.text("INVOICE", 105, 20, { align: "center" })
-
-  // Add invoice details
-  doc.setFontSize(10)
-  doc.text(`Invoice #: ${invoice.invoiceNumber}`, 150, 40, { align: "right" })
-  doc.text(
-    `Date: ${new Date(invoice.orderDate).toLocaleDateString()}`,
-    150,
-    45,
-    { align: "right" }
-  )
-  doc.text(`Order ID: ${invoice.id}`, 150, 50, { align: "right" })
-
-  // Add customer information
-  doc.setFontSize(12)
-  doc.text("Bill To:", 20, 40)
-  doc.setFontSize(10)
-  doc.text(`${invoice.userName}`, 20, 45)
-  doc.text(`${invoice.userEmail}`, 20, 50)
-  doc.text(`${invoice.userPhone || ""}`, 20, 55)
-
-  // Add shipping address
-  if (invoice.shippingAddress) {
-    doc.setFontSize(12)
-    doc.text("Shipping Address:", 20, 65)
-    doc.setFontSize(10)
-    doc.text(`${invoice.shippingAddress.street}`, 20, 70)
-    doc.text(
-      `${invoice.shippingAddress.city}, ${invoice.shippingAddress.state} ${invoice.shippingAddress.postalCode}`,
-      20,
-      75
-    )
-    doc.text(`${invoice.shippingAddress.country}`, 20, 80)
+// This function will be loaded only on the client side
+const loadHtml2Pdf = async () => {
+  if (!html2pdf) {
+    // Import html2pdf dynamically only in browser environment
+    const module = await import("html2pdf.js")
+    html2pdf = module.default
   }
-
-  // Add billing address
-  if (invoice.billingAddress) {
-    doc.setFontSize(12)
-    doc.text("Billing Address:", 110, 65)
-    doc.setFontSize(10)
-    doc.text(`${invoice.billingAddress.street}`, 110, 70)
-    doc.text(
-      `${invoice.billingAddress.city}, ${invoice.billingAddress.state} ${invoice.billingAddress.postalCode}`,
-      110,
-      75
-    )
-    doc.text(`${invoice.billingAddress.country}`, 110, 80)
-  }
-
-  // Add product table
-  const tableColumn = ["Product", "Quantity", "Unit Price", "Total"]
-  const tableRows = invoice.products.map((product) => [
-    `${product.name} - ${product.variantName} (${product.potency})`,
-    product.quantity.toString(),
-    formatCurrency(product.unitPrice),
-    formatCurrency(product.totalPrice),
-  ])
-
-  // @ts-ignore - jspdf-autotable types
-  doc.autoTable({
-    head: [tableColumn],
-    body: tableRows,
-    startY: 90,
-    theme: "grid",
-    headStyles: { fillColor: [66, 66, 66] },
-  })
-
-  // Get the final Y position after the table
-  // @ts-ignore - jspdf-autotable types
-  const finalY = doc.lastAutoTable.finalY + 10
-
-  // Add summary
-  doc.text("Summary", 130, finalY)
-  doc.text("Subtotal:", 130, finalY + 10)
-  doc.text(formatCurrency(invoice.subtotal), 175, finalY + 10, {
-    align: "right",
-  })
-
-  doc.text("Shipping:", 130, finalY + 15)
-  doc.text(formatCurrency(invoice.shippingCost), 175, finalY + 15, {
-    align: "right",
-  })
-
-  if (invoice.discount > 0) {
-    doc.text("Discount:", 130, finalY + 20)
-    doc.text(`-${formatCurrency(invoice.discount)}`, 175, finalY + 20, {
-      align: "right",
-    })
-  }
-
-  if (invoice.tax > 0) {
-    doc.text("Tax:", 130, finalY + 25)
-    doc.text(formatCurrency(invoice.tax), 175, finalY + 25, { align: "right" })
-  }
-
-  // Add total
-  doc.setFontSize(12)
-  doc.setFont("helvetica", "bold")
-  doc.text("Total:", 130, finalY + 35)
-  doc.text(formatCurrency(invoice.totalAmountPaid), 175, finalY + 35, {
-    align: "right",
-  })
-
-  // Add footer
-  doc.setFontSize(8)
-  doc.setFont("helvetica", "normal")
-  doc.text("Thank you for your business!", 105, 280, { align: "center" })
-
-  // Return the PDF as a blob
-  return doc.output("blob")
+  return html2pdf
 }
 
-// Function to download the invoice
 export async function downloadInvoice(invoice: InvoiceDetailedInfo) {
   try {
-    const pdfBlob = await generateInvoicePDF(invoice)
+    // Make sure we're in a browser environment
+    if (typeof window === "undefined" || typeof document === "undefined") {
+      return {
+        success: false,
+        message: "PDF generation is only available in the browser",
+      }
+    }
 
-    // Create a download link
-    const url = URL.createObjectURL(pdfBlob)
-    const link = document.createElement("a")
-    link.href = url
-    link.download = `Invoice_${invoice.invoiceNumber}.pdf`
+    // Load html2pdf dynamically
+    const html2pdfLib = await loadHtml2Pdf()
 
-    // Trigger download
-    document.body.appendChild(link)
-    link.click()
+    // Get the invoice content element
+    const element = document.getElementById("invoice-content")
 
-    // Clean up
-    document.body.removeChild(link)
-    URL.revokeObjectURL(url)
+    if (!element) {
+      return {
+        success: false,
+        message: "Invoice content not found",
+      }
+    }
 
-    return true
+    // Create a clone of the element to avoid modifying the original
+    const clonedElement = element.cloneNode(true) as HTMLElement
+
+    // Remove print:hidden elements from the clone
+    const hiddenElements = clonedElement.querySelectorAll(".print\\:hidden")
+    hiddenElements.forEach((el) => el.remove())
+
+    // Fix for Dialog component: make the cloned content visible
+    // Create a temporary div to hold our invoice for conversion
+    const tempDiv = document.createElement("div")
+    tempDiv.style.position = "absolute"
+    tempDiv.style.left = "-9999px"
+    tempDiv.style.top = "0"
+    tempDiv.style.width = "816px" // A4 width in pixels at 96 DPI
+    tempDiv.style.opacity = "1"
+    tempDiv.style.visibility = "visible"
+    tempDiv.style.pointerEvents = "none"
+    tempDiv.appendChild(clonedElement)
+    document.body.appendChild(tempDiv)
+
+    // Make sure all content within the cloned element is visible
+    const hiddenStyles = tempDiv.querySelectorAll(
+      '[style*="visibility: hidden"], [style*="display: none"], [aria-hidden="true"]'
+    )
+    hiddenStyles.forEach((el) => {
+      if (el instanceof HTMLElement) {
+        el.style.visibility = "visible"
+        el.style.display = "block"
+        el.removeAttribute("aria-hidden")
+      }
+    })
+
+    // Configure html2pdf options
+    const options = {
+      filename: `Invoice_${invoice.invoiceNumber}.pdf`,
+      image: { type: "jpeg", quality: 0.98 },
+      html2canvas: {
+        scale: 2,
+        useCORS: true,
+        letterRendering: true,
+        logging: false,
+      },
+      jsPDF: {
+        unit: "mm",
+        format: "a4",
+        orientation: "portrait" as "portrait" | "landscape",
+      },
+      margin: [10, 10, 10, 10],
+    }
+
+    // Generate and download the PDF
+    try {
+      await html2pdfLib().from(tempDiv).set(options).save()
+
+      // Cleanup: remove the temporary div after PDF generation
+      document.body.removeChild(tempDiv)
+
+      return {
+        success: true,
+        message: "Invoice downloaded successfully",
+      }
+    } catch (pdfError) {
+      console.error("PDF generation error:", pdfError)
+
+      // Cleanup: remove the temporary div even if there was an error
+      if (document.body.contains(tempDiv)) {
+        document.body.removeChild(tempDiv)
+      }
+
+      throw pdfError
+    }
   } catch (error) {
-    console.error("Error downloading invoice:", error)
-    return false
+    console.error("Error generating PDF:", error)
+    return {
+      success: false,
+      message: "Failed to generate PDF",
+    }
   }
 }
 
-// Function to send the invoice to the customer
+// Placeholder for the future implementation
 export async function sendInvoiceToCustomer(invoice: InvoiceDetailedInfo) {
   try {
-    // In a real implementation, you would call an API endpoint to send the email
-    // For now, we'll just simulate a successful response
+    // This function will be replaced with your better solution
+    console.log(
+      "Invoice email functionality will be implemented with a better solution"
+    )
 
-    // Example API call:
-    // const response = await fetch('/api/invoices/send', {
-    //   method: 'POST',
-    //   headers: {
-    //     'Content-Type': 'application/json',
-    //   },
-    //   body: JSON.stringify({
-    //     invoiceId: invoice.id,
-    //     email: invoice.userEmail,
-    //   }),
-    // })
-
-    // if (!response.ok) {
-    //   throw new Error('Failed to send invoice')
-    // }
-
-    // return await response.json()
-
-    // Simulate a successful response
     return {
       success: true,
-      message: `Invoice #${invoice.invoiceNumber} sent to ${invoice.userEmail}`,
+      message: `Invoice email feature will be implemented with your preferred solution`,
     }
   } catch (error) {
-    console.error("Error sending invoice:", error)
+    console.error("Error:", error)
     return {
       success: false,
       message: "Failed to send invoice",
