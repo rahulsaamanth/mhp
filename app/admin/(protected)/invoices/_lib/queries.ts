@@ -22,6 +22,14 @@ interface CountResult {
 // Interface for the detailed invoice information
 export interface InvoiceDetailedInfo
   extends Omit<OrderWithComputedFields, "orderDetails"> {
+  status: any
+  customer: any
+  items: any
+  total: number
+  notes: string
+  dueDate: string | number | Date
+  date: string | number | Date
+  company: any
   products: {
     id: string
     name: string
