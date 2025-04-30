@@ -190,8 +190,8 @@ export function InvoiceDetailsModal({
               <h3 className="font-semibold text-sm uppercase text-muted-foreground">
                 Invoice From
               </h3>
-              <h4 className="font-bold">MH Pharmaceuticals</h4>
-              <p className="text-sm">support@mhpharmaceuticals.com</p>
+              <h4 className="font-bold">Homeo South Pharmaceuticals</h4>
+              <p className="text-sm">support@homeosouth.com</p>
               <p className="text-sm">Order ID: {invoiceDetails.id}</p>
             </div>
           </div>
@@ -345,7 +345,7 @@ export function InvoiceDetailsModal({
             <p>Thank you for your business!</p>
             <p className="mt-1">
               If you have any questions about this invoice, please contact us at
-              support@mhpharmaceuticals.com
+              support@homeosouth.com
             </p>
           </div>
         </div>

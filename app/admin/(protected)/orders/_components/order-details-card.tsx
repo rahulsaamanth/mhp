@@ -1,7 +1,8 @@
 "use client"
 
-import React from "react"
-import { OrderForTable } from "@/types"
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
+import { Badge } from "@/components/ui/badge"
+import { Button } from "@/components/ui/button"
 import {
   Card,
   CardContent,
@@ -22,6 +23,9 @@ import {
   PaginationContent,
   PaginationItem,
 } from "@/components/ui/pagination"
+import { Separator } from "@/components/ui/separator"
+import { Skeleton } from "@/components/ui/skeleton"
+import { OrderForTable } from "@/types"
 import {
   AlertCircle,
   ChevronLeft,
@@ -29,16 +33,13 @@ import {
   Copy,
   MoreVertical,
   Package,
+  ReceiptText,
   ShoppingCart,
-  Truck,
 } from "lucide-react"
-import { Separator } from "@/components/ui/separator"
-import { Button } from "@/components/ui/button"
-import { OrderDetailedInfo } from "../_lib/queries"
 import Image from "next/image"
-import { Badge } from "@/components/ui/badge"
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
-import { Skeleton } from "@/components/ui/skeleton"
+import Link from "next/link"
+import React from "react"
+import { OrderDetailedInfo } from "../_lib/queries"
 
 interface OrderDetailsCardProps {
   selectedOrderId: string | null
@@ -141,11 +142,15 @@ export function OrderDetailsCard({
           <CardDescription>Date: {formattedDate}</CardDescription>
         </div>
         <div className="ml-auto flex items-center gap-1">
-          <Button size="sm" variant="outline" className="h-8 gap-1">
-            <Truck className="h-3.5 w-3.5" />
-            <span className="lg:sr-only xl:not-sr-only xl:whitespace-nowrap">
-              Track Order
-            </span>
+          <Button asChild size="sm" variant="outline" className="h-8 gap-1">
+            <Link
+              href={`/admin/invoices?invoiceNumber=${currentOrderDetails?.invoiceNumber || selectedOrder?.id}`}
+            >
+              <ReceiptText className="h-3.5 w-3.5" />
+              <span className="lg:sr-only xl:not-sr-only xl:whitespace-nowrap">
+                View Invoice
+              </span>
+            </Link>
           </Button>
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
