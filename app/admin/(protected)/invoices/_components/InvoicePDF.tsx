@@ -1,23 +1,15 @@
-import React from "react"
 import {
   Document,
+  Font,
+  G,
   Page,
+  Path,
+  StyleSheet,
+  Svg,
   Text,
   View,
-  StyleSheet,
-  Font,
-  Image,
-  Svg,
-  Path,
-  G,
-  Defs,
-  LinearGradient,
-  Stop,
-  Circle,
-  Rect,
 } from "@react-pdf/renderer"
 import { InvoiceDetailedInfo } from "../_lib/queries"
-import { Filter } from "lucide-react"
 
 // Register standard fonts
 Font.register({

@@ -1,7 +1,7 @@
 import "server-only"
 
 import { type GetOrdersSchema } from "./validations"
-import { unstable_cache } from "next/cache"
+import { cache } from "@/lib/cache"
 import { filterColumns } from "@/lib/filter-columns"
 import {
   order,
@@ -58,7 +58,7 @@ export interface OrderDetailedInfo
 }
 
 export async function getOrders(input: GetOrdersSchema) {
-  return unstable_cache(
+  return cache(
     async () => {
       try {
         const offset = (input.page - 1) * input.perPage

@@ -2,7 +2,7 @@
 import "server-only"
 
 import { type GetInvoicesSchema } from "./validations"
-import { unstable_cache } from "next/cache"
+import { cache } from "@/lib/cache"
 import { filterColumns } from "@/lib/filter-columns"
 import {
   order,
@@ -76,7 +76,7 @@ export interface InvoiceDetailedInfo
 }
 
 export async function getInvoices(input: GetInvoicesSchema) {
-  return unstable_cache(
+  return cache(
     async () => {
       try {
         const offset = (input.page - 1) * input.perPage

@@ -35,8 +35,8 @@ export const SIDENAV_ITEMS: SideNavItem[] = [
     icon: "basil:invoice-outline",
   },
   {
-    title: "Offers",
-    path: "/admin/offers",
+    title: "Coupons",
+    path: "/admin/coupons",
     icon: "ic:outline-local-offer",
     // coupon icon
     // icon: "mdi:coupon-outline",

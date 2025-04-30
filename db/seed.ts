@@ -1218,6 +1218,7 @@ async function seed() {
         paymentStatus: "PAID",
         shippingAddressId: addresses[0]?.id!,
         billingAddressId: addresses[0]?.id!,
+        invoiceNumber: `INV-${new Date().getFullYear()}-${String(new Date().getMonth() + 1).padStart(2, "0")}-${String(Math.floor(Math.random() * 100000)).padStart(5, "0")}`,
         estimatedDeliveryDate: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000), // 7 days from now
       },
       {
@@ -1233,6 +1234,7 @@ async function seed() {
         paymentStatus: "PAID",
         shippingAddressId: addresses[1]?.id!,
         billingAddressId: addresses[1]?.id!,
+        invoiceNumber: `INV-${new Date().getFullYear()}-${String(new Date().getMonth() + 1).padStart(2, "0")}-${String(Math.floor(Math.random() * 100000)).padStart(5, "0")}`,
         estimatedDeliveryDate: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000), // 7 days from now
       },
       {
@@ -1248,6 +1250,7 @@ async function seed() {
         paymentStatus: "PAID",
         shippingAddressId: addresses[2]?.id!,
         billingAddressId: addresses[2]?.id!,
+        invoiceNumber: `INV-${new Date().getFullYear()}-${String(new Date().getMonth() + 1).padStart(2, "0")}-${String(Math.floor(Math.random() * 100000)).padStart(5, "0")}`,
         estimatedDeliveryDate: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000), // 7 days from now
       },
       {
@@ -1263,6 +1266,7 @@ async function seed() {
         paymentStatus: "PAID",
         shippingAddressId: addresses[3]?.id!,
         billingAddressId: addresses[3]?.id!,
+        invoiceNumber: `INV-${new Date().getFullYear()}-${String(new Date().getMonth() + 1).padStart(2, "0")}-${String(Math.floor(Math.random() * 100000)).padStart(5, "0")}`,
         estimatedDeliveryDate: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000), // 7 days from now
       },
       {
@@ -1278,6 +1282,7 @@ async function seed() {
         paymentStatus: "PAID",
         shippingAddressId: addresses[4]?.id!,
         billingAddressId: addresses[4]?.id!,
+        invoiceNumber: `INV-${new Date().getFullYear()}-${String(new Date().getMonth() + 1).padStart(2, "0")}-${String(Math.floor(Math.random() * 100000)).padStart(5, "0")}`,
         estimatedDeliveryDate: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000), // 7 days from now
       },
     ])

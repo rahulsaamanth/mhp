@@ -2,15 +2,14 @@
 
 import { InvoiceDetailedInfo } from "./queries"
 import { saveAs } from "file-saver"
-import { pdf } from "@react-pdf/renderer"
+
 import React from "react"
+import PDFDocument from "../_components/InvoicePDF"
 
 export async function downloadInvoice(invoice: InvoiceDetailedInfo) {
   try {
     // Dynamically load the components to avoid SSR issues with react-pdf
     const ReactPDF = require("@react-pdf/renderer")
-    const React = require("react")
-    const PDFDocument = require("../_components/InvoicePDF").default
 
     // Ensure document is created in the browser context
     const blob = await ReactPDF.pdf(

@@ -1,18 +1,18 @@
 import "server-only"
 
+import { db } from "@/db/db"
+import { cache } from "@/lib/cache"
+import { filterColumns } from "@/lib/filter-columns"
+import { ProductForTable } from "@/types"
 import {
-  Category,
-  Manufacturer,
   category,
+  Manufacturer,
   manufacturer,
   product,
+  product as productTable,
 } from "@rahulsaamanth/mhp-schema"
-import { SQLChunk, count, eq, gt, like, sql } from "drizzle-orm"
-
-import { db } from "@/db/db"
-import { filterColumns } from "@/lib/filter-columns"
-import { unstable_cache } from "@/lib/unstable-cache"
-import { ProductForTable } from "@/types"
+import { SQLChunk, gt, like, sql } from "drizzle-orm"
+import { count, eq } from "drizzle-orm"
 import { type GetProductsSchema } from "./validations"
 import { NeonHttpQueryResult } from "drizzle-orm/neon-http"
 
@@ -21,7 +21,7 @@ interface CountResult {
 }
 
 export async function getProducts(input: GetProductsSchema) {
-  return unstable_cache(
+  return cache(
     async () => {
       try {
         const offset = (input.page - 1) * input.perPage
@@ -32,7 +32,7 @@ export async function getProducts(input: GetProductsSchema) {
         const advancedWhere: SQLChunk[] =
           advancedTable && input.filters && input.filters.length > 0
             ? (filterColumns({
-                table: product,
+                table: productTable,
                 filters: input.filters,
                 joinOperator: input.joinOperator,
               }) as unknown as SQLChunk[]) || []
@@ -201,41 +201,8 @@ export async function getProducts(input: GetProductsSchema) {
   )()
 }
 
-// export async function getCategoryCounts() {
-//   return unstable_cache(
-//     async () => {
-//       try {
-//         return await db
-//           .select({
-//             category: category.name,
-//             count: count(product.id),
-//           })
-//           .from(category)
-//           .leftJoin(product, eq(category.id, product.categoryId))
-//           .groupBy(category.name)
-//           .having(gt(count(product.id), 0))
-//           .then((res) =>
-//             res.reduce(
-//               (acc, { category, count }) => {
-//                 acc[category] = count
-//                 return acc
-//               },
-//               {} as Record<Category["name"], number>
-//             )
-//           )
-//       } catch (_err) {
-//         return {} as Record<Category["name"], number>
-//       }
-//     },
-//     ["category-product-counts"],
-//     {
-//       revalidate: 3600,
-//     }
-//   )()
-// }
-
 export async function getCategoryCounts() {
-  return unstable_cache(
+  return cache(
     async () => {
       try {
         const categories = await db
@@ -276,7 +243,7 @@ export async function getCategoryCounts() {
 }
 
 export async function getManufacturerCounts() {
-  return unstable_cache(
+  return cache(
     async () => {
       try {
         return await db
@@ -309,7 +276,7 @@ export async function getManufacturerCounts() {
 }
 
 export async function getStatusCounts() {
-  return unstable_cache(
+  return cache(
     async () => {
       try {
         return await db

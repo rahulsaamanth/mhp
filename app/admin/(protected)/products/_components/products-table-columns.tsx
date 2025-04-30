@@ -220,10 +220,15 @@ export function getColumns({
                 <Copy className="size-4 mr-2" /> Copy ID
               </DropdownMenuItem>
               <DropdownMenuSeparator />
-              <DropdownMenuItem>
-                <Square className="size-4 mr-2" />
-                View
-              </DropdownMenuItem>
+              <Link
+                href={`https://homeosouth.com/product/${row.original.id}`}
+                target="_blank"
+              >
+                <DropdownMenuItem>
+                  <Square className="size-4 mr-2" />
+                  View
+                </DropdownMenuItem>
+              </Link>
               <DropdownMenuItem
                 onClick={() => setRowAction({ row, type: "delete" })}
               >

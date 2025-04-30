@@ -1,10 +1,10 @@
 import "server-only"
 
 import { db } from "@/db/db"
-import { unstable_cache } from "next/cache"
+import { cache } from "@/lib/cache"
 
 export async function getCategories() {
-  return unstable_cache(
+  return cache(
     async () => {
       return await db.query.category.findMany()
     },
@@ -17,7 +17,7 @@ export async function getCategories() {
 }
 
 export async function getManufacturers() {
-  return unstable_cache(
+  return cache(
     async () => {
       return await db.query.manufacturer.findMany()
     },
@@ -30,7 +30,7 @@ export async function getManufacturers() {
 }
 
 export async function getTags() {
-  return unstable_cache(
+  return cache(
     async () => {
       return await db.query.tag.findMany()
     },
