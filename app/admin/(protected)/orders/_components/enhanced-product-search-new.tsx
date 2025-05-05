@@ -12,7 +12,6 @@ import {
   FormMessage,
 } from "@/components/ui/form"
 
-// Define the product and variant types
 export interface ProductVariant {
   id: string
   variantName?: string
@@ -82,7 +81,6 @@ export function EnhancedProductSearch({
   const searchRef = useRef<HTMLDivElement>(null)
   const searchTimeout = useRef<NodeJS.Timeout | null>(null)
 
-  // Handle outside click to close dropdown
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
       if (
@@ -99,7 +97,6 @@ export function EnhancedProductSearch({
     }
   }, [])
 
-  // Load recent products from localStorage
   useEffect(() => {
     try {
       const storedRecent = localStorage.getItem("mhp-recent-products")
@@ -111,7 +108,6 @@ export function EnhancedProductSearch({
     }
   }, [])
 
-  // Step 1: Fetch product list based on search query
   const fetchProductList = async (query: string) => {
     if (query.length < 4) {
       setProductResults([])
@@ -130,10 +126,9 @@ export function EnhancedProductSearch({
       }
       const data = await response.json()
 
-      // Store the product results without variants for now
       const products = data.data.map((product: any) => ({
         ...product,
-        variants: [], // We'll fetch variants separately when a product is expanded
+        variants: [],
       }))
 
       setProductResults(products)
@@ -147,7 +142,6 @@ export function EnhancedProductSearch({
     }
   }
 
-  // Step 2: Fetch variants for a specific product when expanded
   const fetchProductVariants = async (productId: string) => {
     try {
       const response = await fetch(`/api/products/${productId}`)
@@ -156,7 +150,6 @@ export function EnhancedProductSearch({
       }
       const data = await response.json()
 
-      // Update the product with its variants
       setFilteredProducts((prevProducts) =>
         prevProducts.map((product) =>
           product.id === productId
@@ -173,26 +166,22 @@ export function EnhancedProductSearch({
     setSearchQuery(query)
     setIsSearchOpen(true)
 
-    // Clear any existing timeout
     if (searchTimeout.current) {
       clearTimeout(searchTimeout.current)
     }
 
-    // Set a new timeout to debounce the API call
     searchTimeout.current = setTimeout(() => {
       fetchProductList(query)
-    }, 300) // 300ms debounce
+    }, 300)
   }
 
   const handleProductExpand = (productId: string) => {
-    // Toggle expansion state
     const newExpandedIds = new Set(expandedProductIds)
 
     if (newExpandedIds.has(productId)) {
       newExpandedIds.delete(productId)
     } else {
       newExpandedIds.add(productId)
-      // Fetch variants when expanding
       fetchProductVariants(productId)
     }
 
@@ -230,6 +219,17 @@ export function EnhancedProductSearch({
     // Call the passed action handler to add product to the order items table
     onProductSelectAction(selectedProduct)
 
+    // Clear the form fields for this component to allow new product selection
+    form.setValue(`${fieldName}.${index}.productVariantId`, "")
+    form.setValue(`${fieldName}.${index}.productName`, "")
+    form.setValue(`${fieldName}.${index}.variantName`, "")
+    form.setValue(`${fieldName}.${index}.potency`, "")
+    form.setValue(`${fieldName}.${index}.packSize`, 0)
+    form.setValue(`${fieldName}.${index}.unitPrice`, 0)
+    form.setValue(`${fieldName}.${index}.originalPrice`, 0)
+    form.setValue(`${fieldName}.${index}.discountAmount`, 0)
+    form.setValue(`${fieldName}.${index}.taxAmount`, 0)
+
     // Close search, reset search state, and clear the selected product display
     setIsSearchOpen(false)
     setSearchQuery("")
@@ -237,14 +237,23 @@ export function EnhancedProductSearch({
   }
 
   const clearSelection = () => {
-    // Reset the search query and close the dropdown
     setSearchQuery("")
     setIsSearchOpen(false)
 
-    // Don't remove the item row - just clear the component for a new selection
+    onProductSelectAction({
+      id: "",
+      name: "",
+      variantName: "",
+      potency: "",
+      packSize: 0,
+      sellingPrice: 0,
+      mrp: 0,
+      discountAmount: 0,
+      taxAmount: 0,
+      variantImage: null,
+    })
   }
 
-  // Get the currently selected product details to display
   const selectedVariantId = form.watch(`${fieldName}.${index}.productVariantId`)
   const selectedProductName = form.watch(`${fieldName}.${index}.productName`)
   const selectedVariantName = form.watch(`${fieldName}.${index}.variantName`)
@@ -267,14 +276,6 @@ export function EnhancedProductSearch({
                     <div className="flex flex-col border rounded-md p-3">
                       <div className="flex items-center justify-between">
                         <div className="font-medium">{selectedProductName}</div>
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          onClick={clearSelection}
-                          className="h-6 w-6 p-0"
-                        >
-                          <X className="h-3 w-3" />
-                        </Button>
                       </div>
                       <div className="text-xs text-muted-foreground">
                         {selectedVariantName}

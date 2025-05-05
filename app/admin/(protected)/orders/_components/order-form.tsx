@@ -1,4 +1,3 @@
-// File: /app/admin/(protected)/orders/_components/order-form.tsx
 "use client"
 
 import { ChevronLeft, Loader, PlusCircle, X } from "lucide-react"
@@ -52,31 +51,28 @@ import {
   Store,
 } from "@rahulsaamanth/mhp-schema"
 import { useMutation } from "@tanstack/react-query"
-import React, { useEffect } from "react"
-// import { ProductSearch, SelectedProduct } from "./product-search"
+import React, { useEffect, useState } from "react"
 import { toast } from "sonner"
 import { createOrderSchema } from "@/schemas"
 import { Checkbox } from "@/components/ui/checkbox"
 
 import { Textarea } from "@/components/ui/textarea"
 
-// You'll need to create these action functions
 import { createOrder, updateOrder } from "../_lib/actions"
 import { DatePicker } from "@/components/date-picker"
 
-// Import the enhanced product search component
-import { EnhancedProductSearch } from "./enhanced-product-search-new"
+import { ProductSearchDialog } from "./product-search-dialog"
 
 type OrderFormProps = {
   props: {
     stores: Store[]
-    users?: any[] // Replace with your user type
-    products?: any[] // Replace with your product type
-    categories?: any[] // Replace with your category type
-    manufacturers?: any[] // Replace with your manufacturer type
+    users?: any[]
+    products?: any[]
+    categories?: any[]
+    manufacturers?: any[]
   }
   mode?: "create" | "edit"
-  orderData?: any // Replace with your order type
+  orderData?: any
 }
 
 export const OrderForm = ({
@@ -93,7 +89,6 @@ export const OrderForm = ({
     categories = [],
   } = props
 
-  // Default values for the form
   const defaultValues = {
     userId: orderData?.userId ?? "",
     customerName: orderData?.customerName ?? "",
@@ -108,10 +103,10 @@ export const OrderForm = ({
     discount: orderData?.discount ?? 0,
     tax: orderData?.tax ?? 0,
     totalAmountPaid: orderData?.totalAmountPaid ?? 0,
-    deliveryStatus: orderData?.deliveryStatus ?? "COMPLETED", // Default to COMPLETED for offline orders
-    paymentStatus: orderData?.paymentStatus ?? "PAID", // Default to PAID for offline orders
+    deliveryStatus: orderData?.deliveryStatus ?? "COMPLETED",
+    paymentStatus: orderData?.paymentStatus ?? "PAID",
     paymentMethodId: orderData?.paymentMethodId ?? "",
-    paymentType: orderData?.paymentType ?? "CASH", // Default to CASH for offline orders
+    paymentType: orderData?.paymentType ?? "CASH",
     paymentIntentId: orderData?.paymentIntentId ?? "",
     shippingAddress: orderData?.shippingAddress ?? {
       street: "",
@@ -146,12 +141,10 @@ export const OrderForm = ({
     name: "orderItems",
   })
 
-  // Reset form function
   function resetForm() {
     form.reset()
   }
 
-  // Handle form submission
   const { mutate: server_handleOrder, isPending } = useMutation({
     mutationFn:
       mode === "edit"
@@ -180,39 +173,31 @@ export const OrderForm = ({
     },
   })
 
-  // Calculate totals when order items change
   useEffect(() => {
     const calculateTotals = () => {
       const items = form.getValues("orderItems")
 
-      // Calculate subtotal
       const subtotal = items.reduce(
         (sum, item) => sum + item.unitPrice * item.quantity,
         0
       )
 
-      // Calculate tax
       const tax = items.reduce((sum, item) => sum + (item.taxAmount || 0), 0)
 
-      // Get shipping and discount
       const shippingCost =
         form.watch("orderType") === "ONLINE"
           ? form.getValues("shippingCost") || 0
           : 0
       const discount = form.getValues("discount") || 0
 
-      // Calculate total
       const total = subtotal + tax + shippingCost - discount
 
-      // Update form values
       form.setValue("subtotal", Number(subtotal.toFixed(2)))
       form.setValue("tax", Number(tax.toFixed(2)))
       form.setValue("totalAmountPaid", Number(total.toFixed(2)))
 
-      // Set default values based on order type
       if (form.watch("orderType") === "OFFLINE") {
-        // For offline orders, set sensible defaults
-        form.setValue("deliveryStatus", "DELIVERED")
+        form.setValue("deliveryStatus", "IN_STORE_PICKUP")
         form.setValue("shippingCost", 0)
         form.setValue("paymentType", "IN_STORE")
       }
@@ -227,7 +212,6 @@ export const OrderForm = ({
     form,
   ])
 
-  // Copy shipping address to billing address when sameAsBilling is checked
   useEffect(() => {
     const sameAsBilling = form.getValues("sameAsBilling")
     if (sameAsBilling) {
@@ -236,15 +220,12 @@ export const OrderForm = ({
     }
   }, [form.watch("sameAsBilling"), form.watch("shippingAddress"), form])
 
-  // Remove any existing or empty rows when component mounts
   useEffect(() => {
     const orderItems = form.getValues("orderItems")
 
-    // If there are empty items, remove them
     if (orderItems && orderItems.length > 0) {
       const nonEmptyItems = orderItems.filter((item) => item.productVariantId)
 
-      // If we filtered out any items, update the form
       if (nonEmptyItems.length !== orderItems.length) {
         form.setValue("orderItems", nonEmptyItems)
       }
@@ -254,7 +235,6 @@ export const OrderForm = ({
   const onSubmit = async (data: z.infer<typeof createOrderSchema>) => {
     console.log("onSubmit function called with data:", data)
     try {
-      // Validate that at least one order item is present with a valid product
       if (
         !data.orderItems ||
         data.orderItems.length === 0 ||
@@ -265,14 +245,12 @@ export const OrderForm = ({
         return
       }
 
-      // Validate that a store is selected
       if (!data.storeId) {
         console.log("Validation failed: No store selected")
         toast.error("Please select a store")
         return
       }
 
-      // For guest orders, ensure customer name and phone are provided
       if (data.isGuestOrder) {
         if (!data.customerName || !data.customerPhone) {
           console.log(
@@ -283,7 +261,6 @@ export const OrderForm = ({
         }
       }
 
-      // Process the data and submit the form
       console.log("All validations passed, submitting order data:", data)
       server_handleOrder(data)
     } catch (error) {
@@ -292,8 +269,11 @@ export const OrderForm = ({
     }
   }
 
-  // Handle product selection
   const handleProductSelect = (product: any, index: number) => {
+    if (!product.id) {
+      return
+    }
+
     form.setValue(`orderItems.${index}.productVariantId`, product.id)
     form.setValue(`orderItems.${index}.productName`, product.name)
     form.setValue(`orderItems.${index}.unitPrice`, product.sellingPrice)
@@ -312,23 +292,21 @@ export const OrderForm = ({
     )
   }
 
+  const [showProductSearch, setShowProductSearch] = useState(false)
+
   return (
     <Form {...form}>
       <form
         onSubmit={(e) => {
-          e.preventDefault() // Prevent default form submission
+          e.preventDefault()
           console.log("Form submit event triggered")
 
-          // Debug validation errors
           const validationErrors = form.formState.errors
           console.log("Form validation errors:", validationErrors)
 
-          // Get current form values
           const formValues = form.getValues()
 
-          // For OFFLINE orders, fill in dummy address data if not provided
           if (formValues.orderType === "OFFLINE") {
-            // Set default addresses for offline orders if they're empty
             if (!formValues.shippingAddress.street) {
               form.setValue("shippingAddress", {
                 street: "In-Store Purchase",
@@ -348,7 +326,6 @@ export const OrderForm = ({
             })
           }
 
-          // Manually call onSubmit to bypass potential validation issues
           const updatedValues = form.getValues()
           console.log("Submitting with values:", updatedValues)
           onSubmit(updatedValues)
@@ -396,7 +373,6 @@ export const OrderForm = ({
 
             <div className="grid gap-4 md:grid-cols-[1fr_250px] lg:grid-cols-3 lg:gap-8">
               <div className="grid auto-rows-max items-start gap-4 lg:col-span-2 lg:gap-8">
-                {/* Order Type and Store Selection */}
                 <Card className="py-3">
                   <CardHeader>
                     <CardTitle>Order Details</CardTitle>
@@ -472,7 +448,6 @@ export const OrderForm = ({
                   </CardContent>
                 </Card>
 
-                {/* Customer Information */}
                 <Card className="py-3">
                   <CardHeader>
                     <CardTitle>Customer Information</CardTitle>
@@ -616,7 +591,6 @@ export const OrderForm = ({
                   </CardContent>
                 </Card>
 
-                {/* Shipping Address - Only show for online orders */}
                 {form.watch("orderType") === "ONLINE" && (
                   <Card className="py-3">
                     <CardHeader>
@@ -733,7 +707,6 @@ export const OrderForm = ({
                   </Card>
                 )}
 
-                {/* Billing Address - Only show if sameAsBilling is false and orderType is ONLINE */}
                 {!form.watch("sameAsBilling") &&
                   form.watch("orderType") === "ONLINE" && (
                     <Card className="py-3">
@@ -837,37 +810,25 @@ export const OrderForm = ({
                     </Card>
                   )}
 
-                {/* Order Items */}
                 <Card className="my-4">
                   <CardHeader>
                     <CardTitle>Order Items</CardTitle>
                     <CardDescription>Add products to the order</CardDescription>
                   </CardHeader>
                   <CardContent>
-                    <EnhancedProductSearch
-                      form={form}
-                      products={products}
-                      categories={props.categories || []}
-                      manufacturers={manufacturers || []}
-                      onProductSelectAction={(product) => {
-                        // Always append a new item when a product is selected
-                        append({
-                          productVariantId: product.id,
-                          quantity: 1,
-                          unitPrice: product.sellingPrice || 0,
-                          originalPrice: product.mrp || 0,
-                          discountAmount: product.discountAmount || 0,
-                          taxAmount: product.taxAmount || 0,
-                          productName: product.name || "",
-                          variantName: product.variantName || "",
-                          potency: product.potency || "",
-                          packSize: product.packSize || 0,
-                          imageUrl: product.variantImage || "",
-                        })
-                      }}
-                    />
+                    <div className="flex justify-end mb-4">
+                      <Button
+                        onClick={() => setShowProductSearch(true)}
+                        type="button"
+                        size="sm"
+                        className="gap-1"
+                      >
+                        <PlusCircle className="h-3.5 w-3.5" />
+                        Add Product
+                      </Button>
+                    </div>
 
-                    <div className="overflow-x-auto mx-4 sm:mx-0 mt-6">
+                    <div className="overflow-x-auto mx-4 sm:mx-0">
                       <div className="inline-block min-w-full align-middle">
                         <Table className="min-w-full">
                           <TableHeader>
@@ -903,8 +864,12 @@ export const OrderForm = ({
                               ))
                             ) : (
                               <TableRow>
-                                <TableCell colSpan={8} className="text-center py-8 text-muted-foreground">
-                                  No products added. Use the search above to add products to order items.
+                                <TableCell
+                                  colSpan={8}
+                                  className="text-center py-8 text-muted-foreground"
+                                >
+                                  No products added. Click the "Add Product"
+                                  button to add products to the order.
                                 </TableCell>
                               </TableRow>
                             )}
@@ -912,13 +877,22 @@ export const OrderForm = ({
                         </Table>
                       </div>
                     </div>
+
+                    <ProductSearchDialog
+                      open={showProductSearch}
+                      onOpenChange={setShowProductSearch}
+                      onProductSelect={(product) => {
+                        append({
+                          ...product,
+                          imageUrl: product.imageUrl || undefined, // Convert null to undefined
+                        })
+                      }}
+                    />
                   </CardContent>
                 </Card>
               </div>
 
-              {/* Right Column - Order Summary & Status */}
               <div className="grid auto-rows-max items-start gap-4">
-                {/* Order Status */}
                 <Card>
                   <CardHeader>
                     <CardTitle>Order Status</CardTitle>
@@ -1003,7 +977,6 @@ export const OrderForm = ({
                   </CardContent>
                 </Card>
 
-                {/* Payment Details */}
                 <Card>
                   <CardHeader>
                     <CardTitle>Payment Details</CardTitle>
@@ -1042,7 +1015,6 @@ export const OrderForm = ({
                   </CardContent>
                 </Card>
 
-                {/* Order Summary */}
                 <Card>
                   <CardHeader>
                     <CardTitle>Order Summary</CardTitle>
@@ -1129,7 +1101,6 @@ export const OrderForm = ({
                   </CardContent>
                 </Card>
 
-                {/* Notes */}
                 <Card>
                   <CardHeader>
                     <CardTitle>Notes</CardTitle>
@@ -1178,7 +1149,6 @@ export const OrderForm = ({
             </div>
           </div>
 
-          {/* Mobile Submit Buttons */}
           <div className="flex items-center justify-center gap-2 md:hidden">
             {mode === "create" ? (
               <Button
@@ -1201,7 +1171,6 @@ export const OrderForm = ({
   )
 }
 
-// Order Item Fields Component
 type OrderItemFieldsProps = {
   form: UseFormReturn<z.infer<typeof createOrderSchema>>
   index: number
@@ -1219,25 +1188,23 @@ const OrderItemFields = ({
     form.watch(`orderItems.${index}.unitPrice`) *
     form.watch(`orderItems.${index}.quantity`)
 
-  // Get product information from form values to display
   const productName = form.watch(`orderItems.${index}.productName`)
   const variantName = form.watch(`orderItems.${index}.variantName`)
   const potency = form.watch(`orderItems.${index}.potency`)
   const packSize = form.watch(`orderItems.${index}.packSize`)
-  const imageUrl = form.watch(`orderItems.${index}.imageUrl`)
 
   return (
     <TableRow>
       <TableCell className="font-medium">{index + 1}</TableCell>
       <TableCell>
-        <div className="flex flex-col">
-          <span className="font-medium">{productName}</span>
-          <div className="flex gap-1 text-xs text-muted-foreground">
+        <div className="font-medium">{productName}</div>
+        {productName && (
+          <div className="flex gap-1 text-xs text-muted-foreground mt-1">
             {variantName && <span>{variantName}</span>}
             {potency && potency !== "NONE" && <span>({potency})</span>}
-            {packSize && packSize > 0 && <span>{packSize}</span>}
+            {(packSize ?? 0) > 0 && <span>{packSize}</span>}
           </div>
-        </div>
+        )}
       </TableCell>
       <TableCell>
         <FormField
@@ -1334,11 +1301,9 @@ const OrderItemFields = ({
       </TableCell>
       <TableCell className="font-medium">₹{itemTotal.toFixed(2)}</TableCell>
       <TableCell>
-        {!isOnly && (
-          <Button variant="ghost" size="icon" onClick={onRemove} type="button">
-            <X className="h-4 w-4" />
-          </Button>
-        )}
+        <Button variant="ghost" size="icon" onClick={onRemove} type="button">
+          <X className="h-4 w-4" />
+        </Button>
       </TableCell>
     </TableRow>
   )

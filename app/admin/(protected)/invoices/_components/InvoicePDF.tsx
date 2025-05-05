@@ -1,13 +1,11 @@
 import {
   Document,
   Font,
-  G,
   Page,
-  Path,
   StyleSheet,
-  Svg,
   Text,
   View,
+  Image,
 } from "@react-pdf/renderer"
 import { InvoiceDetailedInfo } from "../_lib/queries"
 
@@ -281,88 +279,6 @@ const getStatusBadgeStyle = (status: string) => {
   return styles.statusBadge
 }
 
-// Company Logo SVG Component with the detailed SVG - Refined for React-PDF
-// Removed bottle shape, tagline, leaf, and divider line
-const CompanyLogo = () => (
-  <Svg width="300" height="61" viewBox="0 0 300 61">
-    <G
-      transform="translate(0.000000,61.000000) scale(0.100000,-0.100000)"
-      fill="#000000"
-    >
-      {/* Green MH section */}
-      <Path
-        d="M2291 511 c-22 -14 -11 -183 13 -210 31 -34 79 -45 119 -26 45 21 57
-51 57 143 0 78 -10 105 -36 95 -10 -4 -14 -27 -14 -88 0 -88 -12 -115 -50
--115 -38 0 -50 27 -50 109 0 80 -12 108 -39 92z"
-        fill="#5cb800"
-      />
-
-      {/* HERBAL Text */}
-      <Path
-        d="M550 391 c0 -90 3 -120 13 -124 29 -11 40 9 33 57 l-7 46 55 0 56 0
-0 -45 c0 -34 5 -47 20 -55 28 -15 31 -3 28 126 -3 101 -4 109 -23 109 -17 0
--20 -8 -23 -47 l-3 -48 -55 0 -55 0 7 35 c7 37 -7 65 -32 65 -11 0 -14 -25
--14 -119z"
-      />
-      {/* Letter E */}
-      <Path
-        d="M839 495 c-56 -30 -73 -119 -34 -178 60 -92 200 -55 212 56 12 102
--88 171 -178 122z m106 -50 c32 -31 33 -80 3 -112 -21 -22 -62 -30 -84 -15
--18 11 -34 49 -34 77 0 31 41 75 70 75 12 0 32 -11 45 -25z"
-      />
-      {/* Letter R */}
-      <Path
-        d="M1059 508 c-1 -2 -3 -54 -4 -116 -2 -101 0 -114 17 -123 26 -14 32 7
-26 92 -3 38 -4 69 -3 69 2 0 17 -22 34 -50 17 -27 36 -50 43 -50 7 0 25 21 40
-48 l27 47 1 -72 c0 -62 3 -74 20 -83 28 -15 31 -3 28 126 -3 93 -5 109 -20
-112 -12 2 -29 -16 -55 -57 -21 -34 -40 -61 -43 -61 -3 1 -22 28 -42 60 -21 33
--44 60 -53 60 -8 0 -16 -1 -16 -2z"
-      />
-      {/* Letter B */}
-      <Path
-        d="M1340 500 c-1 -5 -1 -55 -1 -110 0 -55 0 -104 1 -110 0 -6 34 -10 81
--10 71 0 80 2 77 18 -2 13 -15 18 -61 20 -56 3 -57 4 -57 32 0 29 1 30 48 30
-27 0 52 3 55 7 15 14 -18 33 -59 33 -42 0 -44 1 -44 30 l0 30 61 0 c52 0 60 2
-57 18 -3 14 -16 17 -81 20 -48 2 -77 -1 -77 -8z"
-      />
-      <Path
-        d="M1572 494 c-81 -57 -62 -190 33 -223 80 -27 150 30 150 122 0 43 -4
-52 -37 83 -31 28 -46 34 -81 34 -23 0 -53 -7 -65 -16z m113 -49 c47 -46 17
--135 -46 -135 -63 0 -91 79 -48 134 26 33 62 34 94 1z"
-      />
-
-      {/* Green sections - SOLUTIONS */}
-      <Path
-        d="M1832 494 c-32 -22 -30 -76 4 -103 15 -12 36 -21 48 -21 32 0 61 -24
-53 -44 -8 -19 -54 -21 -92 -4 -20 9 -28 9 -38 -1 -9 -10 -7 -16 11 -31 73 -60
-188 -16 168 63 -7 28 -50 57 -85 57 -11 0 -27 7 -36 16 -33 33 28 59 76 33 25
--13 51 -5 43 14 -13 36 -112 50 -152 21z"
-        fill="#5cb800"
-      />
-      <Path
-        d="M2062 494 c-52 -36 -67 -115 -32 -172 42 -69 130 -79 186 -21 25 26
-29 38 29 85 0 51 -3 58 -37 90 -31 28 -46 34 -81 34 -23 0 -53 -7 -65 -16z
-m109 -43 c18 -14 24 -29 24 -59 0 -52 -26 -82 -72 -82 -28 0 -36 5 -50 34 -21
-44 -8 95 27 113 34 17 44 16 71 -6z"
-        fill="#5cb800"
-      />
-      <Path
-        d="M2510 491 c0 -22 19 -32 49 -24 20 5 21 2 21 -90 0 -84 2 -98 19
--106 35 -19 45 9 38 110 l-6 90 37 -3 c31 -3 37 0 37 17 0 18 -8 20 -97 23
--91 3 -98 1 -98 -17z"
-        fill="#5cb800"
-      />
-      <Path
-        d="M2740 396 c0 -87 3 -116 15 -126 23 -19 35 -2 35 49 l0 47 50 1 50 1
-0 -43 c0 -45 22 -77 41 -58 6 6 8 58 7 124 -3 106 -4 114 -23 114 -17 0 -20
--8 -23 -47 l-3 -48 -50 0 -49 0 0 34 c0 47 -9 66 -31 66 -18 0 -19 -9 -19
--114z"
-        fill="#5cb800"
-      />
-    </G>
-  </Svg>
-)
-
 // Define the PDF Document
 const InvoicePDF = ({ invoice }: { invoice: InvoiceDetailedInfo }) => (
   <Document>
@@ -370,8 +286,8 @@ const InvoicePDF = ({ invoice }: { invoice: InvoiceDetailedInfo }) => (
       {/* Header with Logo */}
       <View style={styles.header}>
         <View style={styles.logoContainer}>
-          {/* Using the new SVG logo */}
-          <CompanyLogo />
+          {/* Using the logo image from public directory */}
+          <Image style={styles.logo} src="/the_logo1.png" />
         </View>
         <View style={styles.invoiceHeaderRight}>
           <Text style={styles.invoiceTitle}>INVOICE</Text>
