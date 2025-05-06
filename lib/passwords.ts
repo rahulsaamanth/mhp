@@ -23,25 +23,22 @@ async function pbkdf2(
     {
       name: "PBKDF2",
       salt: salt,
-      iterations: 600000, // High iteration count for security
+      iterations: 600000,
       hash: "SHA-256",
     },
     key,
-    256 // 256-bit key
+    256
   )
 }
 
 export async function hashPassword(password: string): Promise<string> {
-  // Generate a random salt
   const salt = crypto.getRandomValues(new Uint8Array(16))
   const derivedKey = await pbkdf2(password, salt)
 
-  // Combine salt and derived key
   const combined = new Uint8Array(salt.length + derivedKey.byteLength)
   combined.set(salt)
   combined.set(new Uint8Array(derivedKey), salt.length)
 
-  // Return as base64 string
   return Buffer.from(combined).toString("base64")
 }
 
@@ -50,18 +47,29 @@ export async function comparePasswords(
   hashedPassword: string
 ): Promise<boolean> {
   try {
-    // Decode the stored hash
     const combined = Buffer.from(hashedPassword, "base64")
 
-    // Extract salt and hash
-    const salt = combined.slice(0, 16)
-    const storedHash = combined.slice(16)
+    const saltBytes = combined.slice(0, 16)
+    const storedHashBytes = combined.slice(16)
 
-    // Hash the input password with the same salt
-    const derivedKey = await pbkdf2(password, new Uint8Array(salt))
+    const salt = Uint8Array.from(saltBytes)
 
-    // Compare in constant time
-    return Buffer.from(derivedKey).equals(storedHash)
+    const derivedKey = await pbkdf2(password, salt)
+
+    const derivedKeyArray = new Uint8Array(derivedKey)
+
+    const storedHashArray = Uint8Array.from(storedHashBytes)
+
+    if (derivedKeyArray.length !== storedHashArray.length) {
+      return false
+    }
+
+    let result = 0
+    for (let i = 0; i < derivedKeyArray.length; i++) {
+      result |= (derivedKeyArray[i] ?? 0) ^ (storedHashArray[i] ?? 0)
+    }
+
+    return result === 0
   } catch {
     return false
   }

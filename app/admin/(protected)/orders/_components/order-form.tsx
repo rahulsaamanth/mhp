@@ -1,6 +1,6 @@
 "use client"
 
-import { ChevronLeft, Loader, PlusCircle, X } from "lucide-react"
+import { ChevronLeft, Loader, PlusCircle, X, Search } from "lucide-react"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import {
@@ -62,6 +62,7 @@ import { createOrder, updateOrder } from "../_lib/actions"
 import { DatePicker } from "@/components/date-picker"
 
 import { ProductSearchDialog } from "./product-search-dialog"
+import { UserSearchDialog } from "./user-search-dialog"
 
 type OrderFormProps = {
   props: {
@@ -95,7 +96,7 @@ export const OrderForm = ({
     customerPhone: orderData?.customerPhone ?? "",
     customerEmail: orderData?.customerEmail ?? "",
     isGuestOrder: orderData?.isGuestOrder ?? false,
-    storeId: orderData?.storeId ?? "",
+    storeId: stores.find((store) => store.code === "MANGALORE-01")?.id ?? "",
     orderType: orderData?.orderType ?? "OFFLINE",
     orderItems: orderData?.orderItems ?? [],
     subtotal: orderData?.subtotal ?? 0,
@@ -232,6 +233,14 @@ export const OrderForm = ({
     }
   }, [form])
 
+  useEffect(() => {
+    const orderType = form.watch("orderType")
+
+    if (orderType === "OFFLINE") {
+      form.setValue("isGuestOrder", true)
+    }
+  }, [form.watch("orderType"), form])
+
   const onSubmit = async (data: z.infer<typeof createOrderSchema>) => {
     console.log("onSubmit function called with data:", data)
     try {
@@ -293,6 +302,7 @@ export const OrderForm = ({
   }
 
   const [showProductSearch, setShowProductSearch] = useState(false)
+  const [showUserSearch, setShowUserSearch] = useState(false)
 
   return (
     <Form {...form}>
@@ -480,55 +490,14 @@ export const OrderForm = ({
 
                       {!form.watch("isGuestOrder") && (
                         <div className="grid gap-3">
-                          <FormField
-                            control={form.control}
-                            name="userId"
-                            render={({ field }) => (
-                              <FormItem>
-                                <FormLabel>Select User</FormLabel>
-                                <FormControl>
-                                  <Select
-                                    onValueChange={(value) => {
-                                      field.onChange(value)
-                                      const user = users.find(
-                                        (u) => u.id === value
-                                      )
-                                      if (user) {
-                                        form.setValue(
-                                          "customerName",
-                                          user.name || ""
-                                        )
-                                        form.setValue(
-                                          "customerEmail",
-                                          user.email || ""
-                                        )
-                                        form.setValue(
-                                          "customerPhone",
-                                          user.phone || ""
-                                        )
-                                      }
-                                    }}
-                                    value={field.value}
-                                  >
-                                    <SelectTrigger>
-                                      <SelectValue placeholder="Select user" />
-                                    </SelectTrigger>
-                                    <SelectContent>
-                                      {users.map((user) => (
-                                        <SelectItem
-                                          key={user.id}
-                                          value={user.id}
-                                        >
-                                          {user.name} ({user.email})
-                                        </SelectItem>
-                                      ))}
-                                    </SelectContent>
-                                  </Select>
-                                </FormControl>
-                                <FormMessage />
-                              </FormItem>
-                            )}
-                          />
+                          <Button
+                            type="button"
+                            variant="outline"
+                            onClick={() => setShowUserSearch(true)}
+                          >
+                            <Search className="h-4 w-4 mr-2" />
+                            Search Users
+                          </Button>
                         </div>
                       )}
 
@@ -587,6 +556,17 @@ export const OrderForm = ({
                           )}
                         />
                       </div>
+
+                      <UserSearchDialog
+                        open={showUserSearch}
+                        onOpenChange={setShowUserSearch}
+                        onUserSelect={(user) => {
+                          form.setValue("userId", user.id)
+                          form.setValue("customerName", user.name)
+                          form.setValue("customerEmail", user.email)
+                          form.setValue("customerPhone", user.phone)
+                        }}
+                      />
                     </div>
                   </CardContent>
                 </Card>
@@ -884,7 +864,7 @@ export const OrderForm = ({
                       onProductSelect={(product) => {
                         append({
                           ...product,
-                          imageUrl: product.imageUrl || undefined, // Convert null to undefined
+                          imageUrl: product.imageUrl || undefined,
                         })
                       }}
                     />
