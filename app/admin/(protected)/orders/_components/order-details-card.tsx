@@ -229,37 +229,20 @@ export function OrderDetailsCard({
               </ul>
 
               {/* Address section */}
-              {(currentOrderDetails.shippingAddress ||
-                currentOrderDetails.billingAddress) && (
+              {currentOrderDetails.shippingAddress && (
                 <>
                   <Separator className="my-2" />
                   <div className="grid gap-2">
-                    {currentOrderDetails.shippingAddress && (
-                      <div>
-                        <h5 className="text-xs font-medium">
-                          Shipping Address
-                        </h5>
-                        <p className="text-xs text-muted-foreground">
-                          {currentOrderDetails.shippingAddress.street},{" "}
-                          {currentOrderDetails.shippingAddress.city},{" "}
-                          {currentOrderDetails.shippingAddress.state},{" "}
-                          {currentOrderDetails.shippingAddress.postalCode},{" "}
-                          {currentOrderDetails.shippingAddress.country}
-                        </p>
-                      </div>
-                    )}
-                    {currentOrderDetails.billingAddress && (
-                      <div>
-                        <h5 className="text-xs font-medium">Billing Address</h5>
-                        <p className="text-xs text-muted-foreground">
-                          {currentOrderDetails.billingAddress.street},{" "}
-                          {currentOrderDetails.billingAddress.city},{" "}
-                          {currentOrderDetails.billingAddress.state},{" "}
-                          {currentOrderDetails.billingAddress.postalCode},{" "}
-                          {currentOrderDetails.billingAddress.country}
-                        </p>
-                      </div>
-                    )}
+                    <div>
+                      <h5 className="text-xs font-medium">Delivery Address</h5>
+                      <p className="text-xs text-muted-foreground">
+                        {currentOrderDetails.shippingAddress.street},{" "}
+                        {currentOrderDetails.shippingAddress.city},{" "}
+                        {currentOrderDetails.shippingAddress.state},{" "}
+                        {currentOrderDetails.shippingAddress.postalCode},{" "}
+                        {currentOrderDetails.shippingAddress.country}
+                      </p>
+                    </div>
                   </div>
                 </>
               )}
@@ -273,7 +256,8 @@ export function OrderDetailsCard({
                 Products
               </div>
               <div className="space-y-3 max-h-64 overflow-y-auto pr-2">
-                {currentOrderDetails.products?.length > 0 ? (
+                {currentOrderDetails?.products &&
+                currentOrderDetails.products.length > 0 ? (
                   currentOrderDetails.products.map((product) => (
                     <div
                       key={product.id}

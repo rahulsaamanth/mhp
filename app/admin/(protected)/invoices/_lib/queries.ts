@@ -49,16 +49,8 @@ export interface InvoiceDetailedInfo
   totalAmountPaid: number
   paymentMethod?: string
   paymentStatus: typeof paymentStatus
-  shippingAddressId?: string
-  billingAddressId?: string
+  addressId?: string
   shippingAddress?: {
-    street: string
-    city: string
-    state: string
-    postalCode: string
-    country: string
-  }
-  billingAddress?: {
     street: string
     city: string
     state: string
@@ -150,8 +142,7 @@ export async function getInvoices(input: GetInvoicesSchema) {
                                 o."userId",
                                 o."invoiceNumber",
                                 o."shippingCost",
-                                o."shippingAddressId", 
-                                o."billingAddressId",
+                                o."addressId",
                                 o."isGuestOrder",
                                 o."customerName",
                                 o."customerEmail",
@@ -233,42 +224,32 @@ export async function getInvoices(input: GetInvoicesSchema) {
   )()
 }
 
-// Helper function to fetch addresses
+// Helper function to fetch shipping address
 async function fetchAddresses(
   tx: any,
   invoiceInfo: Partial<InvoiceDetailedInfo>
 ) {
   try {
-    if (!invoiceInfo.shippingAddressId && !invoiceInfo.billingAddressId) {
+    if (!invoiceInfo.addressId) {
       return {}
     }
 
-    const shippingAddressId = invoiceInfo.shippingAddressId
-    const billingAddressId = invoiceInfo.billingAddressId
-
-    const shippingAddressPromise = shippingAddressId
-      ? tx.execute(
-          sql`SELECT "street", "city", "state", "postalCode", "country" FROM "Address" WHERE "id" = ${shippingAddressId}`
-        )
-      : Promise.resolve({ rows: [] })
-
-    const billingAddressPromise = billingAddressId
-      ? tx.execute(
-          sql`SELECT "street", "city", "state", "postalCode", "country" FROM "Address" WHERE "id" = ${billingAddressId}`
-        )
-      : Promise.resolve({ rows: [] })
-
-    const [shippingAddressResult, billingAddressResult] = await Promise.all([
-      shippingAddressPromise,
-      billingAddressPromise,
-    ])
+    const addressResult = await tx.execute(sql`
+      SELECT 
+        "street",
+        "city", 
+        "state",
+        "postalCode",
+        "country"
+      FROM "Address"
+      WHERE "id" = ${invoiceInfo.addressId}
+    `)
 
     return {
-      shippingAddress: shippingAddressResult.rows[0] || null,
-      billingAddress: billingAddressResult.rows[0] || null,
+      shippingAddress: addressResult.rows[0] || null,
     }
   } catch (error) {
-    console.error("Error fetching addresses:", error)
+    console.error("Error fetching address:", error)
     return {}
   }
 }

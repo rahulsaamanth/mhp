@@ -196,11 +196,11 @@ export function InvoiceDetailsModal({
             </div>
           </div>
 
-          {/* Shipping & Billing Address */}
-          <div className="grid grid-cols-2 gap-8 pt-2">
+          {/* Address Section */}
+          <div className="grid grid-cols-1 gap-8 pt-2">
             <div className="space-y-1">
               <h3 className="font-semibold text-sm uppercase text-muted-foreground">
-                Shipping Address
+                Delivery Address
               </h3>
               {invoiceDetails.shippingAddress ? (
                 <address className="not-italic text-sm">
@@ -215,26 +215,6 @@ export function InvoiceDetailsModal({
               ) : (
                 <p className="text-muted-foreground text-sm">
                   No shipping address
-                </p>
-              )}
-            </div>
-            <div className="space-y-1">
-              <h3 className="font-semibold text-sm uppercase text-muted-foreground">
-                Billing Address
-              </h3>
-              {invoiceDetails.billingAddress ? (
-                <address className="not-italic text-sm">
-                  <p>{invoiceDetails.billingAddress.street}</p>
-                  <p>
-                    {invoiceDetails.billingAddress.city},{" "}
-                    {invoiceDetails.billingAddress.state}{" "}
-                    {invoiceDetails.billingAddress.postalCode}
-                  </p>
-                  <p>{invoiceDetails.billingAddress.country}</p>
-                </address>
-              ) : (
-                <p className="text-muted-foreground text-sm">
-                  No billing address
                 </p>
               )}
             </div>

@@ -7,6 +7,7 @@ async function seed() {
   console.log("🌱 Seeding started...")
 
   // await db.delete(schema.review)
+  await db.delete(schema.payment)
   await db.delete(schema.orderDetails)
   await db.delete(schema.order)
   await db.delete(schema.productInventory)
@@ -20,7 +21,7 @@ async function seed() {
   await db.delete(schema.user)
   await db.delete(schema.address)
   await db.delete(schema.productVariant)
-  await db.delete(schema.paymentMethod)
+  // await db.delete(schema.paymentMethod)
 
   const hashedPassword = await hashPassword("password123")
 
@@ -1216,8 +1217,7 @@ async function seed() {
         totalAmountPaid: 1035,
         deliveryStatus: "OUT_FOR_DELIVERY",
         paymentStatus: "PAID",
-        shippingAddressId: addresses[0]?.id!,
-        billingAddressId: addresses[0]?.id!,
+        addressId: addresses[0]?.id!,
         invoiceNumber: `INV-${new Date().getFullYear()}-${String(new Date().getMonth() + 1).padStart(2, "0")}-${String(Math.floor(Math.random() * 100000)).padStart(5, "0")}`,
         estimatedDeliveryDate: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000), // 7 days from now
       },
@@ -1232,8 +1232,7 @@ async function seed() {
         totalAmountPaid: 85,
         deliveryStatus: "DELIVERED",
         paymentStatus: "PAID",
-        shippingAddressId: addresses[1]?.id!,
-        billingAddressId: addresses[1]?.id!,
+        addressId: addresses[1]?.id!,
         invoiceNumber: `INV-${new Date().getFullYear()}-${String(new Date().getMonth() + 1).padStart(2, "0")}-${String(Math.floor(Math.random() * 100000)).padStart(5, "0")}`,
         estimatedDeliveryDate: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000), // 7 days from now
       },
@@ -1248,8 +1247,7 @@ async function seed() {
         totalAmountPaid: 775,
         deliveryStatus: "PROCESSING",
         paymentStatus: "PAID",
-        shippingAddressId: addresses[2]?.id!,
-        billingAddressId: addresses[2]?.id!,
+        addressId: addresses[2]?.id!,
         invoiceNumber: `INV-${new Date().getFullYear()}-${String(new Date().getMonth() + 1).padStart(2, "0")}-${String(Math.floor(Math.random() * 100000)).padStart(5, "0")}`,
         estimatedDeliveryDate: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000), // 7 days from now
       },
@@ -1264,8 +1262,7 @@ async function seed() {
         totalAmountPaid: 290,
         deliveryStatus: "SHIPPED",
         paymentStatus: "PAID",
-        shippingAddressId: addresses[3]?.id!,
-        billingAddressId: addresses[3]?.id!,
+        addressId: addresses[3]?.id!,
         invoiceNumber: `INV-${new Date().getFullYear()}-${String(new Date().getMonth() + 1).padStart(2, "0")}-${String(Math.floor(Math.random() * 100000)).padStart(5, "0")}`,
         estimatedDeliveryDate: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000), // 7 days from now
       },
@@ -1280,8 +1277,7 @@ async function seed() {
         totalAmountPaid: 155,
         deliveryStatus: "DELIVERED",
         paymentStatus: "PAID",
-        shippingAddressId: addresses[4]?.id!,
-        billingAddressId: addresses[4]?.id!,
+        addressId: addresses[4]?.id!,
         invoiceNumber: `INV-${new Date().getFullYear()}-${String(new Date().getMonth() + 1).padStart(2, "0")}-${String(Math.floor(Math.random() * 100000)).padStart(5, "0")}`,
         estimatedDeliveryDate: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000), // 7 days from now
       },

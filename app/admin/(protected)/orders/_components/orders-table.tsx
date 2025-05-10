@@ -56,13 +56,14 @@ export function OrdersTable({ promise }: OrderTableProps) {
   useEffect(() => {
     if (data && data.length > 0 && !selectedOrderId) {
       const firstOrder = data[0]
-      if (firstOrder && firstOrder.id) {
-        setSelectedOrderId(firstOrder.id)
+      const orderId = firstOrder?.id
+      if (orderId && typeof orderId === 'string') {
+        setSelectedOrderId(orderId)
 
         // Initialize the order details map with the first order
         setOrderDetails((prevDetails) => ({
           ...prevDetails,
-          [firstOrder.id]: firstOrder as unknown as OrderDetailedInfo,
+          [orderId]: firstOrder as OrderDetailedInfo,
         }))
       }
     }
@@ -75,7 +76,7 @@ export function OrdersTable({ promise }: OrderTableProps) {
       if (order) {
         setOrderDetails((prevDetails) => ({
           ...prevDetails,
-          [selectedOrderId]: order as unknown as OrderDetailedInfo,
+          [selectedOrderId]: order as OrderDetailedInfo,
         }))
       }
     }
@@ -99,14 +100,9 @@ export function OrdersTable({ promise }: OrderTableProps) {
 
   const enableAdvancedTable = featureFlags.includes("advancedTable")
 
-  // Create a TableForData type that includes dummy orderDetails property to match OrderForTable type
-  const tableData = data.map((order) => ({
-    ...order,
-    orderDetails: [], // Add empty orderDetails to satisfy the type
-  }))
-
+  // Pass the data directly without modifying it since the Order type from the schema already has the required fields
   const { table } = useDataTable({
-    data: tableData as unknown as OrderForTable[],
+    data: data as unknown as OrderForTable[],
     columns,
     pageCount,
     filterFields,
@@ -115,7 +111,7 @@ export function OrdersTable({ promise }: OrderTableProps) {
       sorting: [{ id: "orderDate", desc: true }],
       columnPinning: { right: ["actions"] },
     },
-    getRowId: (originalRow, index) => `${originalRow.id}-${index}`,
+    getRowId: (originalRow) => originalRow.id,
     shallow: false,
     clearOnDefault: true,
   })
@@ -161,7 +157,7 @@ export function OrdersTable({ promise }: OrderTableProps) {
       if (order) {
         setOrderDetails((prevDetails) => ({
           ...prevDetails,
-          [orderId]: order as unknown as OrderDetailedInfo,
+          [orderId]: order as OrderDetailedInfo,
         }))
       }
     }

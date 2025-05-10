@@ -19,9 +19,43 @@ interface CountResult {
 }
 
 // Interface for the detailed order information
-export interface OrderDetailedInfo
-  extends Omit<OrderWithComputedFields, "orderDetails"> {
-  products: {
+export interface OrderDetailedInfo {
+  id: string
+  userId?: string
+  customerName?: string
+  customerPhone?: string
+  customerEmail?: string | null
+  isGuestOrder: boolean
+  storeId?: string
+  discountCodeId?: string
+  orderDate: Date
+  subtotal: number
+  shippingCost: number
+  discount: number
+  tax: number
+  totalAmountPaid: number
+  orderType: (typeof orderType.enumValues)[number]
+  deliveryStatus: (typeof deliveryStatus.enumValues)[number]
+  addressId: string
+  paymentStatus: (typeof paymentStatus.enumValues)[number]
+  paymentIntentId?: string
+  invoiceNumber?: string
+  customerNotes?: string
+  adminNotes?: string
+  cancellationReason?: string
+  estimatedDeliveryDate?: Date
+  deliveredAt?: Date
+  userName?: string
+  userEmail?: string
+  userPhone?: string
+  shippingAddress?: {
+    street: string
+    city: string
+    state: string
+    postalCode: string
+    country: string
+  }
+  products?: {
     id: string
     name: string
     description: string
@@ -33,28 +67,6 @@ export interface OrderDetailedInfo
     potency: string
     packSize: number | null
   }[]
-  subtotal: number
-  shippingCost: number
-  paymentMethod?: string
-  shippingAddressId?: string
-  billingAddressId?: string
-  shippingAddress?: {
-    street: string
-    city: string
-    state: string
-    postalCode: string
-    country: string
-  }
-  billingAddress?: {
-    street: string
-    city: string
-    state: string
-    postalCode: string
-    country: string
-  }
-  userEmail: string
-  userPhone: string
-  invoiceNumber?: string
 }
 
 export async function getOrders(input: GetOrdersSchema) {
@@ -112,93 +124,86 @@ export async function getOrders(input: GetOrdersSchema) {
           }
         })
 
-        const { data, total } = await db.transaction(async (tx) => {
-          const data = (await tx.execute(sql`
-                            WITH OrderStats AS(
-                               SELECT 
-                                o."id",
-                                o."orderDate",
-                                o."totalAmountPaid",
-                                o."subtotal",
-                                o."paymentStatus",
-                                o."deliveryStatus",
-                                o."orderType",
-                                o."userId",
-                                o."invoiceNumber",
-                                o."shippingCost",
-                                o."shippingAddressId", 
-                                o."billingAddressId",
-                                o."isGuestOrder",
-                                o."customerName",
-                                o."customerPhone",
-                                o."customerEmail",
-                                o."storeId",
-                                o."discount",
-                                o."tax",
-                                u."name" as "userName",
-                                u."email" as "userEmail",
-                                u."phone" as "userPhone"
-                            FROM "Order" o
-                            LEFT JOIN "User" u ON u."id" = o."userId"
-                          
-                            WHERE ${whereClause}                                     
-                            )
-                            SELECT *
-                            FROM OrderStats
-                            ${orderBy.length ? sql`ORDER BY ${sql.join(orderBy, sql`, `)}` : sql``}
-                            LIMIT ${input.perPage}
-                            OFFSET ${offset}
-                            `)) as unknown as NeonHttpQueryResult<
-            Partial<OrderDetailedInfo>
-          >
+        const result = await db.transaction(async (tx) => {
+          const rawOrders = (await tx.execute(sql`
+            WITH OrderStats AS(
+               SELECT 
+                o."id",
+                o."orderDate",
+                o."totalAmountPaid",
+                o."subtotal",
+                o."paymentStatus",
+                o."deliveryStatus",
+                o."orderType",
+                o."userId",
+                o."invoiceNumber",
+                o."shippingCost",
+                o."addressId",
+                o."isGuestOrder",
+                o."customerName",
+                o."customerPhone",
+                o."customerEmail",
+                o."storeId",
+                o."discount",
+                o."tax",
+                u."name" as "userName",
+                u."email" as "userEmail",
+                u."phone" as "userPhone"
+            FROM "Order" o
+            LEFT JOIN "User" u ON u."id" = o."userId"
+            WHERE ${whereClause}                                     
+            )
+            SELECT *
+            FROM OrderStats
+            ${orderBy.length ? sql`ORDER BY ${sql.join(orderBy, sql`, `)}` : sql``}
+            LIMIT ${input.perPage}
+            OFFSET ${offset}
+          `)) as unknown as NeonHttpQueryResult<Partial<OrderDetailedInfo>>
 
           const totalResult = (await tx.execute(
             sql`
-                                SELECT COUNT(*) as count
-                                FROM "Order" o
-                                LEFT JOIN "User" u ON u."id" = o."userId"
-                                WHERE ${whereClause}
-                                `
+              SELECT COUNT(*) as count
+              FROM "Order" o
+              LEFT JOIN "User" u ON u."id" = o."userId"
+              WHERE ${whereClause}
+            `
           )) as unknown as NeonHttpQueryResult<CountResult>
 
           const total = Number(totalResult.rows[0]?.count) ?? 0
 
           // For each order, fetch its details
           const ordersWithDetails = await Promise.all(
-            data.rows.map(async (order) => {
+            rawOrders.rows.map(async (order) => {
               if (!order.id) return order
 
-              // Get addresses if they exist
-              const addressesData = await fetchAddresses(tx, order)
+              // Get shipping address if it exists
+              const shippingAddressData = await fetchShippingAddress(tx, order)
 
               // Get order details with product information
-              const orderDetails = await fetchOrderDetails(
-                tx,
-                order.id as string
-              )
+              const orderDetails = await fetchOrderDetails(tx, order.id)
 
               return {
                 ...order,
-                ...addressesData,
+                ...shippingAddressData,
                 ...orderDetails,
               }
             })
           )
 
           return {
-            data: ordersWithDetails as OrderDetailedInfo[],
+            data: ordersWithDetails,
             total,
           }
         })
 
-        const pageCount = Math.ceil(total / input.perPage)
+        const pageCount = Math.ceil(result.total / input.perPage)
 
         return {
-          data,
+          data: result.data,
           pageCount,
         }
       } catch (error) {
-        console.error(error)
+        console.error("Error fetching orders:", error)
         return {
           data: [],
           pageCount: 0,
@@ -213,72 +218,36 @@ export async function getOrders(input: GetOrdersSchema) {
   )()
 }
 
-// Helper function to fetch addresses
-async function fetchAddresses(tx: any, orderInfo: Partial<OrderDetailedInfo>) {
-  if (!(orderInfo.shippingAddressId || orderInfo.billingAddressId)) {
+// Helper function to fetch shipping address
+async function fetchShippingAddress(tx: any, orderInfo: Partial<OrderDetailedInfo>) {
+  if (!orderInfo.addressId) {
     return {}
   }
 
-  const addressIds = []
-  if (orderInfo.shippingAddressId) addressIds.push(orderInfo.shippingAddressId)
-  if (
-    orderInfo.billingAddressId &&
-    orderInfo.billingAddressId !== orderInfo.shippingAddressId
-  ) {
-    addressIds.push(orderInfo.billingAddressId)
-  }
-
-  if (addressIds.length === 0) return {}
-
-  const addressesData = (await tx.execute(sql`
+  const addressData = await tx.execute(sql`
     SELECT 
-      a."id",
-      a."street",
-      a."city",
-      a."state",
-      a."postalCode",
-      a."country"
-    FROM "Address" a
-    WHERE a."id" IN (${sql.join(
-      addressIds.map((id) => sql`${id}`),
-      sql`, `
-    )})
-  `)) as unknown as NeonHttpQueryResult<{
-    id: string
-    street: string
-    city: string
-    state: string
-    postalCode: string
-    country: string
-    type: string
-  }>
+      "street",
+      "city",
+      "state",
+      "postalCode",
+      "country"
+    FROM "Address"
+    WHERE "id" = ${orderInfo.addressId}
+  `)
 
-  const result: Partial<OrderDetailedInfo> = {}
-
-  if (addressesData.rows.length > 0) {
-    for (const address of addressesData.rows) {
-      if (address.id === orderInfo.shippingAddressId) {
-        result.shippingAddress = {
-          street: address.street,
-          city: address.city,
-          state: address.state,
-          postalCode: address.postalCode,
-          country: address.country,
-        }
-      }
-      if (address.id === orderInfo.billingAddressId) {
-        result.billingAddress = {
-          street: address.street,
-          city: address.city,
-          state: address.state,
-          postalCode: address.postalCode,
-          country: address.country,
-        }
-      }
-    }
+  if (addressData.rows.length === 0) {
+    return {}
   }
 
-  return result
+  return {
+    shippingAddress: {
+      street: addressData.rows[0].street,
+      city: addressData.rows[0].city,
+      state: addressData.rows[0].state,
+      postalCode: addressData.rows[0].postalCode,
+      country: addressData.rows[0].country,
+    },
+  }
 }
 
 // Helper function to fetch order details with products

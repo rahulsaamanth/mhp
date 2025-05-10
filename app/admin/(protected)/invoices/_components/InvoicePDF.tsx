@@ -308,7 +308,7 @@ const InvoicePDF = ({ invoice }: { invoice: InvoiceDetailedInfo }) => (
         </View>
       </View>
 
-      {/* Invoice To/From Section */}
+      {/* Address Section */}
       <View style={styles.addressGrid}>
         <View style={styles.addressColumn}>
           <Text style={styles.addressTitle}>Invoice To</Text>
@@ -339,10 +339,10 @@ const InvoicePDF = ({ invoice }: { invoice: InvoiceDetailedInfo }) => (
         </View>
       </View>
 
-      {/* Shipping & Billing Address */}
+      {/* Shipping Address */}
       <View style={styles.addressGrid}>
         <View style={styles.addressColumn}>
-          <Text style={styles.addressTitle}>Shipping Address</Text>
+          <Text style={styles.addressTitle}>Delivery Address</Text>
           {invoice.shippingAddress ? (
             <>
               <Text style={styles.addressText}>
@@ -359,27 +359,6 @@ const InvoicePDF = ({ invoice }: { invoice: InvoiceDetailedInfo }) => (
             </>
           ) : (
             <Text style={styles.addressText}>No shipping address provided</Text>
-          )}
-        </View>
-
-        <View style={styles.addressColumn}>
-          <Text style={styles.addressTitle}>Billing Address</Text>
-          {invoice.billingAddress ? (
-            <>
-              <Text style={styles.addressText}>
-                {safeString(invoice.billingAddress.street)}
-              </Text>
-              <Text style={styles.addressText}>
-                {safeString(invoice.billingAddress.city)},{" "}
-                {safeString(invoice.billingAddress.state)}{" "}
-                {safeString(invoice.billingAddress.postalCode)}
-              </Text>
-              <Text style={styles.addressText}>
-                {safeString(invoice.billingAddress.country)}
-              </Text>
-            </>
-          ) : (
-            <Text style={styles.addressText}>No billing address provided</Text>
           )}
         </View>
       </View>

@@ -250,10 +250,7 @@ export const createOrderSchema = z.object({
 
   // Financial details
   subtotal: z.number().min(0, "Subtotal must be positive"),
-  shippingCost: z
-    .number()
-    .min(0, "Shipping cost must not be negative")
-    .default(0),
+  shippingCost: z.number().min(0, "Shipping cost must not be negative").default(0),
   discount: z.number().min(0, "Discount must not be negative").default(0),
   tax: z.number().min(0, "Tax must not be negative").default(0),
   totalAmountPaid: z.number().min(0, "Total amount must be positive"),
@@ -269,8 +266,6 @@ export const createOrderSchema = z.object({
 
   // Address information
   shippingAddress: addressSchema,
-  billingAddress: addressSchema,
-  sameAsBilling: z.boolean().default(true),
 
   // Notes
   customerNotes: z.string().optional(),

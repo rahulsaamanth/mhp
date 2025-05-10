@@ -116,14 +116,6 @@ export const OrderForm = ({
       postalCode: "",
       country: "India",
     },
-    billingAddress: orderData?.billingAddress ?? {
-      street: "",
-      city: "",
-      state: "",
-      postalCode: "",
-      country: "India",
-    },
-    sameAsBilling: true,
     customerNotes: orderData?.customerNotes ?? "",
     adminNotes: orderData?.adminNotes ?? "",
     estimatedDeliveryDate: orderData?.estimatedDeliveryDate
@@ -212,14 +204,6 @@ export const OrderForm = ({
     form.watch("orderType"),
     form,
   ])
-
-  useEffect(() => {
-    const sameAsBilling = form.getValues("sameAsBilling")
-    if (sameAsBilling) {
-      const shippingAddress = form.getValues("shippingAddress")
-      form.setValue("billingAddress", shippingAddress)
-    }
-  }, [form.watch("sameAsBilling"), form.watch("shippingAddress"), form])
 
   useEffect(() => {
     const orderItems = form.getValues("orderItems")
@@ -326,14 +310,6 @@ export const OrderForm = ({
                 country: "India",
               })
             }
-
-            form.setValue("billingAddress", {
-              street: "In-Store Purchase",
-              city: "Local",
-              state: "Local",
-              postalCode: "000000",
-              country: "India",
-            })
           }
 
           const updatedValues = form.getValues()
@@ -662,133 +638,10 @@ export const OrderForm = ({
                             )}
                           />
                         </div>
-
-                        <FormField
-                          control={form.control}
-                          name="sameAsBilling"
-                          render={({ field }) => (
-                            <FormItem className="flex flex-row items-center space-x-3 space-y-0 rounded-md border p-4">
-                              <FormControl>
-                                <Checkbox
-                                  checked={field.value}
-                                  onCheckedChange={field.onChange}
-                                />
-                              </FormControl>
-                              <div className="space-y-1 leading-none">
-                                <FormLabel>
-                                  Use same address for billing
-                                </FormLabel>
-                              </div>
-                            </FormItem>
-                          )}
-                        />
                       </div>
                     </CardContent>
                   </Card>
                 )}
-
-                {!form.watch("sameAsBilling") &&
-                  form.watch("orderType") === "ONLINE" && (
-                    <Card className="py-3">
-                      <CardHeader>
-                        <CardTitle>Billing Address</CardTitle>
-                      </CardHeader>
-                      <CardContent>
-                        <div className="grid gap-6">
-                          <div className="grid gap-3">
-                            <FormField
-                              control={form.control}
-                              name="billingAddress.street"
-                              render={({ field }) => (
-                                <FormItem>
-                                  <FormLabel>Street Address</FormLabel>
-                                  <FormControl>
-                                    <Input
-                                      {...field}
-                                      placeholder="Enter street address"
-                                    />
-                                  </FormControl>
-                                  <FormMessage />
-                                </FormItem>
-                              )}
-                            />
-                          </div>
-
-                          <div className="grid gap-3 sm:grid-cols-2">
-                            <FormField
-                              control={form.control}
-                              name="billingAddress.city"
-                              render={({ field }) => (
-                                <FormItem>
-                                  <FormLabel>City</FormLabel>
-                                  <FormControl>
-                                    <Input
-                                      {...field}
-                                      placeholder="Enter city"
-                                    />
-                                  </FormControl>
-                                  <FormMessage />
-                                </FormItem>
-                              )}
-                            />
-
-                            <FormField
-                              control={form.control}
-                              name="billingAddress.state"
-                              render={({ field }) => (
-                                <FormItem>
-                                  <FormLabel>State</FormLabel>
-                                  <FormControl>
-                                    <Input
-                                      {...field}
-                                      placeholder="Enter state"
-                                    />
-                                  </FormControl>
-                                  <FormMessage />
-                                </FormItem>
-                              )}
-                            />
-                          </div>
-
-                          <div className="grid gap-3 sm:grid-cols-2">
-                            <FormField
-                              control={form.control}
-                              name="billingAddress.postalCode"
-                              render={({ field }) => (
-                                <FormItem>
-                                  <FormLabel>Postal Code</FormLabel>
-                                  <FormControl>
-                                    <Input
-                                      {...field}
-                                      placeholder="Enter postal code"
-                                    />
-                                  </FormControl>
-                                  <FormMessage />
-                                </FormItem>
-                              )}
-                            />
-
-                            <FormField
-                              control={form.control}
-                              name="billingAddress.country"
-                              render={({ field }) => (
-                                <FormItem>
-                                  <FormLabel>Country</FormLabel>
-                                  <FormControl>
-                                    <Input
-                                      {...field}
-                                      placeholder="Enter country"
-                                    />
-                                  </FormControl>
-                                  <FormMessage />
-                                </FormItem>
-                              )}
-                            />
-                          </div>
-                        </div>
-                      </CardContent>
-                    </Card>
-                  )}
 
                 <Card className="my-4">
                   <CardHeader>

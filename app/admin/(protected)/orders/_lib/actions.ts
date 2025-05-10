@@ -68,26 +68,6 @@ export async function createOrder(data: z.infer<typeof createOrderSchema>) {
 
       const shippingAddressId = shippingAddressResult?.id
 
-      // Create billing address (or use shipping address)
-      let billingAddressId = shippingAddressId
-
-      if (!data.sameAsBilling) {
-        const [billingAddressResult] = await tx
-          .insert(address)
-          .values({
-            userId: data.userId || user.id!,
-            street: data.billingAddress.street,
-            city: data.billingAddress.city,
-            state: data.billingAddress.state,
-            postalCode: data.billingAddress.postalCode,
-            country: data.billingAddress.country,
-            type: "BILLING",
-          })
-          .returning({ id: address.id })
-
-        billingAddressId = billingAddressResult?.id
-      }
-
       const invoiceNumber = `INV-${new Date().getFullYear()}-${String(
         new Date().getMonth() + 1
       ).padStart(
@@ -114,8 +94,7 @@ export async function createOrder(data: z.infer<typeof createOrderSchema>) {
           totalAmountPaid: data.totalAmountPaid,
           orderType: data.orderType,
           deliveryStatus: data.deliveryStatus,
-          shippingAddressId: String(shippingAddressId),
-          billingAddressId: String(billingAddressId),
+          addressId: String(shippingAddressId),
           paymentStatus: data.paymentStatus,
           paymentIntentId: data.paymentIntentId || null,
           customerNotes: data.customerNotes || null,
