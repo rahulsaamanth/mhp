@@ -75,7 +75,9 @@ export function getColumns({
       header: ({ column }) => (
         <DataTableColumnHeader column={column} title="Total Amount" />
       ),
-      cell: ({ row }) => <span>₹{row.original.totalAmountPaid}</span>,
+      cell: ({ row }) => (
+        <span>₹{row.original.totalAmountPaid.toFixed(2)}</span>
+      ),
       enableSorting: true,
       enableHiding: false,
     },

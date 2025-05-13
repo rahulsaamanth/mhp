@@ -67,6 +67,7 @@ export interface OrderDetailedInfo {
     potency: string
     packSize: number | null
   }[]
+  discountCode?: string // Added discount code field
 }
 
 export async function getOrders(input: GetOrdersSchema) {
@@ -219,7 +220,10 @@ export async function getOrders(input: GetOrdersSchema) {
 }
 
 // Helper function to fetch shipping address
-async function fetchShippingAddress(tx: any, orderInfo: Partial<OrderDetailedInfo>) {
+async function fetchShippingAddress(
+  tx: any,
+  orderInfo: Partial<OrderDetailedInfo>
+) {
   if (!orderInfo.addressId) {
     return {}
   }
@@ -252,41 +256,36 @@ async function fetchShippingAddress(tx: any, orderInfo: Partial<OrderDetailedInf
 
 // Helper function to fetch order details with products
 async function fetchOrderDetails(tx: any, orderId: string) {
-  const orderDetailsData = (await tx.execute(sql`
-    SELECT 
-      od."id" as "orderDetailId",
-      od."quantity",
-      od."unitPrice",
-      pv."id" as "variantId",
-      pv."variantName",
-      pv."potency",
-      pv."packSize",
-      pv."variantImage",
-      p."id" as "productId",
-      p."name" as "productName",
-      p."description" as "productDescription",
-      p."form" as "productForm"
-    FROM "OrderDetails" od
-    JOIN "ProductVariant" pv ON od."productVariantId" = pv."id"
-    JOIN "Product" p ON pv."productId" = p."id"
-    WHERE od."orderId" = ${orderId}
-  `)) as unknown as NeonHttpQueryResult<{
-    orderDetailId: string
-    quantity: number
-    unitPrice: number
-    variantId: string
-    variantName: string
-    potency: string
-    packSize: number | null
-    variantImage: string[] | null
-    productId: string
-    productName: string
-    productDescription: string
-    productForm: string
-  }>
+  const [orderDetailsData, discountCodeData] = await Promise.all([
+    tx.execute(sql`
+      SELECT 
+        od."id" as "orderDetailId",
+        od."quantity",
+        od."unitPrice",
+        pv."id" as "variantId",
+        pv."variantName",
+        pv."potency",
+        pv."packSize",
+        pv."variantImage",
+        p."id" as "productId",
+        p."name" as "productName",
+        p."description" as "productDescription",
+        p."form" as "productForm"
+      FROM "OrderDetails" od
+      JOIN "ProductVariant" pv ON od."productVariantId" = pv."id"
+      JOIN "Product" p ON pv."productId" = p."id"
+      WHERE od."orderId" = ${orderId}
+    `),
+    tx.execute(sql`
+      SELECT dc."code"
+      FROM "Order" o
+      LEFT JOIN "DiscountCode" dc ON o."discountCodeId" = dc."id"
+      WHERE o."id" = ${orderId}
+    `)
+  ]) as [any, any]
 
   // Transform the data to match the OrderDetailedInfo interface
-  const products = orderDetailsData.rows.map((item) => ({
+  const products = orderDetailsData.rows.map((item: any) => ({
     id: item.productId,
     name: item.productName,
     description: item.productDescription,
@@ -304,6 +303,6 @@ async function fetchOrderDetails(tx: any, orderId: string) {
 
   return {
     products,
-    // No need to return subtotal as it's already in the order record
+    discountCode: discountCodeData.rows[0]?.code || "None"
   }
 }

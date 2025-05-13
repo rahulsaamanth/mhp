@@ -58,7 +58,7 @@ export const DashboardLatestProductsShortTable = ({
     <Card className="rounded-sm">
       <CardHeader className="flex-row justify-between w-full">
         <CardTitle>Latest Products</CardTitle>
-        <Link href="/products/new">
+        <Link href="/admin/products/new">
           <Button variant="default">Add New</Button>
         </Link>
       </CardHeader>

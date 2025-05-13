@@ -111,10 +111,10 @@ const MaxFileSize = 1024 * 1024 * 5
 // }
 
 const s3Client = new S3Client({
-  region: process.env.AWS_BUCKET_REGION!,
+  region: process.env.S3_BUCKET_REGION!,
   credentials: {
-    accessKeyId: process.env.AWS_ACCESS_KEY!,
-    secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY!,
+    accessKeyId: process.env.S3_ACCESS_KEY!,
+    secretAccessKey: process.env.S3_SECRET_KEY!,
   },
 })
 
@@ -137,14 +137,14 @@ export async function uploadToS3(
     }
 
     const command = new PutObjectCommand({
-      Bucket: process.env.AWS_BUCKET_NAME!,
+      Bucket: process.env.S3_BUCKET_NAME!,
       Key: fileName,
       Body: fileBuffer,
       ContentType: fileType,
     })
 
     await s3Client.send(command)
-    return `https://${process.env.AWS_BUCKET_NAME}.s3.${process.env.AWS_BUCKET_REGION}.amazonaws.com/${fileName}`
+    return `https://${process.env.S3_BUCKET_NAME}.s3.${process.env.S3_BUCKET_REGION}.amazonaws.com/${fileName}`
   } catch (error) {
     console.error("Error uploading to S3:", error)
     throw new Error("Failed to upload file")

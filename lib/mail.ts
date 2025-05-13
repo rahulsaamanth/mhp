@@ -1,5 +1,3 @@
-import { Resend } from "resend"
-
 export const sendVerificationEmail = async (email: string, token: string) => {
   const resetLink = `${process.env.PUBLIC_APP_URL!}/admin/auth/new-verification?token=${token}`
 

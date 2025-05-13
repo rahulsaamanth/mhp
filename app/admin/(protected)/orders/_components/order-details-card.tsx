@@ -192,6 +192,16 @@ export function OrderDetailsCard({
                   </span>
                 </li>
                 <li className="flex items-center justify-between">
+                  <span className="text-muted-foreground">Discount Code</span>
+                  <span>{currentOrderDetails.discountCode || "None"}</span>
+                </li>
+                <li className="flex items-center justify-between">
+                  <span className="text-muted-foreground">Discount</span>
+                  <span>
+                    ₹{currentOrderDetails.discount?.toFixed(2) || "0.00"}
+                  </span>
+                </li>
+                <li className="flex items-center justify-between">
                   <span className="text-muted-foreground">Shipping</span>
                   <span>
                     ₹{currentOrderDetails.shippingCost?.toFixed(2) || "0.00"}
