@@ -487,7 +487,7 @@ export async function createProduct(data: z.infer<typeof createProductSchema>) {
 }
 
 const s3Client = new S3Client({
-  region: process.env.S3_BUCKET_REGION!,
+  region: process.env.S3_REGION!,
   credentials: {
     accessKeyId: process.env.S3_ACCESS_KEY!,
     secretAccessKey: process.env.S3_SECRET_KEY!,
@@ -523,14 +523,14 @@ export async function uploadProductImage(
     }
 
     const command = new PutObjectCommand({
-      Bucket: process.env.S3_BUCKET_NAME!,
+      Bucket: process.env.S3_NAME!,
       Key: fileName,
       Body: fileBuffer,
       ContentType: fileType,
     })
 
     await s3Client.send(command)
-    return `https://${process.env.S3_BUCKET_NAME}.s3.${process.env.S3_BUCKET_REGION}.amazonaws.com/${fileName}`
+    return `https://${process.env.S3_NAME}.s3.${process.env.S3_REGION}.amazonaws.com/${fileName}`
   } catch (error) {
     console.error("Error uploading to S3:", error)
     throw new Error("Failed to upload file")
