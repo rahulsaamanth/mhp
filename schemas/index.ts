@@ -250,7 +250,10 @@ export const createOrderSchema = z.object({
 
   // Financial details
   subtotal: z.number().min(0, "Subtotal must be positive"),
-  shippingCost: z.number().min(0, "Shipping cost must not be negative").default(0),
+  shippingCost: z
+    .number()
+    .min(0, "Shipping cost must not be negative")
+    .default(0),
   discount: z.number().min(0, "Discount must not be negative").default(0),
   tax: z.number().min(0, "Tax must not be negative").default(0),
   totalAmountPaid: z.number().min(0, "Total amount must be positive"),
@@ -276,3 +279,19 @@ export const createOrderSchema = z.object({
 })
 
 export type OrderCreateInput = z.infer<typeof createOrderSchema>
+
+export const addDiscountCodeSchema = z.object({
+  code: z
+    .string()
+    .min(3, "Code must be at least 3 characters")
+    .max(50, "Code cannot exceed 50 characters")
+    .trim(),
+  description: z.string().nullable().optional(),
+  discountAmount: z.number().positive("Discount amount must be positive"),
+  discountType: z.enum(["PERCENTAGE", "FIXED"]),
+  isActive: z.boolean().default(true),
+  allProducts: z.boolean().default(true),
+  minimumOrderValue: z.number().nullable().optional(),
+  limit: z.number().nullable().optional(),
+  expiresAt: z.date().nullable().optional(),
+})
