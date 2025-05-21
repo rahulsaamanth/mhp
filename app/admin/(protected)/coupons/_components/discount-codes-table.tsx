@@ -105,7 +105,7 @@ const DiscountCodesTable: React.FC<DiscountCodesTableProps> = ({
                 </div>
               </td>
               <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                ${discount.minimumOrderValue}
+                ₹{discount.minimumOrderValue}
               </td>
               <td className="px-6 py-4 whitespace-nowrap">
                 <span
