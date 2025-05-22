@@ -179,7 +179,7 @@ export function InvoicesTable({ promise }: InvoiceTableProps) {
     filterFields,
     enableAdvancedFilter: false,
     initialState: {
-      sorting: [{ id: "orderDate", desc: true }],
+      sorting: [{ id: "createdAt", desc: true }],
       columnPinning: { right: ["actions"] },
     },
     getRowId: (originalRow, index) => `${originalRow.id}-${index}`,
@@ -202,7 +202,7 @@ export function InvoicesTable({ promise }: InvoiceTableProps) {
       "paymentStatus",
     ]
 
-    const desktopColumns = ["id", "orderDate"]
+    const desktopColumns = ["id", "createdAt"]
 
     table.getAllColumns().forEach((column) => {
       const columnId = column.id

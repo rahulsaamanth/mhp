@@ -60,7 +60,7 @@ export function InvoiceDetailsModal({
 
   // Format date for display
   const formattedDate = invoiceDetails
-    ? new Date(invoiceDetails.orderDate).toLocaleDateString()
+    ? new Date(invoiceDetails.createdAt).toLocaleDateString()
     : ""
 
   // Render a skeleton when no invoice is selected

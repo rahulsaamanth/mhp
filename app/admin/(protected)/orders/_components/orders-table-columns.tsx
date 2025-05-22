@@ -103,12 +103,12 @@ export function getColumns({
       enableHiding: true,
     },
     {
-      accessorKey: "orderDate",
+      accessorKey: "createdAt",
       header: ({ column }) => (
         <DataTableColumnHeader column={column} title="Order Date" />
       ),
       cell: ({ row }) => {
-        const date = new Date(row.original.orderDate)
+        const date = new Date(row.original.createdAt)
         return <span>{date.toLocaleDateString()}</span>
       },
       enableSorting: true,

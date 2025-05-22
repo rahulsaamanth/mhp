@@ -28,7 +28,7 @@ export interface OrderDetailedInfo {
   isGuestOrder: boolean
   storeId?: string
   discountCodeId?: string
-  orderDate: Date
+  createdAt: Date
   subtotal: number
   shippingCost: number
   discount: number
@@ -99,9 +99,9 @@ export async function getOrders(input: GetOrdersSchema) {
                 ? sql`u."name" ILIKE ${`%${input.userName}%`}`
                 : sql`1=1`,
               fromDate
-                ? sql`o."orderDate" >= ${fromDate.toISOString()}`
+                ? sql`o."createdAt" >= ${fromDate.toISOString()}`
                 : sql`1=1`,
-              toDate ? sql`o."orderDate" <= ${toDate.toISOString()}` : sql`1=1`,
+              toDate ? sql`o."createdAt" <= ${toDate.toISOString()}` : sql`1=1`,
             ].filter(Boolean)
 
         const whereClause =
@@ -116,12 +116,12 @@ export async function getOrders(input: GetOrdersSchema) {
           switch (column) {
             case "totalAmountPaid":
               return sql`"totalAmountPaid" ${sql.raw(direction)} NULLS LAST`
-            case "orderDate":
-              return sql`"orderDate" ${sql.raw(direction)}`
+            case "createdAt":
+              return sql`"createdAt" ${sql.raw(direction)}`
             case "userName":
               return sql`"userName" ${sql.raw(direction)} NULLS LAST`
             default:
-              return sql`"orderDate" DESC`
+              return sql`"createdAt" DESC`
           }
         })
 
@@ -130,7 +130,7 @@ export async function getOrders(input: GetOrdersSchema) {
             WITH OrderStats AS(
                SELECT 
                 o."id",
-                o."orderDate",
+                o."createdAt",
                 o."totalAmountPaid",
                 o."subtotal",
                 o."paymentStatus",
@@ -256,7 +256,7 @@ async function fetchShippingAddress(
 
 // Helper function to fetch order details with products
 async function fetchOrderDetails(tx: any, orderId: string) {
-  const [orderDetailsData, discountCodeData] = await Promise.all([
+  const [orderDetailsData, discountCodeData] = (await Promise.all([
     tx.execute(sql`
       SELECT 
         od."id" as "orderDetailId",
@@ -281,8 +281,8 @@ async function fetchOrderDetails(tx: any, orderId: string) {
       FROM "Order" o
       LEFT JOIN "DiscountCode" dc ON o."discountCodeId" = dc."id"
       WHERE o."id" = ${orderId}
-    `)
-  ]) as [any, any]
+    `),
+  ])) as [any, any]
 
   // Transform the data to match the OrderDetailedInfo interface
   const products = orderDetailsData.rows.map((item: any) => ({
@@ -303,6 +303,6 @@ async function fetchOrderDetails(tx: any, orderId: string) {
 
   return {
     products,
-    discountCode: discountCodeData.rows[0]?.code || "None"
+    discountCode: discountCodeData.rows[0]?.code || "None",
   }
 }

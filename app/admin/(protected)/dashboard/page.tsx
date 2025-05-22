@@ -51,8 +51,8 @@ async function getSalesData({
 }) {
   unstable_noStore()
   const whereClause = []
-  if (createdAfter) whereClause.push(gte(order.orderDate, createdAfter))
-  if (createdBefore) whereClause.push(lte(order.orderDate, createdBefore))
+  if (createdAfter) whereClause.push(gte(order.createdAt, createdAfter))
+  if (createdBefore) whereClause.push(lte(order.createdAt, createdBefore))
 
   const [salesData, salesChartData]: [
     { salesCount: number; totalAmount: number }[],
@@ -66,12 +66,12 @@ async function getSalesData({
       .from(order),
     db
       .select({
-        createdAt: order.orderDate,
+        createdAt: order.createdAt,
         totalAmountPaid: order.totalAmountPaid,
       })
       .from(order)
       .where(and(...whereClause))
-      .orderBy(order.orderDate),
+      .orderBy(order.createdAt),
   ])
 
   const { array, format } = getChartDateArray(
@@ -177,8 +177,8 @@ async function getProductsSoldByCategory({
 }) {
   unstable_noStore()
   const whereClause = []
-  if (createdAfter) whereClause.push(gte(order.orderDate, createdAfter))
-  if (createdBefore) whereClause.push(lte(order.orderDate, createdBefore))
+  if (createdAfter) whereClause.push(gte(order.createdAt, createdAfter))
+  if (createdBefore) whereClause.push(lte(order.createdAt, createdBefore))
 
   const mainCategory = aliasedTable(category, "mainCategory")
 
@@ -239,7 +239,7 @@ async function getLatestOrders() {
     })
     .from(order)
     .leftJoin(user, eq(order.userId, user.id))
-    .orderBy(desc(order.orderDate))
+    .orderBy(desc(order.createdAt))
     .limit(5)
   return data
 }

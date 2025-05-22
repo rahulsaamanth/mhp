@@ -60,7 +60,7 @@ export interface InvoiceDetailedInfo
   userEmail: string
   userPhone: string
   invoiceNumber?: string
-  orderDate: Date
+  createdAt: Date
   isGuestOrder: boolean
   customerName: string
   customerEmail: string | null
@@ -96,9 +96,9 @@ export async function getInvoices(input: GetInvoicesSchema) {
                 ? sql`u."name" ILIKE ${`%${input.userName}%`}`
                 : sql`1=1`,
               fromDate
-                ? sql`o."orderDate" >= ${fromDate.toISOString()}`
+                ? sql`o."createdAt" >= ${fromDate.toISOString()}`
                 : sql`1=1`,
-              toDate ? sql`o."orderDate" <= ${toDate.toISOString()}` : sql`1=1`,
+              toDate ? sql`o."createdAt" <= ${toDate.toISOString()}` : sql`1=1`,
               // Only include orders that have an invoice number
               sql`o."invoiceNumber" IS NOT NULL`,
             ].filter(Boolean)
@@ -115,14 +115,14 @@ export async function getInvoices(input: GetInvoicesSchema) {
           switch (column) {
             case "totalAmountPaid":
               return sql`"totalAmountPaid" ${sql.raw(direction)} NULLS LAST`
-            case "orderDate":
-              return sql`"orderDate" ${sql.raw(direction)}`
+            case "createdAt":
+              return sql`"createdAt" ${sql.raw(direction)}`
             case "userName":
               return sql`"userName" ${sql.raw(direction)} NULLS LAST`
             case "invoiceNumber":
               return sql`"invoiceNumber" ${sql.raw(direction)} NULLS LAST`
             default:
-              return sql`"orderDate" DESC`
+              return sql`"createdAt" DESC`
           }
         })
 
@@ -131,7 +131,7 @@ export async function getInvoices(input: GetInvoicesSchema) {
                             WITH InvoiceStats AS(
                                SELECT 
                                 o."id",
-                                o."orderDate",
+                                o."createdAt",
                                 o."totalAmountPaid",
                                 o."subtotal",
                                 o."tax",

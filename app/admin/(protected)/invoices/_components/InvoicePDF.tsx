@@ -297,8 +297,8 @@ const InvoicePDF = ({ invoice }: { invoice: InvoiceDetailedInfo }) => (
             {formatDate(
               invoice.date
                 ? String(invoice.date)
-                : invoice.orderDate
-                  ? String(invoice.orderDate)
+                : invoice.createdAt
+                  ? String(invoice.createdAt)
                   : undefined
             )}
           </Text>

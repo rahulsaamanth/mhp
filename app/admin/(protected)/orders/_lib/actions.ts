@@ -27,6 +27,9 @@ export async function getOrder(id: string) {
             product: true,
           },
         },
+        address: true,
+        store: true,
+        user: true,
       },
     })
 
@@ -85,7 +88,7 @@ export async function createOrder(data: z.infer<typeof createOrderSchema>) {
           customerEmail: data.customerEmail || null,
           isGuestOrder: data.isGuestOrder,
           storeId: data.storeId,
-          orderDate: new Date(),
+          createdAt: new Date(),
           invoiceNumber: invoiceNumber,
           subtotal: data.subtotal,
           shippingCost: data.shippingCost,
@@ -196,19 +199,134 @@ export async function updateOrder(
       }
     }
 
-    // Implementation for updating an order would go here
-    // This would be more complex as it would need to handle:
-    // 1. Updating order details
-    // 2. Potentially adjusting inventory based on changes
-    // 3. Handling address changes
-    // 4. Managing order items that were added/removed/modified
+    // Implementation for updating an order
+    return await db.transaction(async (tx) => {
+      // Get the current order to compare changes
+      const currentOrder = await tx.query.order.findFirst({
+        where: eq(order.id, orderId),
+        with: {
+          orderDetails: {
+            with: {
+              product: true,
+            },
+          },
+          address: true,
+        },
+      })
 
-    revalidateTag("orders")
+      if (!currentOrder) {
+        return {
+          success: false,
+          error: "Order not found",
+        }
+      }
 
-    return {
-      success: true,
-      orderId,
-    }
+      // Update shipping address
+      await tx
+        .update(address)
+        .set({
+          street: data.shippingAddress.street,
+          city: data.shippingAddress.city,
+          state: data.shippingAddress.state,
+          postalCode: data.shippingAddress.postalCode,
+          country: data.shippingAddress.country,
+          updatedAt: new Date(),
+        })
+        .where(eq(address.id, currentOrder.addressId))
+
+      // Update the order details
+      await tx
+        .update(order)
+        .set({
+          userId: data.userId || user.id!,
+          customerName: data.customerName,
+          customerPhone: data.customerPhone,
+          customerEmail: data.customerEmail || null,
+          isGuestOrder: data.isGuestOrder,
+          storeId: data.storeId,
+          subtotal: data.subtotal,
+          shippingCost: data.shippingCost,
+          discount: data.discount,
+          tax: data.tax,
+          totalAmountPaid: data.totalAmountPaid,
+          orderType: data.orderType,
+          deliveryStatus: data.deliveryStatus,
+          paymentStatus: data.paymentStatus,
+          paymentIntentId: data.paymentIntentId || null,
+          customerNotes: data.customerNotes || null,
+          adminNotes: data.adminNotes || null,
+          estimatedDeliveryDate: data.estimatedDeliveryDate,
+          updatedAt: new Date(),
+        })
+        .where(eq(order.id, orderId))
+
+      // Handle order items
+      // 1. Delete existing order details
+      await tx.delete(orderDetails).where(eq(orderDetails.orderId, orderId))
+
+      // 2. Add new order details
+      for (const item of data.orderItems) {
+        // Check if product exists in inventory and update stock
+        if (item.productVariantId) {
+          const inventoryItem = await tx.query.productInventory.findFirst({
+            where: and(
+              eq(productInventory.productVariantId, item.productVariantId),
+              eq(productInventory.storeId, data.storeId)
+            ),
+          })
+
+          if (inventoryItem) {
+            // Calculate previous and new stock
+            const previousStock = inventoryItem.stock
+            const newStock = previousStock - item.quantity
+
+            // Add order details
+            await tx.insert(orderDetails).values({
+              orderId: orderId,
+              productVariantId: item.productVariantId,
+              quantity: item.quantity,
+              unitPrice: item.unitPrice,
+              originalPrice: item.originalPrice,
+            })
+
+            // Update inventory stock
+            await tx
+              .update(productInventory)
+              .set({
+                stock: newStock,
+                updatedAt: new Date(),
+              })
+              .where(
+                and(
+                  eq(productInventory.productVariantId, item.productVariantId),
+                  eq(productInventory.storeId, data.storeId)
+                )
+              )
+
+            // Record inventory movement
+            await tx.insert(inventoryManagement).values({
+              productVariantId: item.productVariantId,
+              orderId,
+              type: "OUT",
+              quantity: item.quantity,
+              reason: `Order Update ${orderId}`,
+              storeId: data.storeId,
+              previousStock,
+              newStock,
+              createdAt: new Date(),
+              createdBy: user.id!,
+            })
+          }
+        }
+      }
+
+      revalidateTag("orders")
+
+      return {
+        success: true,
+        orderId,
+      }
+    })
   } catch (error) {
     console.error("Error updating order:", error)
     return {

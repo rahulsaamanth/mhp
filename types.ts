@@ -80,7 +80,7 @@ export type Order = {
   id: string
   user: User
   userId: string
-  orderDate: Date
+  createdAt: Date
   totalAmountPaid: number
   orderDetails: OrderDetails[]
 }
@@ -210,7 +210,7 @@ export interface InvoiceForTable {
   userName: string
   userEmail: string
   userPhone: string
-  orderDate: string
+  createdAt: string
   totalAmountPaid: number
   paymentStatus: string
   invoiceDetails: any[]

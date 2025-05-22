@@ -1208,7 +1208,7 @@ async function seed() {
     .values([
       {
         userId: users[0]?.id!,
-        orderDate: new Date(),
+        // createdAt: new Date(),
         orderType: "ONLINE",
         subtotal: 985,
         shippingCost: 50,
@@ -1223,7 +1223,7 @@ async function seed() {
       },
       {
         userId: users[1]?.id!,
-        orderDate: new Date(),
+        // createdAt: new Date(),
         orderType: "ONLINE",
         subtotal: 85,
         shippingCost: 0,
@@ -1238,7 +1238,7 @@ async function seed() {
       },
       {
         userId: users[2]?.id!,
-        orderDate: new Date(),
+        // createdAt: new Date(),
         orderType: "ONLINE",
         subtotal: 775,
         shippingCost: 0,
@@ -1253,7 +1253,7 @@ async function seed() {
       },
       {
         userId: users[3]?.id!,
-        orderDate: new Date(),
+        // createdAt: new Date(),
         orderType: "ONLINE",
         subtotal: 290,
         shippingCost: 0,
@@ -1268,7 +1268,7 @@ async function seed() {
       },
       {
         userId: users[4]?.id!,
-        orderDate: new Date(),
+        // createdAt: new Date(),
         orderType: "ONLINE",
         subtotal: 155,
         shippingCost: 0,

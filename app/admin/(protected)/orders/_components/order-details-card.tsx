@@ -88,7 +88,7 @@ export function OrderDetailsCard({
 
   // Format date for display
   const formattedDate = selectedOrder
-    ? new Date(selectedOrder.orderDate).toLocaleDateString()
+    ? new Date(selectedOrder.createdAt).toLocaleDateString()
     : ""
 
   // Render a skeleton when no order is selected

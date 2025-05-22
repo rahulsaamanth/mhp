@@ -105,7 +105,26 @@ const UsersPage = async ({
   //   </div>
   // )
   return (
-    <div>{/* <ClientDataTable data={columnData} columns={columns} /> */}</div>
+    <div className="container mx-auto py-12">
+      <div className="flex flex-col items-center justify-center text-center space-y-6">
+        <div className="text-6xl">🏗️</div>
+        <h1 className="text-3xl font-bold">Users Page Under Construction</h1>
+        <p className="text-xl text-muted-foreground max-w-md">
+          This page is currently being built and will be available soon. Check
+          back later for the complete users management interface.
+        </p>
+        <div className="border border-dashed border-gray-300 rounded-lg p-8 w-full max-w-2xl mt-6">
+          <p className="text-muted-foreground">Future features will include:</p>
+          <ul className="list-disc list-inside mt-4 text-left space-y-2">
+            <li>User management dashboard</li>
+            <li>Customer analytics</li>
+            <li>User role management</li>
+            <li>User activity tracking</li>
+            <li>Customer engagement metrics</li>
+          </ul>
+        </div>
+      </div>
+    </div>
   )
 }
 

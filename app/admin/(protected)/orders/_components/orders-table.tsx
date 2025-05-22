@@ -57,7 +57,7 @@ export function OrdersTable({ promise }: OrderTableProps) {
     if (data && data.length > 0 && !selectedOrderId) {
       const firstOrder = data[0]
       const orderId = firstOrder?.id
-      if (orderId && typeof orderId === 'string') {
+      if (orderId && typeof orderId === "string") {
         setSelectedOrderId(orderId)
 
         // Initialize the order details map with the first order
@@ -108,7 +108,7 @@ export function OrdersTable({ promise }: OrderTableProps) {
     filterFields,
     enableAdvancedFilter: enableAdvancedTable,
     initialState: {
-      sorting: [{ id: "orderDate", desc: true }],
+      sorting: [{ id: "createdAt", desc: true }],
       columnPinning: { right: ["actions"] },
     },
     getRowId: (originalRow) => originalRow.id,
@@ -126,7 +126,7 @@ export function OrdersTable({ promise }: OrderTableProps) {
       "paymentStatus",
     ]
 
-    const desktopColumns = ["id", "orderDate"]
+    const desktopColumns = ["id", "createdAt"]
 
     table.getAllColumns().forEach((column) => {
       const columnId = column.id

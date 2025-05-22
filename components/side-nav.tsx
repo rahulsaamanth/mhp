@@ -35,7 +35,7 @@ const SideNav = () => {
 
         <div className="flex h-5/6 flex-col gap-2 md:px-6">
           {SIDENAV_ITEMS.map((item, idx) => {
-            const bottomItems = idx === SIDENAV_ITEMS.length - 2
+            const bottomItems = idx === SIDENAV_ITEMS.length - 1
             return bottomItems ? (
               <div key={idx} className="mt-auto">
                 <MenuItem

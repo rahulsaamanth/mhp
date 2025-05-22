@@ -44,11 +44,11 @@ export const SIDENAV_ITEMS: SideNavItem[] = [
     // icon: "flowbite:sale-percent-outline",
   },
 
-  {
-    title: "Admin",
-    path: "/admin/admin",
-    icon: "eos-icons:admin-outlined",
-  },
+  // {
+  //   title: "Admin",
+  //   path: "/admin/admin",
+  //   icon: "eos-icons:admin-outlined",
+  // },
   {
     title: "Settings",
     path: "/admin/settings",

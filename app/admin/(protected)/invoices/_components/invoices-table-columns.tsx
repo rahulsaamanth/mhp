@@ -95,13 +95,13 @@ export function getColumns({ setRowAction, onViewInvoice }: GetColumnsOptions) {
       enableHiding: true,
     },
     {
-      accessorKey: "orderDate",
+      accessorKey: "createdAt",
       header: ({ column }) => (
         <DataTableColumnHeader column={column} title="Date" />
       ),
       cell: ({ row }) => {
         return (
-          <div>{new Date(row.original.orderDate).toLocaleDateString()}</div>
+          <div>{new Date(row.original.createdAt).toLocaleDateString()}</div>
         )
       },
       enableSorting: true,

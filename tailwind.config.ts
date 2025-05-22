@@ -18,9 +18,8 @@ const config = {
       },
     },
     fontFamily: {
-      sans: ['"MD IO"', "sans-serif"],
-      mdIo: ['"MD IO"', "sans-serif"],
-      mdIoUltra: ['"MD IO Ultra"', "sans-serif"],
+      sans: ["var(--font-roboto-mono)", "monospace"],
+      mono: ["var(--font-roboto-mono)", "monospace"],
     },
     extend: {
       colors: {
