@@ -1,10 +1,8 @@
 // /home/rahulsaamanth/Code0/mhp/app/admin/(protected)/invoices/page.tsx
 import React from "react"
 import { DateRangePicker } from "@/components/date-range-picker"
-import { Skeleton } from "@/components/ui/skeleton"
 import { getValidFilters } from "@/lib/data-table"
 import { SearchParams } from "@/types"
-import { DataTableSkeleton } from "@/components/data-table/data-table-skeleton"
 import { InvoicesTable } from "./_components/invoices-table"
 import { searchParamsCache } from "./_lib/validations"
 import { getInvoices } from "./_lib/queries"
@@ -31,30 +29,17 @@ export default async function InvoicesPage(props: InvoicePageProps) {
           <div className="flex-1">
             <div className="flex justify-between items-center mb-4">
               <h1 className="text-2xl font-bold">Invoices</h1>
-              <React.Suspense fallback={<Skeleton className="h-7 w-52" />}>
-                <DateRangePicker
-                  triggerSize="sm"
-                  triggerClassName="ml-auto w-56 sm:w-60"
-                  align="end"
-                  shallow={false}
-                />
-              </React.Suspense>
+              <DateRangePicker
+                triggerSize="sm"
+                triggerClassName="ml-auto w-56 sm:w-60"
+                align="end"
+                shallow={false}
+              />
             </div>
             <div className="overflow-auto">
-              <React.Suspense
-                fallback={
-                  <DataTableSkeleton
-                    columnCount={6}
-                    searchableColumnCount={1}
-                    filterableColumnCount={0}
-                    shrinkZero
-                  />
-                }
-              >
-                <div className="w-full overflow-auto">
-                  <InvoicesTable promise={invoicesPromise} />
-                </div>
-              </React.Suspense>
+              <div className="w-full overflow-auto">
+                <InvoicesTable promise={invoicesPromise} />
+              </div>
             </div>
           </div>
         </div>

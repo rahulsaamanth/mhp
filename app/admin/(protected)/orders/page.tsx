@@ -1,13 +1,11 @@
 import React from "react"
 import { DateRangePicker } from "@/components/date-range-picker"
 import { Card } from "@/components/ui/card"
-import { Skeleton } from "@/components/ui/skeleton"
 import { getValidFilters } from "@/lib/data-table"
 import { SearchParams } from "@/types"
 import { FeatureFlagsProvider } from "./_components/feature-flags-provider"
 import { getOrders } from "./_lib/queries"
 import { searchParamsCache } from "./_lib/validations"
-import { DataTableSkeleton } from "@/components/data-table/data-table-skeleton"
 import { OrdersTable } from "./_components/orders-table"
 
 interface OrderPageProps {
@@ -32,30 +30,17 @@ export default async function OrdersPage(props: OrderPageProps) {
           <div className="flex-1">
             <FeatureFlagsProvider>
               <div className="flex justify-end mb-4">
-                <React.Suspense fallback={<Skeleton className="h-7 w-52" />}>
-                  <DateRangePicker
-                    triggerSize="sm"
-                    triggerClassName="ml-auto w-56 sm:w-60"
-                    align="end"
-                    shallow={false}
-                  />
-                </React.Suspense>
+                <DateRangePicker
+                  triggerSize="sm"
+                  triggerClassName="ml-auto w-56 sm:w-60"
+                  align="end"
+                  shallow={false}
+                />
               </div>
               <div className="overflow-auto">
-                <React.Suspense
-                  fallback={
-                    <DataTableSkeleton
-                      columnCount={6}
-                      searchableColumnCount={1}
-                      filterableColumnCount={0}
-                      shrinkZero
-                    />
-                  }
-                >
-                  <div className="w-full overflow-auto">
-                    <OrdersTable promise={ordersPromise} />
-                  </div>
-                </React.Suspense>
+                <div className="w-full overflow-auto">
+                  <OrdersTable promise={ordersPromise} />
+                </div>
               </div>
             </FeatureFlagsProvider>
           </div>

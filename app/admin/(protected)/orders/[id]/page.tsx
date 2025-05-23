@@ -6,7 +6,6 @@ import React from "react"
 import { getOrder } from "../_lib/actions"
 import { notFound } from "next/navigation"
 import { OrderForm } from "../_components/order-form"
-import { OrderFormSkeleton } from "../_components/loading-ui"
 
 import { eq } from "drizzle-orm"
 
@@ -104,7 +103,11 @@ export default function EditOrderPage({
   }
 
   if (isOrderLoading || isFormDataLoading) {
-    return <OrderFormSkeleton />
+    return (
+      <div className="container mx-auto p-6 text-center">
+        <p className="text-lg">Loading order details...</p>
+      </div>
+    )
   }
 
   // Check if orderData is an error object
