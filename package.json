@@ -11,7 +11,7 @@
     "format": "prettier --write \"**/*.{js,ts,jsx,tsx}\"",
     "db:seed": "dotenv -e .env -- tsx db/seed.ts",
     "db:truncate": "dotenv -e .env -- tsx db/truncate",
-    "mail": "dotenv -e .env -- tsx lib/mail.ts"
+    "send-mail": "dotenv -e .env -- tsx lib/send-mail.ts"
   },
   "dependencies": {
     "@auth/drizzle-adapter": "^1.8.0",
