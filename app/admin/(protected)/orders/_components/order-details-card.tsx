@@ -245,7 +245,18 @@ export function OrderDetailsCard({
                   <div className="grid gap-2">
                     <div>
                       <h5 className="text-xs font-medium">Delivery Address</h5>
+                      <p className="text-xs font-medium">
+                        {currentOrderDetails.customerName}
+                      </p>
                       <p className="text-xs text-muted-foreground">
+                        {currentOrderDetails.customerPhone}
+                      </p>
+                      <p className="text-xs text-muted-foreground">
+                        {currentOrderDetails.isGuestOrder
+                          ? currentOrderDetails.customerEmail
+                          : currentOrderDetails.userEmail}
+                      </p>
+                      <p className="text-xs text-muted-foreground mt-1">
                         {currentOrderDetails.shippingAddress.street},{" "}
                         {currentOrderDetails.shippingAddress.city},{" "}
                         {currentOrderDetails.shippingAddress.state},{" "}
@@ -341,11 +352,9 @@ export function OrderDetailsCard({
                       {currentOrderDetails.userEmail}
                     </p>
                   )}
-                  {currentOrderDetails.userPhone && (
-                    <p className="text-xs text-muted-foreground">
-                      {currentOrderDetails.userPhone}
-                    </p>
-                  )}
+                  <p className="text-xs text-muted-foreground">
+                    {currentOrderDetails.customerPhone}
+                  </p>
                 </div>
               </div>
             </div>

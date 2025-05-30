@@ -66,7 +66,7 @@ export function InvoiceDetailsModal({
   // Render a skeleton when no invoice is selected
   if (!invoiceDetails) {
     return (
-      <Dialog open={isOpen} onOpenChange={onClose}>
+      <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
         <DialogContent className="max-w-3xl">
           <DialogHeader>
             <DialogTitle>
@@ -85,7 +85,7 @@ export function InvoiceDetailsModal({
   }
 
   return (
-    <Dialog open={isOpen} onOpenChange={onClose}>
+    <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
       <DialogContent
         className="max-w-4xl print:shadow-none print:border-none print:max-w-full"
         id="invoice-content"
@@ -179,11 +179,6 @@ export function InvoiceDetailsModal({
                   ? invoiceDetails.customerEmail
                   : invoiceDetails.userEmail}
               </p>
-              <p className="text-sm">
-                {invoiceDetails.isGuestOrder
-                  ? invoiceDetails.customerPhone
-                  : invoiceDetails.userPhone}
-              </p>
             </div>
 
             <div className="space-y-1">
@@ -204,7 +199,12 @@ export function InvoiceDetailsModal({
               </h3>
               {invoiceDetails.shippingAddress ? (
                 <address className="not-italic text-sm">
-                  <p>{invoiceDetails.shippingAddress.street}</p>
+                  <p className="font-medium">{invoiceDetails.customerName}</p>
+                  <p>{invoiceDetails.customerPhone}</p>
+                  <p>{invoiceDetails.customerEmail}</p>
+                  <p className="mt-1">
+                    {invoiceDetails.shippingAddress.street}
+                  </p>
                   <p>
                     {invoiceDetails.shippingAddress.city},{" "}
                     {invoiceDetails.shippingAddress.state}{" "}

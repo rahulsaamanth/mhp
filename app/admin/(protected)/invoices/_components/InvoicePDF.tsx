@@ -346,6 +346,15 @@ const InvoicePDF = ({ invoice }: { invoice: InvoiceDetailedInfo }) => (
           {invoice.shippingAddress ? (
             <>
               <Text style={styles.addressText}>
+                {safeString(invoice.customerName)}
+              </Text>
+              <Text style={styles.addressText}>
+                {safeString(invoice.customerPhone)}
+              </Text>
+              <Text style={styles.addressText}>
+                {safeString(invoice.customerEmail)}
+              </Text>
+              <Text style={styles.addressText}>
                 {safeString(invoice.shippingAddress.street)}
               </Text>
               <Text style={styles.addressText}>
