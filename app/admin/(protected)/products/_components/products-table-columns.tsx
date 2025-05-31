@@ -57,15 +57,28 @@ export function getColumns({
     {
       accessorKey: "image",
       header: ({ column }) => <></>,
-      cell: ({ row }) => (
-        <div className="size-40 flex items-center justify-center overflow-hidden">
-          <img
-            alt="failed to load"
-            className="aspect-square rounded-md object-contain w-full h-full"
-            src={row.getValue("image")}
-          />
-        </div>
-      ),
+      cell: ({ row }) => {
+        const imageUrl = row.getValue("image") as string
+        return (
+          <div className="size-40 flex items-center justify-center overflow-hidden">
+            {imageUrl ? (
+              <img
+                alt={`${row.getValue("name")}`}
+                className="aspect-square rounded-md object-contain w-full h-full"
+                src={imageUrl}
+                onError={(e) => {
+                  // Fallback if image fails to load
+                  ;(e.target as HTMLImageElement).src = "/placeholder-image.jpg"
+                }}
+              />
+            ) : (
+              <div className="aspect-square rounded-md bg-muted w-full h-full flex items-center justify-center text-muted-foreground">
+                No image
+              </div>
+            )}
+          </div>
+        )
+      },
       enableSorting: false,
       enableHiding: false,
     },

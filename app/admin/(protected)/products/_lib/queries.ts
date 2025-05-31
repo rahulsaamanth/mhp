@@ -125,10 +125,14 @@ export async function getProducts(input: GetProductsSchema) {
                 c."name" as "categoryName",
                 m."name" as "manufacturerName",
                 (
-                  SELECT (pv."variantImage"[1])
-                  FROM "ProductVariant" pv
-                  WHERE pv."productId" = p.id
-                  LIMIT 1
+                  SELECT (
+                    SELECT (variants."variantImage"[1])
+                    FROM "ProductVariant" variants
+                    WHERE variants."productId" = p.id 
+                    AND variants."variantImage" IS NOT NULL 
+                    AND array_length(variants."variantImage", 1) > 0
+                    LIMIT 1
+                  )
                 ) as "image",
                 (
                   SELECT COUNT(DISTINCT od."orderId")
