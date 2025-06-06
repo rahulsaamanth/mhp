@@ -2,8 +2,8 @@
 
 import { db } from "@/db/db"
 import { useQuery } from "@tanstack/react-query"
-import React from "react"
-import { getOrder } from "../_lib/actions"
+import React, { useEffect } from "react"
+import { getOrder, updateOrderAdminStatus } from "../_lib/actions"
 import { notFound } from "next/navigation"
 import { OrderForm } from "../_components/order-form"
 
@@ -40,6 +40,20 @@ export default function EditOrderPage({
     queryKey: ["orders", id],
     queryFn: () => getOrder(id),
   })
+
+  // Update the order status to OPENED when the page loads
+  useEffect(() => {
+    if (orderData && !("error" in orderData) && orderData.length > 0) {
+      const order = orderData[0]
+      // Only update if the current status is NEW
+      if (
+        order &&
+        (order.adminViewStatus === "NEW" || !order.adminViewStatus)
+      ) {
+        updateOrderAdminStatus(id, "OPENED").catch(console.error)
+      }
+    }
+  }, [orderData, id])
 
   // Fetch additional data needed for the form
   const {

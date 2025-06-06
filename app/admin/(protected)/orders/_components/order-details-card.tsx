@@ -38,8 +38,10 @@ import {
 } from "lucide-react"
 import Image from "next/image"
 import Link from "next/link"
-import React from "react"
+import React, { useEffect } from "react"
 import { OrderDetailedInfo } from "../_lib/queries"
+import { AdminStatusSelector } from "./admin-status-selector"
+import { updateOrderAdminStatus } from "../_lib/actions"
 
 interface OrderDetailsCardProps {
   selectedOrderId: string | null
@@ -63,6 +65,19 @@ export function OrderDetailsCard({
   const currentOrderDetails = selectedOrderId
     ? orderDetails[selectedOrderId]
     : null
+
+  // Automatically mark the order as "OPENED" when viewed by admin
+  useEffect(() => {
+    if (selectedOrderId && selectedOrder) {
+      // Only update if current status is NEW
+      if (
+        selectedOrder.adminViewStatus === "NEW" ||
+        !selectedOrder.adminViewStatus
+      ) {
+        updateOrderAdminStatus(selectedOrderId, "OPENED").catch(console.error)
+      }
+    }
+  }, [selectedOrderId, selectedOrder])
 
   // Find the previous/next order for navigation
   const findAdjacentOrder = (direction: "prev" | "next") => {
@@ -141,7 +156,14 @@ export function OrderDetailsCard({
           </CardTitle>
           <CardDescription>Date: {formattedDate}</CardDescription>
         </div>
-        <div className="ml-auto flex items-center gap-1">
+        <div className="ml-auto flex items-center gap-2">
+          {selectedOrderId && (
+            <AdminStatusSelector
+              orderId={selectedOrderId}
+              currentStatus={selectedOrder?.adminViewStatus || "NEW"}
+              className="h-8"
+            />
+          )}
           <Button asChild size="sm" variant="outline" className="h-8 gap-1">
             <Link
               href={`/admin/invoices?invoiceNumber=${currentOrderDetails?.invoiceNumber || selectedOrder?.id}`}

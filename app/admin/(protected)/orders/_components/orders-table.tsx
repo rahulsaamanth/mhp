@@ -117,7 +117,12 @@ export function OrdersTable({ promise }: OrderTableProps) {
   })
 
   useEffect(() => {
-    const alwaysVisibleColumns = ["select", "userName", "totalAmountPaid"]
+    const alwaysVisibleColumns = [
+      "select",
+      "userName",
+      "totalAmountPaid",
+      "adminViewStatus",
+    ]
 
     const tabletColumns = [
       "userName",

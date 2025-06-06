@@ -56,10 +56,12 @@ export async function createOrder(data: z.infer<typeof createOrderSchema>) {
     // Start a transaction
     return await db.transaction(async (tx) => {
       // Create shipping address
+      // Make sure we always have a valid userId for the address
+      // For offline orders, we'll use the admin's userId if no specific user is provided
       const [shippingAddressResult] = await tx
         .insert(address)
         .values({
-          userId: data.userId || user.id!,
+          userId: data.userId || user.id!, // Always use admin's ID if no userId provided
           street: data.shippingAddress.street,
           city: data.shippingAddress.city,
           state: data.shippingAddress.state,
@@ -238,6 +240,7 @@ export async function updateOrder(
       await tx
         .update(order)
         .set({
+          // For offline orders, ensure we use the admin's ID if no user ID is provided
           userId: data.userId || user.id!,
           customerName: data.customerName,
           customerPhone: data.customerPhone,
@@ -371,6 +374,42 @@ export async function deleteOrders({ ids }: { ids: string[] }) {
     }
   } catch (error) {
     console.error("Error deleting orders:", error)
+    return {
+      success: false,
+      error: getErrorMessage(error),
+    }
+  }
+}
+
+/**
+ * Updates the admin view status of an order
+ */
+export async function updateOrderAdminStatus(
+  orderId: string,
+  status: "NEW" | "OPENED" | "PROCESSING" | "CLOSED"
+) {
+  try {
+    const user = await currentUser()
+
+    if (!user || user.role !== "ADMIN") {
+      return { success: false, error: "Unauthorized" }
+    }
+
+    // Update the order status in the database
+    await db
+      .update(order)
+      .set({
+        adminViewStatus: status,
+        updatedAt: new Date(),
+      })
+      .where(eq(order.id, orderId))
+
+    // Revalidate the orders page to reflect the changes
+    revalidateTag("orders")
+
+    return { success: true }
+  } catch (error) {
+    console.error("Error updating order admin status:", error)
     return {
       success: false,
       error: getErrorMessage(error),

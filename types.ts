@@ -198,6 +198,7 @@ export interface OrderWithComputedFields extends Order {
   storeId: string
   discount: number
   tax: number
+  adminViewStatus?: "NEW" | "OPENED" | "PROCESSING" | "CLOSED"
 }
 
 export type OrderForTable = OrderWithComputedFields

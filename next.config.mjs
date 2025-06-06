@@ -15,14 +15,14 @@ const nextConfig = {
     remotePatterns: [
       {
         protocol: "https",
-        hostname: "mhp-local.s3.ap-south-1.amazonaws.com",
+        hostname: "hs-media.s3.ap-south-1.amazonaws.com",
       },
       {
         protocol: "https",
         hostname: "healthyghar.com",
       },
     ],
-    // domains: ["mhp-local.s3.ap-south-1.amazonaws.com", "healthyghar.com"],
+    // domains: ["hs-media.s3.ap-south-1.amazonaws.com", "healthyghar.com"],
   },
   webpack: (config, { isServer }) => {
     if (!isServer) {

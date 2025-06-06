@@ -7,6 +7,7 @@ import { DataTableRowAction, Order, OrderForTable } from "@/types"
 import { ColumnDef } from "@tanstack/react-table"
 import Link from "next/link"
 import React from "react"
+import { AdminStatusBadge } from "./admin-status-badge"
 
 interface GetColumnProps {
   setRowAction: React.Dispatch<
@@ -122,6 +123,22 @@ export function getColumns({
       cell: ({ row }) => <span>{row.original.paymentStatus.toString()}</span>,
       enableSorting: false,
       enableHiding: true,
+    },
+    {
+      accessorKey: "adminViewStatus",
+      header: ({ column }) => (
+        <DataTableColumnHeader column={column} title="Admin Status" />
+      ),
+      cell: ({ row }) => {
+        const status = row.original.adminViewStatus || "NEW"
+        return (
+          <div className="flex items-center justify-center">
+            <AdminStatusBadge status={status} />
+          </div>
+        )
+      },
+      enableSorting: true,
+      enableHiding: false,
     },
   ]
 }

@@ -221,7 +221,16 @@ export const OrderForm = ({
     const orderType = form.watch("orderType")
 
     if (orderType === "OFFLINE") {
+      // For offline orders, set as guest order and ensure userId is properly handled
       form.setValue("isGuestOrder", true)
+
+      // If no user is selected and it's a guest order, clear the userId field
+      // The server will use the admin's ID as a fallback for the address
+      const currentUserId = form.watch("userId")
+      if (!currentUserId || currentUserId === "") {
+        // Don't explicitly set userId to null here, let the server handle it
+        console.log("Offline order: userId will be handled by server")
+      }
     }
   }, [form.watch("orderType"), form])
 

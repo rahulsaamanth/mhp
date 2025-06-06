@@ -48,6 +48,7 @@ export interface OrderDetailedInfo {
   userName?: string
   userEmail?: string
   userPhone?: string
+  adminViewStatus?: "NEW" | "OPENED" | "PROCESSING" | "CLOSED"
   shippingAddress?: {
     street: string
     city: string
@@ -147,6 +148,7 @@ export async function getOrders(input: GetOrdersSchema) {
                 o."storeId",
                 o."discount",
                 o."tax",
+                o."adminViewStatus",
                 u."name" as "userName",
                 u."email" as "userEmail",
                 u."phone" as "userPhone"

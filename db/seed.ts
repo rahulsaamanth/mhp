@@ -557,7 +557,7 @@ async function seed() {
         sku: "DR-SIL-3X-20T",
         variantName: "Silicea - 3X - 20gms",
         variantImage: [
-          "https://mhp-local.s3.ap-south-1.amazonaws.com/DRR-DRS-3X-20-1",
+          "https://hs-media.s3.ap-south-1.amazonaws.com/DRR-DRS-200X-20-1",
         ],
         packSize: 20,
         potency: "3X",
@@ -571,9 +571,7 @@ async function seed() {
         productId: products[0]?.id!,
         sku: "DR-SIL-6X-20T",
         variantName: "Silicea - 6X - 20gms",
-        variantImage: [
-          "https://mhp-local.s3.ap-south-1.amazonaws.com/DRR-DRS-3X-20-1",
-        ],
+        variantImage: [],
         packSize: 20,
         potency: "6X",
         costPrice: 120,
@@ -586,9 +584,7 @@ async function seed() {
         productId: products[0]?.id!,
         sku: "DR-SIL-12X-20T",
         variantName: "Silicea - 12X - 20gms",
-        variantImage: [
-          "https://mhp-local.s3.ap-south-1.amazonaws.com/DRR-DRS-3X-20-1",
-        ],
+        variantImage: [],
         packSize: 20,
         potency: "12X",
         costPrice: 120,
@@ -601,9 +597,7 @@ async function seed() {
         productId: products[0]?.id!,
         sku: "DR-SIL-30X-20T",
         variantName: "Silicea - 30X - 20gms",
-        variantImage: [
-          "https://mhp-local.s3.ap-south-1.amazonaws.com/DRR-DRS-3X-20-1",
-        ],
+        variantImage: [],
         packSize: 20,
         potency: "30X",
         costPrice: 150,
@@ -616,9 +610,7 @@ async function seed() {
         productId: products[0]?.id!,
         sku: "DR-SIL-200X-20T",
         variantName: "Silicea - 200X - 20gms",
-        variantImage: [
-          "https://mhp-local.s3.ap-south-1.amazonaws.com/DRR-DRS-3X-20-1",
-        ],
+        variantImage: [],
         packSize: 20,
         potency: "200X",
         costPrice: 200,
@@ -632,7 +624,7 @@ async function seed() {
         sku: "DR-NAT-SUL-3X-20T",
         variantName: "Natrum Sulphuricum - 3X - 20gms",
         variantImage: [
-          "https://mhp-local.s3.ap-south-1.amazonaws.com/DRR-DRNS-3X-20-1",
+          "https://hs-media.s3.ap-south-1.amazonaws.com/DRR-DRNS-3X-20-1",
         ],
         packSize: 20,
         potency: "3X",
@@ -647,7 +639,7 @@ async function seed() {
         sku: "DR-MAG-PHOS-6X-20T",
         variantName: "Magnesia Phosphoricum - 6X - 20gms",
         variantImage: [
-          "https://mhp-local.s3.ap-south-1.amazonaws.com/DRR-DRMP-6X-20-1",
+          "https://hs-media.s3.ap-south-1.amazonaws.com/DRR-DRMP-6X-20-1",
         ],
         packSize: 20,
         potency: "6X",
@@ -662,7 +654,7 @@ async function seed() {
         sku: "SBL-SIL-6X-25T",
         variantName: "Silicea 6X - 25gms",
         variantImage: [
-          "https://mhp-local.s3.ap-south-1.amazonaws.com/SBL-SBLSIL-6X-25-1",
+          "https://hs-media.s3.ap-south-1.amazonaws.com/SBL-SBLSIL-NONE-25-1",
         ],
         packSize: 25,
         potency: "NONE",
@@ -676,9 +668,7 @@ async function seed() {
         productId: products[3]?.id!,
         sku: "SBL-SIL-6X-450T",
         variantName: "Silicea 6X - 450gms",
-        variantImage: [
-          "https://mhp-local.s3.ap-south-1.amazonaws.com/SBL-SBLSIL-6X-450-1",
-        ],
+        variantImage: [],
         packSize: 450,
         potency: "6X",
         costPrice: 500,
@@ -692,7 +682,7 @@ async function seed() {
         sku: "SBL-NAT-SUL-6X-25T",
         variantName: "Natrum Sulphuricum 6X - 25gms",
         variantImage: [
-          "https://mhp-local.s3.ap-south-1.amazonaws.com/SBL-SNM-200X-25-1",
+          "https://hs-media.s3.ap-south-1.amazonaws.com/SBL-SNM-200X-25-1",
         ],
         packSize: 25,
         potency: "6X",
@@ -707,7 +697,7 @@ async function seed() {
         sku: "SBL-NAT-SUL-6X-450T",
         variantName: "Natrum Sulphuricum 6X - 450gms",
         variantImage: [
-          "https://mhp-local.s3.ap-south-1.amazonaws.com/SBL-SNM-200X-450-1",
+          "https://hs-media.s3.ap-south-1.amazonaws.com/SBL-SNM-200X-450-1",
         ],
         packSize: 450,
         potency: "6X",
@@ -722,7 +712,7 @@ async function seed() {
         sku: "SBL-NAT-MUR-200X-25T",
         variantName: "Natrum Muriaticum 200X",
         variantImage: [
-          "https://mhp-local.s3.ap-south-1.amazonaws.com/SBL-SNM-200X-25-1",
+          "https://hs-media.s3.ap-south-1.amazonaws.com/SBL-SNM-200X-25-1",
         ],
         packSize: 25,
         potency: "200X",
@@ -737,7 +727,7 @@ async function seed() {
         sku: "SBL-NAT-MUR-200X-450T",
         variantName: "Natrum Muriaticum 200X",
         variantImage: [
-          "https://mhp-local.s3.ap-south-1.amazonaws.com/SBL-SNM-200X-450-1",
+          "https://hs-media.s3.ap-south-1.amazonaws.com/SBL-SNM-200X-450-1",
         ],
         packSize: 450,
         potency: "200X",
@@ -752,7 +742,7 @@ async function seed() {
         sku: "SBL-BC10-25T",
         variantName: "Bio Combination 10",
         variantImage: [
-          "https://mhp-local.s3.ap-south-1.amazonaws.com/SBL-SBC1ET-10M-25-1",
+          "https://hs-media.s3.ap-south-1.amazonaws.com/SBL-SBC1ET-10M-25-1",
         ],
         packSize: 25,
         potency: "10M",
@@ -766,12 +756,10 @@ async function seed() {
         productId: products[6]?.id!,
         sku: "SBL-BC10-450T",
         variantName: "Bio Combination 10",
-        variantImage: [
-          "https://mhp-local.s3.ap-south-1.amazonaws.com/SBL-SBC1ET-NONE-450-1",
-        ],
+        variantImage: [],
         packSize: 450,
         costPrice: 500,
-        potency: "NONE",
+        potency: "10M",
         mrp: 600, // Add base price before tax and discount
         sellingPrice: 650,
         discount: 10,
@@ -782,7 +770,7 @@ async function seed() {
         sku: "SBL-BC11-25T",
         variantName: "Bio Combination 11",
         variantImage: [
-          "https://mhp-local.s3.ap-south-1.amazonaws.com/SBL-SBC1P-30C-25-1",
+          "https://hs-media.s3.ap-south-1.amazonaws.com/SBL-SBC1P-30C-25-1",
         ],
         packSize: 25,
         potency: "30C",
@@ -796,11 +784,9 @@ async function seed() {
         productId: products[7]?.id!,
         sku: "SBL-BC11-450T",
         variantName: "Bio Combination 11",
-        variantImage: [
-          "https://mhp-local.s3.ap-south-1.amazonaws.com/SBL-SBC1P-NONE-450-1",
-        ],
+        variantImage: [],
         packSize: 450,
-        potency: "NONE",
+        potency: "30C",
         costPrice: 500,
         mrp: 600, // Add base price before tax and discount
         sellingPrice: 650,
@@ -812,7 +798,7 @@ async function seed() {
         sku: "SBL-BC12-25T",
         variantName: "Bio Combination 12",
         variantImage: [
-          "https://mhp-local.s3.ap-south-1.amazonaws.com/SBL-SBC1H-NONE-25-1",
+          "https://hs-media.s3.ap-south-1.amazonaws.com/SBL-SBC1H-NONE-25-1",
         ],
         packSize: 25,
         potency: "NONE",
@@ -827,7 +813,7 @@ async function seed() {
         sku: "SBL-BC12-450T",
         variantName: "Bio Combination 12",
         variantImage: [
-          "https://mhp-local.s3.ap-south-1.amazonaws.com/SBL-SBC1H-NONE-450-1",
+          "https://hs-media.s3.ap-south-1.amazonaws.com/SBL-SBC1H-NONE-450-1",
         ],
         packSize: 450,
         potency: "NONE",
@@ -842,7 +828,7 @@ async function seed() {
         sku: "DR-BC1-20T",
         variantName: "Bio Combination 1 - (20g)",
         variantImage: [
-          "https://mhp-local.s3.ap-south-1.amazonaws.com/DRR-DRBC1A-30X-20-1",
+          "https://hs-media.s3.ap-south-1.amazonaws.com/DRR-DRBC1A-30X-20-1",
         ],
         packSize: 20,
         potency: "30X",
@@ -857,7 +843,7 @@ async function seed() {
         sku: "DR-BC2-20T",
         variantName: "Bio Combination 2 (20g)",
         variantImage: [
-          "https://mhp-local.s3.ap-south-1.amazonaws.com/DRR-DRBC2A-12X-20-1",
+          "https://hs-media.s3.ap-south-1.amazonaws.com/DRR-DRBC2A-12X-20-1",
         ],
         packSize: 20,
         potency: "12X",
@@ -872,7 +858,7 @@ async function seed() {
         sku: "DR-BC3-20T",
         variantName: "Bio Combination 3 (20g)",
         variantImage: [
-          "https://mhp-local.s3.ap-south-1.amazonaws.com/DRR-DRBC3C-NONE-20-1",
+          "https://hs-media.s3.ap-south-1.amazonaws.com/DRR-DRBC3C-NONE-20-1",
         ],
         packSize: 20,
         costPrice: 120,
@@ -886,7 +872,7 @@ async function seed() {
         sku: "WS-BC20-20T",
         variantName: "Bio Combination 20 - 20gms",
         variantImage: [
-          "https://mhp-local.s3.ap-south-1.amazonaws.com/WIL-WSIBC2SD-NONE-20-1",
+          "https://hs-media.s3.ap-south-1.amazonaws.com/WIL-WSIBC2SD-NONE-20-1",
         ],
         packSize: 20,
         costPrice: 60,
@@ -900,7 +886,7 @@ async function seed() {
         sku: "WS-BC20-550T",
         variantName: "Bio Combination 20 - 550gms",
         variantImage: [
-          "https://mhp-local.s3.ap-south-1.amazonaws.com/WIL-WSIBC2SD-NONE-550-1",
+          "https://hs-media.s3.ap-south-1.amazonaws.com/WIL-WSIBC2SD-NONE-550-1",
         ],
         packSize: 550,
         costPrice: 600,
@@ -914,7 +900,7 @@ async function seed() {
         sku: "WS-BC21-20T",
         variantName: "Bio Combination 21 - 20gms",
         variantImage: [
-          "https://mhp-local.s3.ap-south-1.amazonaws.com/WIL-WSIBC2TT-NONE-20-1",
+          "https://hs-media.s3.ap-south-1.amazonaws.com/WIL-WSIBC2TT-NONE-20-1",
         ],
         packSize: 20,
         costPrice: 60,
@@ -928,7 +914,7 @@ async function seed() {
         sku: "WS-BC21-550T",
         variantName: "Bio Combination 21 - 550gms",
         variantImage: [
-          "https://mhp-local.s3.ap-south-1.amazonaws.com/WIL-WSIBC2TT-NONE-550-1",
+          "https://hs-media.s3.ap-south-1.amazonaws.com/WIL-WSIBC2TT-NONE-550-1",
         ],
         packSize: 550,
         costPrice: 600,
@@ -941,9 +927,7 @@ async function seed() {
         productId: products[14]?.id!,
         sku: "SBL-ABEL-MOS-1000CH-30ML",
         variantName: "Abel Moschus - (30ml)",
-        variantImage: [
-          "https://mhp-local.s3.ap-south-1.amazonaws.com/SBL-SAM-1M CH-30-1",
-        ],
+        variantImage: [],
         packSize: 30,
         potency: "1M CH",
         costPrice: 100,
@@ -956,9 +940,7 @@ async function seed() {
         productId: products[14]?.id!,
         sku: "SBL-ABEL-MOS-200CH-30ML",
         variantName: "Abel Moschus - (30ml)",
-        variantImage: [
-          "https://mhp-local.s3.ap-south-1.amazonaws.com/SBL-SAM-200CH-30-1",
-        ],
+        variantImage: [],
         packSize: 30,
         potency: "200CH",
         costPrice: 70,
@@ -972,7 +954,7 @@ async function seed() {
         sku: "SBL-ABEL-MOS-30CH-30ML",
         variantName: "Abel Moschus - (30ml)",
         variantImage: [
-          "https://mhp-local.s3.ap-south-1.amazonaws.com/SBL-SAM-30CH-30-1",
+          "https://hs-media.s3.ap-south-1.amazonaws.com/SBL-SAM-30CH-30-1",
         ],
         packSize: 30,
         potency: "30CH",
@@ -986,9 +968,7 @@ async function seed() {
         productId: products[14]?.id!,
         sku: "SBL-ABEL-MOS-6CH-30ML",
         variantName: "Abel Moschus - (30ml)",
-        variantImage: [
-          "https://mhp-local.s3.ap-south-1.amazonaws.com/SBL-SAM-6CH-30-1",
-        ],
+        variantImage: [],
         packSize: 30,
         potency: "6CH",
         costPrice: 60,
@@ -1002,7 +982,7 @@ async function seed() {
         sku: "SBL-MOS-1X-30ML",
         variantName: "Moschus 1X (Q) - (30ml)",
         variantImage: [
-          "https://mhp-local.s3.ap-south-1.amazonaws.com/SBL-SAM-1X-30-1",
+          "https://hs-media.s3.ap-south-1.amazonaws.com/SBL-SAM-1X-30-1",
         ],
         packSize: 30,
         potency: "1X",
@@ -1017,7 +997,7 @@ async function seed() {
         sku: "BAK-ACNE-AID-TWIN",
         variantName: "Acne Aid (Twin Pack)",
         variantImage: [
-          "https://mhp-local.s3.ap-south-1.amazonaws.com/BAC-BAA(P-NONE-40-1",
+          "https://hs-media.s3.ap-south-1.amazonaws.com/BAC-BAA(P-NONE-20-1",
         ],
         potency: "NONE",
         costPrice: 200,
@@ -1031,7 +1011,7 @@ async function seed() {
         sku: "BAK-SUN-HRC-100G",
         variantName: "sunny hair removal cream - 100gms",
         variantImage: [
-          "https://mhp-local.s3.ap-south-1.amazonaws.com/BAC-BSHRC-NONE-60-1",
+          "https://hs-media.s3.ap-south-1.amazonaws.com/BAC-BSHRC-NONE-60-1",
         ],
         packSize: 100,
         costPrice: 100,
@@ -1045,7 +1025,7 @@ async function seed() {
         sku: "BAK-SUN-HRC-60G",
         variantName: "sunny hair removal cream - 60gms",
         variantImage: [
-          "https://mhp-local.s3.ap-south-1.amazonaws.com/BAC-BSHRC-NONE-60-1",
+          "https://hs-media.s3.ap-south-1.amazonaws.com/BAC-BSHRC-NONE-60-1",
         ],
         packSize: 60,
         costPrice: 60,
@@ -1059,7 +1039,7 @@ async function seed() {
         sku: "HAP-NOK-CRM-25G",
         variantName: "Nokrack Cream - (25g)",
         variantImage: [
-          "https://mhp-local.s3.ap-south-1.amazonaws.com/HAP-HNC-NONE-25-1",
+          "https://hs-media.s3.ap-south-1.amazonaws.com/HAP-HNC-NONE-25-1",
         ],
         packSize: 25,
         costPrice: 50,
@@ -1073,7 +1053,7 @@ async function seed() {
         sku: "ALL-IMM-BOOST-25T",
         variantName: "Immunity Booster Tablet (25)",
         variantImage: [
-          "https://mhp-local.s3.ap-south-1.amazonaws.com/ALL-AIBT-NONE-25-1",
+          "https://hs-media.s3.ap-south-1.amazonaws.com/ALL-AIBT-NONE-25-1",
         ],
         packSize: 25,
         costPrice: 100,
@@ -1087,7 +1067,7 @@ async function seed() {
         sku: "ALL-MULTI-VIT-30T",
         variantName: "Multi Vitamins - 30 Tablets",
         variantImage: [
-          "https://mhp-local.s3.ap-south-1.amazonaws.com/ALL-AMV-NONE-30-1",
+          "https://hs-media.s3.ap-south-1.amazonaws.com/ALL-AMV-NONE-30-1",
         ],
         packSize: 30,
         costPrice: 250,
@@ -1101,8 +1081,8 @@ async function seed() {
         sku: "ALL-MULTI-VIT-60T",
         variantName: "Multi Vitamins - 60 Tablets",
         variantImage: [
-          "https://mhp-local.s3.ap-south-1.amazonaws.com/ALL-AMV-NONE-60-1",
-          "https://mhp-local.s3.ap-south-1.amazonaws.com/ALL-AMV-NONE-60-2",
+          "https://hs-media.s3.ap-south-1.amazonaws.com/ALL-AMV-NONE-60-1",
+          "https://hs-media.s3.ap-south-1.amazonaws.com/ALL-AMV-NONE-60-2",
         ],
         packSize: 60,
         costPrice: 500,
@@ -1116,7 +1096,7 @@ async function seed() {
         sku: "ADV-BABY-DROP-30ML",
         variantName: "Babyson Drops - (30ml)",
         variantImage: [
-          "https://mhp-local.s3.ap-south-1.amazonaws.com/ADV-ABD-NONE-30-1",
+          "https://hs-media.s3.ap-south-1.amazonaws.com/ADV-ABD-NONE-30-1",
         ],
         packSize: 30,
         costPrice: 60,
