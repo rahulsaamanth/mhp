@@ -1,6 +1,9 @@
 "use client"
 
 import { useRouter } from "next/navigation"
+import { useState } from "react"
+import { Loader } from "lucide-react"
+import { Button } from "@/components/ui/button"
 
 interface LoginButtonProps {
   children: React.ReactNode
@@ -14,7 +17,10 @@ export const LoginButton = ({
   asChild,
 }: LoginButtonProps) => {
   const router = useRouter()
+  const [isLoading, setIsLoading] = useState(false)
+
   const onClick = () => {
+    setIsLoading(true)
     router.push("/admin/auth/login")
   }
 
@@ -23,8 +29,18 @@ export const LoginButton = ({
   }
 
   return (
-    <span onClick={onClick} className="cursor-pointer">
-      {children}
-    </span>
+    <Button
+      onClick={onClick}
+      className="cursor-pointer inline-flex items-center rounded-none"
+    >
+      {isLoading ? (
+        <>
+          <Loader className="h-4 w-4 mr-2 animate-spin" />
+          <span>Redirecting...</span>
+        </>
+      ) : (
+        children
+      )}
+    </Button>
   )
 }

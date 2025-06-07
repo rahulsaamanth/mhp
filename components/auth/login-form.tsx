@@ -3,6 +3,7 @@
 import React, { Suspense, useState } from "react"
 import { useSearchParams } from "next/navigation"
 import * as z from "zod"
+import { Loader } from "lucide-react"
 
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
@@ -147,7 +148,16 @@ export const LoginFormContent = () => {
           <FormError message={_error || urlError} />
           <FormSuccess message={success} />
           <Button type="submit" className="w-full" disabled={isPending}>
-            {showTwoFactor ? "Confirm" : "Login"}
+            {isPending ? (
+              <>
+                <Loader className="mr-2 h-4 w-4 animate-spin" />
+                {showTwoFactor ? "Confirming..." : "Logging in..."}
+              </>
+            ) : showTwoFactor ? (
+              "Confirm"
+            ) : (
+              "Login"
+            )}
           </Button>
         </form>
       </Form>
