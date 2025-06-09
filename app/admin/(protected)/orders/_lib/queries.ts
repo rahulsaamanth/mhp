@@ -268,7 +268,18 @@ async function fetchOrderDetails(tx: any, orderId: string) {
         pv."variantName",
         pv."potency",
         pv."packSize",
-        pv."variantImage",
+        (
+          CASE 
+            WHEN pv."variantImage" IS NOT NULL AND array_length(pv."variantImage", 1) > 0 THEN
+              (
+                SELECT img
+                FROM unnest(pv."variantImage") AS img
+                WHERE img IS NOT NULL AND img != ''
+                LIMIT 1
+              )
+            ELSE NULL
+          END
+        ) as "validImage",
         p."id" as "productId",
         p."name" as "productName",
         p."description" as "productDescription",
@@ -294,10 +305,7 @@ async function fetchOrderDetails(tx: any, orderId: string) {
     quantity: Number(item.quantity) || 0,
     unitPrice: Number(item.unitPrice) || 0,
     totalPrice: (Number(item.quantity) || 0) * (Number(item.unitPrice) || 0),
-    image:
-      item.variantImage && item.variantImage.length > 0
-        ? item.variantImage[0]
-        : null,
+    image: item.validImage || null,
     variantName: item.variantName,
     potency: item.potency,
     packSize: item.packSize,
