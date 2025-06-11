@@ -17,6 +17,9 @@ import {
 } from "@rahulsaamanth/mhp-schema"
 
 export async function getOrder(id: string) {
+  // Disable caching to always fetch fresh data
+  unstable_noStore()
+
   try {
     const data = await db.query.order.findMany({
       where: eq(order.id, id),

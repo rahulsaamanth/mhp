@@ -9,7 +9,6 @@ import { OrderForm } from "../_components/order-form"
 
 import { eq } from "drizzle-orm"
 
-// Define types for our order data
 type OrderError = { error: string }
 type OrderData = Array<{
   id: string
@@ -31,7 +30,6 @@ export default function EditOrderPage({
 }) {
   const { id } = React.use(params)
 
-  // Fetch order data with proper typings
   const {
     data: orderData,
     isPending: isOrderLoading,
@@ -39,13 +37,14 @@ export default function EditOrderPage({
   } = useQuery<OrderData | OrderError>({
     queryKey: ["orders", id],
     queryFn: () => getOrder(id),
+    staleTime: 0,
+    refetchOnWindowFocus: true,
+    refetchOnMount: true,
   })
 
-  // Update the order status to OPENED when the page loads
   useEffect(() => {
     if (orderData && !("error" in orderData) && orderData.length > 0) {
       const order = orderData[0]
-      // Only update if the current status is NEW
       if (
         order &&
         (order.adminViewStatus === "NEW" || !order.adminViewStatus)
@@ -55,7 +54,6 @@ export default function EditOrderPage({
     }
   }, [orderData, id])
 
-  // Fetch additional data needed for the form
   const {
     data: formData,
     isPending: isFormDataLoading,
@@ -124,27 +122,20 @@ export default function EditOrderPage({
     )
   }
 
-  // Check if orderData is an error object
   if (!orderData || "error" in orderData) {
     return notFound()
   }
 
-  // Check if orderData is an array with no items
   if (Array.isArray(orderData) && orderData.length === 0) {
     return notFound()
   }
 
-  // Transform orderData to match the format expected by OrderForm
-  // The getOrder function returns an array, so we need to use the first item
   const order = Array.isArray(orderData) ? orderData[0] : orderData
 
-  // At this point, we've already checked that order exists, but TypeScript doesn't know that
-  // Let's ensure it's defined before we use it
   if (!order) {
     return notFound()
   }
 
-  // Get shipping address from address relation
   const shippingAddress = order.address || {
     street: "",
     city: "",
@@ -153,61 +144,74 @@ export default function EditOrderPage({
     country: "India",
   }
 
-  // Get product details from the order
   const productDetails = order.orderDetails?.[0]?.product
 
-  // For development only - inspect the structure of the order details
-  if (process.env.NODE_ENV !== "production") {
-    console.log(
-      "Order Details Structure:",
-      order.orderDetails?.[0]
-        ? JSON.stringify(
-            {
-              product: order.orderDetails[0].product,
-              detail: order.orderDetails[0],
-            },
-            null,
-            2
-          )
-        : "No order details"
-    )
+  console.log(
+    "Order Details Structure:",
+    order.orderDetails?.[0]
+      ? {
+          productObject: order.orderDetails[0].product,
+          detailObject: order.orderDetails[0],
+        }
+      : "No order details"
+  )
+
+  if (order.orderDetails?.[0]?.product) {
+    console.log("First product variant structure:", {
+      id: order.orderDetails[0].product.id,
+      productId: order.orderDetails[0].product.productId,
+      variantName: order.orderDetails[0].product.variantName,
+      sku: order.orderDetails[0].product.sku,
+    })
   }
 
-  // Prepare order data for the form with all required fields
+  console.log("Full order data structure:", order)
+
   const preparedOrderData = {
     ...order,
     shippingAddress,
     orderItems:
       order.orderDetails?.map((detail: any) => {
-        // Access product data correctly based on API response structure
-        const product = detail.product || {}
-
-        // For debugging - log the product information
-        if (process.env.NODE_ENV !== "production") {
-          console.log(`Product data for item ${detail.id}:`, product)
+        if (!detail.product) {
+          console.error("No product data found for order detail:", detail.id)
+          return {
+            id: detail.id,
+            productVariantId: detail.productVariantId || "",
+            quantity: detail.quantity || 0,
+            unitPrice: detail.unitPrice || 0,
+            originalPrice: detail.originalPrice || detail.unitPrice || 0,
+            totalPrice: (detail.quantity || 0) * (detail.unitPrice || 0),
+            discountAmount: detail.discountAmount || 0,
+            taxAmount: detail.taxAmount || 0,
+            productName: `Unknown Product (${detail.productVariantId})`,
+            variantName: "",
+            potency: "",
+            packSize: null,
+            sku: "",
+          }
         }
+
+        const productName =
+          detail.product?.variantName ||
+          `Unknown Product (${detail.productVariantId})`
 
         return {
           id: detail.id,
-          productId: detail.productId,
-          productVariantId: detail.productVariantId,
-          quantity: detail.quantity,
-          unitPrice: detail.unitPrice,
-          originalPrice: product.mrp || detail.unitPrice,
-          totalPrice: detail.totalPrice,
-          discountAmount: 0, // Add default values required by schema
-          taxAmount: product.taxAmount || 0, // Fix: was using tax instead of taxAmount
-          // Make sure we get the product name
-          productName: product.name || "Product " + detail.productId,
-          // Make sure variant information is correctly retrieved
-          variantName: product.variantName || "",
-          potency: product.potency || "",
-          packSize: product.packSize || 0,
-          // Include the full product object for reference
-          product: product,
+          productId: detail.product?.productId || "",
+          productVariantId: detail.productVariantId || "",
+          quantity: detail.quantity || 0,
+          unitPrice: detail.unitPrice || 0,
+          originalPrice: detail.originalPrice || detail.unitPrice || 0,
+          totalPrice: (detail.quantity || 0) * (detail.unitPrice || 0),
+          discountAmount: detail.discountAmount || 0,
+          taxAmount: detail.taxAmount || 0,
+          productName: productName,
+          variantName: detail.product?.variantName || "",
+          potency: detail.product?.potency || "",
+          packSize: detail.product?.packSize,
+          sku: detail.product?.sku || "",
         }
       }) || [],
-    // Convert ISO string dates to Date objects if they exist
     estimatedDeliveryDate: order.estimatedDeliveryDate
       ? new Date(order.estimatedDeliveryDate)
       : undefined,

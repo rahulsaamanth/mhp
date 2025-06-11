@@ -66,19 +66,6 @@ export function OrderDetailsCard({
     ? orderDetails[selectedOrderId]
     : null
 
-  // Automatically mark the order as "OPENED" when viewed by admin
-  useEffect(() => {
-    if (selectedOrderId && selectedOrder) {
-      // Only update if current status is NEW
-      if (
-        selectedOrder.adminViewStatus === "NEW" ||
-        !selectedOrder.adminViewStatus
-      ) {
-        updateOrderAdminStatus(selectedOrderId, "OPENED").catch(console.error)
-      }
-    }
-  }, [selectedOrderId, selectedOrder])
-
   // Find the previous/next order for navigation
   const findAdjacentOrder = (direction: "prev" | "next") => {
     if (!selectedOrderId || !orders || orders.length === 0) return
