@@ -6,7 +6,7 @@ import { eq } from "drizzle-orm"
 async function seed() {
   console.log("🌱 Seeding started...")
 
-  // await db.delete(schema.review)
+  await db.delete(schema.review)
   await db.delete(schema.payment)
   await db.delete(schema.orderDetails)
   await db.delete(schema.order)
@@ -18,14 +18,14 @@ async function seed() {
   await db.delete(schema.tag)
   await db.delete(schema.twoFactorConfirmation)
   await db.delete(schema.account)
+  await db.delete(schema.review)
   await db.delete(schema.user)
   await db.delete(schema.address)
   await db.delete(schema.productVariant)
-  // await db.delete(schema.paymentMethod)
 
   const hashedPassword = await hashPassword("password123")
 
-  const adminPassword = await hashPassword("Awavauatsh")
+  const adminPassword = await hashPassword(process.env.DB_ADMIN_PASSWORD!)
 
   const users = await db
     .insert(schema.user)
@@ -289,6 +289,7 @@ async function seed() {
         manufacturerId: manufacturers[1]?.id!,
         tax: 12, // Add tax percentage
         status: "ACTIVE",
+        isFeatured: true,
       },
       {
         name: "Dr. Reckeweg Natrum Sulphuricum",
@@ -301,6 +302,7 @@ async function seed() {
         manufacturerId: manufacturers[1]?.id!,
         tax: 12, // Add tax percentage
         status: "ACTIVE",
+        isFeatured: true,
       },
       {
         name: "Dr. Reckeweg Magnesia Phosphoricum",
@@ -313,6 +315,7 @@ async function seed() {
         manufacturerId: manufacturers[1]?.id!,
         tax: 12, // Add tax percentage
         status: "ACTIVE",
+        isFeatured: true,
       },
       {
         name: "SBL Silicea",
@@ -324,7 +327,9 @@ async function seed() {
         categoryId: subCategories[0]?.id!,
         manufacturerId: manufacturers[0]?.id!,
         tax: 12, // Add tax percentage
+
         status: "ACTIVE",
+        isFeatured: true,
       },
       {
         name: "SBL Natrum Sulphuricum",
@@ -336,6 +341,8 @@ async function seed() {
         categoryId: subCategories[0]?.id!,
         manufacturerId: manufacturers[0]?.id!,
         tax: 12, // Add tax percentage
+        isFeatured: true,
+
         status: "ACTIVE",
       },
       {
@@ -349,6 +356,7 @@ async function seed() {
         manufacturerId: manufacturers[0]?.id!,
         tax: 12, // Add tax percentage
         status: "ACTIVE",
+        isFeatured: true,
       },
       {
         name: "SBL Bio Combination 10 Enlarged Tonsils",
@@ -361,6 +369,7 @@ async function seed() {
         manufacturerId: manufacturers[0]?.id!,
         tax: 12, // Add tax percentage
         status: "ACTIVE",
+        isFeatured: true,
       },
       {
         name: "SBL Bio Combination 11 Pyrexia",
@@ -373,6 +382,7 @@ async function seed() {
         manufacturerId: manufacturers[0]?.id!,
         tax: 12, // Add tax percentage
         status: "ACTIVE",
+        isFeatured: true,
       },
       {
         name: "SBL Bio Combination 12 Headache",
@@ -385,6 +395,7 @@ async function seed() {
         manufacturerId: manufacturers[0]?.id!,
         tax: 12, // Add tax percentage
         status: "ACTIVE",
+        isFeatured: true,
       },
       {
         name: "Dr. Reckeweg Bio Combination 1 Anaemla",
@@ -397,6 +408,7 @@ async function seed() {
         manufacturerId: manufacturers[1]?.id!,
         tax: 12, // Add tax percentage
         status: "ACTIVE",
+        isFeatured: true,
       },
       {
         name: "Dr. Reckeweg Bio Combination 2 Asthama",
@@ -409,6 +421,7 @@ async function seed() {
         manufacturerId: manufacturers[1]?.id!,
         tax: 12, // Add tax percentage
         status: "ACTIVE",
+        isFeatured: true,
       },
       {
         name: "Dr. Reckeweg Bio Combination 3 Colic",
@@ -421,6 +434,7 @@ async function seed() {
         manufacturerId: manufacturers[1]?.id!,
         tax: 12, // Add tax percentage
         status: "ACTIVE",
+        isFeatured: true,
       },
       {
         name: "Willmar Schwabe India Bio Combination 20 Skin Diseases",
@@ -433,6 +447,7 @@ async function seed() {
         manufacturerId: manufacturers[2]?.id!,
         tax: 12, // Add tax percentage
         status: "ACTIVE",
+        isFeatured: true,
       },
       {
         name: "Willmar Schwabe India Bio Combination 21 Teething Trouble",
@@ -445,6 +460,7 @@ async function seed() {
         manufacturerId: manufacturers[2]?.id!,
         tax: 12, // Add tax percentage
         status: "ACTIVE",
+        isFeatured: true,
       },
       {
         name: "SBL Abel Moschus",
@@ -457,6 +473,7 @@ async function seed() {
         manufacturerId: manufacturers[0]?.id!,
         tax: 12, // Add tax percentage
         status: "ACTIVE",
+        isFeatured: true,
       },
       {
         name: "SBL Abel Moschus",
@@ -469,6 +486,7 @@ async function seed() {
         manufacturerId: manufacturers[0]?.id!,
         tax: 12, // Add tax percentage
         status: "ACTIVE",
+        isFeatured: true,
       },
       {
         name: "Bakson Acne Aid (Twin Pack)",
@@ -481,6 +499,7 @@ async function seed() {
         manufacturerId: manufacturers[3]?.id!,
         tax: 12, // Add tax percentage
         status: "ACTIVE",
+        isFeatured: true,
       },
       {
         name: "Bakson sunny hair removal cream",
@@ -493,6 +512,7 @@ async function seed() {
         manufacturerId: manufacturers[3]?.id!,
         tax: 12, // Add tax percentage
         status: "ACTIVE",
+        isFeatured: true,
       },
       {
         name: "Hapdco Nokrack Cream",
@@ -504,6 +524,7 @@ async function seed() {
         manufacturerId: manufacturers[4]?.id!,
         tax: 12, // Add tax percentage
         status: "ACTIVE",
+        isFeatured: true,
       },
       {
         name: "Allen Immunity Booster Tablet",
@@ -521,6 +542,7 @@ async function seed() {
         manufacturerId: manufacturers[5]?.id!,
         tax: 12, // Add tax percentage
         status: "ACTIVE",
+        isFeatured: true,
       },
       {
         name: "Allen Multi Vitamins",
@@ -533,6 +555,7 @@ async function seed() {
         manufacturerId: manufacturers[5]?.id!,
         tax: 12, // Add tax percentage
         status: "ACTIVE",
+        isFeatured: true,
       },
       {
         name: "Adven Babyson Drops",
@@ -545,6 +568,7 @@ async function seed() {
         manufacturerId: manufacturers[6]?.id!,
         tax: 12, // Add tax percentage
         status: "ACTIVE",
+        isFeatured: true,
       },
     ])
     .returning()
@@ -562,9 +586,9 @@ async function seed() {
         packSize: 20,
         potency: "3X",
         costPrice: 120,
-        mrp: 150,
-        sellingPrice: 165,
-        discount: 10,
+        mrp: 165,
+        sellingPrice: 150,
+        discount: Math.round(((165 - 150) / 165) * 100), // 9%
         discountType: "PERCENTAGE",
       },
       {
@@ -575,9 +599,9 @@ async function seed() {
         packSize: 20,
         potency: "6X",
         costPrice: 120,
-        mrp: 150,
-        sellingPrice: 165,
-        discount: 10,
+        mrp: 165,
+        sellingPrice: 150,
+        discount: Math.round(((165 - 150) / 165) * 100), // 9%
         discountType: "PERCENTAGE",
       },
       {
@@ -588,9 +612,9 @@ async function seed() {
         packSize: 20,
         potency: "12X",
         costPrice: 120,
-        mrp: 150, // Add base price before tax and discount
-        sellingPrice: 165,
-        discount: 10,
+        mrp: 165,
+        sellingPrice: 150,
+        discount: Math.round(((165 - 150) / 165) * 100), // 9%
         discountType: "PERCENTAGE",
       },
       {
@@ -601,9 +625,9 @@ async function seed() {
         packSize: 20,
         potency: "30X",
         costPrice: 150,
-        mrp: 180, // Add base price before tax and discount
-        sellingPrice: 200,
-        discount: 10,
+        mrp: 200,
+        sellingPrice: 180,
+        discount: Math.round(((200 - 180) / 200) * 100), // 10%
         discountType: "PERCENTAGE",
       },
       {
@@ -614,9 +638,9 @@ async function seed() {
         packSize: 20,
         potency: "200X",
         costPrice: 200,
-        mrp: 230, // Add base price before tax and discount
-        sellingPrice: 250,
-        discount: 10,
+        mrp: 250,
+        sellingPrice: 230,
+        discount: Math.round(((250 - 230) / 250) * 100), // 8%
         discountType: "PERCENTAGE",
       },
       {
@@ -629,9 +653,9 @@ async function seed() {
         packSize: 20,
         potency: "3X",
         costPrice: 120,
-        mrp: 150, // Add base price before tax and discount
-        sellingPrice: 165,
-        discount: 10,
+        mrp: 165,
+        sellingPrice: 150,
+        discount: Math.round(((165 - 150) / 165) * 100), // 9%
         discountType: "PERCENTAGE",
       },
       {
@@ -644,9 +668,9 @@ async function seed() {
         packSize: 20,
         potency: "6X",
         costPrice: 120,
-        mrp: 150, // Add base price before tax and discount
-        sellingPrice: 165,
-        discount: 10,
+        mrp: 165,
+        sellingPrice: 150,
+        discount: Math.round(((165 - 150) / 165) * 100), // 9%
         discountType: "PERCENTAGE",
       },
       {
@@ -659,9 +683,9 @@ async function seed() {
         packSize: 25,
         potency: "NONE",
         costPrice: 60,
-        mrp: 80, // Add base price before tax and discount
-        sellingPrice: 90,
-        discount: 10,
+        mrp: 90,
+        sellingPrice: 80,
+        discount: Math.round(((90 - 80) / 90) * 100), // 11%
         discountType: "PERCENTAGE",
       },
       {
@@ -672,9 +696,9 @@ async function seed() {
         packSize: 450,
         potency: "6X",
         costPrice: 500,
-        mrp: 600, // Add base price before tax and discount
-        sellingPrice: 650,
-        discount: 10,
+        mrp: 650,
+        sellingPrice: 600,
+        discount: Math.round(((650 - 600) / 650) * 100), // 8%
         discountType: "PERCENTAGE",
       },
       {
@@ -687,9 +711,9 @@ async function seed() {
         packSize: 25,
         potency: "6X",
         costPrice: 60,
-        mrp: 80, // Add base price before tax and discount
-        sellingPrice: 90,
-        discount: 10,
+        mrp: 90,
+        sellingPrice: 80,
+        discount: Math.round(((90 - 80) / 90) * 100), // 11%
         discountType: "PERCENTAGE",
       },
       {
@@ -702,9 +726,9 @@ async function seed() {
         packSize: 450,
         potency: "6X",
         costPrice: 500,
-        mrp: 600, // Add base price before tax and discount
-        sellingPrice: 650,
-        discount: 10,
+        mrp: 650,
+        sellingPrice: 600,
+        discount: Math.round(((650 - 600) / 650) * 100), // 8%
         discountType: "PERCENTAGE",
       },
       {
@@ -717,9 +741,9 @@ async function seed() {
         packSize: 25,
         potency: "200X",
         costPrice: 60,
-        mrp: 80, // Add base price before tax and discount
-        sellingPrice: 90,
-        discount: 10,
+        mrp: 90,
+        sellingPrice: 80,
+        discount: Math.round(((90 - 80) / 90) * 100), // 11%
         discountType: "PERCENTAGE",
       },
       {
@@ -732,9 +756,9 @@ async function seed() {
         packSize: 450,
         potency: "200X",
         costPrice: 500,
-        mrp: 600, // Add base price before tax and discount
-        sellingPrice: 650,
-        discount: 10,
+        mrp: 650,
+        sellingPrice: 600,
+        discount: Math.round(((650 - 600) / 650) * 100), // 8%
         discountType: "PERCENTAGE",
       },
       {
@@ -747,9 +771,9 @@ async function seed() {
         packSize: 25,
         potency: "10M",
         costPrice: 60,
-        mrp: 80, // Add base price before tax and discount
-        sellingPrice: 90,
-        discount: 10,
+        mrp: 90,
+        sellingPrice: 80,
+        discount: Math.round(((90 - 80) / 90) * 100), // 11%
         discountType: "PERCENTAGE",
       },
       {
@@ -760,9 +784,9 @@ async function seed() {
         packSize: 450,
         costPrice: 500,
         potency: "10M",
-        mrp: 600, // Add base price before tax and discount
-        sellingPrice: 650,
-        discount: 10,
+        mrp: 650,
+        sellingPrice: 600,
+        discount: Math.round(((650 - 600) / 650) * 100), // 8%
         discountType: "PERCENTAGE",
       },
       {
@@ -775,9 +799,9 @@ async function seed() {
         packSize: 25,
         potency: "30C",
         costPrice: 60,
-        mrp: 80, // Add base price before tax and discount
-        sellingPrice: 90,
-        discount: 10,
+        mrp: 90,
+        sellingPrice: 80,
+        discount: Math.round(((90 - 80) / 90) * 100), // 11%
         discountType: "PERCENTAGE",
       },
       {
@@ -788,9 +812,9 @@ async function seed() {
         packSize: 450,
         potency: "30C",
         costPrice: 500,
-        mrp: 600, // Add base price before tax and discount
-        sellingPrice: 650,
-        discount: 10,
+        mrp: 650,
+        sellingPrice: 600,
+        discount: Math.round(((650 - 600) / 650) * 100), // 8%
         discountType: "PERCENTAGE",
       },
       {
@@ -803,9 +827,9 @@ async function seed() {
         packSize: 25,
         potency: "NONE",
         costPrice: 60,
-        mrp: 80, // Add base price before tax and discount
-        sellingPrice: 90,
-        discount: 10,
+        mrp: 90,
+        sellingPrice: 80,
+        discount: Math.round(((90 - 80) / 90) * 100), // 11%
         discountType: "PERCENTAGE",
       },
       {
@@ -818,9 +842,9 @@ async function seed() {
         packSize: 450,
         potency: "NONE",
         costPrice: 500,
-        mrp: 600, // Add base price before tax and discount
-        sellingPrice: 650,
-        discount: 10,
+        mrp: 650,
+        sellingPrice: 600,
+        discount: Math.round(((650 - 600) / 650) * 100), // 8%
         discountType: "PERCENTAGE",
       },
       {
@@ -833,9 +857,9 @@ async function seed() {
         packSize: 20,
         potency: "30X",
         costPrice: 120,
-        mrp: 150, // Add base price before tax and discount
-        sellingPrice: 165,
-        discount: 10,
+        mrp: 165,
+        sellingPrice: 150,
+        discount: Math.round(((165 - 150) / 165) * 100), // 9%
         discountType: "PERCENTAGE",
       },
       {
@@ -848,9 +872,9 @@ async function seed() {
         packSize: 20,
         potency: "12X",
         costPrice: 120,
-        mrp: 150, // Add base price before tax and discount
-        sellingPrice: 165,
-        discount: 10,
+        mrp: 165,
+        sellingPrice: 150,
+        discount: Math.round(((165 - 150) / 165) * 100), // 9%
         discountType: "PERCENTAGE",
       },
       {
@@ -862,9 +886,9 @@ async function seed() {
         ],
         packSize: 20,
         costPrice: 120,
-        mrp: 150, // Add base price before tax and discount
-        sellingPrice: 165,
-        discount: 10,
+        mrp: 165,
+        sellingPrice: 150,
+        discount: Math.round(((165 - 150) / 165) * 100), // 9%
         discountType: "PERCENTAGE",
       },
       {
@@ -876,9 +900,9 @@ async function seed() {
         ],
         packSize: 20,
         costPrice: 60,
-        mrp: 80, // Add base price before tax and discount
-        sellingPrice: 85,
-        discount: 10,
+        mrp: 85,
+        sellingPrice: 80,
+        discount: Math.round(((85 - 80) / 85) * 100), // 6%
         discountType: "PERCENTAGE",
       },
       {
@@ -890,9 +914,9 @@ async function seed() {
         ],
         packSize: 550,
         costPrice: 600,
-        mrp: 700, // Add base price before tax and discount
-        sellingPrice: 730,
-        discount: 10,
+        mrp: 730,
+        sellingPrice: 700,
+        discount: Math.round(((730 - 700) / 730) * 100), // 4%
         discountType: "PERCENTAGE",
       },
       {
@@ -904,9 +928,9 @@ async function seed() {
         ],
         packSize: 20,
         costPrice: 60,
-        mrp: 80, // Add base price before tax and discount
-        sellingPrice: 85,
-        discount: 10,
+        mrp: 85,
+        sellingPrice: 80,
+        discount: Math.round(((85 - 80) / 85) * 100), // 6%
         discountType: "PERCENTAGE",
       },
       {
@@ -918,9 +942,9 @@ async function seed() {
         ],
         packSize: 550,
         costPrice: 600,
-        mrp: 700, // Add base price before tax and discount
-        sellingPrice: 730,
-        discount: 10,
+        mrp: 730,
+        sellingPrice: 700,
+        discount: Math.round(((730 - 700) / 730) * 100), // 4%
         discountType: "PERCENTAGE",
       },
       {
@@ -931,9 +955,9 @@ async function seed() {
         packSize: 30,
         potency: "1M CH",
         costPrice: 100,
-        mrp: 120, // Add base price before tax and discount
-        sellingPrice: 130,
-        discount: 10,
+        mrp: 130,
+        sellingPrice: 120,
+        discount: Math.round(((130 - 120) / 130) * 100), // 8%
         discountType: "PERCENTAGE",
       },
       {
@@ -944,9 +968,9 @@ async function seed() {
         packSize: 30,
         potency: "200CH",
         costPrice: 70,
-        mrp: 90, // Add base price before tax and discount
+        mrp: 90,
         sellingPrice: 90,
-        discount: 10,
+        discount: Math.round(((90 - 90) / 90) * 100), // 0%
         discountType: "PERCENTAGE",
       },
       {
@@ -959,9 +983,9 @@ async function seed() {
         packSize: 30,
         potency: "30CH",
         costPrice: 60,
-        mrp: 80, // Add base price before tax and discount
-        sellingPrice: 85,
-        discount: 10,
+        mrp: 85,
+        sellingPrice: 80,
+        discount: Math.round(((85 - 80) / 85) * 100), // 6%
         discountType: "PERCENTAGE",
       },
       {
@@ -972,9 +996,9 @@ async function seed() {
         packSize: 30,
         potency: "6CH",
         costPrice: 60,
-        mrp: 80, // Add base price before tax and discount
-        sellingPrice: 85,
-        discount: 10,
+        mrp: 85,
+        sellingPrice: 80,
+        discount: Math.round(((85 - 80) / 85) * 100), // 6%
         discountType: "PERCENTAGE",
       },
       {
@@ -987,9 +1011,9 @@ async function seed() {
         packSize: 30,
         potency: "1X",
         costPrice: 90,
-        mrp: 110, // Add base price before tax and discount
-        sellingPrice: 115,
-        discount: 10,
+        mrp: 115,
+        sellingPrice: 110,
+        discount: Math.round(((115 - 110) / 115) * 100), // 4%
         discountType: "PERCENTAGE",
       },
       {
@@ -1001,9 +1025,9 @@ async function seed() {
         ],
         potency: "NONE",
         costPrice: 200,
-        mrp: 250, // Add base price before tax and discount
-        sellingPrice: 290,
-        discount: 10,
+        mrp: 290,
+        sellingPrice: 250,
+        discount: Math.round(((290 - 250) / 290) * 100), // 14%
         discountType: "PERCENTAGE",
       },
       {
@@ -1015,9 +1039,9 @@ async function seed() {
         ],
         packSize: 100,
         costPrice: 100,
-        mrp: 130, // Add base price before tax and discount
-        sellingPrice: 155,
-        discount: 10,
+        mrp: 155,
+        sellingPrice: 130,
+        discount: Math.round(((155 - 130) / 155) * 100), // 16%
         discountType: "PERCENTAGE",
       },
       {
@@ -1029,9 +1053,9 @@ async function seed() {
         ],
         packSize: 60,
         costPrice: 60,
-        mrp: 80, // Add base price before tax and discount
-        sellingPrice: 95,
-        discount: 10,
+        mrp: 95,
+        sellingPrice: 80,
+        discount: Math.round(((95 - 80) / 95) * 100), // 16%
         discountType: "PERCENTAGE",
       },
       {
@@ -1043,9 +1067,9 @@ async function seed() {
         ],
         packSize: 25,
         costPrice: 50,
-        mrp: 70, // Add base price before tax and discount
-        sellingPrice: 80,
-        discount: 10,
+        mrp: 80,
+        sellingPrice: 70,
+        discount: Math.round(((80 - 70) / 80) * 100), // 13%
         discountType: "PERCENTAGE",
       },
       {
@@ -1057,9 +1081,9 @@ async function seed() {
         ],
         packSize: 25,
         costPrice: 100,
-        mrp: 130, // Add base price before tax and discount
-        sellingPrice: 155,
-        discount: 10,
+        mrp: 155,
+        sellingPrice: 130,
+        discount: Math.round(((155 - 130) / 155) * 100), // 16%
         discountType: "PERCENTAGE",
       },
       {
@@ -1071,9 +1095,9 @@ async function seed() {
         ],
         packSize: 30,
         costPrice: 250,
-        mrp: 350, // Add base price before tax and discount
-        sellingPrice: 385,
-        discount: 10,
+        mrp: 385,
+        sellingPrice: 350,
+        discount: Math.round(((385 - 350) / 385) * 100), // 9%
         discountType: "PERCENTAGE",
       },
       {
@@ -1086,9 +1110,9 @@ async function seed() {
         ],
         packSize: 60,
         costPrice: 500,
-        mrp: 700, // Add base price before tax and discount
-        sellingPrice: 775,
-        discount: 10,
+        mrp: 775,
+        sellingPrice: 700,
+        discount: Math.round(((775 - 700) / 775) * 100), // 10%
         discountType: "PERCENTAGE",
       },
       {
@@ -1100,9 +1124,9 @@ async function seed() {
         ],
         packSize: 30,
         costPrice: 60,
-        mrp: 80, // Add base price before tax and discount
-        sellingPrice: 85,
-        discount: 10,
+        mrp: 85,
+        sellingPrice: 80,
+        discount: Math.round(((85 - 80) / 85) * 100), // 6%
         discountType: "PERCENTAGE",
       },
     ])
