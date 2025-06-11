@@ -1,131 +1,68 @@
-// import { columns } from "./columns"
+import { getValidFilters } from "@/lib/data-table"
+import { type SearchParams } from "@/types"
+import { getUsers } from "./_lib/queries"
+import { searchParamsCache } from "./_lib/validations"
 
-// import { getChartDateArray } from "@/lib/chart-date-array"
-// import { startOfDay } from "date-fns"
+import { DateRangePicker } from "@/components/date-range-picker"
+import * as React from "react"
+import { FeatureFlagsProvider } from "./_components/feature-flags-provider"
+import { UsersTable } from "./_components/users-table"
 
-// import { and, count, gte, lte, sum } from "drizzle-orm"
-// import { order, user } from "@rahulsaamanth/mhp-schema"
-// import { db } from "@/db/db"
-// import { ClientDataTable } from "@/components/tables/client-data-table"
-// import { getUsers } from "@/actions/users"
+interface UsersPageProps {
+  searchParams: Promise<SearchParams>
+}
 
-// async function getUserData({
-//   createdAfter,
-//   createdBefore,
-// }: {
-//   createdAfter: Date | null
-//   createdBefore: Date | null
-// }) {
-//   const whereClause = []
-//   if (createdAfter) whereClause.push(gte(user.createdAt, createdAfter))
-//   if (createdBefore) whereClause.push(lte(user.createdAt, createdBefore))
+export default async function UsersPage(props: UsersPageProps) {
+  const searchParams = await props.searchParams
+  const search = searchParamsCache.parse(searchParams)
 
-//   const [userCount, orderData, usersChartData] = await Promise.all([
-//     db.select({ count: count() }).from(user),
-//     db.select({ totalAmountPaid: sum(order.totalAmountPaid) }).from(order),
-//     db
-//       .select({ createdAt: user.createdAt })
-//       .from(user)
-//       .where(and(...whereClause))
-//       .orderBy(user.createdAt),
-//   ])
+  const validFilters = getValidFilters(search.filters)
 
-//   const startDate =
-//     createdAfter ||
-//     (usersChartData.length > 0
-//       ? startOfDay(usersChartData[0]!.createdAt)
-//       : new Date())
+  const usersPromise = getUsers({
+    ...search,
+    filters: validFilters,
+  })
 
-//   const { array, format } = getChartDateArray(
-//     startDate,
-//     createdBefore || new Date()
-//   )
+  const promises = Promise.all([usersPromise])
 
-//   const dayArray = array.map((date) => {
-//     return {
-//       date: format(date),
-//       totalUsers: 0,
-//     }
-//   })
-
-//   return {
-//     chartData: usersChartData.reduce((data: any, user: { createdAt: Date }) => {
-//       const formattedDate = format(user.createdAt)
-//       const entry = dayArray.find((day) => day.date === formattedDate)
-//       if (entry == null) return data
-//       entry.totalUsers += 1
-//       return data
-//     }, dayArray),
-//     userCount,
-//   }
-// }
-
-const UsersPage = async ({
-  searchParams,
-}: {
-  searchParams: Promise<{
-    newCustomersRange?: string
-    newCustomersRangeFrom?: string
-    newCustomersRangeTo?: string
-  }>
-}) => {
-  // const columnData = await getUsers()
-
-  // const { newCustomersRange, newCustomersRangeFrom, newCustomersRangeTo } =
-  //   await searchParams
-  // const newCustomersRangeOption =
-  //   getRangeOption(
-  //     newCustomersRange,
-  //     newCustomersRangeFrom,
-  //     newCustomersRangeTo
-  //   ) || RANGE_OPTIONS.last_365_days
-
-  // const userData = await getUserData({
-  //   createdAfter: newCustomersRangeOption.startDate,
-  //   createdBefore: newCustomersRangeOption.endDate,
-  // })
-
-  // return (
-  //   <div className="w-full py-10">
-  //     <section className="grid grid-cols-1 lg:grid-cols-2 gap-4 gap-y-10">
-  //       <ChartCard
-  //         title="New Customers"
-  //         queryKey="newCustomersRange"
-  //         selectedRangeLabel={newCustomersRangeOption.label}
-  //       >
-  //         <UsersByDayChart data={userData.chartData} />
-  //       </ChartCard>
-  //       <ChartCard title="Customer Count by Status">
-  //         <UsersByStatusChart data={userData.userCountByStatus} />
-  //       </ChartCard>
-  //       <div className="col-span-1 lg:col-span-2 w-full">
-  //         <ClientDataTable data={columnData} columns={columns} />
-  //       </div>
-  //     </section>
-  //   </div>
-  // )
   return (
-    <div className="container mx-auto py-12">
-      <div className="flex flex-col items-center justify-center text-center space-y-6">
-        <div className="text-6xl">🏗️</div>
-        <h1 className="text-3xl font-bold">Users Page Under Construction</h1>
-        <p className="text-xl text-muted-foreground max-w-md">
-          This page is currently being built and will be available soon. Check
-          back later for the complete users management interface.
-        </p>
-        <div className="border border-dashed border-gray-300 rounded-lg p-8 w-full max-w-2xl mt-6">
-          <p className="text-muted-foreground">Future features will include:</p>
-          <ul className="list-disc list-inside mt-4 text-left space-y-2">
-            <li>User management dashboard</li>
-            <li>Customer analytics</li>
-            <li>User role management</li>
-            <li>User activity tracking</li>
-            <li>Customer engagement metrics</li>
-          </ul>
+    <div className="space-y-4">
+      <div className="bg-amber-50 border-l-4 border-amber-500 p-4 mb-6">
+        <div className="flex items-center">
+          <svg
+            className="h-6 w-6 text-amber-500 mr-3"
+            xmlns="http://www.w3.org/2000/svg"
+            fill="none"
+            viewBox="0 0 24 24"
+            strokeWidth={2}
+            stroke="currentColor"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              d="M12 9v3.75m9-.75a9 9 0 11-18 0 9 9 0 0118 0zm-9 3.75h.008v.008H12v-.008z"
+            />
+          </svg>
+          <div>
+            <p className="font-medium text-amber-800">
+              Warning: Users Page in Development
+            </p>
+            <p className="text-amber-700 text-sm mt-1">
+              This page is currently under development and not all features are
+              fully functional.
+            </p>
+          </div>
         </div>
       </div>
+      <FeatureFlagsProvider>
+        <DateRangePicker
+          triggerSize="sm"
+          triggerClassName="ml-auto w-56 sm:w-60"
+          align="end"
+          shallow={false}
+        />
+        <UsersTable promises={promises} />
+      </FeatureFlagsProvider>
     </div>
   )
 }
-
-export default UsersPage
