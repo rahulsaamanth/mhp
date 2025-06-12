@@ -25,12 +25,26 @@ import { product } from "@rahulsaamanth/mhp-schema"
 export const buildSearchCondition = (search: string) => {
   if (!search) return []
 
-  return [
-    or(
-      ilike(product.name, `%${search}%`),
-      ilike(product.description, `%${search}%`)
-    ),
-  ]
+  // Split the search string into individual words for more flexible matching
+  const searchTerms = search.trim().split(/\s+/)
+
+  if (searchTerms.length === 1) {
+    // Single word search - do a simple ILIKE match
+    return [
+      or(
+        ilike(product.name, `%${search}%`),
+        ilike(product.description, `%${search}%`)
+      ),
+    ]
+  } else {
+    // Multi-word search - each word should match somewhere in the name or description
+    return searchTerms.map((term) =>
+      or(
+        ilike(product.name, `%${term}%`),
+        ilike(product.description, `%${term}%`)
+      )
+    )
+  }
 }
 
 type ValidSortColumns = "name" | "id"

@@ -571,8 +571,8 @@ export const OrderForm = ({
 
                       <UserSearchDialog
                         open={showUserSearch}
-                        onOpenChange={setShowUserSearch}
-                        onUserSelect={(user) => {
+                        onOpenChangeAction={setShowUserSearch}
+                        onUserSelectAction={(user) => {
                           form.setValue("userId", user.id)
                           form.setValue("customerName", user.name)
                           form.setValue("customerEmail", user.email)
@@ -745,8 +745,8 @@ export const OrderForm = ({
 
                     <ProductSearchDialog
                       open={showProductSearch}
-                      onOpenChange={setShowProductSearch}
-                      onProductSelect={(product) => {
+                      onOpenChangeAction={setShowProductSearch}
+                      onProductSelectAction={(product) => {
                         append({
                           ...product,
                           imageUrl: product.imageUrl || undefined,

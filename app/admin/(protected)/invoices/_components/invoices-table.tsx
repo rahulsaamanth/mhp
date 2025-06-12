@@ -309,7 +309,7 @@ export function InvoicesTable({ promise }: InvoiceTableProps) {
       {selectedInvoiceId && (
         <InvoiceDetailsModal
           isOpen={isModalOpen}
-          onClose={() => setIsModalOpen(false)}
+          onCloseAction={() => setIsModalOpen(false)}
           invoiceDetails={invoiceDetails[selectedInvoiceId] || null}
         />
       )}

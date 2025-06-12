@@ -51,7 +51,7 @@ export interface SelectedProduct {
 }
 
 interface ProductSearchProps {
-  onProductSelectAction: (product: SelectedProduct) => void
+  onProductSelectActionAction: (product: SelectedProduct) => void
   form: UseFormReturn<any>
   fieldName?: string
   index?: number
@@ -61,7 +61,7 @@ interface ProductSearchProps {
 }
 
 export function EnhancedProductSearch({
-  onProductSelectAction,
+  onProductSelectActionAction,
   form,
   fieldName = "orderItems",
   index = 0,
@@ -217,7 +217,7 @@ export function EnhancedProductSearch({
     }
 
     // Call the passed action handler to add product to the order items table
-    onProductSelectAction(selectedProduct)
+    onProductSelectActionAction(selectedProduct)
 
     // Clear the form fields for this component to allow new product selection
     form.setValue(`${fieldName}.${index}.productVariantId`, "")
@@ -240,7 +240,7 @@ export function EnhancedProductSearch({
     setSearchQuery("")
     setIsSearchOpen(false)
 
-    onProductSelectAction({
+    onProductSelectActionAction({
       id: "",
       name: "",
       variantName: "",

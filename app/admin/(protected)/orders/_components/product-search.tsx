@@ -45,14 +45,14 @@ export interface SelectedProduct {
 }
 
 interface ProductSearchProps {
-  onProductSelectAction: (product: SelectedProduct) => void
+  onProductSelectActionAction: (product: SelectedProduct) => void
   form: any
   fieldName: string
   index: number
 }
 
 export const ProductSearch = ({
-  onProductSelectAction,
+  onProductSelectActionAction,
   form,
   fieldName,
   index,
@@ -217,7 +217,7 @@ export const ProductSearch = ({
       form.setValue(`${fieldName}.${index}.quantity`, 1)
     }
 
-    onProductSelectAction(selectedProduct)
+    onProductSelectActionAction(selectedProduct)
     setIsSearchOpen(false)
     setSearchQuery("")
     setExpandedProductIds(new Set())

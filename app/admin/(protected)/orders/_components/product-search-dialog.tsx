@@ -51,14 +51,14 @@ interface SelectedProduct {
 
 interface ProductSearchDialogProps {
   open: boolean
-  onOpenChange: (open: boolean) => void
-  onProductSelect: (product: SelectedProduct) => void
+  onOpenChangeAction: (open: boolean) => void
+  onProductSelectAction: (product: SelectedProduct) => void
 }
 
 export function ProductSearchDialog({
   open,
-  onOpenChange,
-  onProductSelect,
+  onOpenChangeAction,
+  onProductSelectAction,
 }: ProductSearchDialogProps) {
   const [searchQuery, setSearchQuery] = useState("")
   const [isLoading, setIsLoading] = useState(false)
@@ -172,12 +172,12 @@ export function ProductSearchDialog({
     }
 
     // Add product to order and close dialog
-    onProductSelect(selectedProduct)
-    onOpenChange(false)
+    onProductSelectAction(selectedProduct)
+    onOpenChangeAction(false)
   }
 
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
+    <Dialog open={open} onOpenChange={onOpenChangeAction}>
       <DialogContent className="sm:max-w-[600px] max-h-[80vh] flex flex-col">
         <DialogHeader>
           <DialogTitle>Search Products</DialogTitle>
@@ -245,9 +245,9 @@ export function ProductSearchDialog({
                           >
                             <div>
                               <span>
-                                {variant.variantName || "Default"}
-                                {variant.potency && variant.potency !== "NONE"
-                                  ? ` - ${variant.potency}`
+                                {variant.variantName || "Default"} |
+                                {variant.potency
+                                  ? ` Potency: ${variant.potency}`
                                   : ""}
                                 {variant.packSize
                                   ? ` - Pack: ${variant.packSize}`

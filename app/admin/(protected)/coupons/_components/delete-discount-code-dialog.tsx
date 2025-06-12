@@ -49,7 +49,11 @@ export function DeleteDiscountCodeDialog({
   return (
     <AlertDialog open={open} onOpenChange={setOpen}>
       <AlertDialogTrigger asChild>
-        <Button variant="ghost" size="icon" className="text-red-600 hover:text-red-800 hover:bg-red-50">
+        <Button
+          variant="ghost"
+          size="icon"
+          className="text-red-600 hover:text-red-800 hover:bg-red-50"
+        >
           <Trash2 className="h-4 w-4" />
           <span className="sr-only">Delete</span>
         </Button>
@@ -58,9 +62,12 @@ export function DeleteDiscountCodeDialog({
         <AlertDialogHeader>
           <AlertDialogTitle>Delete Discount Code</AlertDialogTitle>
           <AlertDialogDescription>
-            Are you sure you want to delete the discount code <span className="font-medium">{discountCodeName}</span>?
-            <br /><br />
-            This action cannot be undone. If the discount code is currently in use by any orders, it cannot be deleted.
+            Are you sure you want to delete the discount code{" "}
+            <span className="font-medium">{discountCodeName}</span>?
+            <br />
+            <br />
+            This action cannot be undone. If the discount code is currently in
+            use by any orders, it cannot be deleted.
           </AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter>

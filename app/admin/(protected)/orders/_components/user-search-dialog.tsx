@@ -27,14 +27,14 @@ interface SelectedUser {
 
 interface UserSearchDialogProps {
   open: boolean
-  onOpenChange: (open: boolean) => void
-  onUserSelect: (user: SelectedUser) => void
+  onOpenChangeAction: (open: boolean) => void
+  onUserSelectAction: (user: SelectedUser) => void
 }
 
 export function UserSearchDialog({
   open,
-  onOpenChange,
-  onUserSelect,
+  onOpenChangeAction,
+  onUserSelectAction,
 }: UserSearchDialogProps) {
   const [searchQuery, setSearchQuery] = useState("")
   const [isLoading, setIsLoading] = useState(false)
@@ -96,12 +96,12 @@ export function UserSearchDialog({
       phone: user.phone || "",
     }
 
-    onUserSelect(selectedUser)
-    onOpenChange(false)
+    onUserSelectAction(selectedUser)
+    onOpenChangeAction(false)
   }
 
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
+    <Dialog open={open} onOpenChange={onOpenChangeAction}>
       <DialogContent className="sm:max-w-[600px] max-h-[80vh] flex flex-col">
         <DialogHeader>
           <DialogTitle>Search Users</DialogTitle>

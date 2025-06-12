@@ -10,7 +10,9 @@ async function seed() {
   await db.delete(schema.payment)
   await db.delete(schema.orderDetails)
   await db.delete(schema.order)
+  await db.delete(schema.inventoryManagement) // Delete inventory management records first
   await db.delete(schema.productInventory)
+  await db.delete(schema.productVariant)
   await db.delete(schema.product)
   await db.delete(schema.category)
   await db.delete(schema.manufacturer)
@@ -21,7 +23,6 @@ async function seed() {
   await db.delete(schema.review)
   await db.delete(schema.user)
   await db.delete(schema.address)
-  await db.delete(schema.productVariant)
 
   const hashedPassword = await hashPassword("password123")
 
@@ -681,7 +682,7 @@ async function seed() {
           "https://hs-media.s3.ap-south-1.amazonaws.com/SBL-SBLSIL-NONE-25-1",
         ],
         packSize: 25,
-        potency: "NONE",
+        potency: "6X",
         costPrice: 60,
         mrp: 90,
         sellingPrice: 80,

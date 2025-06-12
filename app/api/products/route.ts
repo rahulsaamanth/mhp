@@ -1,7 +1,7 @@
 import { db } from "@/db/db"
 import { product } from "@rahulsaamanth/mhp-schema"
 import { buildSearchCondition, buildSortCondition } from "@/db/utils"
-import { and, sql } from "drizzle-orm"
+import { and, asc, sql } from "drizzle-orm"
 import { NextRequest, NextResponse } from "next/server"
 
 import { productVariant } from "@rahulsaamanth/mhp-schema"
@@ -29,7 +29,7 @@ export async function GET(request: NextRequest) {
         .select()
         .from(product)
         .where(and(...whereConditions))
-        // .orderBy(...orderByCondition)
+        .orderBy(asc(product.name)) // Default sorting by name for search results
         .limit(pageSize)
         .offset(offset),
     ])

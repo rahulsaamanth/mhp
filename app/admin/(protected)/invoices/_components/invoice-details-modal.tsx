@@ -23,13 +23,13 @@ import Image from "next/image"
 
 interface InvoiceDetailsModalProps {
   isOpen: boolean
-  onClose: () => void
+  onCloseAction: () => void
   invoiceDetails: InvoiceDetailedInfo | null
 }
 
 export function InvoiceDetailsModal({
   isOpen,
-  onClose,
+  onCloseAction,
   invoiceDetails,
 }: InvoiceDetailsModalProps) {
   const [isSending, setIsSending] = React.useState(false)
@@ -66,7 +66,7 @@ export function InvoiceDetailsModal({
   // Render a skeleton when no invoice is selected
   if (!invoiceDetails) {
     return (
-      <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
+      <Dialog open={isOpen} onOpenChange={(open) => !open && onCloseAction()}>
         <DialogContent className="max-w-3xl">
           <DialogHeader>
             <DialogTitle>
@@ -85,7 +85,7 @@ export function InvoiceDetailsModal({
   }
 
   return (
-    <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
+    <Dialog open={isOpen} onOpenChange={(open) => !open && onCloseAction()}>
       <DialogContent
         className="max-w-4xl print:shadow-none print:border-none print:max-w-full"
         id="invoice-content"
