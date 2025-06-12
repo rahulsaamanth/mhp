@@ -1,35 +1,14 @@
 "use client"
 
-import { ChevronLeft, Loader, PlusCircle, X, Search } from "lucide-react"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import {
   Card,
   CardContent,
   CardDescription,
-  CardFooter,
   CardHeader,
   CardTitle,
 } from "@/components/ui/card"
-import { Input } from "@/components/ui/input"
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select"
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table"
-import { useRouter } from "next/navigation"
-import { UseFormReturn, useFieldArray, useForm } from "react-hook-form"
-import * as z from "zod"
 import {
   Form,
   FormControl,
@@ -39,27 +18,43 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form"
-import { Label } from "@/components/ui/label"
+import { Input } from "@/components/ui/input"
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select"
 import { Switch } from "@/components/ui/switch"
-import { cn } from "@/lib/utils"
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table"
+import { createOrderSchema } from "@/schemas"
 import { zodResolver } from "@hookform/resolvers/zod"
 import {
+  Store,
   deliveryStatus,
-  orderType,
   paymentStatus,
   paymentType,
-  Store,
 } from "@rahulsaamanth/mhp-schema"
 import { useMutation } from "@tanstack/react-query"
-import React, { useEffect, useState } from "react"
+import { ChevronLeft, Loader, PlusCircle, Search, X } from "lucide-react"
+import { useRouter } from "next/navigation"
+import { useEffect, useState } from "react"
+import { UseFormReturn, useFieldArray, useForm } from "react-hook-form"
 import { toast } from "sonner"
-import { createOrderSchema } from "@/schemas"
-import { Checkbox } from "@/components/ui/checkbox"
+import * as z from "zod"
 
 import { Textarea } from "@/components/ui/textarea"
 
-import { createOrder, updateOrder } from "../_lib/actions"
 import { DatePicker } from "@/components/date-picker"
+import { createOrder, updateOrder } from "../_lib/actions"
 
 import { ProductSearchDialog } from "./product-search-dialog"
 import { UserSearchDialog } from "./user-search-dialog"
@@ -175,7 +170,9 @@ export const OrderForm = ({
         0
       )
 
-      const tax = items.reduce((sum, item) => sum + (item.taxAmount || 0), 0)
+      // Tax is now included in the unit price, so we'll just use a combined tax field
+      // for any additional tax the admin wants to add
+      const tax = form.getValues("tax") || 0
 
       const shippingCost =
         form.watch("orderType") === "ONLINE"
@@ -186,7 +183,6 @@ export const OrderForm = ({
       const total = subtotal + tax + shippingCost - discount
 
       form.setValue("subtotal", Number(subtotal.toFixed(2)))
-      form.setValue("tax", Number(tax.toFixed(2)))
       form.setValue("totalAmountPaid", Number(total.toFixed(2)))
 
       if (form.watch("orderType") === "OFFLINE") {
@@ -202,8 +198,38 @@ export const OrderForm = ({
     form.watch("shippingCost"),
     form.watch("discount"),
     form.watch("orderType"),
+    form.watch("tax"),
     form,
   ])
+
+  // Add an additional useEffect to ensure totals are recalculated when specific fields change
+  useEffect(() => {
+    const subscription = form.watch((value, { name }) => {
+      // If the changed field is related to order items, quantity, price, tax or discount
+      if (
+        name?.startsWith("orderItems") ||
+        name === "discount" ||
+        name === "tax" ||
+        name === "shippingCost"
+      ) {
+        // Recalculate totals
+        const items = form.getValues("orderItems")
+        const subtotal = items.reduce(
+          (sum, item) => sum + (item.unitPrice || 0) * (item.quantity || 0),
+          0
+        )
+        const tax = form.getValues("tax") || 0
+        const shippingCost = form.getValues("shippingCost") || 0
+        const discount = form.getValues("discount") || 0
+        const total = subtotal + tax + shippingCost - discount
+
+        form.setValue("subtotal", Number(subtotal.toFixed(2)))
+        form.setValue("totalAmountPaid", Number(total.toFixed(2)))
+      }
+    })
+
+    return () => subscription.unsubscribe()
+  }, [form])
 
   useEffect(() => {
     const orderItems = form.getValues("orderItems")
@@ -280,6 +306,7 @@ export const OrderForm = ({
     form.setValue(`orderItems.${index}.productName`, product.name)
     form.setValue(`orderItems.${index}.unitPrice`, product.sellingPrice)
     form.setValue(`orderItems.${index}.originalPrice`, product.mrp)
+    // We still store these values in the database, but don't show them in the UI
     form.setValue(`orderItems.${index}.taxAmount`, product.taxAmount || 0)
     form.setValue(
       `orderItems.${index}.discountAmount`,
@@ -678,18 +705,14 @@ export const OrderForm = ({
                               <TableHead className="w-[40px] whitespace-nowrap">
                                 No.
                               </TableHead>
-                              <TableHead className="w-[200px]">
+                              <TableHead className="w-[250px]">
                                 Product
                               </TableHead>
                               <TableHead className="w-[60px]">Qty</TableHead>
-                              <TableHead className="w-[80px]">
+                              <TableHead className="w-[100px]">
                                 Unit Price
                               </TableHead>
-                              <TableHead className="w-[80px]">
-                                Discount
-                              </TableHead>
-                              <TableHead className="w-[80px]">Tax</TableHead>
-                              <TableHead className="w-[80px]">Total</TableHead>
+                              <TableHead className="w-[100px]">Total</TableHead>
                               <TableHead className="w-[40px]"></TableHead>
                             </TableRow>
                           </TableHeader>
@@ -707,7 +730,7 @@ export const OrderForm = ({
                             ) : (
                               <TableRow>
                                 <TableCell
-                                  colSpan={8}
+                                  colSpan={6}
                                   className="text-center py-8 text-muted-foreground"
                                 >
                                   No products added. Click the "Add Product"
@@ -867,7 +890,6 @@ export const OrderForm = ({
                         <span className="text-sm">Subtotal:</span>
                         <span>₹{form.watch("subtotal").toFixed(2)}</span>
                       </div>
-
                       {form.watch("orderType") === "ONLINE" && (
                         <FormField
                           control={form.control}
@@ -889,6 +911,13 @@ export const OrderForm = ({
                                           ? 0
                                           : parseFloat(e.target.value)
                                       field.onChange(value)
+
+                                      // Force trigger the form's onChange to recalculate totals
+                                      form.setValue("shippingCost", value, {
+                                        shouldDirty: true,
+                                        shouldTouch: true,
+                                        shouldValidate: true,
+                                      })
                                     }}
                                     className="w-24 text-right"
                                   />
@@ -899,7 +928,6 @@ export const OrderForm = ({
                           )}
                         />
                       )}
-
                       <FormField
                         control={form.control}
                         name="discount"
@@ -920,6 +948,49 @@ export const OrderForm = ({
                                         ? 0
                                         : parseFloat(e.target.value)
                                     field.onChange(value)
+
+                                    // Force trigger the form's onChange to recalculate totals
+                                    form.setValue("discount", value, {
+                                      shouldDirty: true,
+                                      shouldTouch: true,
+                                      shouldValidate: true,
+                                    })
+                                  }}
+                                  className="w-24 text-right"
+                                />
+                              </FormControl>
+                            </div>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />{" "}
+                      <FormField
+                        control={form.control}
+                        name="tax"
+                        render={({ field }) => (
+                          <FormItem>
+                            <div className="flex items-center justify-between">
+                              <FormLabel className="text-sm">
+                                Additional Tax:
+                              </FormLabel>
+                              <FormControl>
+                                <Input
+                                  type="number"
+                                  {...field}
+                                  value={field.value === 0 ? "" : field.value}
+                                  onChange={(e) => {
+                                    const value =
+                                      e.target.value === ""
+                                        ? 0
+                                        : parseFloat(e.target.value)
+                                    field.onChange(value)
+
+                                    // Force trigger the form's onChange to recalculate totals
+                                    form.setValue("tax", value, {
+                                      shouldDirty: true,
+                                      shouldTouch: true,
+                                      shouldValidate: true,
+                                    })
                                   }}
                                   className="w-24 text-right"
                                 />
@@ -929,12 +1000,6 @@ export const OrderForm = ({
                           </FormItem>
                         )}
                       />
-
-                      <div className="flex items-center justify-between">
-                        <span className="text-sm">Tax:</span>
-                        <span>₹{form.watch("tax").toFixed(2)}</span>
-                      </div>
-
                       <div className="flex items-center justify-between border-t pt-2 font-medium">
                         <span>Total:</span>
                         <span>₹{form.watch("totalAmountPaid").toFixed(2)}</span>
@@ -1026,9 +1091,20 @@ const OrderItemFields = ({
   onRemove,
   isOnly,
 }: OrderItemFieldsProps) => {
-  const itemTotal =
-    form.watch(`orderItems.${index}.unitPrice`) *
-    form.watch(`orderItems.${index}.quantity`)
+  // Track item total in state to ensure proper re-rendering
+  const [itemTotal, setItemTotal] = useState(0)
+
+  // Update item total whenever quantity or unit price changes
+  useEffect(() => {
+    const unitPrice = form.watch(`orderItems.${index}.unitPrice`) || 0
+    const quantity = form.watch(`orderItems.${index}.quantity`) || 0
+    setItemTotal(unitPrice * quantity)
+  }, [
+    form.watch(`orderItems.${index}.unitPrice`),
+    form.watch(`orderItems.${index}.quantity`),
+    index,
+    form,
+  ])
 
   const productName = form.watch(`orderItems.${index}.productName`)
   const variantName = form.watch(`orderItems.${index}.variantName`)
@@ -1062,6 +1138,13 @@ const OrderItemFields = ({
                     const value =
                       e.target.value === "" ? 0 : parseInt(e.target.value, 10)
                     field.onChange(value)
+
+                    // Force trigger the form's onChange to recalculate totals
+                    form.setValue(`orderItems.${index}.quantity`, value, {
+                      shouldDirty: true,
+                      shouldTouch: true,
+                      shouldValidate: true,
+                    })
                   }}
                   className="w-16"
                   min={1}
@@ -1086,54 +1169,15 @@ const OrderItemFields = ({
                     const value =
                       e.target.value === "" ? 0 : parseFloat(e.target.value)
                     field.onChange(value)
+
+                    // Force trigger the form's onChange to recalculate totals
+                    form.setValue(`orderItems.${index}.unitPrice`, value, {
+                      shouldDirty: true,
+                      shouldTouch: true,
+                      shouldValidate: true,
+                    })
                   }}
-                  className="w-20"
-                />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-      </TableCell>
-      <TableCell>
-        <FormField
-          control={form.control}
-          name={`orderItems.${index}.discountAmount`}
-          render={({ field }) => (
-            <FormItem>
-              <FormControl>
-                <Input
-                  type="number"
-                  value={field.value === 0 ? "" : field.value}
-                  onChange={(e) => {
-                    const value =
-                      e.target.value === "" ? 0 : parseFloat(e.target.value)
-                    field.onChange(value)
-                  }}
-                  className="w-20"
-                />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-      </TableCell>
-      <TableCell>
-        <FormField
-          control={form.control}
-          name={`orderItems.${index}.taxAmount`}
-          render={({ field }) => (
-            <FormItem>
-              <FormControl>
-                <Input
-                  type="number"
-                  value={field.value === 0 ? "" : field.value}
-                  onChange={(e) => {
-                    const value =
-                      e.target.value === "" ? 0 : parseFloat(e.target.value)
-                    field.onChange(value)
-                  }}
-                  className="w-20"
+                  className="w-24"
                 />
               </FormControl>
               <FormMessage />

@@ -175,55 +175,70 @@ async function getProductsSoldByCategory({
   createdAfter: Date | null
   createdBefore: Date | null
 }) {
-  unstable_noStore()
-  const whereClause = []
-  if (createdAfter) whereClause.push(gte(order.createdAt, createdAfter))
-  if (createdBefore) whereClause.push(lte(order.createdAt, createdBefore))
+  unstable_noStore() // This ensures the data is always fresh and never cached
 
-  const mainCategory = aliasedTable(category, "mainCategory")
+  try {
+    const whereClause = []
+    if (createdAfter) whereClause.push(gte(order.createdAt, createdAfter))
+    if (createdBefore) whereClause.push(lte(order.createdAt, createdBefore))
 
-  const data = await db
-    .select({
-      // mainCategoryId: mainCategory.id,
-      mainCategoryName: mainCategory.name,
-      // subCategoryId: category.id,
-      subCategoryName: category.name,
-      totalOrders: countDistinct(order.id).mapWith(Number),
-      totalRevenue: sum(order.totalAmountPaid).mapWith(Number),
-      totalItemsSold: sum(orderDetails.quantity).mapWith(Number),
-    })
-    .from(order)
-    .innerJoin(orderDetails, sql`${orderDetails.orderId} = ${order.id}`)
-    .innerJoin(
-      productVariant,
-      sql`${productVariant.id} = ${orderDetails.productVariantId}`
-    )
-    .innerJoin(product, sql`${product.id} = ${productVariant.productId}`)
-    .innerJoin(category, sql`${category.id} = ${product.categoryId}`)
-    .innerJoin(mainCategory, sql`${category.parentId} = ${mainCategory.id}`)
-    .where(and(...whereClause))
-    .groupBy(mainCategory.id, mainCategory.name, category.id, category.name)
-    .orderBy(desc(sum(order.totalAmountPaid)))
+    const mainCategory = aliasedTable(category, "mainCategory")
 
-  const mainCategoryMap = data.reduce((acc: any, item) => {
-    if (!acc[item.mainCategoryName]) {
-      acc[item.mainCategoryName] = {
-        name: item.mainCategoryName,
-        value: 0,
+    const data = await db
+      .select({
+        mainCategoryId: mainCategory.id,
+        mainCategoryName: mainCategory.name,
+        subCategoryId: category.id,
+        subCategoryName: category.name,
+        totalOrders: countDistinct(order.id).mapWith(Number),
+        totalRevenue: sum(order.totalAmountPaid).mapWith(Number),
+        totalItemsSold: sum(orderDetails.quantity).mapWith(Number),
+      })
+      .from(order)
+      .innerJoin(orderDetails, sql`${orderDetails.orderId} = ${order.id}`)
+      .innerJoin(
+        productVariant,
+        sql`${productVariant.id} = ${orderDetails.productVariantId}`
+      )
+      .innerJoin(product, sql`${product.id} = ${productVariant.productId}`)
+      .innerJoin(category, sql`${category.id} = ${product.categoryId}`)
+      .innerJoin(mainCategory, sql`${category.parentId} = ${mainCategory.id}`)
+      .where(whereClause.length > 0 ? and(...whereClause) : sql`1=1`)
+      .groupBy(mainCategory.id, mainCategory.name, category.id, category.name)
+      .orderBy(desc(sum(order.totalAmountPaid)))
+
+    // Process main categories data
+    const mainCategoryMap = data.reduce((acc: any, item) => {
+      if (!acc[item.mainCategoryId]) {
+        acc[item.mainCategoryId] = {
+          name: item.mainCategoryName,
+          value: 0,
+        }
       }
-    }
-    acc[item.mainCategoryName].value += item.totalItemsSold
-    return acc
-  }, {})
+      acc[item.mainCategoryId].value += item.totalItemsSold
+      return acc
+    }, {})
 
-  return {
-    mainCategoryArray: Object.values(
-      mainCategoryMap
-    ) as OrdersByCategoryChartData,
-    subCategoryArray: data.map((item) => ({
+    // Process sub categories data
+    const subCategoryArray = data.map((item) => ({
       name: item.subCategoryName,
       value: item.totalItemsSold,
-    })),
+      mainCategoryId: item.mainCategoryId, // Adding reference to parent category for potential relationship visualization
+    }))
+
+    return {
+      mainCategoryArray: Object.values(
+        mainCategoryMap
+      ) as OrdersByCategoryChartData,
+      subCategoryArray: subCategoryArray,
+    }
+  } catch (error) {
+    console.error("Error fetching product category data:", error)
+    // Return empty arrays as fallback to prevent UI breaking
+    return {
+      mainCategoryArray: [] as OrdersByCategoryChartData,
+      subCategoryArray: [] as OrdersByCategoryChartData,
+    }
   }
 }
 
@@ -405,8 +420,8 @@ export default async function DashboardPage({
         </ChartCard>
         <ChartCard
           title="Products sold by Category"
-          // queryKey="productsSoldByCategory"
-          // selectedRangeLabel={productsSoldByCategoryRangeOption.label}
+          queryKey="productsSoldByCategoryRange"
+          selectedRangeLabel={productsSoldByCategoryRangeOption.label}
         >
           <OrdersByCategoryChart
             data1={productsSoldByCategory.mainCategoryArray}

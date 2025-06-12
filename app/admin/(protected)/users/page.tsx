@@ -51,6 +51,9 @@ export default async function UsersPage(props: UsersPageProps) {
               This page is currently under development and not all features are
               fully functional.
             </p>
+            <p className="text-red-600 text-sm mt-1 font-semibold">
+              Please do not use this page in production environments.
+            </p>
           </div>
         </div>
       </div>
