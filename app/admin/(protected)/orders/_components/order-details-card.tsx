@@ -290,7 +290,7 @@ export function OrderDetailsCard({
                 currentOrderDetails.products.length > 0 ? (
                   currentOrderDetails.products.map((product) => (
                     <div
-                      key={product.id}
+                      key={`${product.id}-${product.variantName}`}
                       className="flex gap-3 border rounded-md p-2"
                     >
                       <div className="h-16 w-16 overflow-hidden rounded-md relative bg-muted">
@@ -300,6 +300,10 @@ export function OrderDetailsCard({
                             fill
                             alt={product.name}
                             className="object-cover"
+                            onError={(e) => {
+                              const target = e.target as HTMLImageElement
+                              target.src = "/placeholder-image.jpg"
+                            }}
                           />
                         ) : (
                           <div className="h-full w-full flex items-center justify-center bg-muted">
@@ -358,7 +362,7 @@ export function OrderDetailsCard({
                 <div className="flex items-start gap-3">
                   <Avatar className="h-10 w-10">
                     <AvatarImage
-                      src=""
+                      src={`https://api.dicebear.com/7.x/initials/svg?seed=${encodeURIComponent(currentOrderDetails.userName || "User")}`}
                       alt={currentOrderDetails.userName || ""}
                     />
                     <AvatarFallback>

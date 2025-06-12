@@ -39,6 +39,8 @@ export function OrdersTable({ promise }: OrderTableProps) {
   const { featureFlags } = useFeatureFlags()
   const { data, pageCount } = React.use(promise)
 
+  console.log(data)
+
   const [rowAction, setRowAction] =
     React.useState<DataTableRowAction<OrderForTable> | null>(null)
 

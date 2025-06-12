@@ -277,7 +277,15 @@ async function fetchOrderDetails(tx: any, orderId: string) {
                 WHERE img IS NOT NULL AND img != ''
                 LIMIT 1
               )
-            ELSE NULL
+            ELSE (
+              -- If current variant has no image, look for an image in any variant of the same product
+              SELECT pv2."variantImage"[1]
+              FROM "ProductVariant" pv2
+              WHERE pv2."productId" = p."id"
+                AND pv2."variantImage" IS NOT NULL
+                AND array_length(pv2."variantImage", 1) > 0
+              LIMIT 1
+            )
           END
         ) as "validImage",
         p."id" as "productId",
@@ -298,18 +306,23 @@ async function fetchOrderDetails(tx: any, orderId: string) {
   ])) as [any, any]
 
   // Transform the data to match the OrderDetailedInfo interface
-  const products = orderDetailsData.rows.map((item: any) => ({
-    id: item.productId,
-    name: item.productName,
-    description: item.productDescription,
-    quantity: Number(item.quantity) || 0,
-    unitPrice: Number(item.unitPrice) || 0,
-    totalPrice: (Number(item.quantity) || 0) * (Number(item.unitPrice) || 0),
-    image: item.validImage || null,
-    variantName: item.variantName,
-    potency: item.potency,
-    packSize: item.packSize,
-  }))
+  const products = orderDetailsData.rows.map((item: any) => {
+    // Ensure we have a valid image or use a fallback
+    const imageUrl = item.validImage || null
+
+    return {
+      id: item.productId,
+      name: item.productName,
+      description: item.productDescription,
+      quantity: Number(item.quantity) || 0,
+      unitPrice: Number(item.unitPrice) || 0,
+      totalPrice: (Number(item.quantity) || 0) * (Number(item.unitPrice) || 0),
+      image: imageUrl,
+      variantName: item.variantName,
+      potency: item.potency,
+      packSize: item.packSize,
+    }
+  })
 
   return {
     products,
