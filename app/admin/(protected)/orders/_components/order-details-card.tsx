@@ -342,30 +342,44 @@ export function OrderDetailsCard({
 
             <div className="grid gap-3">
               <div className="font-semibold">Customer Information</div>
-              <div className="flex items-start gap-3">
-                <Avatar className="h-10 w-10">
-                  <AvatarImage
-                    src=""
-                    alt={currentOrderDetails.userName || ""}
-                  />
-                  <AvatarFallback>
-                    {currentOrderDetails.userName?.substring(0, 2) || "U"}
-                  </AvatarFallback>
-                </Avatar>
-                <div className="grid gap-1">
-                  <h4 className="font-medium">
-                    {currentOrderDetails.userName || "No name provided"}
-                  </h4>
-                  {currentOrderDetails.userEmail && (
+              {currentOrderDetails.orderType === "OFFLINE" ? (
+                <div className="text-sm">
+                  <p>
+                    Name:{" "}
+                    {currentOrderDetails.customerName || "No name provided"}
+                  </p>
+                  {currentOrderDetails.customerPhone && (
                     <p className="text-xs text-muted-foreground">
-                      {currentOrderDetails.userEmail}
+                      Phone: {currentOrderDetails.customerPhone}
                     </p>
                   )}
-                  <p className="text-xs text-muted-foreground">
-                    {currentOrderDetails.customerPhone}
-                  </p>
                 </div>
-              </div>
+              ) : (
+                <div className="flex items-start gap-3">
+                  <Avatar className="h-10 w-10">
+                    <AvatarImage
+                      src=""
+                      alt={currentOrderDetails.userName || ""}
+                    />
+                    <AvatarFallback>
+                      {currentOrderDetails.userName?.substring(0, 2) || "U"}
+                    </AvatarFallback>
+                  </Avatar>
+                  <div className="grid gap-1">
+                    <h4 className="font-medium">
+                      {currentOrderDetails.userName || "No name provided"}
+                    </h4>
+                    {currentOrderDetails.userEmail && (
+                      <p className="text-xs text-muted-foreground">
+                        {currentOrderDetails.userEmail}
+                      </p>
+                    )}
+                    <p className="text-xs text-muted-foreground">
+                      {currentOrderDetails.customerPhone}
+                    </p>
+                  </div>
+                </div>
+              )}
             </div>
           </>
         )}
