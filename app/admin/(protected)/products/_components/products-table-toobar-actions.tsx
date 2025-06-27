@@ -9,6 +9,7 @@ import { Button } from "@/components/ui/button"
 import { DeleteProductsDialog } from "./delete-products-dialog"
 import { ProductForTable } from "@/types"
 import Link from "next/link"
+import { RevalidateProductsButton } from "./revalidate-products-button"
 
 interface TasksTableToolbarActionsProps {
   table: Table<ProductForTable>
@@ -32,6 +33,7 @@ export function ProductsTableToolbarActions({
           Add New Product
         </Button>
       </Link>
+      <RevalidateProductsButton />
       <Button
         variant="outline"
         size="sm"
