@@ -195,7 +195,7 @@ export const createProductSchema = z.object({
   tax: z
     .number()
     .min(0, "Tax musn't be negative")
-    .max(28, "Tax musn't excee the tax slab 28")
+    .max(28, "Tax musn't exceed the tax slab 28")
     .default(0),
   taxInclusive: z.boolean().optional(),
   variants: z
