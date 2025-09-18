@@ -175,19 +175,19 @@ export const ProductsForm = ({
     name: "variants",
   })
 
-  // function resetForm() {
-  //   form.reset()
-  //   form.setValue("description", "")
-  //   form.setValue("categoryId", defaultValues.categoryId)
-  //   form.setValue("manufacturerId", defaultValues.manufacturerId)
-  //   form.setValue("form", defaultValues.form)
-  //   form.setValue("unit", defaultValues.unit)
-  //   form.setValue("status", defaultValues.status)
-  //   form.setValue("tax", defaultValues.tax)
-  //   form.setValue("tags", defaultValues.tags)
+  function resetForm() {
+    form.reset()
+    form.setValue("description", "")
+    form.setValue("categoryId", defaultValues.categoryId)
+    form.setValue("manufacturerId", defaultValues.manufacturerId)
+    form.setValue("form", defaultValues.form)
+    form.setValue("unit", defaultValues.unit)
+    form.setValue("status", defaultValues.status)
+    form.setValue("tax", defaultValues.tax)
+    form.setValue("tags", defaultValues.tags)
 
-  //   form.setValue("variants", defaultValues.variants)
-  // }
+    form.setValue("variants", defaultValues.variants)
+  }
 
   const { mutate: server_handleProduct, isPending } = useMutation({
     mutationFn:
