@@ -258,7 +258,11 @@ export const ProductsForm = ({
             }
           }
 
-          const generateFileName = (index: number) => `${sku}-${index + 1}`
+          const generateFileName = (index: number) => {
+            const timestamp = Date.now()
+            const randomStr = Math.random().toString(36).substring(2, 8)
+            return `${sku}-${index + 1}-${timestamp}-${randomStr}`
+          }
 
           const uploadedUrls = await Promise.all(
             variant.variantImage.map(async (file: File, idx: number) => {
